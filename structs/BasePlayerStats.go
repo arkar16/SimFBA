@@ -1,0 +1,50 @@
+package structs
+
+type BasePlayerStats struct {
+	PassAttempts         int
+	PassCompletions      int
+	PassingTDs           int
+	Interceptions        int
+	LongestPass          int
+	Sacks                int
+	RushAttempts         int
+	RushingYards         int
+	RushingTDs           int
+	Fumbles              int
+	LongestRush          int
+	Targets              int
+	Catches              int
+	ReceivingYards       int
+	ReceivingTDs         int
+	LongestReceiption    int
+	SoloTackles          int
+	AssistedTackles      int
+	TacklesForLoss       int
+	SacksMade            float64
+	ForceFumbles         int
+	ReturnedFumbles      int
+	PassDeflections      int
+	InterceptionsCaught  int
+	Safeties             int
+	DefensiveTDs         int
+	FGMade               int
+	FGAttempts           int
+	LongestFG            int
+	ExtraPointsMade      int
+	ExtraPointsAttempted int
+	KickoffTouchbacks    int
+	Punts                int
+	PuntTouchbacks       int
+	PuntsInside20        int
+	KickReturns          int
+	KickReturnTDs        int
+	KickReturnYards      int
+	PuntReturns          int
+	PuntReturnTDs        int
+	PuntReturnYards      int
+	STSoloTackles        int
+	STAssistedTackles    int
+	PuntsBlocked         int
+	FGBlocked            int
+	Snaps                int
+}

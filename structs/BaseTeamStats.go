@@ -1,0 +1,49 @@
+package structs
+
+type BaseTeamStats struct {
+	PointsScored                  int
+	PointsAgainst                 int
+	PassingYards                  int
+	PassingAttempts               int
+	PassingCompletions            int
+	PassingTouchdowns             int
+	PassingInterceptions          int
+	QBRating                      int
+	QBSacks                       int
+	RushAttempts                  int
+	RushingYards                  int
+	RushingYardsPerAttempt        float32
+	RushingTouchdowns             int
+	RushingFumbles                int
+	ReceivingTargets              int
+	ReceivingCatches              int
+	ReceivingYards                int
+	YardsPerCatch                 float32
+	ReceivingTouchdowns           int
+	ReceivingFumbles              int
+	PassingYardsAllowed           int
+	PassingTDsAllowed             int
+	PassingCompletionsAllowed     int
+	RushingYardsAllowed           int
+	RushingTDsAllowed             int
+	RushingYardsPerAttemptAllowed float32
+	SoloTackles                   int
+	AssistedTackles               int
+	TacklesForLoss                float32
+	DefensiveSacks                float32
+	ForcedFumbles                 int
+	FumblesRecovered              int
+	DefensiveInterceptions        int
+	ExtraPointsMade               int
+	ExtraPointsAttempted          int
+	ExtraPointPercentage          float32
+	FieldGoalsMade                int
+	FieldGoalsAttempted           int
+	FieldGoalsPercentage          float32
+	Punts                         int
+	PuntYards                     int
+	PuntAverage                   float32
+	Inside20YardLine              int
+	Penalties                     int
+	PenaltyYards                  int
+}

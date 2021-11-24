@@ -14,8 +14,10 @@ type CollegeTeam struct {
 	Color3            string
 	RecruitingProfile RecruitingTeamProfile
 	Gameplan          CollegeGameplan
-	TeamStats         []CollegeTeamStats `gorm:"foreignKey:TeamID"`
-	CollegeRivals     []CollegeRival     `gorm:"foreignKey:TeamID"`
-	TeamRecord        CollegeTeamRecords `gorm:"foreignKey:TeamID"`
-	TeamGameplan      CollegeGameplan    `gorm:"foreignKey:TeamID"`
+	TeamStats         []CollegeTeamStats    `gorm:"foreignKey:TeamID"`
+	CollegeRivals     []CollegeRival        `gorm:"foreignKey:TeamID"`
+	TeamRecord        CollegeTeamRecords    `gorm:"foreignKey:TeamID"`
+	TeamGameplan      CollegeGameplan       `gorm:"foreignKey:TeamID"`
+	TeamDepthChart    CollegeTeamDepthChart `gorm:"foreignKey:TeamID"`
+	TeamStandings     []CollegeStandings    `gorm:"foreignKey:TeamID"`
 }

@@ -17,6 +17,12 @@ type Timestamp struct {
 	SaturdayNoon       bool
 	SaturdayEvening    bool
 	SaturdayNight      bool
+	NFLSundayNoon      bool
+	NFLSundayAfternoon bool
+	NFLSundayEvening   bool
+	NFLMondayEvening   bool
+	NFLTradingAllowed  bool
+	NFLPreseason       bool
 	RecruitingSynced   bool
 	GMActionsCompleted bool
 	IsOffSeason        bool
@@ -27,11 +33,18 @@ func (t *Timestamp) MoveUpWeekCollege() {
 	t.CollegeWeek++
 }
 
+func (t *Timestamp) MoveUpWeekNFL() {
+	t.NFLWeekID++
+	t.NFLWeek++
+}
+
 func (t *Timestamp) MoveUpSeason() {
 	t.CollegeSeasonID++
 	t.Season++
 	t.CollegeWeek = 0
 	t.CollegeWeekID++
+	t.NFLWeek = 0
+	t.NFLSeasonID++
 }
 
 func (t *Timestamp) ToggleThursdayGames() {

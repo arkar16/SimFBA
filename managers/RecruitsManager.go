@@ -14,6 +14,39 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+func GetAllRecruits() []structs.Recruit {
+	db := dbprovider.GetInstance().GetDB()
+
+	var croots []structs.Recruit
+
+	db.Find(&croots)
+
+	return croots
+}
+
+func GetAllUnsignedRecruits() []structs.Recruit {
+	db := dbprovider.GetInstance().GetDB()
+
+	var croots []structs.Recruit
+
+	db.Where("is_signed = ?", false).Find(&croots)
+
+	return croots
+}
+
+func GetCollegeRecruitByRecruitID(recruitID string) structs.Recruit {
+	db := dbprovider.GetInstance().GetDB()
+
+	var recruit structs.Recruit
+
+	err := db.Where("id = ?", recruitID).Find(&recruit)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	return recruit
+}
+
 func GetRecruitsByTeamProfileID(ProfileID string) []structs.RecruitPlayerProfile {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -197,15 +230,25 @@ func RecruitSync(CurrentWeek int) {
 	db := dbprovider.GetInstance().GetDB()
 
 	// GetCurrentWeek
+	timestamp := GetTimestamp()
+	if timestamp.RecruitingSynced {
+		log.Fatalln("Recruiting already ran for this week. Please wait until next week to sync recruiting again.")
+	}
 	var recruitModifiers structs.AdminRecruitModifier
-	recruits := GetAllRecruits()
+	var recruitProfiles []structs.RecruitPlayerProfile
+	recruits := GetAllUnsignedRecruits()
 	// Get every recruit
 	for _, recruit := range recruits {
-		recruitProfiles := GetRecruitPlayerProfilesByRecruitId(strconv.Itoa(int(recruit.ID)))
+		recruitProfiles = GetRecruitPlayerProfilesByRecruitId(strconv.Itoa(int(recruit.ID)))
+
 		var recruitProfilesWithScholarship []structs.RecruitPlayerProfile
+
 		totalTeamRecruitProfiles := len(recruitProfiles)
+
 		totalPointsOnRecruit := 0
+
 		var signThreshold float64
+
 		for _, recruitProfile := range recruitProfiles {
 			recruitProfile.AddCurrentWeekPointsToTotal()
 			totalPointsOnRecruit += recruitProfile.TotalPoints
@@ -218,6 +261,7 @@ func RecruitSync(CurrentWeek int) {
 		sort.Sort(structs.ByPoints(recruitProfilesWithScholarship))
 
 		signThreshold = float64(recruitModifiers.ModifierOne-CurrentWeek) * (float64(totalTeamRecruitProfiles/recruitModifiers.ModifierTwo) * math.Log(float64(recruitModifiers.WeeksOfRecruiting-CurrentWeek)))
+
 		if float64(totalPointsOnRecruit) > signThreshold {
 			percentageOdds := rand.Intn(totalPointsOnRecruit) + 1
 			currentProbability := 0
@@ -246,9 +290,58 @@ func RecruitSync(CurrentWeek int) {
 			recruit.UpdateSigningStatus()
 			recruit.UpdateTeamID(winningTeamID)
 		}
-		// Save all recruit profiles after iterating recruit
-		db.Save(&recruitProfiles)
 	}
-	// Save Recruits
-	db.Save(&recruits)
+	timestamp.ToggleRecruiting()
+	// Save Recruits and Recruit Player Profiles
+	err := db.Save(&recruitProfiles).Error
+	if err != nil {
+		fmt.Println(err.Error())
+		log.Fatalf("Could not sync all recruiting profiles.")
+	}
+
+	err = db.Save(&recruits).Error
+	if err != nil {
+		fmt.Println(err.Error())
+		log.Fatalf("Could not sync all recruits.")
+	}
+
+	err = db.Save(&timestamp).Error
+	if err != nil {
+		fmt.Println(err.Error())
+		log.Fatalf("Could not save timestamp")
+	}
+}
+
+func GetRecruitFromRecruitsList(id int, recruits []structs.RecruitPlayerProfile) structs.RecruitPlayerProfile {
+	var recruit structs.RecruitPlayerProfile
+
+	for i := 0; i < len(recruits); i++ {
+		if recruits[i].RecruitID == id {
+			recruit = recruits[i]
+			break
+		}
+	}
+
+	return recruit
+}
+
+func CreateCollegeRecruit(createRecruitDTO structs.CreateRecruitDTO) {
+	db := dbprovider.GetInstance().GetDB()
+
+	collegeRecruit := &structs.Recruit{}
+	collegeRecruit.Map(createRecruitDTO)
+
+	// No Player Record exists, so we shall make one.
+
+	db.Create(&collegeRecruit)
+
+	playerRecord := structs.Player{
+		RecruitID: int(collegeRecruit.ID),
+	}
+	// Create Player Record
+	db.Create(&playerRecord)
+	// Assign PlayerID to Recruit
+	collegeRecruit.AssignPlayerID(int(playerRecord.ID))
+	// Save Recruit
+	db.Save(&collegeRecruit)
 }

@@ -48,6 +48,41 @@ func GetTeamByTeamID(teamId string) structs.CollegeTeam {
 	return team
 }
 
+// GetTeamsByConferenceID
+func GetTeamsByConferenceID(conferenceID string) []structs.CollegeTeam {
+	var teams []structs.CollegeTeam
+	db := dbprovider.GetInstance().GetDB()
+	err := db.Where("conference_id = ?", conferenceID).Find(&teams).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return teams
+}
+
+// GetTeamsByConferenceIDWithStandings
+func GetTeamsByConferenceIDWithStandings(conferenceID string, seasonID string) []structs.CollegeTeam {
+	var teams []structs.CollegeTeam
+	db := dbprovider.GetInstance().GetDB()
+	err := db.Preload("TeamStandings").
+		Where("conference_id = ? AND TeamStandings.season_id = ?", conferenceID, seasonID).
+		Find(&teams).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return teams
+}
+
+// GetTeamsByDivisionID
+func GetTeamsByDivisionID(conferenceID string) []structs.CollegeTeam {
+	var teams []structs.CollegeTeam
+	db := dbprovider.GetInstance().GetDB()
+	err := db.Where("division_id = ?", conferenceID).Find(&teams).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return teams
+}
+
 func RemoveUserFromTeam(teamId string) {
 	db := dbprovider.GetInstance().GetDB()
 

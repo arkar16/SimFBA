@@ -36,14 +36,25 @@ func (p *Provider) InitDatabase() bool {
 	}
 	// AutoMigrations
 	db.AutoMigrate(&structs.CollegePlayer{})
+	db.AutoMigrate(&structs.Recruit{})
+	db.AutoMigrate(&structs.Player{})
+	db.AutoMigrate(&structs.CollegePlayerStats{})
 	db.AutoMigrate(&structs.CollegeTeam{})
 	db.AutoMigrate(&structs.CollegeConference{})
 	db.AutoMigrate(&structs.CollegeDivision{})
-	db.AutoMigrate(&structs.RecruitingTeamProfile{})
 	db.AutoMigrate(&structs.CollegeTeamStats{})
-
-	db.AutoMigrate(&structs.Player{})
-
+	db.AutoMigrate(&structs.CollegeTeamDepthChart{})
+	db.AutoMigrate(&structs.CollegeDepthChartPosition{})
+	db.AutoMigrate(&structs.CollegeGameplan{})
+	db.AutoMigrate(&structs.CollegeStandings{})
+	db.AutoMigrate(&structs.RecruitingTeamProfile{})
+	db.AutoMigrate(&structs.RecruitPlayerProfile{})
+	db.AutoMigrate(&structs.RecruitPointAllocation{})
+	db.AutoMigrate(&structs.CollegeWeek{})
+	db.AutoMigrate(&structs.CollegeSeason{})
+	db.AutoMigrate(&structs.NFLPlayer{})
+	db.AutoMigrate(&structs.AdminRecruitModifier{})
+	db.AutoMigrate(&structs.Affinity{})
 	return true
 }
 

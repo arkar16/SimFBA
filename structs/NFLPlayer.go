@@ -9,5 +9,5 @@ type NFLPlayer struct {
 	College  string
 	BasePlayer
 	Contract string // Will Modify later
-
+	IsActive bool
 }

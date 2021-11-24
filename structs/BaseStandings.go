@@ -12,4 +12,5 @@ type BaseStandings struct {
 	Streak           int
 	HomeWins         int
 	AwayWins         int
+	Coach            string
 }

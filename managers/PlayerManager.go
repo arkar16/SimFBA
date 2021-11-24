@@ -18,16 +18,6 @@ func GetAllPlayers() []structs.Player {
 	return players
 }
 
-func GetAllRecruits() []structs.Recruit {
-	db := dbprovider.GetInstance().GetDB()
-
-	var croots []structs.Recruit
-
-	db.Find(&croots)
-
-	return croots
-}
-
 func GetAllCollegePlayers() []structs.CollegePlayer {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -38,12 +28,22 @@ func GetAllCollegePlayers() []structs.CollegePlayer {
 	return CollegePlayers
 }
 
-func GetAllCollegePlayersByTeamId(TeamID int) []structs.CollegePlayer {
+func GetAllCollegePlayersByTeamId(TeamID string) []structs.CollegePlayer {
 	db := dbprovider.GetInstance().GetDB()
 
 	var CollegePlayers []structs.CollegePlayer
 
 	db.Where("team_id = ?", TeamID).Find(&CollegePlayers)
+
+	return CollegePlayers
+}
+
+func GetAllCollegePlayersByTeamIdWithoutRedshirts(TeamID string) []structs.CollegePlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var CollegePlayers []structs.CollegePlayer
+
+	db.Where("team_id = ? AND is_redshirting = false", TeamID).Find(&CollegePlayers)
 
 	return CollegePlayers
 }

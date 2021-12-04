@@ -4,7 +4,8 @@ import "github.com/jinzhu/gorm"
 
 type CollegeConference struct {
 	gorm.Model
-	ConferenceName     int
+	ConferenceName     string
+	ConferenceAbbr     string
 	ConferenceDivision string
 	Divisions          []CollegeDivision
 }

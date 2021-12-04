@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/CalebRose/SimFBA/config"
-	"github.com/CalebRose/SimFBA/structs"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -34,27 +33,28 @@ func (p *Provider) InitDatabase() bool {
 		log.Fatal(err)
 		return false
 	}
-	// AutoMigrations
-	db.AutoMigrate(&structs.CollegePlayer{})
-	db.AutoMigrate(&structs.Recruit{})
-	db.AutoMigrate(&structs.Player{})
-	db.AutoMigrate(&structs.CollegePlayerStats{})
-	db.AutoMigrate(&structs.CollegeTeam{})
-	db.AutoMigrate(&structs.CollegeConference{})
-	db.AutoMigrate(&structs.CollegeDivision{})
-	db.AutoMigrate(&structs.CollegeTeamStats{})
-	db.AutoMigrate(&structs.CollegeTeamDepthChart{})
-	db.AutoMigrate(&structs.CollegeDepthChartPosition{})
-	db.AutoMigrate(&structs.CollegeGameplan{})
-	db.AutoMigrate(&structs.CollegeStandings{})
-	db.AutoMigrate(&structs.RecruitingTeamProfile{})
-	db.AutoMigrate(&structs.RecruitPlayerProfile{})
-	db.AutoMigrate(&structs.RecruitPointAllocation{})
-	db.AutoMigrate(&structs.CollegeWeek{})
-	db.AutoMigrate(&structs.CollegeSeason{})
-	db.AutoMigrate(&structs.NFLPlayer{})
-	db.AutoMigrate(&structs.AdminRecruitModifier{})
-	db.AutoMigrate(&structs.Affinity{})
+	// AutoMigrations -- uncomment when needing to update a table
+	// db.AutoMigrate(&structs.CollegePlayer{})
+	// db.AutoMigrate(&structs.Recruit{})
+	// db.AutoMigrate(&structs.Player{})
+	// db.AutoMigrate(&structs.CollegePlayerStats{})
+	// db.AutoMigrate(&structs.CollegeTeam{})
+	// db.AutoMigrate(&structs.CollegeConference{})
+	// db.AutoMigrate(&structs.CollegeDivision{})
+	// db.AutoMigrate(&structs.CollegeTeamStats{})
+	// db.AutoMigrate(&structs.CollegeTeamDepthChart{})
+	// db.AutoMigrate(&structs.CollegeDepthChartPosition{})
+	// db.AutoMigrate(&structs.CollegeGameplan{})
+	// db.AutoMigrate(&structs.CollegeStandings{})
+	// db.AutoMigrate(&structs.RecruitingTeamProfile{})
+	// db.AutoMigrate(&structs.RecruitPlayerProfile{})
+	// db.AutoMigrate(&structs.RecruitPointAllocation{})
+	// db.AutoMigrate(&structs.CollegeWeek{})
+	// db.AutoMigrate(&structs.CollegeSeason{})
+	// db.AutoMigrate(&structs.NFLPlayer{})
+	// db.AutoMigrate(&structs.AdminRecruitModifier{})
+	// db.AutoMigrate(&structs.Affinity{})
+	// db.AutoMigrate(&structs.TeamRequest{})
 	return true
 }
 

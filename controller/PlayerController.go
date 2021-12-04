@@ -21,7 +21,7 @@ func AllPlayers(w http.ResponseWriter, r *http.Request) {
 // AllCollegePlayersByTeamID
 func AllCollegePlayersByTeamID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	teamId := vars["teamId"]
+	teamId := vars["teamID"]
 
 	if len(teamId) == 0 {
 		panic("User did not provide TeamID")
@@ -35,7 +35,7 @@ func AllCollegePlayersByTeamID(w http.ResponseWriter, r *http.Request) {
 // AllCollegePlayersByTeamIDWithoutRedshirts
 func AllCollegePlayersByTeamIDWithoutRedshirts(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	teamId := vars["teamId"]
+	teamId := vars["teamID"]
 
 	if len(teamId) == 0 {
 		panic("User did not provide TeamID")

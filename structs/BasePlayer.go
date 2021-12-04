@@ -13,7 +13,6 @@ type BasePlayer struct {
 	Stamina        int
 	Injury         int
 	FootballIQ     int
-	WorkEthic      int
 	Speed          int
 	Carrying       int
 	Agility        int
@@ -34,5 +33,11 @@ type BasePlayer struct {
 	PuntAccuracy   int
 	PuntPower      int
 	Progression    int
+	Discipline     int
 	PotentialGrade string
+	FreeAgency     string
+	Personality    string
+	RecruitingBias string
+	WorkEthic      string
+	AcademicBias   string
 }

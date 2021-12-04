@@ -1,13 +1,16 @@
 package structs
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/CalebRose/SimFBA/structs"
+	"github.com/jinzhu/gorm"
+)
 
 type CollegePlayer struct {
 	gorm.Model
 	PlayerID int
 	TeamID   int
 	TeamAbbr string
-	BasePlayer
+	structs.BasePlayer
 	HighSchool    string
 	City          string
 	State         string
@@ -15,7 +18,7 @@ type CollegePlayer struct {
 	IsRedshirt    bool
 	IsRedshirting bool
 	HasGraduated  bool
-	Stats         []CollegePlayerStats `gorm:"foreignKey:CollegePlayerID"`
+	Stats         []structs.CollegePlayerStats `gorm:"foreignKey:CollegePlayerID"`
 }
 
 func (p *CollegePlayer) SetRedshirtingStatus() {

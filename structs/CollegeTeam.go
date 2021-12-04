@@ -9,9 +9,9 @@ type CollegeTeam struct {
 	Conference        string
 	DivisionID        int
 	Division          string
-	Color1            string
-	Color2            string
-	Color3            string
+	ProgramPrestige   int
+	AcademicPrestige  int
+	Facilities        int
 	RecruitingProfile RecruitingTeamProfile
 	Gameplan          CollegeGameplan
 	TeamStats         []CollegeTeamStats    `gorm:"foreignKey:TeamID"`

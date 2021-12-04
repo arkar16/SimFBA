@@ -4,6 +4,7 @@ import "github.com/jinzhu/gorm"
 
 type CollegeRival struct {
 	gorm.Model
+	RivalryName   string
 	TeamID        int
 	Team          string
 	TeamWins      int

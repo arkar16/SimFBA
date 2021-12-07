@@ -4,10 +4,9 @@ package structs
 type CreateRequestDTO struct {
 	ID         int
 	TeamID     int
-	Team       string
-	Abbr       string
+	TeamName   string
+	TeamAbbr   string
 	Username   string
 	Conference string
-	IsNBA      bool
 	IsApproved bool
 }

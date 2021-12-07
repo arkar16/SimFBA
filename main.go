@@ -74,7 +74,8 @@ func handleRequests() {
 	myRouter.HandleFunc("/requests/all/", controller.GetTeamRequests).Methods("GET")
 	myRouter.HandleFunc("/requests/create/", controller.CreateTeamRequest).Methods("POST")
 	myRouter.HandleFunc("/requests/approve/", controller.ApproveTeamRequest).Methods("PUT")
-	myRouter.HandleFunc("/requests/reject/", controller.RejectTeamRequest).Methods("PUT")
+	myRouter.HandleFunc("/requests/reject/", controller.RejectTeamRequest).Methods("DELETE")
+	myRouter.HandleFunc("/requests/remove/{teamID}", controller.RemoveUserFromTeam).Methods("PUT")
 
 	// Standings Controls
 
@@ -85,8 +86,8 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/college/active/", controller.GetAllActiveCollegeTeams).Methods("GET")
 	myRouter.HandleFunc("/teams/college/available/", controller.GetAllAvailableCollegeTeams).Methods("GET")
 	myRouter.HandleFunc("/teams/college/team/{teamID}/", controller.GetTeamByTeamID).Methods("GET")
-	myRouter.HandleFunc("/teams/college/teams/conference/{conferenceID}/", controller.GetTeamsByConferenceID).Methods("GET")
-	myRouter.HandleFunc("/teams/college/teams/division/{divisionID}/", controller.GetTeamsByDivisionID).Methods("GET")
+	myRouter.HandleFunc("/teams/college/conference/{conferenceID}/", controller.GetTeamsByConferenceID).Methods("GET")
+	myRouter.HandleFunc("/teams/college/division/{divisionID}/", controller.GetTeamsByDivisionID).Methods("GET")
 
 	// Handle Controls
 	handler := cors.AllowAll().Handler(myRouter)

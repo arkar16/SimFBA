@@ -32,7 +32,7 @@ func GetAllCoachedCollegeTeams() []structs.CollegeTeam {
 
 	var teams []structs.CollegeTeam
 
-	db.Where("coach is not null OR coach NOT IN (?,?)", "", "AI").Find(&teams)
+	db.Where("coach is not null AND coach NOT IN (?,?)", "", "AI").Find(&teams)
 
 	return teams
 }
@@ -41,7 +41,7 @@ func GetAllCoachedCollegeTeams() []structs.CollegeTeam {
 func GetTeamByTeamID(teamId string) structs.CollegeTeam {
 	var team structs.CollegeTeam
 	db := dbprovider.GetInstance().GetDB()
-	err := db.Preload("RecruitingProfile").Where("id = ?", teamId).Find(&team).Error
+	err := db.Where("id = ?", teamId).Find(&team).Error
 	if err != nil {
 		log.Fatal(err)
 	}

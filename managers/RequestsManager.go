@@ -11,20 +11,20 @@ import (
 func GetAllTeamRequests() []structs.CreateRequestDTO {
 	db := dbprovider.GetInstance().GetDB()
 	var CollegeTeamRequests []structs.CreateRequestDTO
-	var NFLTeamRequests []structs.CreateRequestDTO
+	// var NFLTeamRequests []structs.CreateRequestDTO
 	var AllRequests []structs.CreateRequestDTO
 
 	// College Team Requests
-	db.Raw("SELECT requests.id, requests.team_id, college_teams.team_name, college_teams.team_abbr, requests.username, college_teams.conference, requests.is_approved FROM simfbaah_interface_3.requests INNER JOIN simfbaah_interface_3.college_teams on college_teams.id = requests.team_id WHERE requests.deleted_at is null AND requests.is_approved = 0").
+	db.Raw("SELECT team_requests.id, team_requests.team_id, college_teams.team_name, college_teams.team_abbr, team_requests.username, college_teams.conference, team_requests.is_approved FROM simfbaah_interface_3.team_requests INNER JOIN simfbaah_interface_3.college_teams on college_teams.id = team_requests.team_id WHERE team_requests.deleted_at is null AND team_requests.is_approved = 0").
 		Scan(&CollegeTeamRequests)
 
 	// NFL Team Requests
-	db.Raw("SELECT requests.id, requests.team_id, nfl_teams.team_name, nfl_teams.team_abbr, requests.username, nfl_teams.conference, requests.is_approved FROM simfbaah_interface_3.requests INNER JOIN simfbaah_interface_3.nfl_teams on nfl_teams.id = requests.team_id WHERE requests.deleted_at is null AND requests.is_approved = 0").
-		Scan(&NFLTeamRequests)
+	// db.Raw("SELECT team_requests.id, team_requests.team_id, nfl_teams.team_name, nfl_teams.team_abbr, team_requests.username, nfl_teams.conference, team_requests.is_approved FROM simfbaah_interface_3.team_requests INNER JOIN simfbaah_interface_3.nfl_teams on nfl_teams.id = team_requests.team_id WHERE team_requests.deleted_at is null AND requests.is_approved = 0").
+	// 	Scan(&NFLTeamRequests)
 
 	// Append
 	AllRequests = append(AllRequests, CollegeTeamRequests...)
-	AllRequests = append(AllRequests, NFLTeamRequests...)
+	// AllRequests = append(AllRequests, NFLTeamRequests...)
 
 	return AllRequests
 }
@@ -33,7 +33,7 @@ func CreateTeamRequest(request structs.TeamRequest) {
 	db := dbprovider.GetInstance().GetDB()
 
 	var ExistingTeamRequest structs.TeamRequest
-	err := db.Where("username = ? AND team_id = ?", request.Username, request.TeamID).Find(&ExistingTeamRequest).Error
+	err := db.Where("username = ? AND team_id = ? AND is_approved = false AND deleted_at is null", request.Username, request.TeamID).Find(&ExistingTeamRequest).Error
 	if err != nil {
 		// Then there's no existing record, I guess? Which is fine.
 		fmt.Println("Creating Team Request for TEAM " + strconv.Itoa(request.TeamID))
@@ -46,7 +46,7 @@ func CreateTeamRequest(request structs.TeamRequest) {
 	db.Create(&request)
 }
 
-func ApproveTeamRequest(request structs.TeamRequest) {
+func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 	db := dbprovider.GetInstance().GetDB()
 
 	// Approve Request
@@ -64,6 +64,8 @@ func ApproveTeamRequest(request structs.TeamRequest) {
 	team.AssignUserToTeam(request.Username)
 
 	db.Save(&team)
+
+	return request
 }
 
 func RejectTeamRequest(request structs.TeamRequest) {

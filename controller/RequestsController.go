@@ -7,6 +7,7 @@ import (
 
 	"github.com/CalebRose/SimFBA/managers"
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/gorilla/mux"
 )
 
 func GetTeamRequests(w http.ResponseWriter, r *http.Request) {
@@ -55,4 +56,16 @@ func RejectTeamRequest(w http.ResponseWriter, r *http.Request) {
 	managers.RejectTeamRequest(request)
 
 	fmt.Fprintf(w, "Request: %+v", request)
+}
+
+func RemoveUserFromTeam(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+	if len(teamID) == 0 {
+		panic("User did not provide TeamID")
+	}
+
+	managers.RemoveUserFromTeam(teamID)
+
+	// json.NewEncoder(w).Encode(team)
 }

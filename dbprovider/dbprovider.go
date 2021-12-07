@@ -5,7 +5,7 @@ import (
 	"log"
 	"sync"
 
-	"github.com/CalebRose/SimFBA/config"
+	config "github.com/CalebRose/SimFBA/secrets"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )

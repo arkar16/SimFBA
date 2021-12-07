@@ -33,7 +33,7 @@ func GetAllCollegePlayersByTeamId(TeamID string) []structs.CollegePlayer {
 
 	var CollegePlayers []structs.CollegePlayer
 
-	db.Where("team_id = ?", TeamID).Find(&CollegePlayers)
+	db.Order("overall desc").Where("team_id = ?", TeamID).Find(&CollegePlayers)
 
 	return CollegePlayers
 }

@@ -95,3 +95,18 @@ func ToggleRedshirtStatusForPlayer(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(w, "College Player successfully redshirted.")
 }
+
+func ExportRosterToCSV(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/csv")
+
+	vars := mux.Vars(r)
+	teamId := vars["teamID"]
+
+	if len(teamId) == 0 {
+		panic("User did not provide TeamID")
+	}
+
+	managers.ExportTeamToCSV(teamId, w)
+
+	// ?
+}

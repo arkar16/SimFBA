@@ -1,0 +1,41 @@
+package models
+
+type CollegePlayerCSV struct {
+	FirstName          string
+	LastName           string
+	Position           string
+	Archetype          string
+	Year               string
+	Age                int
+	Stars              int
+	HighSchool         string
+	City               string
+	State              string
+	Height             int
+	Weight             int
+	OverallGrade       string
+	StaminaGrade       string
+	InjuryGrade        string
+	FootballIQGrade    string
+	SpeedGrade         string
+	CarryingGrade      string
+	AgilityGrade       string
+	CatchingGrade      string
+	RouteRunningGrade  string
+	ZoneCoverageGrade  string
+	ManCoverageGrade   string
+	StrengthGrade      string
+	TackleGrade        string
+	PassBlockGrade     string
+	RunBlockGrade      string
+	PassRushGrade      string
+	RunDefenseGrade    string
+	ThrowPowerGrade    string
+	ThrowAccuracyGrade string
+	KickAccuracyGrade  string
+	KickPowerGrade     string
+	PuntAccuracyGrade  string
+	PuntPowerGrade     string
+	PotentialGrade     string
+	RedshirtStatus     string
+}

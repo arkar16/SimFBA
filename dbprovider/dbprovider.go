@@ -55,6 +55,7 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.AdminRecruitModifier{})
 	// db.AutoMigrate(&structs.Affinity{})
 	// db.AutoMigrate(&structs.TeamRequest{})
+	// db.AutoMigrate(&structs.Timestamp{})
 	return true
 }
 

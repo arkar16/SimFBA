@@ -21,5 +21,6 @@ type CollegeGame struct {
 	IsBowlGame               bool
 	IsPlayoffGame            bool
 	IsNationalChampionship   bool
+	IsRivalryGame            bool
 	GameComplete             bool
 }

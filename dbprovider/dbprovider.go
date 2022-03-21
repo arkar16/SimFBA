@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	config "github.com/CalebRose/SimFBA/secrets"
+	"github.com/CalebRose/SimFBA/structs"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 )
@@ -39,16 +40,23 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.Player{})
 	// db.AutoMigrate(&structs.CollegePlayerStats{})
 	// db.AutoMigrate(&structs.CollegeTeam{})
+	// db.AutoMigrate(&structs.CollegeRival{})
 	// db.AutoMigrate(&structs.CollegeConference{})
 	// db.AutoMigrate(&structs.CollegeDivision{})
 	// db.AutoMigrate(&structs.CollegeTeamStats{})
 	// db.AutoMigrate(&structs.CollegeTeamDepthChart{})
-	// db.AutoMigrate(&structs.CollegeDepthChartPosition{})
+	db.AutoMigrate(&structs.CollegeDepthChartPosition{})
 	// db.AutoMigrate(&structs.CollegeGameplan{})
+	// db.AutoMigrate(&structs.CollegeGame{})
+
 	// db.AutoMigrate(&structs.CollegeStandings{})
 	// db.AutoMigrate(&structs.RecruitingTeamProfile{})
 	// db.AutoMigrate(&structs.RecruitPlayerProfile{})
 	// db.AutoMigrate(&structs.RecruitPointAllocation{})
+	// db.AutoMigrate(&structs.RecruitRegion{})
+	// db.AutoMigrate(&structs.RecruitState{})
+	// db.AutoMigrate(&structs.ProfileAffinity{})
+
 	// db.AutoMigrate(&structs.CollegeWeek{})
 	// db.AutoMigrate(&structs.CollegeSeason{})
 	// db.AutoMigrate(&structs.NFLPlayer{})
@@ -56,6 +64,7 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.Affinity{})
 	// db.AutoMigrate(&structs.TeamRequest{})
 	// db.AutoMigrate(&structs.Timestamp{})
+	// db.AutoMigrate(&structs.NFLDraftee{})
 	return true
 }
 

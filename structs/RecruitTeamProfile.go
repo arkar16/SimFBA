@@ -5,15 +5,16 @@ import "github.com/jinzhu/gorm"
 // RecruitingTeamProfile - The profile for a team for recruiting
 type RecruitingTeamProfile struct {
 	gorm.Model
-	TeamID                int
-	Team                  string
-	TeamAbbreviation      string
-	State                 string
-	ScholarshipsAvailable int
-	WeeklyPoints          int
-	SpentPoints           int
-	Recruits              []RecruitPlayerProfile `gorm:"foreignKey:ProfileID"`
-	Affinities            []ProfileAffinity      `gorm:"foreignKey:ProfileID"`
+	TeamID                    int
+	Team                      string
+	TeamAbbreviation          string
+	State                     string
+	ScholarshipsAvailable     int
+	WeeklyPoints              int
+	SpentPoints               int
+	RecruitingEfficiencyScore float32
+	Recruits                  []RecruitPlayerProfile `gorm:"foreignKey:ProfileID"`
+	Affinities                []ProfileAffinity      `gorm:"foreignKey:ProfileID"`
 }
 
 func (r *RecruitingTeamProfile) SubtractScholarshipsAvailable() {

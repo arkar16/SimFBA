@@ -43,6 +43,7 @@ type CollegeGameplan struct {
 	DefPersonnelOne       int
 	DefPersonnelTwo       int
 	DefPersonnelThree     int
+	DefRunToPassRatio     int
 	BlitzRatio            int
 	BlitzAggressiveness   string
 	BlitzSafeties         bool
@@ -50,9 +51,13 @@ type CollegeGameplan struct {
 	LinebackerCoverage    string
 	CornersCoverage       string
 	SafetiesCoverage      string
+	PrimaryHB             int
+	MaximumFGDistance     int
+	GoFor4AndShort        int
+	GoFor4AndLong         int
 }
 
-func (cg *CollegeGameplan) UpdateGameplan(dto UpdateGameplanDTO) {
+func (cg *CollegeGameplan) UpdateGameplan(dto CollegeGameplan) {
 	// Validation is done in UI, so we're just passing data along in API
 	cg.OffensiveScheme = dto.OffensiveScheme
 	cg.OffRunToPassRatio = dto.OffRunToPassRatio
@@ -99,4 +104,8 @@ func (cg *CollegeGameplan) UpdateGameplan(dto UpdateGameplanDTO) {
 	cg.LinebackerCoverage = dto.LinebackerCoverage
 	cg.CornersCoverage = dto.CornersCoverage
 	cg.SafetiesCoverage = dto.SafetiesCoverage
+	cg.PrimaryHB = dto.PrimaryHB
+	cg.MaximumFGDistance = dto.MaximumFGDistance
+	cg.GoFor4AndLong = dto.GoFor4AndLong
+	cg.GoFor4AndShort = dto.GoFor4AndShort
 }

@@ -17,6 +17,7 @@ type Timestamp struct {
 	SaturdayNoon       bool
 	SaturdayEvening    bool
 	SaturdayNight      bool
+	NFLThursday        bool
 	NFLSundayNoon      bool
 	NFLSundayAfternoon bool
 	NFLSundayEvening   bool

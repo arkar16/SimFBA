@@ -117,3 +117,13 @@ func SetRedshirtStatusForPlayer(playerId string) structs.CollegePlayer {
 
 	return player
 }
+
+func GetAllNFLDraftees() []structs.NFLDraftee {
+	db := dbprovider.GetInstance().GetDB()
+
+	var NFLDraftees []structs.NFLDraftee
+
+	db.Order("overall desc").Find(&NFLDraftees)
+
+	return NFLDraftees
+}

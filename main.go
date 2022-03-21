@@ -45,14 +45,17 @@ func handleRequests() {
 
 	// Gameplan Controls
 	myRouter.HandleFunc("/gameplan/college/team/{teamID}/", controller.GetTeamGameplanByTeamID).Methods("GET")
+	myRouter.HandleFunc("/gameplan/college/updategameplan", controller.UpdateGameplan).Methods("PUT")
 	myRouter.HandleFunc("/gameplan/college/depthchart/{teamID}/", controller.GetTeamDepthchartByTeamID).Methods("GET")
 	myRouter.HandleFunc("/gameplan/college/depthchart/positions/{depthChartID}/", controller.GetDepthChartPositionsByDepthChartID).Methods("GET")
+	myRouter.HandleFunc("/gameplan/college/updatedepthchart", controller.UpdateDepthChart).Methods("PUT")
 
 	// Player Controls
 	myRouter.HandleFunc("/players/all/", controller.AllPlayers).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/{teamID}/", controller.AllCollegePlayersByTeamID).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/nors/{teamID}/", controller.AllCollegePlayersByTeamIDWithoutRedshirts).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/export/{teamID}/", controller.ExportRosterToCSV).Methods("GET")
+	// myRouter.HandleFunc("/collegeplayers/teams/export/", controller.ExportAllRostersToCSV).Methods("GET") // DO NOT USE
 
 	// Recruiting Controls
 	myRouter.HandleFunc("/recruiting/profile/{teamID}/", controller.GetRecruitingProfileByTeamID).Methods("GET")
@@ -89,6 +92,9 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/college/team/{teamID}/", controller.GetTeamByTeamID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/conference/{conferenceID}/", controller.GetTeamsByConferenceID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/division/{divisionID}/", controller.GetTeamsByDivisionID).Methods("GET")
+
+	// Draft Controls
+	myRouter.HandleFunc("/nfl/draft/draftees/export/{season}", controller.ExportDrafteesToCSV).Methods("GET")
 
 	// Handle Controls
 	handler := cors.AllowAll().Handler(myRouter)

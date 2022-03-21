@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/CalebRose/SimFBA/managers"
 	"github.com/gorilla/mux"
@@ -107,6 +108,20 @@ func ExportRosterToCSV(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.ExportTeamToCSV(teamId, w)
+
+	// ?
+}
+
+func ExportAllRostersToCSV(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/csv")
+
+	CollegeTeams := managers.GetAllCollegeTeams()
+
+	for _, team := range CollegeTeams {
+		id := strconv.FormatUint(uint64(team.ID), 10)
+
+		managers.ExportTeamToCSV(id, w)
+	}
 
 	// ?
 }

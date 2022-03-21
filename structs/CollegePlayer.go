@@ -4,7 +4,7 @@ import "github.com/jinzhu/gorm"
 
 type CollegePlayer struct {
 	gorm.Model
-	PlayerID int
+	PlayerID int `gorm:"column:player_id"`
 	TeamID   int
 	TeamAbbr string
 	BasePlayer

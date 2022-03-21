@@ -1,6 +1,6 @@
 package structs
 
 type UpdateDepthChartDTO struct {
-	DepthChartID           string
+	DepthChartID           int
 	UpdatedPlayerPositions []CollegeDepthChartPosition
 }

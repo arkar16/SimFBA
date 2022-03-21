@@ -2,9 +2,12 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/CalebRose/SimFBA/managers"
+	"github.com/CalebRose/SimFBA/structs"
 	"github.com/gorilla/mux"
 )
 
@@ -29,7 +32,7 @@ func GetTeamDepthchartByTeamID(w http.ResponseWriter, r *http.Request) {
 		panic("User did not provide a teamID")
 	}
 
-	depthchart := managers.GetGameplanByTeamID(teamID)
+	depthchart := managers.GetDepthchartByTeamID(teamID)
 
 	json.NewEncoder(w).Encode(depthchart)
 }
@@ -48,5 +51,29 @@ func GetDepthChartPositionsByDepthChartID(w http.ResponseWriter, r *http.Request
 }
 
 // UpdateGameplan
+func UpdateGameplan(w http.ResponseWriter, r *http.Request) {
+	var updateGameplanDto structs.UpdateGameplanDTO
+	err := json.NewDecoder(r.Body).Decode(&updateGameplanDto)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.UpdateGameplan(updateGameplanDto)
+
+	fmt.Println("Updated Team Gameplan")
+}
 
 // UpdateDepthChart
+func UpdateDepthChart(w http.ResponseWriter, r *http.Request) {
+	var updateDepthChartDto structs.UpdateDepthChartDTO
+	err := json.NewDecoder(r.Body).Decode(&updateDepthChartDto)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.UpdateDepthChart(updateDepthChartDto)
+
+	fmt.Println("Updated Depth Chart for Team " + strconv.Itoa(updateDepthChartDto.DepthChartID))
+}

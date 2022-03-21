@@ -14,5 +14,6 @@ type CollegeRival struct {
 	TeamStreak    int
 	RivalStreak   int
 	CurrentStreak int
+	HasTrophy     bool
 	LatestVictor  string
 }

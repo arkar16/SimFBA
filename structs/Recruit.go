@@ -15,7 +15,10 @@ type Recruit struct {
 	IsSigned              bool
 	CommitmentChoiceVal   float32
 	CalculatedRanking     float32
-	RecruitPlayerProfiles []RecruitPlayerProfile   `gorm:"foreignKey:RecruitI"`
+	OverallRank           int
+	RivalsRank            int
+	ESPNRank              int
+	RecruitPlayerProfiles []RecruitPlayerProfile   `gorm:"foreignKey:RecruitID"`
 	RecruitPoints         []RecruitPointAllocation `gorm:"foreignKey:RecruitID"`
 }
 
@@ -35,7 +38,8 @@ func (r *Recruit) SetCommitmentChoiceVal(val float32) {
 	r.CommitmentChoiceVal = val
 }
 
-func (r *Recruit) Map(createRecruitDTO CreateRecruitDTO) {
+func (r *Recruit) Map(createRecruitDTO CreateRecruitDTO, lastPlayerID uint) {
+	r.ID = lastPlayerID
 	r.FirstName = createRecruitDTO.FirstName
 	r.LastName = createRecruitDTO.LastName
 	r.Position = createRecruitDTO.Position
@@ -75,6 +79,10 @@ func (r *Recruit) Map(createRecruitDTO CreateRecruitDTO) {
 	r.State = createRecruitDTO.State
 	r.AffinityOne = createRecruitDTO.AffinityOne
 	r.AffinityTwo = createRecruitDTO.AffinityTwo
+	r.FreeAgency = createRecruitDTO.FreeAgency
+	r.Personality = createRecruitDTO.Personality
+	r.RecruitingBias = createRecruitDTO.RecruitingBias
+	r.AcademicBias = createRecruitDTO.AcademicBias
 	r.IsSigned = false
 	r.CommitmentChoiceVal = 0
 	r.CalculatedRanking = 0

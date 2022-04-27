@@ -10,7 +10,7 @@ import (
 )
 
 // GetRecruitingProfileByTeamID
-func GetRecruitingProfileByTeamID(TeamID string) structs.RecruitingTeamProfile {
+func GetOnlyRecruitingProfileByTeamID(TeamID string) structs.RecruitingTeamProfile {
 	db := dbprovider.GetInstance().GetDB()
 
 	var profile structs.RecruitingTeamProfile
@@ -21,6 +21,64 @@ func GetRecruitingProfileByTeamID(TeamID string) structs.RecruitingTeamProfile {
 	}
 
 	return profile
+}
+
+// GetRecruitingProfileByTeamID -- Dashboard
+func GetRecruitingProfileByTeamID(TeamID string) structs.RecruitingTeamProfile {
+	db := dbprovider.GetInstance().GetDB()
+
+	var profile structs.RecruitingTeamProfile
+
+	err := db.Preload("Affinities").Preload("Recruits").Where("id = ?", TeamID).Find(&profile).Error
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	// var recruitingBoard []structs.RecruitPlayerProfile
+
+	// err = db.Where("profile_id = ?", TeamID).Find(&recruitingBoard).Error
+	// if err != nil {
+	// 	log.Panicln(err)
+	// }
+
+	// profile.AddRecruitsToProfile(recruitingBoard)
+
+	return profile
+}
+
+func AddRecruitToBoard(RecruitDTO structs.CreateRecruitPointsDto) structs.RecruitPlayerProfile {
+	//
+	db := dbprovider.GetInstance().GetDB()
+
+	recruitProfile := GetRecruitProfileByPlayerId(strconv.Itoa(RecruitDTO.RecruitID), strconv.Itoa(RecruitDTO.ProfileID))
+
+	if recruitProfile.RecruitID != 0 && recruitProfile.ProfileID != 0 {
+		// Replace Recruit Onto Board
+		db.Save(&recruitProfile)
+		return recruitProfile
+	}
+
+	recruitingProfile := structs.RecruitPlayerProfile{
+		SeasonID:            RecruitDTO.SeasonID,
+		RecruitID:           RecruitDTO.RecruitID,
+		ProfileID:           RecruitDTO.ProfileID,
+		TotalPoints:         0,
+		CurrentWeeksPoints:  0,
+		Scholarship:         false,
+		ScholarshipRevoked:  false,
+		AffinityOneEligible: false,
+		AffinityTwoEligible: false,
+		TeamAbbreviation:    RecruitDTO.Team,
+		RemovedFromBoard:    false,
+		IsSigned:            false,
+	}
+
+	// Check for Close to Home Affinity
+
+	// Save
+	db.Create(&recruitingProfile)
+
+	return recruitingProfile
 }
 
 func RemoveRecruitFromBoard(updateRecruitPointsDto structs.UpdateRecruitPointsDto) structs.RecruitPlayerProfile {
@@ -58,7 +116,6 @@ func UpdateRecruitingProfile(updateRecruitingBoardDto structs.UpdateRecruitingBo
 
 		if updatedRecruit.CurrentWeeksPoints > 0 &&
 			recruitProfiles[i].CurrentWeeksPoints != updatedRecruit.CurrentWeeksPoints {
-
 			// Allocate Points to Profile
 			currentPoints += updatedRecruit.CurrentWeeksPoints
 			teamProfile.AllocateSpentPoints(currentPoints)

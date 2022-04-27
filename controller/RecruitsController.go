@@ -92,3 +92,19 @@ func UpdateCollegeRecruit(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println(w, "Recruit successfully updated.")
 }
+
+func SyncCrootRankings(w http.ResponseWriter, r *http.Request) {
+	// Get all recruits, sort by overall
+
+	// Loop through each recruit (get index?)
+
+	// Calculate ESPN Ranking
+
+	// Calculate Rivals Ranking
+
+	// Third ranking?
+
+	// Save recruit
+
+	fmt.Println(w, "Recruit successfully updated.")
+}

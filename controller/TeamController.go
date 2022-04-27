@@ -3,8 +3,10 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/CalebRose/SimFBA/managers"
+	"github.com/CalebRose/SimFBA/models"
 	"github.com/gorilla/mux"
 )
 
@@ -66,4 +68,27 @@ func GetTeamsByDivisionID(w http.ResponseWriter, r *http.Request) {
 	}
 	team := managers.GetTeamByTeamID(divisionID)
 	json.NewEncoder(w).Encode(team)
+}
+
+// GetHomeAndAwayTeamData
+func GetHomeAndAwayTeamData(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	homeTeamAbbr := vars["HomeTeamAbbr"]
+	awayTeamAbbr := vars["AwayTeamAbbr"]
+
+	var responseModel models.SimGameDataResponse
+
+	homeTeam := managers.GetTeamByTeamAbbr(homeTeamAbbr)
+	awayTeam := managers.GetTeamByTeamAbbr(awayTeamAbbr)
+
+	homeTeamID := strconv.Itoa(int(homeTeam.ID))
+	awayTeamID := strconv.Itoa(int(awayTeam.ID))
+
+	homeTeamRoster := managers.GetAllCollegePlayersByTeamIdWithoutRedshirts(homeTeamID)
+	awayTeamRoster := managers.GetAllCollegePlayersByTeamIdWithoutRedshirts(awayTeamID)
+
+	responseModel.AssignHomeTeam(homeTeam, homeTeamRoster)
+	responseModel.AssignAwayTeam(awayTeam, awayTeamRoster)
+
+	json.NewEncoder(w).Encode(responseModel)
 }

@@ -13,7 +13,6 @@ type CollegeTeam struct {
 	AcademicPrestige  int
 	Facilities        int
 	RecruitingProfile RecruitingTeamProfile `gorm:"foreignKey:TeamID"`
-	Gameplan          CollegeGameplan       `gorm:"foreignKey:TeamID"`
 	TeamStats         []CollegeTeamStats    `gorm:"foreignKey:TeamID"`
 	CollegeRivals     []CollegeRival        `gorm:"foreignKey:TeamID"`
 	TeamRecord        CollegeTeamRecords    `gorm:"foreignKey:TeamID"`

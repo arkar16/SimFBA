@@ -25,6 +25,20 @@ func GetRecruitingProfileByTeamID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(recruitingProfile)
 }
 
+// GetOnlyRecruitingProfileByTeamID
+func GetOnlyRecruitingProfileByTeamID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+
+	if len(teamID) == 0 {
+		panic("User did not provide teamID")
+	}
+
+	recruitingProfile := managers.GetOnlyRecruitingProfileByTeamID(teamID)
+
+	json.NewEncoder(w).Encode(recruitingProfile)
+}
+
 // CreateRecruitingPointsProfileForRecruit
 func CreateRecruitingPointsProfileForRecruit(w http.ResponseWriter, r *http.Request) {
 

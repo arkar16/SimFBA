@@ -12,7 +12,11 @@ type RecruitingTeamProfile struct {
 	ScholarshipsAvailable     int
 	WeeklyPoints              int
 	SpentPoints               int
+	TotalCommitments          int
 	RecruitingEfficiencyScore float32
+	ESPNScore                 int
+	RivalsScore               int
+	Top25Score                int
 	Recruits                  []RecruitPlayerProfile `gorm:"foreignKey:ProfileID"`
 	Affinities                []ProfileAffinity      `gorm:"foreignKey:ProfileID"`
 }
@@ -39,4 +43,8 @@ func (r *RecruitingTeamProfile) AllocateSpentPoints(points int) {
 
 func (r *RecruitingTeamProfile) ResetWeeklyPoints(points int) {
 	r.WeeklyPoints = points
+}
+
+func (r *RecruitingTeamProfile) AddRecruitsToProfile(croots []RecruitPlayerProfile) {
+	r.Recruits = croots
 }

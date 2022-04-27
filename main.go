@@ -59,6 +59,7 @@ func handleRequests() {
 
 	// Recruiting Controls
 	myRouter.HandleFunc("/recruiting/profile/{teamID}/", controller.GetRecruitingProfileByTeamID).Methods("GET")
+	myRouter.HandleFunc("/recruiting/profile/only/{teamID}/", controller.GetOnlyRecruitingProfileByTeamID).Methods("GET")
 	myRouter.HandleFunc("/recruiting/createpointsprofile/", controller.CreateRecruitingPointsProfileForRecruit).Methods("POST")
 	myRouter.HandleFunc("/recruiting/allocaterecruitpoints/", controller.AllocateRecruitingPointsForRecruit).Methods("PUT")
 	myRouter.HandleFunc("/recruiting/sendscholarship/", controller.SendScholarshipToRecruit).Methods("PUT")
@@ -71,7 +72,7 @@ func handleRequests() {
 	// myRouter.HandleFunc("/recruits/juco/all/", controller.AllJUCOCollegeRecruits).Methods("GET")
 	myRouter.HandleFunc("/recruits/recruit/{recruitID}/", controller.GetCollegeRecruitByRecruitID).Methods("GET")
 	myRouter.HandleFunc("/recruits/profile/recruits/{recruitProfileID}/", controller.GetRecruitsByTeamProfileID).Methods("GET")
-	myRouter.HandleFunc("/recruits/recruit/create/", controller.CreateCollegeRecruit).Methods("POST")
+	myRouter.HandleFunc("/recruits/recruit/create", controller.CreateCollegeRecruit).Methods("POST")
 	// myRouter.HandleFunc("/recruits/recruit/update/", controller.UpdateCollegeRecruit).Methods("PUT")
 
 	// Requests Controls
@@ -92,6 +93,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/college/team/{teamID}/", controller.GetTeamByTeamID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/conference/{conferenceID}/", controller.GetTeamsByConferenceID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/division/{divisionID}/", controller.GetTeamsByDivisionID).Methods("GET")
+	myRouter.HandleFunc("/teams/college/sim/{HomeTeamAbbr}/{AwayTeamAbbr}/", controller.GetHomeAndAwayTeamData).Methods("GET")
 
 	// Draft Controls
 	myRouter.HandleFunc("/nfl/draft/draftees/export/{season}", controller.ExportDrafteesToCSV).Methods("GET")

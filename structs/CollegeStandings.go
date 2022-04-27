@@ -4,9 +4,12 @@ import "github.com/jinzhu/gorm"
 
 type CollegeStandings struct {
 	gorm.Model
-	TeamID       int
-	SeasonID     int
-	ConferenceID int
-	DivisionID   int
+	TeamID           int
+	TeamName         string
+	SeasonID         int
+	Season           int
+	ConferenceID     int
+	DivisionID       int
+	PostSeasonStatus string
 	BaseStandings
 }

@@ -104,3 +104,16 @@ func GetTeamsInConference(conference string) []structs.CollegeTeam {
 	}
 	return teams
 }
+
+func GetTeamByTeamAbbr(abbr string) structs.CollegeTeam {
+	db := dbprovider.GetInstance().GetDB()
+
+	var team structs.CollegeTeam
+
+	err := db.Preload("TeamGameplan").Preload("TeamDepthChart.DepthChartPlayers").Where("team_abbr = ?", abbr).Find(&team).Error
+	if err != nil {
+		log.Panicln("Could not find team by given abbreviation:"+abbr+"\n", err)
+	}
+
+	return team
+}

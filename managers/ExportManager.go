@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/CalebRose/SimFBA/util"
+	"github.com/CalebRose/SimFBA/models"
 )
 
 func ExportTeamToCSV(TeamID string, w http.ResponseWriter) {
@@ -39,7 +39,7 @@ func ExportTeamToCSV(TeamID string, w http.ResponseWriter) {
 	}
 
 	for _, player := range players {
-		csvModel := util.MapPlayerToCSVModel(player)
+		csvModel := models.MapPlayerToCSVModel(player)
 		playerRow := []string{
 			team.TeamName, csvModel.FirstName, csvModel.LastName, csvModel.Position,
 			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
@@ -94,7 +94,7 @@ func ExportDrafteesToCSV(w http.ResponseWriter) {
 	}
 
 	for _, player := range draftees {
-		csvModel := util.MapNFLDrafteeToModel(player)
+		csvModel := models.MapNFLDrafteeToModel(player)
 		playerRow := []string{
 			strconv.Itoa(csvModel.PlayerID), csvModel.FirstName, csvModel.LastName, csvModel.Position,
 			csvModel.Archetype, strconv.Itoa(player.Age), strconv.Itoa(player.Stars), player.College,

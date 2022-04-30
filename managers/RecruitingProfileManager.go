@@ -29,7 +29,7 @@ func GetRecruitingProfileByTeamID(TeamID string) structs.RecruitingTeamProfile {
 
 	var profile structs.RecruitingTeamProfile
 
-	err := db.Preload("Affinities").Preload("Recruits").Where("id = ?", TeamID).Find(&profile).Error
+	err := db.Preload("Affinities").Preload("Recruits.Recruit").Where("id = ?", TeamID).Find(&profile).Error
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -46,7 +46,24 @@ func GetRecruitingProfileByTeamID(TeamID string) structs.RecruitingTeamProfile {
 	return profile
 }
 
-func AddRecruitToBoard(RecruitDTO structs.CreateRecruitPointsDto) structs.RecruitPlayerProfile {
+func GetRecruitingNeeds(TeamID string) map[string]int {
+	needsMap := make(map[string]int)
+
+	teamRoster := GetAllCollegePlayersByTeamId(TeamID)
+
+	for _, player := range teamRoster {
+		if player.IsRedshirting {
+			continue
+		}
+		if (player.Year == 4 && !player.IsRedshirt) || (player.Year == 5 && player.IsRedshirt) {
+			needsMap[player.Position] += 1
+		}
+	}
+
+	return needsMap
+}
+
+func AddRecruitToBoard(RecruitDTO structs.CreateRecruitProfileDto) structs.RecruitPlayerProfile {
 	//
 	db := dbprovider.GetInstance().GetDB()
 
@@ -54,6 +71,7 @@ func AddRecruitToBoard(RecruitDTO structs.CreateRecruitPointsDto) structs.Recrui
 
 	if recruitProfile.RecruitID != 0 && recruitProfile.ProfileID != 0 {
 		// Replace Recruit Onto Board
+		recruitProfile.ToggleRemoveFromBoard()
 		db.Save(&recruitProfile)
 		return recruitProfile
 	}
@@ -64,16 +82,15 @@ func AddRecruitToBoard(RecruitDTO structs.CreateRecruitPointsDto) structs.Recrui
 		ProfileID:           RecruitDTO.ProfileID,
 		TotalPoints:         0,
 		CurrentWeeksPoints:  0,
+		SpendingCount:       0,
 		Scholarship:         false,
 		ScholarshipRevoked:  false,
-		AffinityOneEligible: false,
-		AffinityTwoEligible: false,
+		AffinityOneEligible: RecruitDTO.AffinityOneEligible,
+		AffinityTwoEligible: RecruitDTO.AffinityTwoEligible,
 		TeamAbbreviation:    RecruitDTO.Team,
 		RemovedFromBoard:    false,
 		IsSigned:            false,
 	}
-
-	// Check for Close to Home Affinity
 
 	// Save
 	db.Create(&recruitingProfile)

@@ -1,6 +1,19 @@
 package controller
 
+import (
+	"encoding/json"
+	"net/http"
+
+	"github.com/CalebRose/SimFBA/managers"
+)
+
 // GetTimeStamp
+func GetCurrentTimestamp(w http.ResponseWriter, r *http.Request) {
+
+	timestamp := managers.GetTimestamp()
+
+	json.NewEncoder(w).Encode(timestamp)
+}
 
 // SyncRecruiting
 

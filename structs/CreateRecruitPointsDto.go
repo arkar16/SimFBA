@@ -1,6 +1,6 @@
 package structs
 
-type CreateRecruitPointsDto struct {
+type CreateRecruitProfileDto struct {
 	PlayerID            int
 	SeasonID            int
 	RecruitID           int

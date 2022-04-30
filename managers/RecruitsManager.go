@@ -101,7 +101,7 @@ func GetRecruitPlayerProfilesByRecruitId(recruitID string) []structs.RecruitPlay
 	return croots
 }
 
-func CreateRecruitingProfileForRecruit(recruitPointsDto structs.CreateRecruitPointsDto) structs.RecruitPlayerProfile {
+func CreateRecruitingProfileForRecruit(recruitPointsDto structs.CreateRecruitProfileDto) structs.RecruitPlayerProfile {
 	db := dbprovider.GetInstance().GetDB()
 
 	recruitEntry := GetRecruitProfileByPlayerId(strconv.Itoa(recruitPointsDto.RecruitID),
@@ -118,17 +118,17 @@ func CreateRecruitingProfileForRecruit(recruitPointsDto structs.CreateRecruitPoi
 		SeasonID:            recruitPointsDto.SeasonID,
 		RecruitID:           recruitPointsDto.RecruitID,
 		ProfileID:           recruitPointsDto.ProfileID,
-		TeamAbbreviation:    recruitPointsDto.Team,
 		TotalPoints:         0,
 		CurrentWeeksPoints:  0,
 		SpendingCount:       0,
 		Scholarship:         false,
+		ScholarshipRevoked:  false,
 		AffinityOneEligible: recruitPointsDto.AffinityOneEligible,
 		AffinityTwoEligible: recruitPointsDto.AffinityTwoEligible,
+		TeamAbbreviation:    recruitPointsDto.Team,
 		RemovedFromBoard:    false,
 		IsSigned:            false,
 	}
-	// Do a check on affinities here
 
 	// Create
 	db.Create(&createRecruitEntry)

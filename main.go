@@ -37,6 +37,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/health", HealthCheck.Handler).Methods("GET")
 
 	// Admin Controls
+	myRouter.HandleFunc("/simfba/get/timestamp/", controller.GetCurrentTimestamp).Methods("GET")
 
 	// Game Controls
 	myRouter.HandleFunc("/games/college/week/{weekID}/", controller.GetCollegeGamesByTimeslotWeekId).Methods("GET")
@@ -60,7 +61,7 @@ func handleRequests() {
 	// Recruiting Controls
 	myRouter.HandleFunc("/recruiting/profile/{teamID}/", controller.GetRecruitingProfileByTeamID).Methods("GET")
 	myRouter.HandleFunc("/recruiting/profile/only/{teamID}/", controller.GetOnlyRecruitingProfileByTeamID).Methods("GET")
-	myRouter.HandleFunc("/recruiting/createpointsprofile/", controller.CreateRecruitingPointsProfileForRecruit).Methods("POST")
+	myRouter.HandleFunc("/recruiting/addrecruit/", controller.CreateRecruitPlayerProfile).Methods("POST")
 	myRouter.HandleFunc("/recruiting/allocaterecruitpoints/", controller.AllocateRecruitingPointsForRecruit).Methods("PUT")
 	myRouter.HandleFunc("/recruiting/sendscholarship/", controller.SendScholarshipToRecruit).Methods("PUT")
 	myRouter.HandleFunc("/recruiting/revokescholarship/", controller.RevokeScholarshipFromRecruit).Methods("PUT")

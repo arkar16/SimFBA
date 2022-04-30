@@ -11,7 +11,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// GetRecruitingProfileByTeamID
+// GetRecruitingProfileByTeamID -- for Overall Dashboard
 func GetRecruitingProfileByTeamID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamID := vars["teamID"]
@@ -20,9 +20,18 @@ func GetRecruitingProfileByTeamID(w http.ResponseWriter, r *http.Request) {
 		panic("User did not provide teamID")
 	}
 
+	var dashboardResponse structs.DashboardTeamProfileResponse
+
 	recruitingProfile := managers.GetRecruitingProfileByTeamID(teamID)
 
-	json.NewEncoder(w).Encode(recruitingProfile)
+	dashboardResponse.SetTeamProfile(recruitingProfile)
+
+	// Get Team Needs
+	teamNeeds := managers.GetRecruitingNeeds(teamID)
+
+	dashboardResponse.SetTeamNeedsMap(teamNeeds)
+
+	json.NewEncoder(w).Encode(dashboardResponse)
 }
 
 // GetOnlyRecruitingProfileByTeamID
@@ -39,10 +48,27 @@ func GetOnlyRecruitingProfileByTeamID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(recruitingProfile)
 }
 
+// CreateRecruitPlayerProfile
+func CreateRecruitPlayerProfile(w http.ResponseWriter, r *http.Request) {
+
+	var recruitPointsDto structs.CreateRecruitProfileDto
+	err := json.NewDecoder(r.Body).Decode(&recruitPointsDto)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	recruitingProfile := managers.AddRecruitToBoard(recruitPointsDto)
+
+	json.NewEncoder(w).Encode(recruitingProfile)
+
+	fmt.Fprintf(w, "New Recruiting Profile Created")
+}
+
 // CreateRecruitingPointsProfileForRecruit
 func CreateRecruitingPointsProfileForRecruit(w http.ResponseWriter, r *http.Request) {
 
-	var recruitPointsDto structs.CreateRecruitPointsDto
+	var recruitPointsDto structs.CreateRecruitProfileDto
 	err := json.NewDecoder(r.Body).Decode(&recruitPointsDto)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)

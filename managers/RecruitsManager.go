@@ -21,7 +21,9 @@ func GetAllRecruits() []models.Croot {
 
 	var recruits []structs.Recruit
 
-	db.Find(&recruits)
+	db.Preload("RecruitPlayerProfiles", func(db *gorm.DB) *gorm.DB {
+		return db.Order("total_points DESC").Where("total_points > 0")
+	}).Find(&recruits)
 
 	var croots []models.Croot
 	for _, recruit := range recruits {

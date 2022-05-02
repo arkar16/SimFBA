@@ -27,6 +27,7 @@ type Croot struct {
 	AffinityTwo    string
 	IsSigned       bool
 	OverallGrade   string
+	LeadingTeams   []string
 }
 
 func (c *Croot) Map(r structs.Recruit) {
@@ -50,4 +51,8 @@ func (c *Croot) Map(r structs.Recruit) {
 	c.AffinityOne = r.AffinityOne
 	c.AffinityTwo = r.AffinityTwo
 	c.OverallGrade = util.GetOverallGrade(r.Overall)
+
+	for _, recruitProfile := range r.RecruitPlayerProfiles {
+		c.LeadingTeams = append(c.LeadingTeams, recruitProfile.TeamAbbreviation)
+	}
 }

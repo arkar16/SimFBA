@@ -59,15 +59,9 @@ func (rp *RecruitPlayerProfile) ToggleRemoveFromBoard() {
 	rp.RemovedFromBoard = !rp.RemovedFromBoard
 }
 
-func (rp *RecruitPlayerProfile) ToggleScholarship() {
-	// If user has not revoked a scholarship from a recruit, assign a scholarship.
-	if !rp.ScholarshipRevoked {
-		rp.Scholarship = !rp.Scholarship
-	}
-	// If toggle switches from true to false
-	if !rp.Scholarship {
-		rp.ScholarshipRevoked = true
-	}
+func (rp *RecruitPlayerProfile) ToggleScholarship(rewardScholarship bool, revokeScholarship bool) {
+	rp.Scholarship = rewardScholarship
+	rp.ScholarshipRevoked = revokeScholarship
 }
 
 func (rp *RecruitPlayerProfile) SetWinningTeamAbbreviation(team string) {

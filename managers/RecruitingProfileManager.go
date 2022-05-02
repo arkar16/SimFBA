@@ -7,6 +7,7 @@ import (
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/jinzhu/gorm"
 )
 
 // GetRecruitingProfileByTeamID
@@ -15,7 +16,7 @@ func GetOnlyRecruitingProfileByTeamID(TeamID string) structs.RecruitingTeamProfi
 
 	var profile structs.RecruitingTeamProfile
 
-	err := db.Where("team_id = ?", TeamID).Find(&profile).Error
+	err := db.Where("id = ?", TeamID).Find(&profile).Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -23,13 +24,30 @@ func GetOnlyRecruitingProfileByTeamID(TeamID string) structs.RecruitingTeamProfi
 	return profile
 }
 
-// GetRecruitingProfileByTeamID -- Dashboard
-func GetRecruitingProfileByTeamID(TeamID string) structs.RecruitingTeamProfile {
+// GetRecruitingProfileForDashboardByTeamID -- Dashboard
+func GetRecruitingProfileForDashboardByTeamID(TeamID string) structs.RecruitingTeamProfile {
 	db := dbprovider.GetInstance().GetDB()
 
 	var profile structs.RecruitingTeamProfile
 
-	err := db.Preload("Affinities").Preload("Recruits.Recruit").Where("id = ?", TeamID).Find(&profile).Error
+	err := db.Preload("Affinities").Preload("Recruits.Recruit.RecruitPlayerProfiles", func(db *gorm.DB) *gorm.DB {
+		return db.Order("total_points DESC").Where("total_points > 0")
+	}).Where("id = ?", TeamID).Find(&profile).Error
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	return profile
+}
+
+func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) structs.RecruitingTeamProfile {
+	db := dbprovider.GetInstance().GetDB()
+
+	var profile structs.RecruitingTeamProfile
+
+	err := db.Preload("Affinities").Preload("Recruits.Recruit.RecruitPlayerProfiles", func(db *gorm.DB) *gorm.DB {
+		return db.Order("total_points DESC").Where("total_points > 0")
+	}).Where("id = ?", TeamID).Find(&profile).Error
 	if err != nil {
 		log.Panicln(err)
 	}
@@ -106,7 +124,7 @@ func RemoveRecruitFromBoard(updateRecruitPointsDto structs.UpdateRecruitPointsDt
 		strconv.Itoa(updateRecruitPointsDto.ProfileID))
 
 	if recruitingPointsProfile.RemovedFromBoard {
-		panic("Recruit has already been removed from Team Recruiting Board.")
+		log.Panicln("Recruit has already been removed from Team Recruiting Board.")
 	}
 
 	recruitingPointsProfile.ToggleRemoveFromBoard()
@@ -120,7 +138,7 @@ func UpdateRecruitingProfile(updateRecruitingBoardDto structs.UpdateRecruitingBo
 
 	var teamID = strconv.Itoa(updateRecruitingBoardDto.TeamID)
 
-	var teamProfile = GetRecruitingProfileByTeamID(teamID)
+	var teamProfile = GetOnlyRecruitingProfileByTeamID(teamID)
 
 	var recruitProfiles = GetRecruitsByTeamProfileID(teamID)
 

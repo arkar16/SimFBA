@@ -17,6 +17,7 @@ type RecruitingTeamProfile struct {
 	ESPNScore                 int
 	RivalsScore               int
 	Top25Score                int
+	RecruitingClassRank       int
 	Recruits                  []RecruitPlayerProfile `gorm:"foreignKey:ProfileID"`
 	Affinities                []ProfileAffinity      `gorm:"foreignKey:ProfileID"`
 }

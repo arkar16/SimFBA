@@ -140,7 +140,7 @@ func AllocateRecruitPointsForRecruit(updateRecruitPointsDto structs.UpdateRecrui
 	db := dbprovider.GetInstance().GetDB()
 
 	// Recruit Team Profile
-	recruitingProfile := GetRecruitingProfileByTeamID(strconv.Itoa(updateRecruitPointsDto.ProfileID))
+	recruitingProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(updateRecruitPointsDto.ProfileID))
 
 	// Recruit Player Profile
 	recruitEntry := GetRecruitProfileByPlayerId(strconv.Itoa(updateRecruitPointsDto.RecruitID),
@@ -188,34 +188,34 @@ func AllocateRecruitPointsForRecruit(updateRecruitPointsDto structs.UpdateRecrui
 func SendScholarshipToRecruit(updateRecruitPointsDto structs.UpdateRecruitPointsDto) (structs.RecruitPlayerProfile, structs.RecruitingTeamProfile) {
 	db := dbprovider.GetInstance().GetDB()
 
-	recruitingProfile := GetRecruitingProfileByTeamID(strconv.Itoa(updateRecruitPointsDto.ProfileID))
+	recruitingProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(updateRecruitPointsDto.ProfileID))
 
 	if recruitingProfile.ScholarshipsAvailable == 0 {
-		log.Fatalf("\nTeamId: " + strconv.Itoa(updateRecruitPointsDto.ProfileID) + " does not have any availabe scholarships")
+		log.Panicln("\nTeamId: " + strconv.Itoa(updateRecruitPointsDto.ProfileID) + " does not have any availabe scholarships")
 	}
 
-	recruitingPointsEntry := GetRecruitProfileByPlayerId(
+	crootProfile := GetRecruitProfileByPlayerId(
 		strconv.Itoa(updateRecruitPointsDto.RecruitID),
 		strconv.Itoa(updateRecruitPointsDto.ProfileID),
 	)
 
-	if recruitingPointsEntry.Scholarship {
-		log.Fatalf("\nRecruit " + strconv.Itoa(recruitingPointsEntry.RecruitID) + "already has a scholarship")
+	crootProfile.ToggleScholarship(updateRecruitPointsDto.RewardScholarship, updateRecruitPointsDto.RevokeScholarship)
+	if !crootProfile.ScholarshipRevoked {
+		recruitingProfile.SubtractScholarshipsAvailable()
+	} else {
+		recruitingProfile.ReallocateScholarship()
 	}
 
-	recruitingPointsEntry.ToggleScholarship()
-	recruitingProfile.SubtractScholarshipsAvailable()
-
-	db.Save(&recruitingPointsEntry)
+	db.Save(&crootProfile)
 	db.Save(&recruitingProfile)
 
-	return recruitingPointsEntry, recruitingProfile
+	return crootProfile, recruitingProfile
 }
 
 func RevokeScholarshipFromRecruit(updateRecruitPointsDto structs.UpdateRecruitPointsDto) (structs.RecruitPlayerProfile, structs.RecruitingTeamProfile) {
 	db := dbprovider.GetInstance().GetDB()
 
-	recruitingProfile := GetRecruitingProfileByTeamID(strconv.Itoa(updateRecruitPointsDto.ProfileID))
+	recruitingProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(updateRecruitPointsDto.ProfileID))
 
 	recruitingPointsProfile := GetRecruitProfileByPlayerId(
 		strconv.Itoa(updateRecruitPointsDto.RecruitID),
@@ -227,7 +227,7 @@ func RevokeScholarshipFromRecruit(updateRecruitPointsDto structs.UpdateRecruitPo
 		return recruitingPointsProfile, recruitingProfile
 	}
 
-	recruitingPointsProfile.ToggleScholarship()
+	// recruitingPointsProfile.ToggleScholarship()
 	recruitingProfile.ReallocateScholarship()
 
 	db.Save(&recruitingPointsProfile)
@@ -297,7 +297,7 @@ func RecruitSync(CurrentWeek int) {
 			}
 
 			if winningTeamID > 0 {
-				recruitTeamProfile := GetRecruitingProfileByTeamID(strconv.Itoa(winningTeamID))
+				recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(winningTeamID))
 				teamAbbreviation := recruitTeamProfile.TeamAbbreviation
 
 				for _, recruitProfile := range recruitProfiles {

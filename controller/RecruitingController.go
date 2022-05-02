@@ -11,8 +11,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-// GetRecruitingProfileByTeamID -- for Overall Dashboard
-func GetRecruitingProfileByTeamID(w http.ResponseWriter, r *http.Request) {
+// GetRecruitingProfileForDashboardByTeamID -- for Overall Dashboard
+func GetRecruitingProfileForDashboardByTeamID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamID := vars["teamID"]
 
@@ -22,7 +22,30 @@ func GetRecruitingProfileByTeamID(w http.ResponseWriter, r *http.Request) {
 
 	var dashboardResponse structs.DashboardTeamProfileResponse
 
-	recruitingProfile := managers.GetRecruitingProfileByTeamID(teamID)
+	recruitingProfile := managers.GetRecruitingProfileForDashboardByTeamID(teamID)
+
+	dashboardResponse.SetTeamProfile(recruitingProfile)
+
+	// Get Team Needs
+	teamNeeds := managers.GetRecruitingNeeds(teamID)
+
+	dashboardResponse.SetTeamNeedsMap(teamNeeds)
+
+	json.NewEncoder(w).Encode(dashboardResponse)
+}
+
+// GetRecruitingProfileByTeamID -- for Overall Dashboard
+func GetRecruitingProfileForTeamBoardByTeamID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+
+	if len(teamID) == 0 {
+		panic("User did not provide teamID")
+	}
+
+	var dashboardResponse structs.DashboardTeamProfileResponse
+
+	recruitingProfile := managers.GetRecruitingProfileForTeamBoardByTeamID(teamID)
 
 	dashboardResponse.SetTeamProfile(recruitingProfile)
 

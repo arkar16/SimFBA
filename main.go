@@ -59,11 +59,12 @@ func handleRequests() {
 	// myRouter.HandleFunc("/collegeplayers/teams/export/", controller.ExportAllRostersToCSV).Methods("GET") // DO NOT USE
 
 	// Recruiting Controls
-	myRouter.HandleFunc("/recruiting/profile/{teamID}/", controller.GetRecruitingProfileByTeamID).Methods("GET")
+	myRouter.HandleFunc("/recruiting/profile/dashboard/{teamID}/", controller.GetRecruitingProfileForDashboardByTeamID).Methods("GET")
+	myRouter.HandleFunc("/recruiting/profile/team/{teamID}/", controller.GetRecruitingProfileForTeamBoardByTeamID).Methods("GET")
 	myRouter.HandleFunc("/recruiting/profile/only/{teamID}/", controller.GetOnlyRecruitingProfileByTeamID).Methods("GET")
 	myRouter.HandleFunc("/recruiting/addrecruit/", controller.CreateRecruitPlayerProfile).Methods("POST")
 	myRouter.HandleFunc("/recruiting/allocaterecruitpoints/", controller.AllocateRecruitingPointsForRecruit).Methods("PUT")
-	myRouter.HandleFunc("/recruiting/sendscholarship/", controller.SendScholarshipToRecruit).Methods("PUT")
+	myRouter.HandleFunc("/recruiting/toggleScholarship/", controller.SendScholarshipToRecruit).Methods("PUT")
 	myRouter.HandleFunc("/recruiting/revokescholarship/", controller.RevokeScholarshipFromRecruit).Methods("PUT")
 	myRouter.HandleFunc("/recruiting/removecrootfromboard/", controller.RemoveRecruitFromBoard).Methods("PUT")
 	myRouter.HandleFunc("/recruiting/saverecruitingprofile/", controller.SaveRecruitingBoard).Methods("PUT")

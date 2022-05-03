@@ -4,14 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"math"
-	"math/rand"
-	"sort"
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
-	config "github.com/CalebRose/SimFBA/secrets"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/jinzhu/gorm"
 )
@@ -41,7 +37,9 @@ func GetAllUnsignedRecruits() []structs.Recruit {
 
 	var croots []structs.Recruit
 
-	db.Where("is_signed = ?", false).Find(&croots)
+	db.Preload("RecruitPlayerProfiles", func(db *gorm.DB) *gorm.DB {
+		return db.Order("total_points DESC")
+	}).Where("is_signed = ?", false).Find(&croots)
 
 	return croots
 }
@@ -65,6 +63,20 @@ func GetRecruitsByTeamProfileID(ProfileID string) []structs.RecruitPlayerProfile
 	var croots []structs.RecruitPlayerProfile
 
 	err := db.Preload("Recruit").Where("profile_id = ?", ProfileID).Find(&croots).Error
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return croots
+}
+
+func GetSignedRecruitsByTeamProfileID(ProfileID string) []structs.Recruit {
+	db := dbprovider.GetInstance().GetDB()
+
+	var croots []structs.Recruit
+
+	err := db.Order("overall DESC").Where("team_id = ?", ProfileID, "is_signed = true").Find(&croots).Error
 
 	if err != nil {
 		log.Fatal(err)
@@ -238,102 +250,6 @@ func RevokeScholarshipFromRecruit(updateRecruitPointsDto structs.UpdateRecruitPo
 	return recruitingPointsProfile, recruitingProfile
 }
 
-func RecruitSync(CurrentWeek int) {
-	db := dbprovider.GetInstance().GetDB()
-
-	// GetCurrentWeek
-	timestamp := GetTimestamp()
-	if timestamp.RecruitingSynced {
-		log.Fatalln("Recruiting already ran for this week. Please wait until next week to sync recruiting again.")
-	}
-	var recruitModifiers structs.AdminRecruitModifier
-	var recruitProfiles []structs.RecruitPlayerProfile
-	recruits := GetAllUnsignedRecruits()
-	// Get every recruit
-	for _, recruit := range recruits {
-		recruitProfiles = GetRecruitPlayerProfilesByRecruitId(strconv.Itoa(int(recruit.ID)))
-
-		var recruitProfilesWithScholarship []structs.RecruitPlayerProfile
-
-		totalTeamRecruitProfiles := len(recruitProfiles)
-
-		totalPointsOnRecruit := 0
-
-		var signThreshold float64
-
-		for _, recruitProfile := range recruitProfiles {
-			// Calculate efficacy points
-			// multiply points
-			// Add points to total by recruit profile
-			// add points to total points on recruit
-			recruitProfile.AddCurrentWeekPointsToTotal()
-			totalPointsOnRecruit += recruitProfile.TotalPoints
-			if recruitProfile.Scholarship {
-				recruitProfilesWithScholarship = append(recruitProfilesWithScholarship, recruitProfile)
-			}
-		}
-
-		// Re-Sort profiles
-		sort.Sort(structs.ByPoints(recruitProfilesWithScholarship))
-
-		// Change?
-		// Assign point totals
-		// If there are any modifiers
-		// Evaluate
-		signThreshold = float64(recruitModifiers.ModifierOne-CurrentWeek) * (float64(totalTeamRecruitProfiles/recruitModifiers.ModifierTwo) * math.Log(float64(recruitModifiers.WeeksOfRecruiting-CurrentWeek)))
-
-		// Change logic to withold teams without available scholarships
-		if float64(totalPointsOnRecruit) > signThreshold {
-			percentageOdds := rand.Intn(totalPointsOnRecruit) + 1
-			currentProbability := 0
-			winningTeamID := 0
-
-			for _, recruitProfile := range recruitProfilesWithScholarship {
-				// If a team has no available scholarships or if a team has 25 commitments, continue
-				currentProbability += recruitProfile.TotalPoints
-				if currentProbability > percentageOdds {
-					// WINNING TEAM
-					winningTeamID = recruitProfile.ProfileID
-					break
-				}
-			}
-
-			if winningTeamID > 0 {
-				recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(winningTeamID))
-				teamAbbreviation := recruitTeamProfile.TeamAbbreviation
-
-				for _, recruitProfile := range recruitProfiles {
-					recruitProfile.SetWinningTeamAbbreviation(teamAbbreviation)
-					recruitProfile.SignPlayer()
-				}
-			}
-
-			// Set Recruit property
-			recruit.UpdateSigningStatus()
-			recruit.UpdateTeamID(winningTeamID)
-		}
-	}
-	timestamp.ToggleRecruiting()
-	// Save Recruits and Recruit Player Profiles
-	err := db.Save(&recruitProfiles).Error
-	if err != nil {
-		fmt.Println(err.Error())
-		log.Fatalf("Could not sync all recruiting profiles.")
-	}
-
-	err = db.Save(&recruits).Error
-	if err != nil {
-		fmt.Println(err.Error())
-		log.Fatalf("Could not sync all recruits.")
-	}
-
-	err = db.Save(&timestamp).Error
-	if err != nil {
-		fmt.Println(err.Error())
-		log.Fatalf("Could not save timestamp")
-	}
-}
-
 func GetRecruitFromRecruitsList(id int, recruits []structs.RecruitPlayerProfile) structs.RecruitPlayerProfile {
 	var recruit structs.RecruitPlayerProfile
 
@@ -383,106 +299,4 @@ func UpdateRecruit(r structs.Recruit) {
 	if err != nil {
 		log.Fatal(err)
 	}
-}
-
-func GetESPNRanking(r structs.Recruit) int {
-	// ESPN Ranking = Star Rank + Archetype Modifier + weight difference + height difference
-	// + potential val, and then round.
-
-	starRank := GetESPNStarRank(r.Stars)
-	archMod := GetArchetypeModifier(r.Archetype)
-	potentialMod := GetPotentialModifier(r.PotentialGrade)
-
-	espnPositionMap := config.ESPNModifiers()
-	heightMod := float64(r.Height) / espnPositionMap[r.Position]["Height"]
-	weightMod := float64(r.Weight) / espnPositionMap[r.Position]["Weight"]
-	espnRanking := math.Round(float64(starRank) + float64(archMod) + potentialMod + heightMod + weightMod)
-
-	return int(espnRanking)
-}
-
-func GetESPNStarRank(star int) int {
-	if star == 5 {
-		return 95
-	} else if star == 4 {
-		return 85
-	} else if star == 3 {
-		return 75
-	} else if star == 2 {
-		return 65
-	}
-	return 55
-}
-
-func GetArchetypeModifier(arch string) int {
-	if arch == "Coverage" ||
-		arch == "Run Stopper" ||
-		arch == "Ball Hawk" ||
-		arch == "Man Coverage" ||
-		arch == "Pass Rusher" ||
-		arch == "Rushing" {
-		return 1
-	} else if arch == "Possession" ||
-		arch == "Field General" ||
-		arch == "Nose Tackle" ||
-		arch == "Blocking" ||
-		arch == "Line Captain" {
-		return -1
-	} else if arch == "Speed Rusher" ||
-		arch == "Pass Rush" || arch == "Scrambler" ||
-		arch == "Vertical Threat" ||
-		arch == "Speed" {
-		return 2
-	}
-	return 0
-}
-
-func GetPotentialModifier(pg string) float64 {
-	if pg == "A+" {
-		return 1
-	} else if pg == "A" {
-		return 0.9
-	} else if pg == "A-" {
-		return 0.8
-	} else if pg == "B+" {
-		return 0.6
-	} else if pg == "B" {
-		return 0.4
-	} else if pg == "B-" {
-		return 0.2
-	} else if pg == "C+" {
-		return 0
-	} else if pg == "C" {
-		return -0.15
-	} else if pg == "C-" {
-		return -0.3
-	} else if pg == "D+" {
-		return -0.6
-	} else if pg == "D" {
-		return -0.75
-	} else if pg == "D-" {
-		return -0.9
-	}
-	return -1
-}
-
-func GetPredictiveOverall(r structs.Recruit) int {
-	currentOverall := r.Overall
-
-	var potentialProg int
-
-	if r.PotentialGrade == "B+" ||
-		r.PotentialGrade == "A-" ||
-		r.PotentialGrade == "A" ||
-		r.PotentialGrade == "A+" {
-		potentialProg = 7
-	} else if r.PotentialGrade == "B" ||
-		r.PotentialGrade == "B-" ||
-		r.PotentialGrade == "C+" {
-		potentialProg = 5
-	} else {
-		potentialProg = 4
-	}
-
-	return currentOverall + (potentialProg * 3)
 }

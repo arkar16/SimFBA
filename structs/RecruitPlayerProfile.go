@@ -18,6 +18,7 @@ type RecruitPlayerProfile struct {
 	TeamAbbreviation    string
 	RemovedFromBoard    bool
 	IsSigned            bool
+	IsLocked            bool
 	Recruit             Recruit                  `gorm:"foreignKey:RecruitID"`
 	RecruitPoints       []RecruitPointAllocation `gorm:"foreignKey:RecruitID"`
 }
@@ -71,7 +72,12 @@ func (rp *RecruitPlayerProfile) SetWinningTeamAbbreviation(team string) {
 func (rp *RecruitPlayerProfile) SignPlayer() {
 	if rp.Scholarship {
 		rp.IsSigned = true
+		rp.IsLocked = true
 	}
+}
+
+func (rp *RecruitPlayerProfile) LockPlayer() {
+	rp.IsLocked = true
 }
 
 // Sorting Funcs

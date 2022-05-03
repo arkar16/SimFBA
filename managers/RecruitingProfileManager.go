@@ -52,16 +52,20 @@ func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) structs.RecruitingT
 		log.Panicln(err)
 	}
 
-	// var recruitingBoard []structs.RecruitPlayerProfile
-
-	// err = db.Where("profile_id = ?", TeamID).Find(&recruitingBoard).Error
-	// if err != nil {
-	// 	log.Panicln(err)
-	// }
-
-	// profile.AddRecruitsToProfile(recruitingBoard)
-
 	return profile
+}
+
+func GetRecruitingProfileForRecruitSync() []structs.RecruitingTeamProfile {
+	db := dbprovider.GetInstance().GetDB()
+
+	var profiles []structs.RecruitingTeamProfile
+
+	err := db.Find(&profiles).Error
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	return profiles
 }
 
 func GetRecruitingNeeds(TeamID string) map[string]int {

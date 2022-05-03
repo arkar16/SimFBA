@@ -16,6 +16,9 @@ func GetCurrentTimestamp(w http.ResponseWriter, r *http.Request) {
 }
 
 // SyncRecruiting
+func SyncRecruiting(w http.ResponseWriter, r *http.Request) {
+	managers.SyncRecruiting()
+}
 
 // SyncWeek?
 

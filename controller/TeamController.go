@@ -84,11 +84,40 @@ func GetHomeAndAwayTeamData(w http.ResponseWriter, r *http.Request) {
 	homeTeamID := strconv.Itoa(int(homeTeam.ID))
 	awayTeamID := strconv.Itoa(int(awayTeam.ID))
 
+	var homeTeamResponse models.SimTeamDataResponse
+	var homeDCResponse models.SimTeamDepthChartResponse
+	var homeDCList []models.SimDepthChartPosResponse
+
+	var awayTeamResponse models.SimTeamDataResponse
+	var awayDCResponse models.SimTeamDepthChartResponse
+	var awayDCList []models.SimDepthChartPosResponse
+
+	hdc := homeTeam.TeamDepthChart
+
+	for _, dcp := range hdc.DepthChartPlayers {
+		var simDCPR models.SimDepthChartPosResponse
+		simDCPR.Map(dcp)
+		homeDCList = append(homeDCList, simDCPR)
+	}
+
+	adc := awayTeam.TeamDepthChart
+	for _, dcp := range adc.DepthChartPlayers {
+		var simDCPR models.SimDepthChartPosResponse
+		simDCPR.Map(dcp)
+		awayDCList = append(awayDCList, simDCPR)
+	}
+
+	homeDCResponse.Map(hdc, homeDCList)
+	awayDCResponse.Map(adc, awayDCList)
+
+	homeTeamResponse.Map(homeTeam, homeDCResponse)
+	awayTeamResponse.Map(awayTeam, awayDCResponse)
+
 	homeTeamRoster := managers.GetAllCollegePlayersByTeamIdWithoutRedshirts(homeTeamID)
 	awayTeamRoster := managers.GetAllCollegePlayersByTeamIdWithoutRedshirts(awayTeamID)
 
-	responseModel.AssignHomeTeam(homeTeam, homeTeamRoster)
-	responseModel.AssignAwayTeam(awayTeam, awayTeamRoster)
+	responseModel.AssignHomeTeam(homeTeamResponse, homeTeamRoster)
+	responseModel.AssignAwayTeam(awayTeamResponse, awayTeamRoster)
 
 	json.NewEncoder(w).Encode(responseModel)
 }

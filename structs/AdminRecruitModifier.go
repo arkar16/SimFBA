@@ -18,5 +18,8 @@ func (ARM *AdminRecruitModifier) SetModifierTwo(val int) {
 }
 
 func (ARM *AdminRecruitModifier) SetWeek(val int) {
+	if val > 20 {
+		return
+	}
 	ARM.WeeksOfRecruiting = val
 }

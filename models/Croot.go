@@ -19,6 +19,7 @@ type Croot struct {
 	PotentialGrade string
 	Personality    string
 	RecruitingBias string
+	AcademicBias   string
 	WorkEthic      string
 	HighSchool     string
 	City           string
@@ -44,6 +45,7 @@ func (c *Croot) Map(r structs.Recruit) {
 	c.PotentialGrade = r.PotentialGrade
 	c.Personality = r.Personality
 	c.RecruitingBias = r.RecruitingBias
+	c.AcademicBias = r.AcademicBias
 	c.WorkEthic = r.WorkEthic
 	c.HighSchool = r.HighSchool
 	c.City = r.City

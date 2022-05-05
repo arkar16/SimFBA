@@ -21,7 +21,7 @@ func GetTimestamp() structs.Timestamp {
 }
 
 // UpdateTimestamp - Update the timestamp
-func UpdateTimestamp(updateTimestampDto structs.UpdateTimestampDto) {
+func UpdateTimestamp(updateTimestampDto structs.UpdateTimestampDto) structs.Timestamp {
 	db := dbprovider.GetInstance().GetDB()
 
 	timestamp := GetTimestamp()
@@ -42,8 +42,14 @@ func UpdateTimestamp(updateTimestampDto structs.UpdateTimestampDto) {
 		timestamp.ToggleSaturdayNightGames()
 	}
 
-	if updateTimestampDto.RecruitingSynced && !timestamp.RecruitingSynced {
+	if updateTimestampDto.RESSynced && !timestamp.RecruitingEfficiencySynced {
+		timestamp.ToggleRES()
+		SyncRecruitingEfficiency()
+	}
+
+	if updateTimestampDto.RecruitingSynced && !timestamp.RecruitingSynced && timestamp.RecruitingEfficiencySynced {
 		timestamp.ToggleRecruiting()
+		SyncRecruiting()
 	}
 
 	err := db.Save(timestamp).Error
@@ -51,6 +57,8 @@ func UpdateTimestamp(updateTimestampDto structs.UpdateTimestampDto) {
 		fmt.Println(err.Error())
 		log.Fatalf("Could not save timestamp")
 	}
+
+	return timestamp
 }
 
 // Week Funcs

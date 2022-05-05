@@ -33,7 +33,7 @@ func (r *Recruit) UpdateTeamID(id int) {
 }
 
 func (r *Recruit) UpdateSigningStatus() {
-	r.IsSigned = !r.IsSigned
+	r.IsSigned = true
 }
 
 func (r *Recruit) SetCommitmentChoiceVal(val float64) {

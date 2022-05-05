@@ -5,47 +5,50 @@ import "github.com/jinzhu/gorm"
 // RecruitPlayerProfile - Individual points profile for a Team's Recruiting Portfolio
 type RecruitPlayerProfile struct {
 	gorm.Model
-	SeasonID            int
-	RecruitID           int
-	ProfileID           int
-	TotalPoints         int
-	CurrentWeeksPoints  int
-	SpendingCount       int
-	Scholarship         bool
-	ScholarshipRevoked  bool
-	AffinityOneEligible bool
-	AffinityTwoEligible bool
-	TeamAbbreviation    string
-	RemovedFromBoard    bool
-	IsSigned            bool
-	IsLocked            bool
-	Recruit             Recruit                  `gorm:"foreignKey:RecruitID"`
-	RecruitPoints       []RecruitPointAllocation `gorm:"foreignKey:RecruitID"`
+	SeasonID                  int
+	RecruitID                 int
+	ProfileID                 int
+	TotalPoints               int
+	CurrentWeeksPoints        int
+	SpendingCount             int
+	RecruitingEfficiencyScore float64
+	Scholarship               bool
+	ScholarshipRevoked        bool
+	AffinityOneEligible       bool
+	AffinityTwoEligible       bool
+	TeamAbbreviation          string
+	RemovedFromBoard          bool
+	IsSigned                  bool
+	IsLocked                  bool
+	CaughtCheating            bool
+	Recruit                   Recruit                  `gorm:"foreignKey:RecruitID"`
+	RecruitPoints             []RecruitPointAllocation `gorm:"foreignKey:RecruitID"`
 }
 
 func (rp *RecruitPlayerProfile) AllocateCurrentWeekPoints(points int) {
 	rp.CurrentWeeksPoints = points
 }
 
-func (rp *RecruitPlayerProfile) AddCurrentWeekPointsToTotal() {
+func (rp *RecruitPlayerProfile) AddCurrentWeekPointsToTotal(CurrentPoints int) {
 	// If user spends points on a recruit
-	if rp.CurrentWeeksPoints > 0 {
-		rp.TotalPoints += rp.CurrentWeeksPoints
-		rp.CurrentWeeksPoints = 0
-		rp.SpendingCount += 1
-		if rp.SpendingCount > 4 {
-			rp.SpendingCount = 0
-			if rp.AffinityOneEligible {
-				rp.TotalPoints += 25
-			}
-			if rp.AffinityTwoEligible {
-				rp.TotalPoints += 25
-			}
-		}
+	if CurrentPoints > 0 {
+		rp.TotalPoints += CurrentPoints
+		// rp.SpendingCount += 1
+		// if rp.SpendingCount > 4 {
+		// 	rp.SpendingCount = 0
+		// 	if rp.AffinityOneEligible {
+		// 		rp.TotalPoints += 25
+		// 	}
+		// 	if rp.AffinityTwoEligible {
+		// 		rp.TotalPoints += 25
+		// 	}
+		// }
 	} else {
-		// No Points spent - reset spending count
+		rp.TotalPoints = 0
+		rp.CaughtCheating = true
 		rp.SpendingCount = 0
 	}
+	rp.CurrentWeeksPoints = 0
 }
 
 func (rp *RecruitPlayerProfile) ToggleAffinityOne() {
@@ -78,6 +81,10 @@ func (rp *RecruitPlayerProfile) SignPlayer() {
 
 func (rp *RecruitPlayerProfile) LockPlayer() {
 	rp.IsLocked = true
+}
+
+func (rp *RecruitPlayerProfile) AssignRES(res float64) {
+	rp.RecruitingEfficiencyScore = res
 }
 
 // Sorting Funcs

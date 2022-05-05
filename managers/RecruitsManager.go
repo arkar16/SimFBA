@@ -71,6 +71,20 @@ func GetRecruitsByTeamProfileID(ProfileID string) []structs.RecruitPlayerProfile
 	return croots
 }
 
+func GetOnlyRecruitProfilesByTeamProfileID(ProfileID string) []structs.RecruitPlayerProfile {
+	db := dbprovider.GetInstance().GetDB()
+
+	var croots []structs.RecruitPlayerProfile
+
+	err := db.Where("profile_id = ?", ProfileID).Find(&croots).Error
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return croots
+}
+
 func GetSignedRecruitsByTeamProfileID(ProfileID string) []structs.Recruit {
 	db := dbprovider.GetInstance().GetDB()
 

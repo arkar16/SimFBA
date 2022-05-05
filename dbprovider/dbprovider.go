@@ -35,7 +35,6 @@ func (p *Provider) InitDatabase() bool {
 	}
 	// AutoMigrations -- uncomment when needing to update a table
 	// db.AutoMigrate(&structs.CollegePlayer{})
-	// db.AutoMigrate(&structs.Recruit{})
 	// db.AutoMigrate(&structs.Player{})
 	// db.AutoMigrate(&structs.CollegePlayerStats{})
 	// db.AutoMigrate(&structs.CollegeTeam{})
@@ -47,8 +46,10 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.CollegeDepthChartPosition{})
 	// db.AutoMigrate(&structs.CollegeGameplan{})
 	// db.AutoMigrate(&structs.CollegeGame{})
-
+	// db.AutoMigrate(&structs.CollegeCoach{})
 	// db.AutoMigrate(&structs.CollegeStandings{})
+
+	// db.AutoMigrate(&structs.Recruit{})
 	// db.AutoMigrate(&structs.RecruitingTeamProfile{})
 	// db.AutoMigrate(&structs.RecruitPlayerProfile{})
 	// db.AutoMigrate(&structs.RecruitPointAllocation{})

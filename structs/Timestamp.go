@@ -4,29 +4,31 @@ import "github.com/jinzhu/gorm"
 
 type Timestamp struct {
 	gorm.Model
-	CollegeWeekID      int
-	CollegeWeek        int
-	CollegeSeasonID    int
-	NFLSeasonID        int
-	NFLWeekID          int
-	NFLWeek            int
-	Season             int
-	ThursdayGames      bool
-	FridayGames        bool
-	SaturdayMorning    bool
-	SaturdayNoon       bool
-	SaturdayEvening    bool
-	SaturdayNight      bool
-	NFLThursday        bool
-	NFLSundayNoon      bool
-	NFLSundayAfternoon bool
-	NFLSundayEvening   bool
-	NFLMondayEvening   bool
-	NFLTradingAllowed  bool
-	NFLPreseason       bool
-	RecruitingSynced   bool
-	GMActionsCompleted bool
-	IsOffSeason        bool
+	CollegeWeekID              int
+	CollegeWeek                int
+	CollegeSeasonID            int
+	Season                     int
+	NFLSeasonID                int
+	NFLWeekID                  int
+	NFLWeek                    int
+	ThursdayGames              bool
+	FridayGames                bool
+	SaturdayMorning            bool
+	SaturdayNoon               bool
+	SaturdayEvening            bool
+	SaturdayNight              bool
+	NFLThursday                bool
+	NFLSundayNoon              bool
+	NFLSundayAfternoon         bool
+	NFLSundayEvening           bool
+	NFLMondayEvening           bool
+	NFLTradingAllowed          bool
+	NFLPreseason               bool
+	RecruitingEfficiencySynced bool
+	RecruitingSynced           bool
+	GMActionsCompleted         bool
+	IsOffSeason                bool
+	IsNFLOffSeason             bool
 }
 
 func (t *Timestamp) MoveUpWeekCollege() {
@@ -72,6 +74,10 @@ func (t *Timestamp) ToggleSaturdayNightGames() {
 	t.SaturdayNight = !t.SaturdayNight
 }
 
+func (t *Timestamp) ToggleRES() {
+	t.RecruitingEfficiencySynced = !t.RecruitingEfficiencySynced
+}
+
 func (t *Timestamp) ToggleRecruiting() {
 	t.RecruitingSynced = !t.RecruitingSynced
 }
@@ -82,7 +88,9 @@ func (t *Timestamp) ToggleGMActions() {
 
 func (t *Timestamp) SyncToNextWeek() {
 	t.MoveUpWeekCollege()
-	t.MoveUpSeason()
+	if t.CollegeWeek > 21 {
+		t.MoveUpSeason()
+	}
 	// Reset Toggles
 	t.ToggleThursdayGames()
 	t.ToggleFridayGames()

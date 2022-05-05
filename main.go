@@ -38,6 +38,7 @@ func handleRequests() {
 
 	// Admin Controls
 	myRouter.HandleFunc("/simfba/get/timestamp/", controller.GetCurrentTimestamp).Methods("GET")
+	myRouter.HandleFunc("/simfba/sync/timestamp/", controller.SyncTimestamp).Methods("PUT")
 
 	// Game Controls
 	myRouter.HandleFunc("/games/college/week/{weekID}/", controller.GetCollegeGamesByTimeslotWeekId).Methods("GET")

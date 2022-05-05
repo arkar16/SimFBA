@@ -13,14 +13,23 @@ type RecruitingTeamProfile struct {
 	WeeklyPoints              int
 	SpentPoints               int
 	TotalCommitments          int
+	BaseEfficiencyScore       float64
 	RecruitingEfficiencyScore float64
+	PreviousOverallWinPer     float64
+	PreviousConferenceWinPer  float64
+	CurrentOverallWinPer      float64
+	CurrentConferenceWinPer   float64
 	ESPNScore                 float64
 	RivalsScore               float64
 	Rank247Score              float64
-	Top25Score                float64
+	CompositeScore            float64
 	RecruitingClassRank       int
 	Recruits                  []RecruitPlayerProfile `gorm:"foreignKey:ProfileID"`
 	Affinities                []ProfileAffinity      `gorm:"foreignKey:ProfileID"`
+}
+
+func (r *RecruitingTeamProfile) AssignRES(res float64) {
+	r.RecruitingEfficiencyScore = res
 }
 
 func (r *RecruitingTeamProfile) SubtractScholarshipsAvailable() {
@@ -61,4 +70,8 @@ func (r *RecruitingTeamProfile) Assign247Rank(score float64) {
 
 func (r *RecruitingTeamProfile) AssignESPNRank(score float64) {
 	r.ESPNScore = score
+}
+
+func (r *RecruitingTeamProfile) AssignCompositeRank(score float64) {
+	r.CompositeScore = score
 }

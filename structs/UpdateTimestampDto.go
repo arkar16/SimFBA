@@ -11,6 +11,7 @@ type UpdateTimestampDto struct {
 	SaturdayNoon        bool
 	SaturdayEvening     bool
 	SaturdayNight       bool
+	RESSynced           bool
 	RecruitingSynced    bool
 	GMActionsCompleted  bool
 }

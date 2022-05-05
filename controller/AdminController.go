@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/CalebRose/SimFBA/managers"
+	"github.com/CalebRose/SimFBA/structs"
 )
 
 // GetTimeStamp
@@ -21,6 +22,18 @@ func SyncRecruiting(w http.ResponseWriter, r *http.Request) {
 }
 
 // SyncWeek?
+func SyncTimestamp(w http.ResponseWriter, r *http.Request) {
+	var updateTimestampDto structs.UpdateTimestampDto
+	err := json.NewDecoder(r.Body).Decode(&updateTimestampDto)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	newTimestamp := managers.UpdateTimestamp(updateTimestampDto)
+
+	json.NewEncoder(w).Encode(newTimestamp)
+}
 
 // CreateCollegeRecruit?
 

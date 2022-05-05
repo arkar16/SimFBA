@@ -61,9 +61,15 @@ func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 
 	team := GetTeamByTeamID(strconv.Itoa(request.TeamID))
 
+	coach := GetCollegeCoachByCoachName(request.Username)
+
+	coach.SetTeam(request.TeamID)
+
 	team.AssignUserToTeam(request.Username)
 
 	db.Save(&team)
+
+	db.Save(&coach)
 
 	return request
 }

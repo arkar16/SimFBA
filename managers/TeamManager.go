@@ -88,9 +88,15 @@ func RemoveUserFromTeam(teamId string) {
 
 	team := GetTeamByTeamID(teamId)
 
+	coach := GetCollegeCoachByCoachName(team.Coach)
+
+	coach.SetAsInactive()
+
 	team.RemoveUserFromTeam()
 
 	db.Save(&team)
+
+	db.Save(&coach)
 }
 
 func GetTeamsInConference(conference string) []structs.CollegeTeam {
@@ -116,4 +122,14 @@ func GetTeamByTeamAbbr(abbr string) structs.CollegeTeam {
 	}
 
 	return team
+}
+
+func GetAllCollegeTeamsWithRecruitingProfileAndCoach() []structs.CollegeTeam {
+	db := dbprovider.GetInstance().GetDB()
+
+	var teams []structs.CollegeTeam
+
+	db.Preload("CollegeCoach").Preload("RecruitingProfile").Find(&teams)
+
+	return teams
 }

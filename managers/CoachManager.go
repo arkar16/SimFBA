@@ -10,7 +10,7 @@ func GetCollegeCoachByCoachName(name string) structs.CollegeCoach {
 
 	var coach structs.CollegeCoach
 
-	err := db.Where("coach_name = ?", name).Find(coach).Error
+	err := db.Where("coach_name = ?", name).Find(&coach).Error
 	if err != nil {
 		coach = structs.CollegeCoach{
 			CoachName:                      name,

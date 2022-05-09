@@ -67,11 +67,11 @@ func handleRequests() {
 	myRouter.HandleFunc("/recruiting/profile/team/{teamID}/", controller.GetRecruitingProfileForTeamBoardByTeamID).Methods("GET")
 	myRouter.HandleFunc("/recruiting/profile/only/{teamID}/", controller.GetOnlyRecruitingProfileByTeamID).Methods("GET")
 	myRouter.HandleFunc("/recruiting/addrecruit/", controller.CreateRecruitPlayerProfile).Methods("POST")
-	myRouter.HandleFunc("/recruiting/allocaterecruitpoints/", controller.AllocateRecruitingPointsForRecruit).Methods("PUT")
+	// myRouter.HandleFunc("/recruiting/allocaterecruitpoints/", controller.AllocateRecruitingPointsForRecruit).Methods("PUT")
 	myRouter.HandleFunc("/recruiting/toggleScholarship/", controller.SendScholarshipToRecruit).Methods("PUT")
-	myRouter.HandleFunc("/recruiting/revokescholarship/", controller.RevokeScholarshipFromRecruit).Methods("PUT")
+	// myRouter.HandleFunc("/recruiting/revokescholarship/", controller.RevokeScholarshipFromRecruit).Methods("PUT")
 	myRouter.HandleFunc("/recruiting/removecrootfromboard/", controller.RemoveRecruitFromBoard).Methods("PUT")
-	myRouter.HandleFunc("/recruiting/saverecruitingprofile/", controller.SaveRecruitingBoard).Methods("PUT")
+	myRouter.HandleFunc("/recruiting/savecrootboard/", controller.SaveRecruitingBoard).Methods("POST")
 
 	// ReCroot Controls
 	myRouter.HandleFunc("/recruits/all/", controller.AllRecruits).Methods("GET")
@@ -102,7 +102,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/college/sim/{HomeTeamAbbr}/{AwayTeamAbbr}/", controller.GetHomeAndAwayTeamData).Methods("GET")
 
 	// Draft Controls
-	myRouter.HandleFunc("/nfl/draft/draftees/export/{season}", controller.ExportDrafteesToCSV).Methods("GET")
+	// myRouter.HandleFunc("/nfl/draft/draftees/export/{season}", controller.ExportDrafteesToCSV).Methods("GET")
 
 	// Handle Controls
 	handler := cors.AllowAll().Handler(myRouter)

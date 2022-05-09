@@ -166,11 +166,10 @@ func UpdateRecruitingProfile(updateRecruitingBoardDto structs.UpdateRecruitingBo
 			} else {
 				panic("Error: Allocated more points for Profile " + strconv.Itoa(teamProfile.TeamID) + " than what is allowed.")
 			}
+			// Save Recruit Profile
+			db.Save(&recruitProfiles[i])
 		}
 	}
-
-	// Save all recruit player profiles
-	db.Save(&recruitProfiles)
 
 	// Save team recruiting profile
 	db.Save(&teamProfile)

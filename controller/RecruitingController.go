@@ -164,6 +164,7 @@ func RemoveRecruitFromBoard(w http.ResponseWriter, r *http.Request) {
 
 // SaveRecruitingBoard
 func SaveRecruitingBoard(w http.ResponseWriter, r *http.Request) {
+	// enableCors(&w)
 	var updateRecruitingBoardDto structs.UpdateRecruitingBoardDTO
 	err := json.NewDecoder(r.Body).Decode(&updateRecruitingBoardDto)
 	if err != nil {
@@ -174,5 +175,10 @@ func SaveRecruitingBoard(w http.ResponseWriter, r *http.Request) {
 	recruitingProfile := managers.UpdateRecruitingProfile(updateRecruitingBoardDto)
 
 	fmt.Println("Updated Recruiting Profile " + strconv.Itoa(recruitingProfile.TeamID) + " and all associated players")
-	w.WriteHeader(http.StatusOK)
+	// w.Header().Set("Content-Type", "application/json")
+	// w.WriteHeader(http.StatusOK)
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }

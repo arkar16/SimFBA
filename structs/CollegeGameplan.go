@@ -7,6 +7,9 @@ type CollegeGameplan struct {
 	TeamID                int
 	OffensiveScheme       string
 	OffRunToPassRatio     int
+	OffFormation1Name     string
+	OffFormation2Name     string
+	OffFormation3Name     string
 	OffFormation1         int
 	OffFormation2         int
 	OffFormation3         int

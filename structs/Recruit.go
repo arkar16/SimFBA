@@ -14,7 +14,7 @@ type Recruit struct {
 	AffinityTwo           string
 	IsSigned              bool
 	CommitmentChoiceVal   float64
-	CalculatedRanking     float32
+	CalculatedRanking     float64
 	OverallRank           float64
 	RivalsRank            float64
 	ESPNRank              float64

@@ -59,6 +59,9 @@ func handleRequests() {
 	myRouter.HandleFunc("/collegeplayers/team/export/{teamID}/", controller.ExportRosterToCSV).Methods("GET")
 	// myRouter.HandleFunc("/collegeplayers/teams/export/", controller.ExportAllRostersToCSV).Methods("GET") // DO NOT USE
 
+	// Rankings Controls
+	myRouter.HandleFunc("/rankings/assign/all/croots/", controller.AssignAllRecruitRanks).Methods("GET")
+
 	// Recruiting Controls
 	myRouter.HandleFunc("/recruiting/profile/dashboard/{teamID}/", controller.GetRecruitingProfileForDashboardByTeamID).Methods("GET")
 	myRouter.HandleFunc("/recruiting/profile/team/{teamID}/", controller.GetRecruitingProfileForTeamBoardByTeamID).Methods("GET")

@@ -177,6 +177,7 @@ func SaveRecruitingBoard(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Updated Recruiting Profile " + strconv.Itoa(recruitingProfile.TeamID) + " and all associated players")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(recruitingProfile)
 }
 
 func enableCors(w *http.ResponseWriter) {

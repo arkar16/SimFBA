@@ -153,8 +153,7 @@ func UpdateRecruitingProfile(updateRecruitingBoardDto structs.UpdateRecruitingBo
 	for i := 0; i < len(recruitProfiles); i++ {
 		updatedRecruit := GetRecruitFromRecruitsList(recruitProfiles[i].RecruitID, updatedRecruits)
 
-		if updatedRecruit.CurrentWeeksPoints > 0 &&
-			recruitProfiles[i].CurrentWeeksPoints != updatedRecruit.CurrentWeeksPoints {
+		if recruitProfiles[i].CurrentWeeksPoints != updatedRecruit.CurrentWeeksPoints {
 			// Allocate Points to Profile
 			currentPoints += updatedRecruit.CurrentWeeksPoints
 			teamProfile.AllocateSpentPoints(currentPoints)

@@ -15,6 +15,8 @@ func AssignAllRecruitRanks() {
 
 	var recruits []structs.Recruit
 
+	// var recruitsToSync []structs.Recruit
+
 	db.Where("team_id = 0").Find(&recruits)
 
 	rivalsModifiers := config.RivalsModifiers()
@@ -34,9 +36,12 @@ func AssignAllRecruitRanks() {
 		}
 
 		croot.AssignRankValues(rank247, espnRank, rivalsRank)
+
+		db.Save(&croot)
+
+		// recruitsToSync = append(recruitsToSync, croot)
 	}
 
-	db.Save(&recruits)
 }
 
 func Get247Ranking(r structs.Recruit) float64 {

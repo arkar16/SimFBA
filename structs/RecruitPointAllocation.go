@@ -9,13 +9,15 @@ type RecruitPointAllocation struct {
 	RecruitProfileID   int
 	WeekID             int
 	Points             int
+	RESAffectedPoints  float64
 	AffinityOneApplied bool
 	AffinityTwoApplied bool
 	CaughtCheating     bool
 }
 
-func (rpa *RecruitPointAllocation) UpdatePointsSpent(points int) {
+func (rpa *RecruitPointAllocation) UpdatePointsSpent(points int, res float64) {
 	rpa.Points = points
+	rpa.RESAffectedPoints = res
 }
 
 func (rpa *RecruitPointAllocation) ApplyAffinityOne() {

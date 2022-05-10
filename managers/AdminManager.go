@@ -44,12 +44,13 @@ func UpdateTimestamp(updateTimestampDto structs.UpdateTimestampDto) structs.Time
 
 	if updateTimestampDto.RESSynced && !timestamp.RecruitingEfficiencySynced {
 		timestamp.ToggleRES()
-		SyncRecruitingEfficiency()
+		SyncRecruitingEfficiency(timestamp)
 	}
 
 	if updateTimestampDto.RecruitingSynced && !timestamp.RecruitingSynced && timestamp.RecruitingEfficiencySynced {
+		SyncRecruiting(timestamp)
 		timestamp.ToggleRecruiting()
-		SyncRecruiting()
+
 	}
 
 	err := db.Save(timestamp).Error

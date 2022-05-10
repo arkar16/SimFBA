@@ -16,11 +16,6 @@ func GetCurrentTimestamp(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(timestamp)
 }
 
-// SyncRecruiting
-func SyncRecruiting(w http.ResponseWriter, r *http.Request) {
-	managers.SyncRecruiting()
-}
-
 // SyncWeek?
 func SyncTimestamp(w http.ResponseWriter, r *http.Request) {
 	var updateTimestampDto structs.UpdateTimestampDto
@@ -33,6 +28,11 @@ func SyncTimestamp(w http.ResponseWriter, r *http.Request) {
 	newTimestamp := managers.UpdateTimestamp(updateTimestampDto)
 
 	json.NewEncoder(w).Encode(newTimestamp)
+}
+
+func SyncMissingRES(w http.ResponseWriter, r *http.Request) {
+	managers.SyncAllMissingEfficiencies()
+
 }
 
 // CreateCollegeRecruit?

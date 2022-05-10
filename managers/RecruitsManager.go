@@ -164,55 +164,6 @@ func CreateRecruitingProfileForRecruit(recruitPointsDto structs.CreateRecruitPro
 	return createRecruitEntry
 }
 
-func AllocateRecruitPointsForRecruit(updateRecruitPointsDto structs.UpdateRecruitPointsDto) {
-	db := dbprovider.GetInstance().GetDB()
-
-	// Recruit Team Profile
-	recruitingProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(updateRecruitPointsDto.ProfileID))
-
-	// Recruit Player Profile
-	recruitEntry := GetRecruitProfileByPlayerId(strconv.Itoa(updateRecruitPointsDto.RecruitID),
-		strconv.Itoa(updateRecruitPointsDto.ProfileID))
-
-	var pointAllocation structs.RecruitPointAllocation
-
-	if updateRecruitPointsDto.AllocationID == 0 {
-		pointAllocation = structs.RecruitPointAllocation{
-			RecruitID:          updateRecruitPointsDto.RecruitID,
-			TeamProfileID:      recruitingProfile.TeamID,
-			RecruitProfileID:   int(recruitEntry.ID),
-			WeekID:             updateRecruitPointsDto.WeekID,
-			Points:             updateRecruitPointsDto.SpentPoints,
-			AffinityOneApplied: recruitEntry.AffinityOneEligible,
-			AffinityTwoApplied: recruitEntry.AffinityTwoEligible,
-		}
-	} else {
-		err := db.Where("id = ?", updateRecruitPointsDto.AllocationID).Find(&pointAllocation).Error
-		if err != nil {
-			fmt.Println("Cannot find existing point allocation record.")
-		}
-	}
-
-	// Allow the user to update points spent on a recruit during a given week.
-	difference := recruitingProfile.SpentPoints - pointAllocation.Points
-	if pointAllocation.Points != updateRecruitPointsDto.SpentPoints {
-		pointAllocation.UpdatePointsSpent(updateRecruitPointsDto.SpentPoints)
-	}
-	difference += pointAllocation.Points
-
-	recruitingProfile.AllocateSpentPoints(difference)
-	if recruitingProfile.SpentPoints > recruitingProfile.WeeklyPoints {
-		fmt.Printf("Recruiting Profile " + strconv.Itoa(updateRecruitPointsDto.ProfileID) + " cannot spend more points than weekly amount")
-		return
-	}
-
-	recruitEntry.AllocateCurrentWeekPoints(updateRecruitPointsDto.SpentPoints)
-
-	db.Save(&pointAllocation)
-	db.Save(&recruitEntry)
-	db.Save(&recruitingProfile)
-}
-
 func SendScholarshipToRecruit(updateRecruitPointsDto structs.UpdateRecruitPointsDto) (structs.RecruitPlayerProfile, structs.RecruitingTeamProfile) {
 	db := dbprovider.GetInstance().GetDB()
 

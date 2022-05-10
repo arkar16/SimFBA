@@ -28,6 +28,8 @@ type RecruitingTeamProfile struct {
 	Affinities                []ProfileAffinity      `gorm:"foreignKey:ProfileID"`
 }
 
+type SaveProfile interface{}
+
 func (r *RecruitingTeamProfile) AssignRES(res float64) {
 	r.RecruitingEfficiencyScore = res
 }

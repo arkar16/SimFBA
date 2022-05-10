@@ -105,20 +105,6 @@ func CreateRecruitingPointsProfileForRecruit(w http.ResponseWriter, r *http.Requ
 	fmt.Fprintf(w, "New Recruiting Profile Created")
 }
 
-// AllocateRecruitingPointsForRecruit
-func AllocateRecruitingPointsForRecruit(w http.ResponseWriter, r *http.Request) {
-	var updateRecruitPointsDto structs.UpdateRecruitPointsDto
-	err := json.NewDecoder(r.Body).Decode(&updateRecruitPointsDto)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	managers.AllocateRecruitPointsForRecruit(updateRecruitPointsDto)
-
-	fmt.Printf("Updated Recruiting Points Profile")
-}
-
 // SendScholarshipToRecruit
 func SendScholarshipToRecruit(w http.ResponseWriter, r *http.Request) {
 	var updateRecruitPointsDto structs.UpdateRecruitPointsDto
@@ -172,12 +158,20 @@ func SaveRecruitingBoard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recruitingProfile := managers.UpdateRecruitingProfile(updateRecruitingBoardDto)
+	result := make(chan structs.RecruitingTeamProfile)
 
-	fmt.Println("Updated Recruiting Profile " + strconv.Itoa(recruitingProfile.TeamID) + " and all associated players")
+	go func() {
+		recruitingProfile := managers.UpdateRecruitingProfile(updateRecruitingBoardDto)
+		result <- recruitingProfile
+	}()
+
+	crootProfile := <-result
+	close(result)
+
+	fmt.Println("Updated Recruiting Profile " + strconv.Itoa(crootProfile.TeamID) + " and all associated players")
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(recruitingProfile)
+	json.NewEncoder(w).Encode(crootProfile)
 }
 
 func enableCors(w *http.ResponseWriter) {

@@ -22,7 +22,7 @@ func GetAllAvailableCollegeTeams() []structs.CollegeTeam {
 
 	var teams []structs.CollegeTeam
 
-	db.Where("coach is null OR coach IN (?,?)", "", "AI").Find(&teams)
+	db.Where("coach IN (?,?)", "", "AI").Find(&teams)
 
 	return teams
 }

@@ -167,6 +167,9 @@ func UpdateRecruitingProfile(updateRecruitingBoardDto structs.UpdateRecruitingBo
 			}
 			// Save Recruit Profile
 			db.Save(&recruitProfiles[i])
+		} else {
+			currentPoints += recruitProfiles[i].CurrentWeeksPoints
+			teamProfile.AllocateSpentPoints(currentPoints)
 		}
 	}
 

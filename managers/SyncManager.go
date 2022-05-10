@@ -23,11 +23,11 @@ func GetRecruitingModifiers() structs.AdminRecruitModifier {
 	return recruitModifiers
 }
 
-func SyncRecruiting() {
+func SyncRecruiting(timestamp structs.Timestamp) {
 	db := dbprovider.GetInstance().GetDB()
 
 	// GetCurrentWeek
-	timestamp := GetTimestamp()
+
 	if timestamp.RecruitingSynced {
 		log.Fatalln("Recruiting already ran for this week. Please wait until next week to sync recruiting again.")
 	}
@@ -36,14 +36,16 @@ func SyncRecruiting() {
 
 	var recruitProfiles []structs.RecruitPlayerProfile
 
-	var pointAllocations []structs.RecruitPointAllocation
-
 	// Get every recruit
 	recruits := GetAllUnsignedRecruits()
 
 	// Iterate through every recruit
 	for _, recruit := range recruits {
-		recruitProfiles = recruit.RecruitPlayerProfiles
+		recruitProfiles = GetRecruitPlayerProfilesByRecruitId(strconv.Itoa(int(recruit.ID)))
+
+		if len(recruitProfiles) == 0 {
+			continue
+		}
 
 		var recruitProfilesWithScholarship []structs.RecruitPlayerProfile
 
@@ -90,8 +92,14 @@ func SyncRecruiting() {
 				recruitProfilesWithScholarship = append(recruitProfilesWithScholarship, recruitProfile)
 			}
 
+			rpa.UpdatePointsSpent(recruitProfile.CurrentWeeksPoints, curr)
+
 			// Add RPA to point allocations list
-			pointAllocations = append(pointAllocations, rpa)
+			err := db.Save(&rpa).Error
+			if err != nil {
+				fmt.Println(err.Error())
+				log.Fatalf("Could not save Point Allocation")
+			}
 		}
 
 		// Re-Sort profiles
@@ -133,9 +141,29 @@ func SyncRecruiting() {
 				}
 			}
 
+			// Save Player Files towards Recruit
+			for _, rp := range recruitProfiles {
+				// Save Team Profile
+				err := db.Save(&rp).Error
+				if err != nil {
+					fmt.Println(err.Error())
+					log.Fatalf("Could not sync recruiting profile.")
+				}
+
+				fmt.Println("Save recruit profile from " + rp.TeamAbbreviation + " towards " + recruit.FirstName + " " + recruit.LastName)
+			}
+
 			recruit.UpdateSigningStatus()
 			recruit.UpdateTeamID(winningTeamID)
 		}
+
+		// Save Recruit
+		err := db.Save(&recruit).Error
+		if err != nil {
+			fmt.Println(err.Error())
+			log.Fatalf("Could not sync recruit")
+		}
+		fmt.Println("Save Recruit " + recruit.FirstName + " " + recruit.LastName)
 	}
 
 	// Update rank system for all teams
@@ -172,54 +200,26 @@ func SyncRecruiting() {
 		avg := (distributionESPN + distribution247 + distributionRivals) / 3
 
 		rp.AssignCompositeRank(avg)
-	}
 
-	timestamp.ToggleRecruiting()
-	// Save Recruits, Recruit Player Profiles, and Team Profiles
-	// err := db.Save(&recruitProfiles).Error
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	log.Fatalf("Could not sync all recruiting profiles.")
-	// }
-
-	// Should save both recruits and recruit player profiles
-	err := db.Save(&recruits).Error
-	if err != nil {
-		fmt.Println(err.Error())
-		log.Fatalf("Could not sync all recruits.")
-	}
-
-	// Save the Recruiting Profiles
-	err = db.Save(&teamRecruitingProfiles).Error
-	if err != nil {
-		fmt.Println(err.Error())
-		log.Fatalf("Could not save timestamp")
-	}
-
-	err = db.Save(&pointAllocations).Error
-	if err != nil {
-		fmt.Println(err.Error())
-		log.Fatalf("Could not save timestamp")
-	}
-
-	err = db.Save(&timestamp).Error
-	if err != nil {
-		fmt.Println(err.Error())
-		log.Fatalf("Could not save timestamp")
+		// Save TEAM Recruiting Profile
+		err := db.Save(&rp).Error
+		if err != nil {
+			fmt.Println(err.Error())
+			log.Fatalf("Could not save timestamp")
+		}
+		fmt.Println("Saved Rank Scores for Team " + rp.TeamAbbreviation)
 	}
 }
 
-func SyncRecruitingEfficiency() {
+func SyncRecruitingEfficiency(timestamp structs.Timestamp) {
 	db := dbprovider.GetInstance().GetDB()
-
-	timestamp := GetTimestamp()
 
 	// Get All Team Recruiting Profiles
 	teams := GetAllCollegeTeamsWithRecruitingProfileAndCoach()
 
 	// Iterate through all profiles
 
-	var teamProfilesToSave []structs.RecruitingTeamProfile
+	// var teamProfilesToSave []structs.RecruitingTeamProfile
 
 	for _, team := range teams {
 		// Get all games by team within a season
@@ -267,18 +267,23 @@ func SyncRecruitingEfficiency() {
 		}
 
 		if currentSeasonWins+currentSeasonLosses > 0 {
-			cswp = float64(currentSeasonWins / (currentSeasonWins + currentSeasonLosses))
-			ccwp = float64(currentConferenceWins / (currentConferenceWins + currentConferenceLosses))
+			cswp = float64(currentSeasonWins) / float64(currentSeasonWins+currentSeasonLosses)
+			if team.ConferenceID != 13 {
+				ccwp = float64(currentConferenceWins) / float64(currentConferenceWins+currentConferenceLosses)
+
+			}
 		}
 
 		// Previous Season Win Percentage
 		if previousSeasonWins+previousSeasonLosses > 0 {
-			pswp = float64(previousSeasonWins / (previousSeasonWins + previousSeasonLosses))
-			pcwp = float64(previousConferenceWins / (previousConferenceWins + previousConferenceLosses))
+			pswp = float64(previousSeasonWins) / float64(previousSeasonWins+previousSeasonLosses)
+			if team.ConferenceID != 13 {
+				pcwp = float64(previousConferenceWins) / float64(previousConferenceWins+previousConferenceLosses)
+			}
 		}
 
 		if coach.OverallWins+coach.OverallLosses > 0 {
-			coachwp = float64(coach.OverallWins / (coach.OverallWins + coach.OverallLosses))
+			coachwp = float64(coach.OverallWins) / float64(coach.OverallWins+coach.OverallLosses)
 		}
 
 		res := teamProfile.BaseEfficiencyScore
@@ -292,26 +297,48 @@ func SyncRecruitingEfficiency() {
 		ccsum := conferenceChampionshipVal * postseasonweight // ConferenceChampionship Check
 
 		totalSum := cswsum + ccwsum + pswsum + pcwsum + coachsum + postseasonsum + ccsum
-		totalWeight := csweight + ccweight + psweight + pcweight + coachweight + (postseasonweight * 2)
+		// totalWeight := csweight + ccweight + psweight + pcweight + coachweight + (postseasonweight * 2)
 
 		// RES Calculation
 		// Base of .8
 
-		teamProfile.AssignRES(res + (totalSum / totalWeight))
+		teamProfile.AssignRES(res + (totalSum * 0.4))
 
-		teamProfilesToSave = append(teamProfilesToSave, teamProfile)
+		err := db.Save(&teamProfile).Error
+		if err != nil {
+			fmt.Println(err.Error())
+			log.Fatalf("Could not sync all team profiles.")
+		}
+		fmt.Println("Saved RES for Team: " + team.TeamAbbr)
+
+		// teamProfilesToSave = append(teamProfilesToSave, teamProfile)
 	}
-
-	err := db.Save(&teamProfilesToSave).Error
-	if err != nil {
-		fmt.Println(err.Error())
-		log.Fatalf("Could not sync all team profiles.")
-	}
-
 	// Save the Recruiting Profiles
 	// err = db.Save(&recruitProfilesToSave).Error
 	// if err != nil {
 	// 	fmt.Println(err.Error())
 	// 	log.Fatalf("Could not sync res to all recruits")
 	// }
+}
+
+func SyncAllMissingEfficiencies() {
+	db := dbprovider.GetInstance().GetDB()
+	recruitingProfiles := GetRecruitingProfileForRecruitSync()
+
+	for _, rp := range recruitingProfiles {
+		playerProfiles := GetOnlyRecruitProfilesByTeamProfileID(strconv.Itoa(int(rp.ID)))
+
+		for _, pp := range playerProfiles {
+			if pp.RecruitingEfficiencyScore != 0 {
+				continue
+			}
+			pp.AssignRES(rp.RecruitingEfficiencyScore)
+
+			err := db.Save(&pp).Error
+			if err != nil {
+				log.Panicln("COULD NOT SAVE ALL PROFILES")
+			}
+			fmt.Println("Saved profile from " + rp.Team + " towards " + strconv.Itoa(int(pp.ID)))
+		}
+	}
 }

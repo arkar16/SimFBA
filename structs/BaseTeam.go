@@ -19,7 +19,7 @@ type BaseTeam struct {
 }
 
 func (bt *BaseTeam) RemoveUserFromTeam() {
-	bt.Coach = ""
+	bt.Coach = "AI"
 }
 
 func (bt *BaseTeam) AssignUserToTeam(user string) {

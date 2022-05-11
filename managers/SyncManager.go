@@ -26,7 +26,7 @@ func GetRecruitingModifiers() structs.AdminRecruitModifier {
 func SyncRecruiting(timestamp structs.Timestamp) {
 	db := dbprovider.GetInstance().GetDB()
 
-	// GetCurrentWeek
+	//GetCurrentWeek
 
 	if timestamp.RecruitingSynced {
 		log.Fatalln("Recruiting already ran for this week. Please wait until next week to sync recruiting again.")
@@ -55,44 +55,48 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 		var signThreshold float64
 
-		for _, recruitProfile := range recruitProfiles {
-			if recruitProfile.CurrentWeeksPoints == 0 {
+		for i := 0; i < len(recruitProfiles); i++ {
+
+			if recruitProfiles[i].CurrentWeeksPoints == 0 {
 				continue
 			}
 
 			rpa := structs.RecruitPointAllocation{
-				RecruitID:        recruitProfile.RecruitID,
-				TeamProfileID:    recruitProfile.ProfileID,
-				RecruitProfileID: int(recruitProfile.ID),
+				RecruitID:        recruitProfiles[i].RecruitID,
+				TeamProfileID:    recruitProfiles[i].ProfileID,
+				RecruitProfileID: int(recruitProfiles[i].ID),
 				WeekID:           timestamp.CollegeWeekID,
 			}
 
 			var curr float64 = 0
 
-			res := recruitProfile.RecruitingEfficiencyScore
-			if recruitProfile.AffinityOneEligible {
+			res := recruitProfiles[i].RecruitingEfficiencyScore
+			if recruitProfiles[i].AffinityOneEligible {
 				res += .1
 				rpa.ApplyAffinityOne()
 			}
-			if recruitProfile.AffinityTwoEligible {
+			if recruitProfiles[i].AffinityTwoEligible {
 				res += .1
 				rpa.ApplyAffinityTwo()
 			}
 
-			curr = float64(recruitProfile.CurrentWeeksPoints) * res
+			curr = float64(recruitProfiles[i].CurrentWeeksPoints) * res
 
-			if recruitProfile.CurrentWeeksPoints < 0 || recruitProfile.CurrentWeeksPoints > 20 {
+			if recruitProfiles[i].CurrentWeeksPoints < 0 || recruitProfiles[i].CurrentWeeksPoints > 20 {
 				curr = 0
 				rpa.ApplyCaughtCheating()
 			}
 
-			recruitProfile.AddCurrentWeekPointsToTotal(int(curr))
-			totalPointsOnRecruit += recruitProfile.TotalPoints
-			if recruitProfile.Scholarship {
-				recruitProfilesWithScholarship = append(recruitProfilesWithScholarship, recruitProfile)
+			if curr < 1 {
+				curr = 1
 			}
 
-			rpa.UpdatePointsSpent(recruitProfile.CurrentWeeksPoints, curr)
+			rpa.UpdatePointsSpent(recruitProfiles[i].CurrentWeeksPoints, curr)
+			recruitProfiles[i].AddCurrentWeekPointsToTotal(int(curr))
+			totalPointsOnRecruit += recruitProfiles[i].TotalPoints
+			if recruitProfiles[i].Scholarship {
+				recruitProfilesWithScholarship = append(recruitProfilesWithScholarship, recruitProfiles[i])
+			}
 
 			// Add RPA to point allocations list
 			err := db.Save(&rpa).Error
@@ -109,7 +113,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		// Assign point totals
 		// If there are any modifiers
 		// Evaluate
-		signThreshold = float64(recruitModifiers.ModifierOne-timestamp.CollegeWeek) * (float64(totalTeamRecruitProfiles/recruitModifiers.ModifierTwo) * math.Log(float64(recruitModifiers.WeeksOfRecruiting-timestamp.CollegeWeek)))
+		signThreshold = float64(recruitModifiers.ModifierOne-timestamp.CollegeWeek) * ((float64(totalTeamRecruitProfiles) / recruitModifiers.ModifierTwo) * math.Log(float64(recruitModifiers.WeeksOfRecruiting-timestamp.CollegeWeek)))
 
 		// Change logic to withold teams without available scholarships
 		if float64(totalPointsOnRecruit) > signThreshold {
@@ -117,12 +121,12 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			currentProbability := 0
 			winningTeamID := 0
 
-			for _, recruitProfile := range recruitProfilesWithScholarship {
+			for i := 0; i < len(recruitProfilesWithScholarship); i++ {
 				// If a team has no available scholarships or if a team has 25 commitments, continue
-				currentProbability += recruitProfile.TotalPoints
+				currentProbability += recruitProfilesWithScholarship[i].TotalPoints
 				if currentProbability > percentageOdds {
 					// WINNING TEAM
-					winningTeamID = recruitProfile.ProfileID
+					winningTeamID = recruitProfilesWithScholarship[i].ProfileID
 					break
 				}
 			}
@@ -130,31 +134,32 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			if winningTeamID > 0 {
 				recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(winningTeamID))
 				teamAbbreviation := recruitTeamProfile.TeamAbbreviation
+				recruit.AssignCollege(teamAbbreviation)
 
-				for _, recruitProfile := range recruitProfiles {
-					recruitProfile.SetWinningTeamAbbreviation(teamAbbreviation)
-					if recruitProfile.ProfileID == winningTeamID {
-						recruitProfile.SignPlayer()
+				for i := 0; i < len(recruitProfiles); i++ {
+					recruitProfiles[i].SetWinningTeamAbbreviation(teamAbbreviation)
+					if recruitProfiles[i].ProfileID == winningTeamID {
+						recruitProfiles[i].SignPlayer()
 					} else {
-						recruitProfile.LockPlayer()
+						recruitProfiles[i].LockPlayer()
 					}
 				}
 			}
 
-			// Save Player Files towards Recruit
-			for _, rp := range recruitProfiles {
-				// Save Team Profile
-				err := db.Save(&rp).Error
-				if err != nil {
-					fmt.Println(err.Error())
-					log.Fatalf("Could not sync recruiting profile.")
-				}
-
-				fmt.Println("Save recruit profile from " + rp.TeamAbbreviation + " towards " + recruit.FirstName + " " + recruit.LastName)
-			}
-
 			recruit.UpdateSigningStatus()
 			recruit.UpdateTeamID(winningTeamID)
+		}
+
+		// Save Player Files towards Recruit
+		for _, rp := range recruitProfiles {
+			// Save Team Profile
+			err := db.Save(&rp).Error
+			if err != nil {
+				fmt.Println(err.Error())
+				log.Fatalf("Could not sync recruiting profile.")
+			}
+
+			fmt.Println("Save recruit profile from " + rp.TeamAbbreviation + " towards " + recruit.FirstName + " " + recruit.LastName)
 		}
 
 		// Save Recruit
@@ -173,18 +178,18 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 	var total247Score float64 = 0
 	var totalRivalsScore float64 = 0
 
-	for _, rp := range teamRecruitingProfiles {
-		signedRecruits := GetSignedRecruitsByTeamProfileID(strconv.Itoa(rp.TeamID))
+	for i := 0; i < len(teamRecruitingProfiles); i++ {
+		signedRecruits := GetSignedRecruitsByTeamProfileID(strconv.Itoa(teamRecruitingProfiles[i].TeamID))
 
-		team247Rank := Get247TeamRanking(rp, signedRecruits)
-		teamESPNRank := GetESPNTeamRanking(rp, signedRecruits)
-		teamRivalsRank := GetRivalsTeamRanking(rp, signedRecruits)
+		team247Rank := Get247TeamRanking(teamRecruitingProfiles[i], signedRecruits)
+		teamESPNRank := GetESPNTeamRanking(teamRecruitingProfiles[i], signedRecruits)
+		teamRivalsRank := GetRivalsTeamRanking(teamRecruitingProfiles[i], signedRecruits)
 
-		rp.Assign247Rank(team247Rank)
+		teamRecruitingProfiles[i].Assign247Rank(team247Rank)
 		total247Score += team247Rank
-		rp.AssignESPNRank(teamESPNRank)
+		teamRecruitingProfiles[i].AssignESPNRank(teamESPNRank)
 		totalESPNScore += teamESPNRank
-		rp.AssignRivalsRank(teamRivalsRank)
+		teamRecruitingProfiles[i].AssignRivalsRank(teamRivalsRank)
 		totalRivalsScore += teamRivalsRank
 	}
 
@@ -193,13 +198,16 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 	averageRivalScore := totalRivalsScore / 130
 
 	for _, rp := range teamRecruitingProfiles {
-		distributionESPN := rp.ESPNScore / averageESPNScore
-		distribution247 := rp.Rank247Score / average247score
-		distributionRivals := rp.RivalsScore / averageRivalScore
+		var avg float64 = 0
+		if averageESPNScore > 0 && average247score > 0 && averageRivalScore > 0 {
+			distributionESPN := rp.ESPNScore / averageESPNScore
+			distribution247 := rp.Rank247Score / average247score
+			distributionRivals := rp.RivalsScore / averageRivalScore
 
-		avg := (distributionESPN + distribution247 + distributionRivals) / 3
+			avg = (distributionESPN + distribution247 + distributionRivals) / 3
 
-		rp.AssignCompositeRank(avg)
+			rp.AssignCompositeRank(avg)
+		}
 
 		// Save TEAM Recruiting Profile
 		err := db.Save(&rp).Error

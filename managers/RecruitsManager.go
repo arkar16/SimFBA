@@ -37,9 +37,7 @@ func GetAllUnsignedRecruits() []structs.Recruit {
 
 	var croots []structs.Recruit
 
-	db.Preload("RecruitPlayerProfiles", func(db *gorm.DB) *gorm.DB {
-		return db.Order("total_points DESC")
-	}).Where("is_signed = ?", false).Find(&croots)
+	db.Where("is_signed = ?", false).Find(&croots)
 
 	return croots
 }
@@ -90,8 +88,14 @@ func GetSignedRecruitsByTeamProfileID(ProfileID string) []structs.Recruit {
 
 	var croots []structs.Recruit
 
-	err := db.Order("overall DESC").Where("team_id = ?", ProfileID, "is_signed = true").Find(&croots).Error
-
+	err := db.Order("overall DESC").Where("team_id = ? AND is_signed = ?", ProfileID, true).Find(&croots).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return []structs.Recruit{}
+		} else {
+			log.Fatal(err)
+		}
+	}
 	if err != nil {
 		log.Fatal(err)
 	}

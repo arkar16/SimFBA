@@ -13,6 +13,7 @@ type Recruit struct {
 	AffinityOne           string
 	AffinityTwo           string
 	IsSigned              bool
+	College               string
 	CommitmentChoiceVal   float64
 	CalculatedRanking     float64
 	OverallRank           float64
@@ -30,6 +31,10 @@ func (r *Recruit) UpdatePlayerID(id int) {
 
 func (r *Recruit) UpdateTeamID(id int) {
 	r.TeamID = id
+}
+
+func (r *Recruit) AssignCollege(abbr string) {
+	r.College = abbr
 }
 
 func (r *Recruit) UpdateSigningStatus() {

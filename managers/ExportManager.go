@@ -66,6 +66,52 @@ func ExportTeamToCSV(TeamID string, w http.ResponseWriter) {
 	}
 }
 
+func ExportCrootsToCSV(w http.ResponseWriter) {
+	w.Header().Set("Content-Disposition", "attachment;filename=2022SimNFLDraftClass.csv")
+	w.Header().Set("Transfer-Encoding", "chunked")
+	// Initialize writer
+	writer := csv.NewWriter(w)
+
+	// Get NFL Draft Class
+	croots := GetAllRecruits()
+
+	HeaderRow := []string{
+		"RecruitID", "First Name", "Last Name", "Position",
+		"Archetype", "Stars", "College",
+		"High School", "City", "State", "Height",
+		"Weight", "Overall", "Potential Grade", "Affinity One", "Affinity Two", "Personality",
+		"Recruiting Bias", "Academic Bias", "Work Ethic",
+	}
+
+	err := writer.Write(HeaderRow)
+	if err != nil {
+		log.Fatal("Cannot write header row", err)
+	}
+
+	for _, croot := range croots {
+
+		crootRow := []string{
+			strconv.Itoa(croot.PlayerID), croot.FirstName, croot.LastName, croot.Position,
+			croot.Archetype, strconv.Itoa(croot.Stars), croot.College,
+			croot.HighSchool, croot.City, croot.State, strconv.Itoa(croot.Height),
+			strconv.Itoa(croot.Weight), croot.OverallGrade, croot.PotentialGrade,
+			croot.AffinityOne, croot.AffinityTwo, croot.Personality, croot.RecruitingBias,
+			croot.AcademicBias, croot.WorkEthic,
+		}
+
+		err = writer.Write(crootRow)
+		if err != nil {
+			log.Fatal("Cannot write croot row to CSV", err)
+		}
+
+		writer.Flush()
+		err = writer.Error()
+		if err != nil {
+			log.Fatal("Error while writing to file ::", err)
+		}
+	}
+}
+
 func ExportDrafteesToCSV(w http.ResponseWriter) {
 	w.Header().Set("Content-Disposition", "attachment;filename=2022SimNFLDraftClass.csv")
 	w.Header().Set("Transfer-Encoding", "chunked")

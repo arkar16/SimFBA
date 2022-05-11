@@ -9,6 +9,7 @@ type Croot struct {
 	ID             uint
 	PlayerID       int
 	TeamID         int
+	College        string
 	FirstName      string
 	LastName       string
 	Position       string
@@ -52,6 +53,7 @@ func (c *Croot) Map(r structs.Recruit) {
 	c.State = r.State
 	c.AffinityOne = r.AffinityOne
 	c.AffinityTwo = r.AffinityTwo
+	c.College = r.College
 	c.OverallGrade = util.GetOverallGrade(r.Overall)
 
 	for _, recruitProfile := range r.RecruitPlayerProfiles {

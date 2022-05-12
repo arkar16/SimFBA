@@ -113,7 +113,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		// Assign point totals
 		// If there are any modifiers
 		// Evaluate
-		signThreshold = float64(recruitModifiers.ModifierOne-timestamp.CollegeWeek) * ((float64(totalTeamRecruitProfiles) / recruitModifiers.ModifierTwo) * math.Log(float64(recruitModifiers.WeeksOfRecruiting-timestamp.CollegeWeek)))
+		signThreshold = float64(recruitModifiers.ModifierOne-timestamp.CollegeWeek) * ((float64(totalTeamRecruitProfiles) / recruitModifiers.ModifierTwo) * math.Log10(float64(recruitModifiers.WeeksOfRecruiting-timestamp.CollegeWeek)))
 
 		// Change logic to withold teams without available scholarships
 		if float64(totalPointsOnRecruit) > signThreshold {
@@ -208,6 +208,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 			rp.AssignCompositeRank(avg)
 		}
+		rp.ResetSpentPoints()
 
 		// Save TEAM Recruiting Profile
 		err := db.Save(&rp).Error

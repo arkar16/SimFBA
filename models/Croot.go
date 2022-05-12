@@ -29,7 +29,13 @@ type Croot struct {
 	AffinityTwo    string
 	IsSigned       bool
 	OverallGrade   string
-	LeadingTeams   []string
+	LeadingTeams   []LeadingTeams
+}
+
+type LeadingTeams struct {
+	TeamName string
+	TeamAbbr string
+	Odds     float64
 }
 
 func (c *Croot) Map(r structs.Recruit) {
@@ -56,7 +62,18 @@ func (c *Croot) Map(r structs.Recruit) {
 	c.College = r.College
 	c.OverallGrade = util.GetOverallGrade(r.Overall)
 
+	var totalPoints float64 = 0
+
 	for _, recruitProfile := range r.RecruitPlayerProfiles {
-		c.LeadingTeams = append(c.LeadingTeams, recruitProfile.TeamAbbreviation)
+		totalPoints += float64(recruitProfile.TotalPoints)
+	}
+
+	for _, recruitProfile := range r.RecruitPlayerProfiles {
+		odds := float64(recruitProfile.TotalPoints) / totalPoints
+		leadingTeam := LeadingTeams{
+			TeamAbbr: recruitProfile.TeamAbbreviation,
+			Odds:     odds,
+		}
+		c.LeadingTeams = append(c.LeadingTeams, leadingTeam)
 	}
 }

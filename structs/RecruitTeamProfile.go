@@ -34,6 +34,10 @@ func (r *RecruitingTeamProfile) AssignRES(res float64) {
 	r.RecruitingEfficiencyScore = res
 }
 
+func (r *RecruitingTeamProfile) ResetSpentPoints() {
+	r.SpentPoints = 0
+}
+
 func (r *RecruitingTeamProfile) SubtractScholarshipsAvailable() {
 	if r.ScholarshipsAvailable > 0 {
 		r.ScholarshipsAvailable--

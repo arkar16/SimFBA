@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/CalebRose/SimFBA/models"
 )
@@ -80,7 +81,7 @@ func ExportCrootsToCSV(w http.ResponseWriter) {
 		"Archetype", "Stars", "College",
 		"High School", "City", "State", "Height",
 		"Weight", "Overall", "Potential Grade", "Affinity One", "Affinity Two", "Personality",
-		"Recruiting Bias", "Academic Bias", "Work Ethic",
+		"Recruiting Bias", "Academic Bias", "Work Ethic", "LeadingTeams",
 	}
 
 	err := writer.Write(HeaderRow)
@@ -89,6 +90,11 @@ func ExportCrootsToCSV(w http.ResponseWriter) {
 	}
 
 	for _, croot := range croots {
+		var leadingAbbr []string
+
+		for _, lt := range croot.LeadingTeams {
+			leadingAbbr = append(leadingAbbr, lt.TeamAbbr)
+		}
 
 		crootRow := []string{
 			strconv.Itoa(croot.PlayerID), croot.FirstName, croot.LastName, croot.Position,
@@ -96,7 +102,7 @@ func ExportCrootsToCSV(w http.ResponseWriter) {
 			croot.HighSchool, croot.City, croot.State, strconv.Itoa(croot.Height),
 			strconv.Itoa(croot.Weight), croot.OverallGrade, croot.PotentialGrade,
 			croot.AffinityOne, croot.AffinityTwo, croot.Personality, croot.RecruitingBias,
-			croot.AcademicBias, croot.WorkEthic,
+			croot.AcademicBias, croot.WorkEthic, strings.Join(leadingAbbr, ", "),
 		}
 
 		err = writer.Write(crootRow)

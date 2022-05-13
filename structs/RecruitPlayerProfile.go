@@ -1,6 +1,8 @@
 package structs
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/jinzhu/gorm"
+)
 
 // RecruitPlayerProfile - Individual points profile for a Team's Recruiting Portfolio
 type RecruitPlayerProfile struct {

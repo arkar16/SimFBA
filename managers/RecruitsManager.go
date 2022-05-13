@@ -55,13 +55,27 @@ func GetCollegeRecruitByRecruitID(recruitID string) structs.Recruit {
 	return recruit
 }
 
+func GetCollegeRecruitByRecruitIDForTeamBoard(recruitID string) structs.Recruit {
+	db := dbprovider.GetInstance().GetDB()
+
+	var recruit structs.Recruit
+
+	err := db.Preload("RecruitPlayerProfiles", func(db *gorm.DB) *gorm.DB {
+		return db.Order("total_points DESC").Where("total_points > ?", "0")
+	}).Where("id = ?", recruitID).Find(&recruit).Error
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	return recruit
+}
+
 func GetRecruitsByTeamProfileID(ProfileID string) []structs.RecruitPlayerProfile {
 	db := dbprovider.GetInstance().GetDB()
 
 	var croots []structs.RecruitPlayerProfile
 
 	err := db.Preload("Recruit").Where("profile_id = ?", ProfileID).Find(&croots).Error
-
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/jinzhu/gorm"
 )
@@ -40,19 +41,47 @@ func GetRecruitingProfileForDashboardByTeamID(TeamID string) structs.RecruitingT
 	return profile
 }
 
-func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) structs.RecruitingTeamProfile {
+func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) models.SimTeamBoardResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	var profile structs.RecruitingTeamProfile
 
-	err := db.Preload("Affinities").Preload("Recruits.Recruit.RecruitPlayerProfiles", func(db *gorm.DB) *gorm.DB {
-		return db.Order("total_points DESC").Where("total_points > 0")
-	}).Where("id = ?", TeamID).Find(&profile).Error
+	// err := db.Preload("Affinities").Preload("Recruits.Recruit.RecruitPlayerProfiles", func(db *gorm.DB) *gorm.DB {
+	// 	return db.Order("total_points DESC").Where("total_points > 0")
+	// }).Where("id = ?", TeamID).Find(&profile).Error
+	// if err != nil {
+	// 	log.Panicln(err)
+	// }
+
+	// .Preload("Recruits", func(db *gorm.DB) *gorm.DB {
+	// 	return db.Order("total_points DESC").Where("total_points > 0")
+	// })
+	err := db.Preload("Affinities").Preload("Recruits").Where("id = ?", TeamID).Find(&profile).Error
 	if err != nil {
 		log.Panicln(err)
 	}
 
-	return profile
+	var teamProfileResponse models.SimTeamBoardResponse
+	var crootProfiles []models.CrootProfile
+
+	// iterate through player recruit profiles --> get recruit with preload to player profiles
+	for i := 0; i < len(profile.Recruits); i++ {
+		var crootProfile models.CrootProfile
+		var croot models.Croot
+		recruitID := strconv.Itoa(profile.Recruits[i].RecruitID)
+
+		recruit := GetCollegeRecruitByRecruitIDForTeamBoard(recruitID)
+
+		croot.Map(recruit)
+
+		crootProfile.Map(profile.Recruits[i], croot)
+
+		crootProfiles = append(crootProfiles, crootProfile)
+	}
+
+	teamProfileResponse.Map(profile, crootProfiles)
+
+	return teamProfileResponse
 }
 
 func GetRecruitingProfileForRecruitSync() []structs.RecruitingTeamProfile {

@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/managers"
+	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/gorilla/mux"
 )
@@ -20,7 +21,7 @@ func GetRecruitingProfileForDashboardByTeamID(w http.ResponseWriter, r *http.Req
 		panic("User did not provide teamID")
 	}
 
-	var dashboardResponse structs.DashboardTeamProfileResponse
+	var dashboardResponse models.DashboardTeamProfileResponse
 
 	recruitingProfile := managers.GetRecruitingProfileForDashboardByTeamID(teamID)
 
@@ -43,18 +44,18 @@ func GetRecruitingProfileForTeamBoardByTeamID(w http.ResponseWriter, r *http.Req
 		panic("User did not provide teamID")
 	}
 
-	var dashboardResponse structs.DashboardTeamProfileResponse
+	var teamBoardResponse models.TeamBoardTeamProfileResponse
 
 	recruitingProfile := managers.GetRecruitingProfileForTeamBoardByTeamID(teamID)
 
-	dashboardResponse.SetTeamProfile(recruitingProfile)
+	teamBoardResponse.SetTeamProfile(recruitingProfile)
 
 	// Get Team Needs
 	teamNeeds := managers.GetRecruitingNeeds(teamID)
 
-	dashboardResponse.SetTeamNeedsMap(teamNeeds)
+	teamBoardResponse.SetTeamNeedsMap(teamNeeds)
 
-	json.NewEncoder(w).Encode(dashboardResponse)
+	json.NewEncoder(w).Encode(teamBoardResponse)
 }
 
 // GetOnlyRecruitingProfileByTeamID

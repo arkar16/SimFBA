@@ -29,6 +29,7 @@ type Timestamp struct {
 	GMActionsCompleted         bool
 	IsOffSeason                bool
 	IsNFLOffSeason             bool
+	IsRecruitingLocked         bool
 }
 
 func (t *Timestamp) MoveUpWeekCollege() {
@@ -84,6 +85,10 @@ func (t *Timestamp) ToggleRecruiting() {
 
 func (t *Timestamp) ToggleGMActions() {
 	t.GMActionsCompleted = !t.GMActionsCompleted
+}
+
+func (t *Timestamp) ToggleLockRecruiting() {
+	t.IsRecruitingLocked = !t.IsRecruitingLocked
 }
 
 func (t *Timestamp) SyncToNextWeek() {

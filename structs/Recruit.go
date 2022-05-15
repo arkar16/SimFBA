@@ -31,6 +31,7 @@ func (r *Recruit) UpdatePlayerID(id int) {
 
 func (r *Recruit) UpdateTeamID(id int) {
 	r.TeamID = id
+	r.IsSigned = true
 }
 
 func (r *Recruit) AssignCollege(abbr string) {

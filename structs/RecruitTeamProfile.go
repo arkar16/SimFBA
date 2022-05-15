@@ -81,3 +81,7 @@ func (r *RecruitingTeamProfile) AssignESPNRank(score float64) {
 func (r *RecruitingTeamProfile) AssignCompositeRank(score float64) {
 	r.CompositeScore = score
 }
+
+func (r *RecruitingTeamProfile) UpdateTotalSignedRecruits(num int) {
+	r.TotalCommitments = num
+}

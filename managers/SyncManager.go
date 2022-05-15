@@ -49,7 +49,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 		var recruitProfilesWithScholarship []structs.RecruitPlayerProfile
 
-		totalTeamRecruitProfiles := len(recruitProfiles)
+		eligibleTeams := 0
 
 		totalPointsOnRecruit := 0
 
@@ -98,6 +98,10 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				recruitProfilesWithScholarship = append(recruitProfilesWithScholarship, recruitProfiles[i])
 			}
 
+			if recruitProfiles[i].Scholarship && recruitProfiles[i].TotalPoints > 0 {
+				eligibleTeams += 1
+			}
+
 			// Add RPA to point allocations list
 			err := db.Save(&rpa).Error
 			if err != nil {
@@ -113,10 +117,10 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		// Assign point totals
 		// If there are any modifiers
 		// Evaluate
-		signThreshold = float64(recruitModifiers.ModifierOne-timestamp.CollegeWeek) * ((float64(totalTeamRecruitProfiles) / recruitModifiers.ModifierTwo) * math.Log10(float64(recruitModifiers.WeeksOfRecruiting-timestamp.CollegeWeek)))
+		signThreshold = float64(recruitModifiers.ModifierOne-timestamp.CollegeWeek) * ((float64(eligibleTeams) / recruitModifiers.ModifierTwo) * math.Log10(float64(recruitModifiers.WeeksOfRecruiting-timestamp.CollegeWeek)))
 
 		// Change logic to withold teams without available scholarships
-		if float64(totalPointsOnRecruit) > signThreshold {
+		if float64(totalPointsOnRecruit) > signThreshold && eligibleTeams > 0 {
 			percentageOdds := rand.Intn(totalPointsOnRecruit) + 1
 			currentProbability := 0
 			winningTeamID := 0
@@ -137,7 +141,6 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				recruit.AssignCollege(teamAbbreviation)
 
 				for i := 0; i < len(recruitProfiles); i++ {
-					recruitProfiles[i].SetWinningTeamAbbreviation(teamAbbreviation)
 					if recruitProfiles[i].ProfileID == winningTeamID {
 						recruitProfiles[i].SignPlayer()
 					} else {
@@ -146,7 +149,6 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				}
 			}
 
-			recruit.UpdateSigningStatus()
 			recruit.UpdateTeamID(winningTeamID)
 		}
 
@@ -180,6 +182,8 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 	for i := 0; i < len(teamRecruitingProfiles); i++ {
 		signedRecruits := GetSignedRecruitsByTeamProfileID(strconv.Itoa(teamRecruitingProfiles[i].TeamID))
+
+		teamRecruitingProfiles[i].UpdateTotalSignedRecruits(len(signedRecruits))
 
 		team247Rank := Get247TeamRanking(teamRecruitingProfiles[i], signedRecruits)
 		teamESPNRank := GetESPNTeamRanking(teamRecruitingProfiles[i], signedRecruits)

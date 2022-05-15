@@ -61,6 +61,7 @@ func (c *Croot) Map(r structs.Recruit) {
 	c.AffinityTwo = r.AffinityTwo
 	c.College = r.College
 	c.OverallGrade = util.GetOverallGrade(r.Overall)
+	c.IsSigned = r.IsSigned
 
 	var totalPoints float64 = 0
 

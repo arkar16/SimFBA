@@ -42,6 +42,10 @@ func UpdateTimestamp(updateTimestampDto structs.UpdateTimestampDto) structs.Time
 		timestamp.ToggleSaturdayNightGames()
 	}
 
+	if updateTimestampDto.ToggleRecruitingLock {
+		timestamp.ToggleLockRecruiting()
+	}
+
 	if updateTimestampDto.RESSynced && !timestamp.RecruitingEfficiencySynced {
 		timestamp.ToggleRES()
 		SyncRecruitingEfficiency(timestamp)

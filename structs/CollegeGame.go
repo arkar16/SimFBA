@@ -19,6 +19,8 @@ type CollegeGame struct {
 	HomeTeamScore            int
 	AwayTeamScore            int
 	TimeSlot                 string
+	Stadium                  string
+	City                     string
 	IsNeutral                bool
 	IsConference             bool
 	IsDivisional             bool

@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"sort"
 	"strconv"
+	"time"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/structs"
@@ -25,7 +26,7 @@ func GetRecruitingModifiers() structs.AdminRecruitModifier {
 
 func SyncRecruiting(timestamp structs.Timestamp) {
 	db := dbprovider.GetInstance().GetDB()
-
+	rand.Seed(time.Now().UnixNano())
 	//GetCurrentWeek
 
 	if timestamp.RecruitingSynced {
@@ -52,6 +53,8 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		eligibleTeams := 0
 
 		totalPointsOnRecruit := 0
+
+		var eligiblePointThreshold float64 = 0
 
 		var signThreshold float64
 
@@ -98,7 +101,11 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				recruitProfilesWithScholarship = append(recruitProfilesWithScholarship, recruitProfiles[i])
 			}
 
-			if recruitProfiles[i].Scholarship && recruitProfiles[i].TotalPoints > 0 {
+			if eligiblePointThreshold == 0 {
+				eligiblePointThreshold = curr / 2
+			}
+
+			if recruitProfiles[i].Scholarship && recruitProfiles[i].TotalPoints > int(eligiblePointThreshold) {
 				eligibleTeams += 1
 			}
 
@@ -121,6 +128,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 		// Change logic to withold teams without available scholarships
 		if float64(totalPointsOnRecruit) > signThreshold && eligibleTeams > 0 {
+
 			percentageOdds := rand.Intn(totalPointsOnRecruit) + 1
 			currentProbability := 0
 			winningTeamID := 0

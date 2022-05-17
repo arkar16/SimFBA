@@ -7,6 +7,9 @@ type SimGameDataResponse struct {
 	HomeTeamRoster []structs.CollegePlayer
 	AwayTeam       SimTeamDataResponse
 	AwayTeamRoster []structs.CollegePlayer
+	GameID         int
+	WeekID         int
+	SeasonID       int
 }
 
 func (sgdr *SimGameDataResponse) AssignHomeTeam(team SimTeamDataResponse, roster []structs.CollegePlayer) {

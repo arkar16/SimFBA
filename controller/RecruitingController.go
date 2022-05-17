@@ -72,6 +72,13 @@ func GetOnlyRecruitingProfileByTeamID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(recruitingProfile)
 }
 
+// GetAllRecruitingProfiles
+func GetAllRecruitingProfiles(w http.ResponseWriter, r *http.Request) {
+	recruitingProfiles := managers.GetRecruitingProfileForRecruitSync()
+
+	json.NewEncoder(w).Encode(recruitingProfiles)
+}
+
 // CreateRecruitPlayerProfile
 func CreateRecruitPlayerProfile(w http.ResponseWriter, r *http.Request) {
 

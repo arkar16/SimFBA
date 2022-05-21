@@ -6,6 +6,7 @@ type CreateRecruitProfileDto struct {
 	RecruitID           int
 	ProfileID           int
 	Team                string
+	RES                 float64
 	AffinityOneEligible bool
 	AffinityTwoEligible bool
 	PlayerRecruit       Recruit

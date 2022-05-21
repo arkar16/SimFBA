@@ -98,12 +98,15 @@ func (t *Timestamp) SyncToNextWeek() {
 		t.MoveUpSeason()
 	}
 	// Reset Toggles
-	t.ToggleThursdayGames()
-	t.ToggleFridayGames()
-	t.ToggleSaturdayMorningGames()
-	t.ToggleSaturdayNoonGames()
-	t.ToggleSaturdayEveningGames()
-	t.ToggleSaturdayNightGames()
+	// t.ToggleThursdayGames()
+	// t.ToggleFridayGames()
+	// t.ToggleSaturdayMorningGames()
+	// t.ToggleSaturdayNoonGames()
+	// t.ToggleSaturdayEveningGames()
+	// t.ToggleSaturdayNightGames()
+	t.ToggleRES()
 	t.ToggleRecruiting()
-	t.ToggleGMActions()
+	// t.ToggleGMActions()
+
+	// Migrate game results ?
 }

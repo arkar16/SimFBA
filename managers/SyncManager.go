@@ -37,6 +37,8 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 	var recruitProfiles []structs.RecruitPlayerProfile
 
+	var signeesLog []string
+
 	// Get every recruit
 	recruits := GetAllUnsignedRecruits()
 
@@ -96,17 +98,15 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 			rpa.UpdatePointsSpent(recruitProfiles[i].CurrentWeeksPoints, curr)
 			recruitProfiles[i].AddCurrentWeekPointsToTotal(int(curr))
-			totalPointsOnRecruit += recruitProfiles[i].TotalPoints
-			if recruitProfiles[i].Scholarship {
-				recruitProfilesWithScholarship = append(recruitProfilesWithScholarship, recruitProfiles[i])
-			}
 
 			if eligiblePointThreshold == 0 {
-				eligiblePointThreshold = curr / 2
+				eligiblePointThreshold = float64(recruitProfiles[i].TotalPoints) / 2
 			}
 
 			if recruitProfiles[i].Scholarship && recruitProfiles[i].TotalPoints > int(eligiblePointThreshold) {
+				totalPointsOnRecruit += recruitProfiles[i].TotalPoints
 				eligibleTeams += 1
+				recruitProfilesWithScholarship = append(recruitProfilesWithScholarship, recruitProfiles[i])
 			}
 
 			// Add RPA to point allocations list
@@ -132,6 +132,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			percentageOdds := rand.Intn(totalPointsOnRecruit) + 1
 			currentProbability := 0
 			winningTeamID := 0
+			var odds float64 = 0
 
 			for i := 0; i < len(recruitProfilesWithScholarship); i++ {
 				// If a team has no available scholarships or if a team has 25 commitments, continue
@@ -139,6 +140,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				if currentProbability > percentageOdds {
 					// WINNING TEAM
 					winningTeamID = recruitProfilesWithScholarship[i].ProfileID
+					odds = float64(recruitProfilesWithScholarship[i].TotalPoints) / float64(totalPointsOnRecruit) * 100
 					break
 				}
 			}
@@ -147,12 +149,22 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(winningTeamID))
 				teamAbbreviation := recruitTeamProfile.TeamAbbreviation
 				recruit.AssignCollege(teamAbbreviation)
+				signeesLog = append(signeesLog, recruit.FirstName+" "+recruit.LastName+", "+strconv.Itoa(recruit.Stars)+" star "+recruit.Position+" from "+recruit.City+", "+recruit.State+" has signed with "+recruit.College+" with "+strconv.Itoa(int(odds))+" percent odds.")
 
 				for i := 0; i < len(recruitProfiles); i++ {
 					if recruitProfiles[i].ProfileID == winningTeamID {
 						recruitProfiles[i].SignPlayer()
 					} else {
 						recruitProfiles[i].LockPlayer()
+						tp := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(recruitProfiles[i].ProfileID))
+						tp.ReallocateScholarship()
+						err := db.Save(&tp).Error
+						if err != nil {
+							fmt.Println(err.Error())
+							log.Fatalf("Could not sync recruiting profile.")
+						}
+
+						fmt.Println("Reallocated Scholarship to " + tp.TeamAbbreviation)
 					}
 				}
 			}
@@ -229,6 +241,10 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			log.Fatalf("Could not save timestamp")
 		}
 		fmt.Println("Saved Rank Scores for Team " + rp.TeamAbbreviation)
+	}
+
+	for _, log := range signeesLog {
+		fmt.Println(log)
 	}
 }
 

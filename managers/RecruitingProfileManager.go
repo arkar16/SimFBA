@@ -128,19 +128,20 @@ func AddRecruitToBoard(RecruitDTO structs.CreateRecruitProfileDto) structs.Recru
 	}
 
 	recruitingProfile := structs.RecruitPlayerProfile{
-		SeasonID:            RecruitDTO.SeasonID,
-		RecruitID:           RecruitDTO.RecruitID,
-		ProfileID:           RecruitDTO.ProfileID,
-		TotalPoints:         0,
-		CurrentWeeksPoints:  0,
-		SpendingCount:       0,
-		Scholarship:         false,
-		ScholarshipRevoked:  false,
-		AffinityOneEligible: RecruitDTO.AffinityOneEligible,
-		AffinityTwoEligible: RecruitDTO.AffinityTwoEligible,
-		TeamAbbreviation:    RecruitDTO.Team,
-		RemovedFromBoard:    false,
-		IsSigned:            false,
+		SeasonID:                  RecruitDTO.SeasonID,
+		RecruitID:                 RecruitDTO.RecruitID,
+		ProfileID:                 RecruitDTO.ProfileID,
+		TotalPoints:               0,
+		CurrentWeeksPoints:        0,
+		SpendingCount:             0,
+		Scholarship:               false,
+		ScholarshipRevoked:        false,
+		RecruitingEfficiencyScore: RecruitDTO.RES,
+		AffinityOneEligible:       RecruitDTO.AffinityOneEligible,
+		AffinityTwoEligible:       RecruitDTO.AffinityTwoEligible,
+		TeamAbbreviation:          RecruitDTO.Team,
+		RemovedFromBoard:          false,
+		IsSigned:                  false,
 	}
 
 	// Save

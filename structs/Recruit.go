@@ -81,6 +81,7 @@ func (r *Recruit) Map(createRecruitDTO CreateRecruitDTO, lastPlayerID uint) {
 	r.PuntAccuracy = createRecruitDTO.PuntAccuracy
 	r.PuntPower = createRecruitDTO.PuntPower
 	r.Progression = createRecruitDTO.Progression
+	r.Discipline = createRecruitDTO.Discipline
 	r.PotentialGrade = createRecruitDTO.PotentialGrade
 	r.HighSchool = createRecruitDTO.HighSchool
 	r.City = createRecruitDTO.City

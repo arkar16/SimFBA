@@ -27,7 +27,11 @@ func UpdateTimestamp(updateTimestampDto structs.UpdateTimestampDto) structs.Time
 	timestamp := GetTimestamp()
 
 	if updateTimestampDto.MoveUpCollegeWeek {
+		// Update Standings based on current week's games
+
+		// Sync to Next Week
 		timestamp.SyncToNextWeek()
+
 	} else if updateTimestampDto.ThursdayGames && !timestamp.ThursdayGames {
 		timestamp.ToggleThursdayGames()
 	} else if updateTimestampDto.FridayGames && !timestamp.FridayGames {

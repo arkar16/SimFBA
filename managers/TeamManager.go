@@ -97,6 +97,17 @@ func RemoveUserFromTeam(teamId string) {
 	db.Save(&team)
 
 	db.Save(&coach)
+
+	timestamp := GetTimestamp()
+
+	newsLog := structs.NewsLog{
+		WeekID:      timestamp.CollegeWeekID,
+		SeasonID:    timestamp.CollegeSeasonID,
+		MessageType: "CoachJob",
+		Message:     coach.CoachName + " has decided to step down as the head coach of the " + team.TeamName + " " + team.Mascot + "!",
+	}
+
+	db.Create(&newsLog)
 }
 
 func GetTeamsInConference(conference string) []structs.CollegeTeam {

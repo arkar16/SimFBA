@@ -149,7 +149,16 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(winningTeamID))
 				teamAbbreviation := recruitTeamProfile.TeamAbbreviation
 				recruit.AssignCollege(teamAbbreviation)
-				signeesLog = append(signeesLog, recruit.FirstName+" "+recruit.LastName+", "+strconv.Itoa(recruit.Stars)+" star "+recruit.Position+" from "+recruit.City+", "+recruit.State+" has signed with "+recruit.College+" with "+strconv.Itoa(int(odds))+" percent odds.")
+
+				newsLog := structs.NewsLog{
+					WeekID:      timestamp.CollegeWeekID + 1,
+					SeasonID:    timestamp.CollegeSeasonID,
+					MessageType: "Recruiting",
+					Message:     recruit.FirstName + " " + recruit.LastName + ", " + strconv.Itoa(recruit.Stars) + " star " + recruit.Position + " from " + recruit.City + ", " + recruit.State + " has signed with " + recruit.College + " with " + strconv.Itoa(int(odds)) + " percent odds.",
+				}
+
+				db.Create(&newsLog)
+				fmt.Println("Created new log!")
 
 				for i := 0; i < len(recruitProfiles); i++ {
 					if recruitProfiles[i].ProfileID == winningTeamID {

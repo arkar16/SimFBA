@@ -79,3 +79,16 @@ func CreateCollegeWeek() {
 func CreateCollegeSeason() {
 
 }
+
+func GetNewsLogs(weekID string, seasonID string) []structs.NewsLog {
+	db := dbprovider.GetInstance().GetDB()
+
+	var logs []structs.NewsLog
+
+	err := db.Where("week_id = ? AND season_id = ?", weekID, seasonID).Find(&logs).Error
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	return logs
+}

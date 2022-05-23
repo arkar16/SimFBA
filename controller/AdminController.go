@@ -6,6 +6,7 @@ import (
 
 	"github.com/CalebRose/SimFBA/managers"
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/gorilla/mux"
 )
 
 // GetTimeStamp
@@ -33,6 +34,16 @@ func SyncTimestamp(w http.ResponseWriter, r *http.Request) {
 func SyncMissingRES(w http.ResponseWriter, r *http.Request) {
 	managers.SyncAllMissingEfficiencies()
 
+}
+
+func GetNewsLogs(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	weekID := vars["weekID"]
+	seasonID := vars["seasonID"]
+
+	newsLogs := managers.GetNewsLogs(weekID, seasonID)
+
+	json.NewEncoder(w).Encode(newsLogs)
 }
 
 // CreateCollegeRecruit?

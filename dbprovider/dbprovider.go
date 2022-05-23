@@ -65,6 +65,7 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.TeamRequest{})
 	// db.AutoMigrate(&structs.Timestamp{})
 	// db.AutoMigrate(&structs.NFLDraftee{})
+	// db.AutoMigrate(&structs.NewsLog{})
 	return true
 }
 

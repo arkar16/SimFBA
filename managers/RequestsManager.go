@@ -71,6 +71,17 @@ func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 
 	db.Save(&coach)
 
+	timestamp := GetTimestamp()
+
+	newsLog := structs.NewsLog{
+		WeekID:      timestamp.CollegeWeekID,
+		SeasonID:    timestamp.CollegeSeasonID,
+		MessageType: "CoachJob",
+		Message:     "Breaking News! The " + team.TeamName + " " + team.Mascot + " have hired " + coach.CoachName + " as their new coach for the " + strconv.Itoa(timestamp.Season) + " season!",
+	}
+
+	db.Create(&newsLog)
+
 	return request
 }
 

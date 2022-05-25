@@ -110,31 +110,31 @@ func GetArchetypeModifier(arch string) int {
 
 func Get247PotentialModifier(pg string) float64 {
 	if pg == "A+" {
-		return 7.5
+		return 5.83
 	} else if pg == "A" {
-		return 7
+		return 5.06
 	} else if pg == "A-" {
-		return 6.5
+		return 4.77
 	} else if pg == "B+" {
-		return 6
+		return 4.33
 	} else if pg == "B" {
-		return 5.5
+		return 4.04
 	} else if pg == "B-" {
-		return 5
+		return 3.87
 	} else if pg == "C+" {
-		return 4.5
+		return 3.58
 	} else if pg == "C" {
-		return 4
+		return 3.43
 	} else if pg == "C-" {
-		return 3.5
+		return 3.31
 	} else if pg == "D+" {
-		return 3
+		return 3.03
 	} else if pg == "D" {
-		return 2.5
+		return 2.77
 	} else if pg == "D-" {
-		return 1.75
+		return 2.67
 	}
-	return 1
+	return 2.3
 }
 
 func GetESPNPotentialModifier(pg string) float64 {

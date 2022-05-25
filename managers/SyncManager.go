@@ -99,16 +99,6 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			rpa.UpdatePointsSpent(recruitProfiles[i].CurrentWeeksPoints, curr)
 			recruitProfiles[i].AddCurrentWeekPointsToTotal(int(curr))
 
-			if eligiblePointThreshold == 0 {
-				eligiblePointThreshold = float64(recruitProfiles[i].TotalPoints) / 2
-			}
-
-			if recruitProfiles[i].Scholarship && recruitProfiles[i].TotalPoints > int(eligiblePointThreshold) {
-				totalPointsOnRecruit += recruitProfiles[i].TotalPoints
-				eligibleTeams += 1
-				recruitProfilesWithScholarship = append(recruitProfilesWithScholarship, recruitProfiles[i])
-			}
-
 			// Add RPA to point allocations list
 			err := db.Save(&rpa).Error
 			if err != nil {
@@ -117,8 +107,19 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			}
 		}
 
-		// Re-Sort profiles
-		sort.Sort(structs.ByPoints(recruitProfilesWithScholarship))
+		sort.Sort(structs.ByPoints(recruitProfiles))
+
+		for i := 0; i < len(recruitProfiles); i++ {
+			if eligiblePointThreshold == 0 {
+				eligiblePointThreshold = float64(recruitProfiles[i].TotalPoints) * 0.5
+			}
+
+			if recruitProfiles[i].Scholarship && recruitProfiles[i].TotalPoints > int(eligiblePointThreshold) {
+				totalPointsOnRecruit += recruitProfiles[i].TotalPoints
+				eligibleTeams += 1
+				recruitProfilesWithScholarship = append(recruitProfilesWithScholarship, recruitProfiles[i])
+			}
+		}
 
 		// Change?
 		// Assign point totals

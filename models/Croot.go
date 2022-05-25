@@ -64,15 +64,24 @@ func (c *Croot) Map(r structs.Recruit) {
 	c.IsSigned = r.IsSigned
 
 	var totalPoints float64 = 0
+	var runningThreshold float64 = 0
 
-	for _, recruitProfile := range r.RecruitPlayerProfiles {
-		totalPoints += float64(recruitProfile.TotalPoints)
+	for idx, recruitProfile := range r.RecruitPlayerProfiles {
+		if idx == 0 {
+			runningThreshold = float64(recruitProfile.TotalPoints) / 2
+		}
+		if recruitProfile.TotalPoints >= int(runningThreshold) {
+			totalPoints += float64(recruitProfile.TotalPoints)
+		}
 	}
 
-	for _, recruitProfile := range r.RecruitPlayerProfiles {
-		odds := float64(recruitProfile.TotalPoints) / totalPoints
+	for i := 0; i < len(r.RecruitPlayerProfiles); i++ {
+		var odds float64 = 0
+		if r.RecruitPlayerProfiles[i].TotalPoints >= int(runningThreshold) {
+			odds = float64(r.RecruitPlayerProfiles[i].TotalPoints) / totalPoints
+		}
 		leadingTeam := LeadingTeams{
-			TeamAbbr: recruitProfile.TeamAbbreviation,
+			TeamAbbr: r.RecruitPlayerProfiles[i].TeamAbbreviation,
 			Odds:     odds,
 		}
 		c.LeadingTeams = append(c.LeadingTeams, leadingTeam)

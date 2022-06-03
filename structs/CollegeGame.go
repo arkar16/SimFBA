@@ -31,3 +31,14 @@ type CollegeGame struct {
 	IsRivalryGame            bool
 	GameComplete             bool
 }
+
+func (cg *CollegeGame) UpdateScore(HomeScore int, AwayScore int) {
+	cg.HomeTeamScore = HomeScore
+	cg.AwayTeamScore = AwayScore
+	if HomeScore > AwayScore {
+		cg.HomeTeamWin = true
+	} else {
+		cg.AwayTeamWin = true
+	}
+	cg.GameComplete = true
+}

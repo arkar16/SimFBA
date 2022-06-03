@@ -1,6 +1,10 @@
 package managers
 
 import (
+	"fmt"
+	"log"
+	"strconv"
+
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/structs"
 )
@@ -104,4 +108,94 @@ func GetHistoricalTeamStats(TeamID string, SeasonID string) []structs.CollegeTea
 	db.Where("team_id = ? AND season_id != ?", TeamID, SeasonID).Find(&teamStats)
 
 	return teamStats
+}
+
+func ExportStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
+	db := dbprovider.GetInstance().GetDB()
+	fmt.Println("START")
+
+	timestamp := GetTimestamp()
+
+	var teamStats []structs.CollegeTeamStats
+
+	for _, gameDataDTO := range exportStatsDTO.GameStatDTOs {
+		gameRecord := GetCollegeGameByAbbreviationsWeekAndSeasonID(gameDataDTO.HomeTeam.GetAbbreviation(), strconv.Itoa(timestamp.CollegeWeekID), strconv.Itoa(timestamp.CollegeSeasonID))
+		var playerStats []structs.CollegePlayerStats
+
+		// Team Stats Export
+		ht := GetTeamByTeamAbbr(gameDataDTO.HomeTeam.GetAbbreviation())
+		homeTeam := structs.CollegeTeamStats{
+			TeamID:        int(ht.ID),
+			GameID:        int(gameRecord.ID),
+			WeekID:        gameRecord.WeekID,
+			SeasonID:      gameRecord.SeasonID,
+			OpposingTeam:  gameDataDTO.AwayTeam.Abbreviation,
+			BaseTeamStats: gameDataDTO.HomeTeam.MapToBaseTeamStatsObject(),
+		}
+
+		teamStats = append(teamStats, homeTeam)
+
+		// Away Team
+		at := GetTeamByTeamAbbr(gameDataDTO.AwayTeam.GetAbbreviation())
+		awayTeam := structs.CollegeTeamStats{
+			TeamID:        int(at.ID),
+			GameID:        int(gameRecord.ID),
+			WeekID:        gameRecord.WeekID,
+			SeasonID:      gameRecord.SeasonID,
+			OpposingTeam:  gameDataDTO.HomeTeam.Abbreviation,
+			BaseTeamStats: gameDataDTO.AwayTeam.MapToBaseTeamStatsObject(),
+		}
+
+		teamStats = append(teamStats, awayTeam)
+
+		// Player Stat Export
+		// HomePlayers
+		for _, player := range gameDataDTO.HomePlayers {
+			collegePlayerStats := structs.CollegePlayerStats{
+				CollegePlayerID: player.GetPlayerID(),
+				TeamID:          homeTeam.TeamID,
+				GameID:          homeTeam.GameID,
+				WeekID:          gameRecord.WeekID,
+				SeasonID:        gameRecord.SeasonID,
+				OpposingTeam:    gameDataDTO.AwayTeam.Abbreviation,
+				BasePlayerStats: player.MapTobasePlayerStatsObject(),
+			}
+			playerStats = append(playerStats, collegePlayerStats)
+		}
+
+		// AwayPlayers
+		for _, player := range gameDataDTO.AwayPlayers {
+			collegePlayerStats := structs.CollegePlayerStats{
+				CollegePlayerID: player.GetPlayerID(),
+				TeamID:          awayTeam.TeamID,
+				GameID:          awayTeam.GameID,
+				WeekID:          gameRecord.WeekID,
+				SeasonID:        gameRecord.SeasonID,
+				OpposingTeam:    gameDataDTO.HomeTeam.Abbreviation,
+				BasePlayerStats: player.MapTobasePlayerStatsObject(),
+			}
+			playerStats = append(playerStats, collegePlayerStats)
+		}
+
+		// Update Game
+		gameRecord.UpdateScore(gameDataDTO.HomeScore, gameDataDTO.AwayScore)
+
+		err := db.Save(&gameRecord).Error
+		if err != nil {
+			log.Panicln("Could not save Game " + strconv.Itoa(int(gameRecord.ID)) + "Between " + gameRecord.HomeTeam + " and " + gameRecord.AwayTeam)
+		}
+
+		err = db.CreateInBatches(&playerStats, len(playerStats)).Error
+		if err != nil {
+			log.Panicln("Could not save player stats from week " + strconv.Itoa(timestamp.CollegeWeek))
+		}
+
+		fmt.Println("Finished Game " + strconv.Itoa(int(gameRecord.ID)) + " Between " + gameRecord.HomeTeam + " and " + gameRecord.AwayTeam)
+	}
+
+	err := db.CreateInBatches(&teamStats, len(teamStats)).Error
+	if err != nil {
+		log.Panicln("Could not save team stats!")
+	}
+
 }

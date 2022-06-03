@@ -1,6 +1,8 @@
 package managers
 
 import (
+	"fmt"
+
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/structs"
 )
@@ -33,4 +35,17 @@ func GetCollegeGamesByTeamIdAndSeasonId(TeamID string, SeasonID string) []struct
 	db.Order("week_id asc").Where("season_id = ? AND (home_team_id = ? OR away_team_id = ?)", SeasonID, TeamID, TeamID).Find(&games)
 
 	return games
+}
+
+func GetCollegeGameByAbbreviationsWeekAndSeasonID(HomeTeamAbbr string, WeekID string, SeasonID string) structs.CollegeGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	var game structs.CollegeGame
+
+	err := db.Where("season_id = ? AND week_id = ? AND (home_team = ? OR away_team = ?)", SeasonID, WeekID, HomeTeamAbbr, HomeTeamAbbr).Find(&game).Error
+	if err != nil {
+		fmt.Println("Could not find game!")
+	}
+
+	return game
 }

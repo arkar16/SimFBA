@@ -26,6 +26,7 @@ func GetRecruitingModifiers() structs.AdminRecruitModifier {
 
 func SyncRecruiting(timestamp structs.Timestamp) {
 	db := dbprovider.GetInstance().GetDB()
+	fmt.Println(time.Now().UnixNano())
 	rand.Seed(time.Now().UnixNano())
 	//GetCurrentWeek
 
@@ -110,7 +111,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		sort.Sort(structs.ByPoints(recruitProfiles))
 
 		for i := 0; i < len(recruitProfiles); i++ {
-			if eligiblePointThreshold == 0 {
+			if eligiblePointThreshold == 0 && recruitProfiles[i].Scholarship {
 				eligiblePointThreshold = float64(recruitProfiles[i].TotalPoints) * 0.5
 			}
 
@@ -129,53 +130,66 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 		// Change logic to withold teams without available scholarships
 		if float64(totalPointsOnRecruit) > signThreshold && eligibleTeams > 0 {
-
-			percentageOdds := rand.Intn(totalPointsOnRecruit) + 1
-			currentProbability := 0
 			winningTeamID := 0
 			var odds float64 = 0
 
-			for i := 0; i < len(recruitProfilesWithScholarship); i++ {
-				// If a team has no available scholarships or if a team has 25 commitments, continue
-				currentProbability += recruitProfilesWithScholarship[i].TotalPoints
-				if currentProbability > percentageOdds {
-					// WINNING TEAM
-					winningTeamID = recruitProfilesWithScholarship[i].ProfileID
-					odds = float64(recruitProfilesWithScholarship[i].TotalPoints) / float64(totalPointsOnRecruit) * 100
-					break
-				}
-			}
+			for winningTeamID == 0 {
+				percentageOdds := rand.Intn(totalPointsOnRecruit) + 1
+				currentProbability := 0
 
-			if winningTeamID > 0 {
-				recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(winningTeamID))
-				teamAbbreviation := recruitTeamProfile.TeamAbbreviation
-				recruit.AssignCollege(teamAbbreviation)
-
-				newsLog := structs.NewsLog{
-					WeekID:      timestamp.CollegeWeekID + 1,
-					SeasonID:    timestamp.CollegeSeasonID,
-					MessageType: "Recruiting",
-					Message:     recruit.FirstName + " " + recruit.LastName + ", " + strconv.Itoa(recruit.Stars) + " star " + recruit.Position + " from " + recruit.City + ", " + recruit.State + " has signed with " + recruit.College + " with " + strconv.Itoa(int(odds)) + " percent odds.",
+				for i := 0; i < len(recruitProfilesWithScholarship); i++ {
+					// If a team has no available scholarships or if a team has 25 commitments, continue
+					currentProbability += recruitProfilesWithScholarship[i].TotalPoints
+					if currentProbability >= percentageOdds {
+						// WINNING TEAM
+						winningTeamID = recruitProfilesWithScholarship[i].ProfileID
+						odds = float64(recruitProfilesWithScholarship[i].TotalPoints) / float64(totalPointsOnRecruit) * 100
+						break
+					}
 				}
 
-				db.Create(&newsLog)
-				fmt.Println("Created new log!")
+				if winningTeamID > 0 {
+					recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(winningTeamID))
+					if recruitTeamProfile.ScholarshipsAvailable > 0 && recruitTeamProfile.TotalCommitments < 25 {
+						teamAbbreviation := recruitTeamProfile.TeamAbbreviation
+						recruit.AssignCollege(teamAbbreviation)
 
-				for i := 0; i < len(recruitProfiles); i++ {
-					if recruitProfiles[i].ProfileID == winningTeamID {
-						recruitProfiles[i].SignPlayer()
-					} else {
-						recruitProfiles[i].LockPlayer()
-						tp := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(recruitProfiles[i].ProfileID))
-						tp.ReallocateScholarship()
-						err := db.Save(&tp).Error
-						if err != nil {
-							fmt.Println(err.Error())
-							log.Fatalf("Could not sync recruiting profile.")
+						newsLog := structs.NewsLog{
+							WeekID:      timestamp.CollegeWeekID + 1,
+							SeasonID:    timestamp.CollegeSeasonID,
+							MessageType: "Recruiting",
+							Message:     recruit.FirstName + " " + recruit.LastName + ", " + strconv.Itoa(recruit.Stars) + " star " + recruit.Position + " from " + recruit.City + ", " + recruit.State + " has signed with " + recruit.College + " with " + strconv.Itoa(int(odds)) + " percent odds.",
 						}
 
-						fmt.Println("Reallocated Scholarship to " + tp.TeamAbbreviation)
+						db.Create(&newsLog)
+						fmt.Println("Created new log!")
+
+						for i := 0; i < len(recruitProfiles); i++ {
+							if recruitProfiles[i].ProfileID == winningTeamID {
+								recruitProfiles[i].SignPlayer()
+							} else {
+								recruitProfiles[i].LockPlayer()
+								tp := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(recruitProfiles[i].ProfileID))
+								tp.ReallocateScholarship()
+								err := db.Save(&tp).Error
+								if err != nil {
+									fmt.Println(err.Error())
+									log.Fatalf("Could not sync recruiting profile.")
+								}
+
+								fmt.Println("Reallocated Scholarship to " + tp.TeamAbbreviation)
+							}
+						}
+					} else {
+						recruitProfilesWithScholarship = util.FilterOutRecruitingProfile(recruitProfilesWithScholarship, winningTeamID)
+						winningTeamID = 0
+
+						totalPointsOnRecruit = 0
+						for _, rp := range recruitProfilesWithScholarship {
+							totalPointsOnRecruit += rp.TotalPoints
+						}
 					}
+
 				}
 			}
 

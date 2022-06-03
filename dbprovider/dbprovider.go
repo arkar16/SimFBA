@@ -6,8 +6,9 @@ import (
 	"sync"
 
 	config "github.com/CalebRose/SimFBA/secrets"
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 type Provider struct {
@@ -27,12 +28,13 @@ func GetInstance() *Provider {
 func (p *Provider) InitDatabase() bool {
 	fmt.Println("Database initializing...")
 	var err error
-	c := config.Config()
-	db, err = gorm.Open(c["db"], c["cs"])
+	c := config.Config() // c["cs"]
+	db, err = gorm.Open(mysql.Open(c["cs"]), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 		return false
 	}
+
 	// AutoMigrations -- uncomment when needing to update a table
 	// db.AutoMigrate(&structs.CollegePlayer{})
 	// db.AutoMigrate(&structs.Player{})

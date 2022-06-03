@@ -9,5 +9,6 @@ type CollegePlayerStats struct {
 	GameID          int
 	WeekID          int
 	SeasonID        int
+	OpposingTeam    string
 	BasePlayerStats
 }

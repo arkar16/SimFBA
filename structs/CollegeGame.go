@@ -21,6 +21,7 @@ type CollegeGame struct {
 	TimeSlot                 string
 	Stadium                  string
 	City                     string
+	State                    string
 	IsNeutral                bool
 	IsConference             bool
 	IsDivisional             bool

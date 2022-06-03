@@ -12,12 +12,13 @@ import (
 func GetCollegeGamesByWeekId(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	weekID := vars["weekID"]
+	seasonID := vars["seasonID"]
 
 	if len(weekID) == 0 {
 		panic("User did not provide weekID")
 	}
 
-	collegeGames := managers.GetCollegeGamesByWeekId(weekID)
+	collegeGames := managers.GetCollegeGamesByWeekIdAndSeasonID(weekID, seasonID)
 
 	json.NewEncoder(w).Encode(collegeGames)
 }

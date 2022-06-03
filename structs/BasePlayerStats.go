@@ -1,6 +1,7 @@
 package structs
 
 type BasePlayerStats struct {
+	PassingYards         int
 	PassAttempts         int
 	PassCompletions      int
 	PassingTDs           int
@@ -19,10 +20,10 @@ type BasePlayerStats struct {
 	LongestReceiption    int
 	SoloTackles          int
 	AssistedTackles      int
-	TacklesForLoss       int
+	TacklesForLoss       float64
 	SacksMade            float64
 	ForceFumbles         int
-	ReturnedFumbles      int
+	RecoveredFumbles     int
 	PassDeflections      int
 	InterceptionsCaught  int
 	Safeties             int
@@ -47,4 +48,8 @@ type BasePlayerStats struct {
 	PuntsBlocked         int
 	FGBlocked            int
 	Snaps                int
+	Pancakes             int
+	SacksAllowed         int
+	PlayedGame           int
+	StartedGame          int
 }

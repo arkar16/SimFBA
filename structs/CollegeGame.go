@@ -21,6 +21,7 @@ type CollegeGame struct {
 	TimeSlot                 string
 	Stadium                  string
 	City                     string
+	State                    string
 	IsNeutral                bool
 	IsConference             bool
 	IsDivisional             bool
@@ -30,4 +31,15 @@ type CollegeGame struct {
 	IsNationalChampionship   bool
 	IsRivalryGame            bool
 	GameComplete             bool
+}
+
+func (cg *CollegeGame) UpdateScore(HomeScore int, AwayScore int) {
+	cg.HomeTeamScore = HomeScore
+	cg.AwayTeamScore = AwayScore
+	if HomeScore > AwayScore {
+		cg.HomeTeamWin = true
+	} else {
+		cg.AwayTeamWin = true
+	}
+	cg.GameComplete = true
 }

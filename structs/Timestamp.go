@@ -46,7 +46,6 @@ func (t *Timestamp) MoveUpSeason() {
 	t.CollegeSeasonID++
 	t.Season++
 	t.CollegeWeek = 0
-	t.CollegeWeekID++
 	t.NFLWeek = 0
 	t.NFLSeasonID++
 }
@@ -94,7 +93,7 @@ func (t *Timestamp) ToggleLockRecruiting() {
 
 func (t *Timestamp) SyncToNextWeek() {
 	t.MoveUpWeekCollege()
-	if t.CollegeWeek > 21 {
+	if t.CollegeWeek > 20 {
 		t.MoveUpSeason()
 	}
 	// Reset Toggles

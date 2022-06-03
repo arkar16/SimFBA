@@ -3,22 +3,26 @@ package structs
 type BaseTeamStats struct {
 	PointsScored                  int
 	PointsAgainst                 int
+	TwoPointTries                 int
+	TwoPointSucceed               int
 	PassingYards                  int
 	PassingAttempts               int
 	PassingCompletions            int
+	LongestPass                   int
 	PassingTouchdowns             int
 	PassingInterceptions          int
 	QBRating                      int
 	QBSacks                       int
 	RushAttempts                  int
 	RushingYards                  int
-	RushingYardsPerAttempt        float32
+	RushingYardsPerAttempt        float64
+	LongestRush                   int
 	RushingTouchdowns             int
 	RushingFumbles                int
 	ReceivingTargets              int
 	ReceivingCatches              int
 	ReceivingYards                int
-	YardsPerCatch                 float32
+	YardsPerCatch                 float64
 	ReceivingTouchdowns           int
 	ReceivingFumbles              int
 	PassingYardsAllowed           int
@@ -26,24 +30,37 @@ type BaseTeamStats struct {
 	PassingCompletionsAllowed     int
 	RushingYardsAllowed           int
 	RushingTDsAllowed             int
-	RushingYardsPerAttemptAllowed float32
+	RushingYardsPerAttemptAllowed float64
 	SoloTackles                   int
 	AssistedTackles               int
-	TacklesForLoss                float32
-	DefensiveSacks                float32
+	TacklesForLoss                float64
+	DefensiveSacks                float64
 	ForcedFumbles                 int
 	FumblesRecovered              int
 	DefensiveInterceptions        int
+	TurnoverYards                 int
+	DefensiveTDs                  int
+	Safeties                      int
 	ExtraPointsMade               int
 	ExtraPointsAttempted          int
-	ExtraPointPercentage          float32
+	ExtraPointPercentage          float64
 	FieldGoalsMade                int
 	FieldGoalsAttempted           int
-	FieldGoalsPercentage          float32
+	FieldGoalsPercentage          float64
+	LongestFieldGoal              int
+	KickoffTBs                    int
+	PuntTBs                       int
 	Punts                         int
 	PuntYards                     int
-	PuntAverage                   float32
+	PuntsInside20                 int
+	PuntAverage                   float64
 	Inside20YardLine              int
-	Penalties                     int
-	PenaltyYards                  int
+	KickReturnYards               int
+	KickReturnTDs                 int
+	PuntReturnYards               int
+	PuntReturnTDs                 int
+	OffensivePenalties            int
+	DefensivePenalties            int
+	OffPenaltyYards               int
+	DefPenaltyYards               int
 }

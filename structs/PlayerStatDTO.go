@@ -1,5 +1,119 @@
 package structs
 
 type PlayerStatDTO struct {
-	//
+	FName             string
+	LName             string
+	Position          string
+	PlayerID          int
+	Pancakes          int
+	SacksAllowed      int
+	PassAttempts      int
+	PassCompletions   int
+	PassYards         int
+	PassTDS           int
+	PassINTs          int
+	LongestPass       int
+	TimesSacked       int
+	RushAttempts      int
+	RushYards         int
+	RushTDs           int
+	LongestRush       int
+	Fumbles           int
+	Targets           int
+	Catches           int
+	ReceivingYards    int
+	ReceivingTDs      int
+	LongestCatch      int
+	SoloTackles       int
+	AssistedTackles   int
+	TacklesForLoss    float64
+	Sacks             float64
+	ForcedFumbles     int
+	RecoveredFumbles  int
+	INTs              int
+	Safeties          int
+	DefensiveTDs      int
+	FGAttempts        int
+	FGMade            int
+	LongestFG         int
+	XPAttempts        int
+	XPMade            int
+	KickoffTBs        int
+	Punts             int
+	PuntDistance      int
+	LongestPunt       int
+	PuntTBs           int
+	PuntYards         int
+	PuntInside20      int
+	KickoffReturns    int
+	KickReturnYards   int
+	KickReturnTDs     int
+	PuntReturns       int
+	PuntReturnYards   int
+	PuntReturnTDs     int
+	STSoloTackles     int
+	STAssistedTackles int
+	PuntsBlocked      int
+	FGBlocked         int
+	Snaps             int
+	Games             int
+	GamesStarted      int
+}
+
+func (p *PlayerStatDTO) GetPlayerID() int {
+	return p.PlayerID
+}
+
+func (p *PlayerStatDTO) MapTobasePlayerStatsObject() BasePlayerStats {
+	return BasePlayerStats{
+		PassAttempts:         p.PassAttempts,
+		PassingYards:         p.PassYards,
+		PassCompletions:      p.PassCompletions,
+		PassingTDs:           p.PassTDS,
+		Interceptions:        p.PassINTs,
+		LongestPass:          p.LongestPass,
+		Sacks:                p.TimesSacked,
+		RushAttempts:         p.RushAttempts,
+		RushingYards:         p.RushYards,
+		RushingTDs:           p.RushTDs,
+		LongestRush:          p.LongestRush,
+		Fumbles:              p.Fumbles,
+		Targets:              p.Targets,
+		Catches:              p.Catches,
+		ReceivingYards:       p.ReceivingYards,
+		ReceivingTDs:         p.ReceivingTDs,
+		LongestReceiption:    p.LongestCatch,
+		Pancakes:             p.Pancakes,
+		SacksAllowed:         p.SacksAllowed,
+		SoloTackles:          p.SoloTackles,
+		AssistedTackles:      p.AssistedTackles,
+		TacklesForLoss:       p.TacklesForLoss,
+		SacksMade:            p.Sacks,
+		ForceFumbles:         p.ForcedFumbles,
+		RecoveredFumbles:     p.RecoveredFumbles,
+		Safeties:             p.Safeties,
+		DefensiveTDs:         p.DefensiveTDs,
+		LongestFG:            p.LongestFG,
+		FGAttempts:           p.FGAttempts,
+		FGMade:               p.FGMade,
+		ExtraPointsAttempted: p.XPAttempts,
+		ExtraPointsMade:      p.XPMade,
+		KickoffTouchbacks:    p.KickoffTBs,
+		Punts:                p.Punts,
+		PuntTouchbacks:       p.PuntTBs,
+		PuntsInside20:        p.PuntInside20,
+		KickReturns:          p.KickoffReturns,
+		KickReturnTDs:        p.KickReturnTDs,
+		KickReturnYards:      p.KickReturnYards,
+		PuntReturns:          p.PuntReturns,
+		PuntReturnYards:      p.PuntReturnYards,
+		PuntReturnTDs:        p.PuntReturnTDs,
+		STSoloTackles:        p.STSoloTackles,
+		STAssistedTackles:    p.STAssistedTackles,
+		PuntsBlocked:         p.PuntsBlocked,
+		FGBlocked:            p.FGBlocked,
+		Snaps:                p.Snaps,
+		PlayedGame:           p.Games,
+		StartedGame:          p.GamesStarted,
+	}
 }

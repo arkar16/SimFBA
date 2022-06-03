@@ -48,3 +48,15 @@ func GetPostSeasonWeight(games []structs.CollegeGame, TeamID int) float64 {
 	}
 	return 0
 }
+
+func FilterOutRecruitingProfile(profiles []structs.RecruitPlayerProfile, ID int) []structs.RecruitPlayerProfile {
+	var rp []structs.RecruitPlayerProfile
+
+	for _, profile := range profiles {
+		if int(profile.ID) != ID {
+			rp = append(rp, profile)
+		}
+	}
+
+	return rp
+}

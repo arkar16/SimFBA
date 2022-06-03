@@ -9,7 +9,7 @@ import (
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
-	"github.com/jinzhu/gorm"
+	"gorm.io/gorm"
 )
 
 func GetAllRecruits() []models.Croot {

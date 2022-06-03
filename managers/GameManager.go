@@ -7,12 +7,12 @@ import (
 	"github.com/CalebRose/SimFBA/structs"
 )
 
-func GetCollegeGamesByWeekId(id string) []structs.CollegeGame {
+func GetCollegeGamesByWeekIdAndSeasonID(WeekID string, SeasonID string) []structs.CollegeGame {
 	db := dbprovider.GetInstance().GetDB()
 
 	var games []structs.CollegeGame
 
-	db.Order("time_slot asc").Where("WeekID = ?", id).Find(&games)
+	db.Where("week_id = ? AND season_id = ?", WeekID, SeasonID).Find(&games)
 
 	return games
 }

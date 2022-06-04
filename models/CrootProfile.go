@@ -7,8 +7,8 @@ type CrootProfile struct {
 	SeasonID                  int
 	RecruitID                 int
 	ProfileID                 int
-	TotalPoints               int
-	CurrentWeeksPoints        int
+	TotalPoints               float64
+	CurrentWeeksPoints        float64
 	SpendingCount             int
 	RecruitingEfficiencyScore float64
 	Scholarship               bool

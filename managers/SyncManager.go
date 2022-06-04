@@ -55,7 +55,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 		eligibleTeams := 0
 
-		totalPointsOnRecruit := 0
+		var totalPointsOnRecruit float64 = 0
 
 		var eligiblePointThreshold float64 = 0
 
@@ -98,7 +98,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			}
 
 			rpa.UpdatePointsSpent(recruitProfiles[i].CurrentWeeksPoints, curr)
-			recruitProfiles[i].AddCurrentWeekPointsToTotal(int(curr))
+			recruitProfiles[i].AddCurrentWeekPointsToTotal(curr)
 
 			// Add RPA to point allocations list
 			err := db.Save(&rpa).Error
@@ -115,7 +115,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				eligiblePointThreshold = float64(recruitProfiles[i].TotalPoints) * 0.5
 			}
 
-			if recruitProfiles[i].Scholarship && recruitProfiles[i].TotalPoints > int(eligiblePointThreshold) {
+			if recruitProfiles[i].Scholarship && recruitProfiles[i].TotalPoints > eligiblePointThreshold {
 				totalPointsOnRecruit += recruitProfiles[i].TotalPoints
 				eligibleTeams += 1
 				recruitProfilesWithScholarship = append(recruitProfilesWithScholarship, recruitProfiles[i])
@@ -134,13 +134,13 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			var odds float64 = 0
 
 			for winningTeamID == 0 {
-				percentageOdds := rand.Intn(totalPointsOnRecruit) + 1
-				currentProbability := 0
+				percentageOdds := 1 + rand.Float64()*(totalPointsOnRecruit-1)
+				var currentProbability float64 = 0
 
 				for i := 0; i < len(recruitProfilesWithScholarship); i++ {
 					// If a team has no available scholarships or if a team has 25 commitments, continue
 					currentProbability += recruitProfilesWithScholarship[i].TotalPoints
-					if currentProbability >= percentageOdds {
+					if currentProbability >= float64(percentageOdds) {
 						// WINNING TEAM
 						winningTeamID = recruitProfilesWithScholarship[i].ProfileID
 						odds = float64(recruitProfilesWithScholarship[i].TotalPoints) / float64(totalPointsOnRecruit) * 100

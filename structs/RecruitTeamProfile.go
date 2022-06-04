@@ -10,8 +10,8 @@ type RecruitingTeamProfile struct {
 	TeamAbbreviation          string
 	State                     string
 	ScholarshipsAvailable     int
-	WeeklyPoints              int
-	SpentPoints               int
+	WeeklyPoints              float64
+	SpentPoints               float64
 	TotalCommitments          int
 	BaseEfficiencyScore       float64
 	RecruitingEfficiencyScore float64
@@ -54,11 +54,11 @@ func (r *RecruitingTeamProfile) ResetScholarshipCount() {
 	r.ScholarshipsAvailable = 40
 }
 
-func (r *RecruitingTeamProfile) AllocateSpentPoints(points int) {
+func (r *RecruitingTeamProfile) AllocateSpentPoints(points float64) {
 	r.SpentPoints = points
 }
 
-func (r *RecruitingTeamProfile) ResetWeeklyPoints(points int) {
+func (r *RecruitingTeamProfile) ResetWeeklyPoints(points float64) {
 	r.WeeklyPoints = points
 }
 

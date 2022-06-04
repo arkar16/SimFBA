@@ -70,14 +70,14 @@ func (c *Croot) Map(r structs.Recruit) {
 		if idx == 0 {
 			runningThreshold = float64(recruitProfile.TotalPoints) / 2
 		}
-		if recruitProfile.TotalPoints >= int(runningThreshold) {
+		if recruitProfile.TotalPoints >= runningThreshold {
 			totalPoints += float64(recruitProfile.TotalPoints)
 		}
 	}
 
 	for i := 0; i < len(r.RecruitPlayerProfiles); i++ {
 		var odds float64 = 0
-		if r.RecruitPlayerProfiles[i].TotalPoints >= int(runningThreshold) {
+		if r.RecruitPlayerProfiles[i].TotalPoints >= runningThreshold {
 			odds = float64(r.RecruitPlayerProfiles[i].TotalPoints) / totalPoints
 		}
 		leadingTeam := LeadingTeams{

@@ -8,14 +8,14 @@ type RecruitPointAllocation struct {
 	TeamProfileID      int
 	RecruitProfileID   int
 	WeekID             int
-	Points             int
+	Points             float64
 	RESAffectedPoints  float64
 	AffinityOneApplied bool
 	AffinityTwoApplied bool
 	CaughtCheating     bool
 }
 
-func (rpa *RecruitPointAllocation) UpdatePointsSpent(points int, res float64) {
+func (rpa *RecruitPointAllocation) UpdatePointsSpent(points float64, res float64) {
 	rpa.Points = points
 	rpa.RESAffectedPoints = res
 }

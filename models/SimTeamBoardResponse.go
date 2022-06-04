@@ -9,8 +9,8 @@ type SimTeamBoardResponse struct {
 	TeamAbbreviation          string
 	State                     string
 	ScholarshipsAvailable     int
-	WeeklyPoints              int
-	SpentPoints               int
+	WeeklyPoints              float64
+	SpentPoints               float64
 	TotalCommitments          int
 	BaseEfficiencyScore       float64
 	RecruitingEfficiencyScore float64

@@ -178,7 +178,7 @@ func UpdateRecruitingProfile(updateRecruitingBoardDto structs.UpdateRecruitingBo
 
 	var updatedRecruits = updateRecruitingBoardDto.Recruits
 
-	currentPoints := 0
+	var currentPoints float64 = 0
 
 	for i := 0; i < len(recruitProfiles); i++ {
 		updatedRecruit := GetRecruitFromRecruitsList(recruitProfiles[i].RecruitID, updatedRecruits)

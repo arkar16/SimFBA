@@ -10,8 +10,8 @@ type RecruitPlayerProfile struct {
 	SeasonID                  int
 	RecruitID                 int
 	ProfileID                 int
-	TotalPoints               int
-	CurrentWeeksPoints        int
+	TotalPoints               float64
+	CurrentWeeksPoints        float64
 	SpendingCount             int
 	RecruitingEfficiencyScore float64
 	Scholarship               bool
@@ -27,11 +27,11 @@ type RecruitPlayerProfile struct {
 	RecruitPoints             []RecruitPointAllocation `gorm:"foreignKey:RecruitID"`
 }
 
-func (rp *RecruitPlayerProfile) AllocateCurrentWeekPoints(points int) {
+func (rp *RecruitPlayerProfile) AllocateCurrentWeekPoints(points float64) {
 	rp.CurrentWeeksPoints = points
 }
 
-func (rp *RecruitPlayerProfile) AddCurrentWeekPointsToTotal(CurrentPoints int) {
+func (rp *RecruitPlayerProfile) AddCurrentWeekPointsToTotal(CurrentPoints float64) {
 	// If user spends points on a recruit
 	if CurrentPoints > 0 {
 		rp.TotalPoints += CurrentPoints

@@ -11,7 +11,7 @@ type CollegeDepthChartPosition struct {
 	FirstName        string        // "David"
 	LastName         string        // "Ross"
 	OriginalPosition string        // The Original Position of the Player. Will only be used for STU position
-	CollegePlayer    CollegePlayer `gorm:"associationForeignKey:PlayerID;foreignKey:PlayerID"`
+	CollegePlayer    CollegePlayer `gorm:"foreignKey:PlayerID;references:PlayerID"`
 }
 
 // Update DepthChartPosition -- Updates the Player taking the position

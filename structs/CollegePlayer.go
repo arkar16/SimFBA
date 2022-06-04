@@ -4,10 +4,10 @@ import "github.com/jinzhu/gorm"
 
 type CollegePlayer struct {
 	gorm.Model
-	PlayerID int `gorm:"column:player_id"`
-	TeamID   int
-	TeamAbbr string
 	BasePlayer
+	PlayerID      int
+	TeamID        int
+	TeamAbbr      string
 	HighSchool    string
 	City          string
 	State         string

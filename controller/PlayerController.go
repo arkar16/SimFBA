@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/managers"
+	"github.com/CalebRose/SimFBA/structs"
 	"github.com/gorilla/mux"
 )
 
@@ -63,36 +64,21 @@ func GetCollegePlayerByCollegePlayerId(w http.ResponseWriter, r *http.Request) {
 
 // UpdateCollegePlayer
 func UpdateCollegePlayer(w http.ResponseWriter, r *http.Request) {
-	// Update DTO for College Player
-
-	// validate info from DTO
-
-	// Send DTO to Manager Class
-
-	// Save to DB
-
-	// Return updated player
-
-	// Send to interface?
 
 	fmt.Println(w, "College Player successfully updated.")
 }
 
 // ToggleRedshirtStatusForPlayer
 func ToggleRedshirtStatusForPlayer(w http.ResponseWriter, r *http.Request) {
-	// Use DTO for redshirts?
+	// Update DTO for College Player
+	var redshirtDTO structs.RedshirtDTO
+	err := json.NewDecoder(r.Body).Decode(&redshirtDTO)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
-	// validate info from DTO
-
-	// Send DTO to Manager Class
-
-	// Update redshirting status for players
-
-	// Save to DB
-
-	// Return updated info
-
-	// Send to interface?
+	managers.SetRedshirtStatusForPlayer(strconv.Itoa(redshirtDTO.PlayerID))
 
 	fmt.Println(w, "College Player successfully redshirted.")
 }

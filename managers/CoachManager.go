@@ -11,7 +11,7 @@ func GetCollegeCoachByCoachName(name string) structs.CollegeCoach {
 	var coach structs.CollegeCoach
 
 	err := db.Where("coach_name = ?", name).Find(&coach).Error
-	if err != nil {
+	if err != nil || coach.ID == 0 {
 		coach = structs.CollegeCoach{
 			CoachName:                      name,
 			TeamID:                         0,

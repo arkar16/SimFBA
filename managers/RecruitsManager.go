@@ -199,6 +199,26 @@ func SendScholarshipToRecruit(updateRecruitPointsDto structs.UpdateRecruitPoints
 	crootProfile.ToggleScholarship(updateRecruitPointsDto.RewardScholarship, updateRecruitPointsDto.RevokeScholarship)
 	if !crootProfile.ScholarshipRevoked {
 		recruitingProfile.SubtractScholarshipsAvailable()
+
+		// Break the news
+		ts := GetTimestamp()
+
+		recruit := GetCollegeRecruitByRecruitID(strconv.Itoa(updateRecruitPointsDto.RecruitID))
+
+		stars := recruit.Stars
+
+		if stars >= 4 {
+			message := recruit.FirstName + " " + recruit.LastName + ", " + strconv.Itoa(stars) + " star " + recruit.Position + " from " + recruit.HighSchool + ", " + recruit.City + ", " + recruit.State + " has received an offer from " + updateRecruitPointsDto.Team
+			newLog := structs.NewsLog{
+				WeekID:      ts.CollegeWeekID,
+				SeasonID:    ts.CollegeSeasonID,
+				MessageType: "Recruiting",
+				Message:     message,
+			}
+
+			db.Save(&newLog)
+		}
+
 	} else {
 		recruitingProfile.ReallocateScholarship()
 	}

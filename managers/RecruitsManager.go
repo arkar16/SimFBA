@@ -47,7 +47,7 @@ func GetCollegeRecruitByRecruitID(recruitID string) structs.Recruit {
 
 	var recruit structs.Recruit
 
-	err := db.Where("id = ?", recruitID).Find(&recruit)
+	err := db.Where("id = ?", recruitID).Find(&recruit).Error
 	if err != nil {
 		log.Fatalln(err)
 	}

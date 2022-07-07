@@ -114,16 +114,42 @@ func ExportStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
 	db := dbprovider.GetInstance().GetDB()
 	fmt.Println("START")
 
-	timestamp := GetTimestamp()
+	tsChn := make(chan structs.Timestamp)
+
+	go func() {
+		ts := GetTimestamp()
+		tsChn <- ts
+	}()
+
+	timestamp := <-tsChn
+	close(tsChn)
 
 	var teamStats []structs.CollegeTeamStats
 
 	for _, gameDataDTO := range exportStatsDTO.GameStatDTOs {
-		gameRecord := GetCollegeGameByAbbreviationsWeekAndSeasonID(gameDataDTO.HomeTeam.GetAbbreviation(), strconv.Itoa(timestamp.CollegeWeekID), strconv.Itoa(timestamp.CollegeSeasonID))
+
+		record := make(chan structs.CollegeGame)
+
+		go func() {
+			asynchronousGame := GetCollegeGameByAbbreviationsWeekAndSeasonID(gameDataDTO.HomeTeam.Abbreviation, strconv.Itoa(timestamp.CollegeWeekID), strconv.Itoa(timestamp.CollegeSeasonID))
+			record <- asynchronousGame
+		}()
+
+		gameRecord := <-record
+		close(record)
 		var playerStats []structs.CollegePlayerStats
 
 		// Team Stats Export
-		ht := GetTeamByTeamAbbr(gameDataDTO.HomeTeam.GetAbbreviation())
+		homeTeamChn := make(chan structs.CollegeTeam)
+
+		go func() {
+			homeTeam := GetTeamByTeamAbbr(gameDataDTO.HomeTeam.Abbreviation)
+			homeTeamChn <- homeTeam
+		}()
+
+		ht := <-homeTeamChn
+		close(homeTeamChn)
+
 		homeTeam := structs.CollegeTeamStats{
 			TeamID:        int(ht.ID),
 			GameID:        int(gameRecord.ID),
@@ -136,7 +162,16 @@ func ExportStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
 		teamStats = append(teamStats, homeTeam)
 
 		// Away Team
-		at := GetTeamByTeamAbbr(gameDataDTO.AwayTeam.GetAbbreviation())
+		awayTeamChn := make(chan structs.CollegeTeam)
+
+		go func() {
+			awayTeam := GetTeamByTeamAbbr(gameDataDTO.AwayTeam.Abbreviation)
+			awayTeamChn <- awayTeam
+		}()
+
+		at := <-awayTeamChn
+		close(awayTeamChn)
+
 		awayTeam := structs.CollegeTeamStats{
 			TeamID:        int(at.ID),
 			GameID:        int(gameRecord.ID),

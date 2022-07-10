@@ -56,5 +56,24 @@ func UpdateStandings(ts structs.Timestamp) {
 		if err != nil {
 			log.Panicln("Could not save standings for team " + strconv.Itoa(AwayID))
 		}
+
+		if games[i].HomeTeamCoach != "AI" {
+			homeCoach := GetCollegeCoachByCoachName(games[i].HomeTeamCoach)
+			homeCoach.UpdateCoachRecord(games[i])
+
+			err = db.Save(&homeCoach).Error
+			if err != nil {
+				log.Panicln("Could not save coach record for team " + strconv.Itoa(HomeID))
+			}
+		}
+
+		if games[i].AwayTeamCoach != "AI" {
+			awayCoach := GetCollegeCoachByCoachName(games[i].AwayTeamCoach)
+			awayCoach.UpdateCoachRecord(games[i])
+			err = db.Save(&awayCoach).Error
+			if err != nil {
+				log.Panicln("Could not save coach record for team " + strconv.Itoa(AwayID))
+			}
+		}
 	}
 }

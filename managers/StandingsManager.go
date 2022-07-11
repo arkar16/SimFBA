@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
 )
 
@@ -18,6 +19,89 @@ func GetStandingsByConferenceIDAndSeasonID(conferenceID string, seasonID string)
 		log.Fatal(err)
 	}
 	return standings
+}
+
+// GetHistoricalRecordsByTeamID
+func GetHistoricalRecordsByTeamID(TeamID string) models.TeamRecordResponse {
+	tsChn := make(chan structs.Timestamp)
+
+	go func() {
+		ts := GetTimestamp()
+		tsChn <- ts
+	}()
+
+	timestamp := <-tsChn
+	close(tsChn)
+
+	season := strconv.Itoa(timestamp.Season)
+
+	historicGames := GetCollegeGamesByTeamId(TeamID)
+	var conferenceChampionships []string
+	var divisionTitles []string
+	var nationalChampionships []string
+	overallWins := 0
+	overallLosses := 0
+	currentSeasonWins := 0
+	currentSeasonLosses := 0
+	bowlWins := 0
+	bowlLosses := 0
+
+	for _, game := range historicGames {
+		if !game.GameComplete || (game.GameComplete && game.SeasonID == timestamp.CollegeSeasonID && game.WeekID == timestamp.CollegeWeekID) {
+			continue
+		}
+
+		isAway := strconv.Itoa(game.AwayTeamID) == TeamID
+
+		if (isAway && game.AwayTeamWin) || (!isAway && game.HomeTeamWin) {
+			overallWins++
+
+			if game.SeasonID == timestamp.CollegeSeasonID {
+				currentSeasonWins++
+			}
+
+			if game.IsBowlGame {
+				bowlWins++
+			}
+
+			if game.IsConferenceChampionship {
+				conferenceChampionships = append(conferenceChampionships, season)
+				divisionTitles = append(divisionTitles, season)
+			}
+
+			if game.IsNationalChampionship {
+				nationalChampionships = append(nationalChampionships, season)
+			}
+		} else {
+			overallLosses++
+
+			if game.SeasonID == timestamp.CollegeSeasonID {
+				currentSeasonLosses++
+			}
+
+			if game.IsBowlGame {
+				bowlLosses++
+			}
+
+			if game.IsConferenceChampionship {
+				divisionTitles = append(divisionTitles, season)
+			}
+		}
+	}
+
+	response := models.TeamRecordResponse{
+		OverallWins:             overallWins,
+		OverallLosses:           overallLosses,
+		CurrentSeasonWins:       currentSeasonWins,
+		CurrentSeasonLosses:     currentSeasonLosses,
+		BowlWins:                bowlWins,
+		BowlLosses:              bowlLosses,
+		ConferenceChampionships: conferenceChampionships,
+		DivisionTitles:          divisionTitles,
+		NationalChampionships:   nationalChampionships,
+	}
+
+	return response
 }
 
 // GetStandingsByConferenceIDAndSeasonID

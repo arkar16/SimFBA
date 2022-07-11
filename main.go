@@ -95,6 +95,7 @@ func handleRequests() {
 
 	// Standings Controls
 	myRouter.HandleFunc("/standings/cfb/{conferenceID}/{seasonID}/", controller.GetCollegeStandingsByConferenceIDAndSeasonID).Methods("GET")
+	myRouter.HandleFunc("/standings/cfb/history/team/{teamID}/", controller.GetHistoricalRecordsByTeamID).Methods("GET")
 
 	// Stats Controls
 	myRouter.HandleFunc("/statistics/export/cfb/", controller.ExportStatisticsFromSim).Methods("POST")

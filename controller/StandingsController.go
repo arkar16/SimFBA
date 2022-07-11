@@ -22,6 +22,15 @@ func GetCollegeStandingsByConferenceIDAndSeasonID(w http.ResponseWriter, r *http
 
 // GetCollegeStandingsByDivisionIDAndSeasonID
 
-// GetHistoricalStandingsByTeamID
+// GetHistoricalRecordsByTeamID
+func GetHistoricalRecordsByTeamID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+	if len(teamID) == 0 {
+		panic("User did not provide enough information")
+	}
+	standings := managers.GetHistoricalRecordsByTeamID(teamID)
+	json.NewEncoder(w).Encode(standings)
+}
 
 // GetHistoricalStandingsByCoach

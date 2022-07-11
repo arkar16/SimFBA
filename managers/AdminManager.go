@@ -30,8 +30,8 @@ func UpdateTimestamp(updateTimestampDto structs.UpdateTimestampDto) structs.Time
 		// Update Standings based on current week's games
 
 		// Sync to Next Week
-		timestamp.SyncToNextWeek()
 		UpdateStandings(timestamp)
+		timestamp.SyncToNextWeek()
 
 	} else if updateTimestampDto.ThursdayGames && !timestamp.ThursdayGames {
 		timestamp.ToggleThursdayGames()

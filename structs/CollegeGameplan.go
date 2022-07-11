@@ -97,6 +97,7 @@ func (cg *CollegeGameplan) UpdateGameplan(dto CollegeGameplan) {
 	cg.TargetingRB2 = dto.TargetingRB2
 	cg.TargetingRB3 = dto.TargetingRB3
 	cg.DefensiveScheme = dto.DefensiveScheme
+	cg.DefRunToPassRatio = dto.DefRunToPassRatio
 	cg.DefPersonnelOne = dto.DefPersonnelOne
 	cg.DefPersonnelTwo = dto.DefPersonnelTwo
 	cg.DefPersonnelThree = dto.DefPersonnelThree

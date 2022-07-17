@@ -43,3 +43,11 @@ func (cg *CollegeGame) UpdateScore(HomeScore int, AwayScore int) {
 	}
 	cg.GameComplete = true
 }
+
+func (cg *CollegeGame) UpdateCoach(TeamID int, Username string) {
+	if cg.HomeTeamID == TeamID {
+		cg.HomeTeamCoach = Username
+	} else if cg.AwayTeamID == TeamID {
+		cg.AwayTeamCoach = Username
+	}
+}

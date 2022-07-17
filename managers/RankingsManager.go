@@ -17,7 +17,7 @@ func AssignAllRecruitRanks() {
 
 	// var recruitsToSync []structs.Recruit
 
-	db.Where("team_id = 0").Find(&recruits)
+	db.Order("overall desc").Where("team_id = 0").Find(&recruits)
 
 	rivalsModifiers := config.RivalsModifiers()
 

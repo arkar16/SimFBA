@@ -17,12 +17,12 @@ type BasePlayerStats struct {
 	Catches              int
 	ReceivingYards       int
 	ReceivingTDs         int
-	LongestReceiption    int
+	LongestReception     int
 	SoloTackles          int
 	AssistedTackles      int
 	TacklesForLoss       float64
 	SacksMade            float64
-	ForceFumbles         int
+	ForcedFumbles        int
 	RecoveredFumbles     int
 	PassDeflections      int
 	InterceptionsCaught  int

@@ -115,6 +115,7 @@ func CreateRecruitingPointsProfileForRecruit(w http.ResponseWriter, r *http.Requ
 
 // SendScholarshipToRecruit
 func SendScholarshipToRecruit(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	var updateRecruitPointsDto structs.UpdateRecruitPointsDto
 	err := json.NewDecoder(r.Body).Decode(&updateRecruitPointsDto)
 	if err != nil {
@@ -129,6 +130,7 @@ func SendScholarshipToRecruit(w http.ResponseWriter, r *http.Request) {
 
 // RevokeScholarshipToRecruit
 func RevokeScholarshipFromRecruit(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	var updateRecruitPointsDto structs.UpdateRecruitPointsDto
 	err := json.NewDecoder(r.Body).Decode(&updateRecruitPointsDto)
 	if err != nil {
@@ -163,6 +165,13 @@ func SaveRecruitingBoard(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&updateRecruitingBoardDto)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	ts := managers.GetTimestamp()
+
+	if ts.IsRecruitingLocked {
+		http.Error(w, "Recruiting is locked!", http.StatusNotAcceptable)
 		return
 	}
 

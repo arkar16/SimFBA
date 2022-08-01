@@ -34,6 +34,8 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		log.Fatalln("Recruiting already ran for this week. Please wait until next week to sync recruiting again.")
 	}
 
+	recruitProfilePointsMap := util.GetTeamPointsMap()
+
 	recruitModifiers := GetRecruitingModifiers()
 
 	var recruitProfiles []structs.RecruitPlayerProfile
@@ -99,6 +101,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 			rpa.UpdatePointsSpent(recruitProfiles[i].CurrentWeeksPoints, curr)
 			recruitProfiles[i].AddCurrentWeekPointsToTotal(curr)
+			recruitProfilePointsMap[recruitProfiles[i].TeamAbbreviation] += recruitProfiles[i].CurrentWeeksPoints
 
 			// Add RPA to point allocations list
 			err := db.Save(&rpa).Error
@@ -225,6 +228,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 	var totalRivalsScore float64 = 0
 
 	for i := 0; i < len(teamRecruitingProfiles); i++ {
+
 		signedRecruits := GetSignedRecruitsByTeamProfileID(strconv.Itoa(teamRecruitingProfiles[i].TeamID))
 
 		teamRecruitingProfiles[i].UpdateTotalSignedRecruits(len(signedRecruits))
@@ -246,6 +250,10 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 	averageRivalScore := totalRivalsScore / 130
 
 	for _, rp := range teamRecruitingProfiles {
+		if recruitProfilePointsMap[rp.TeamAbbreviation] > rp.WeeklyPoints {
+			rp.ApplyCaughtCheating()
+		}
+
 		var avg float64 = 0
 		if averageESPNScore > 0 && average247score > 0 && averageRivalScore > 0 {
 			distributionESPN := rp.ESPNScore / averageESPNScore
@@ -284,6 +292,10 @@ func SyncRecruitingEfficiency(timestamp structs.Timestamp) {
 
 	for _, team := range teams {
 		// Get all games by team within a season
+
+		if team.Coach == "" || team.Coach == "AI" {
+			continue
+		}
 
 		teamProfile := team.RecruitingProfile
 
@@ -329,9 +341,8 @@ func SyncRecruitingEfficiency(timestamp structs.Timestamp) {
 
 		if currentSeasonWins+currentSeasonLosses > 0 {
 			cswp = float64(currentSeasonWins) / float64(currentSeasonWins+currentSeasonLosses)
-			if team.ConferenceID != 13 {
+			if team.ConferenceID != 13 && currentConferenceWins+currentConferenceLosses > 0 {
 				ccwp = float64(currentConferenceWins) / float64(currentConferenceWins+currentConferenceLosses)
-
 			}
 		}
 

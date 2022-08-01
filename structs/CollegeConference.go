@@ -7,5 +7,5 @@ type CollegeConference struct {
 	ConferenceName     string
 	ConferenceAbbr     string
 	ConferenceDivision string
-	Divisions          []CollegeDivision
+	Divisions          []CollegeDivision `gorm:"foreignKey:ConferenceID"`
 }

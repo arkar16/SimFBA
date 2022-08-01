@@ -56,6 +56,7 @@ func handleRequests() {
 
 	// Player Controls
 	myRouter.HandleFunc("/players/all/", controller.AllPlayers).Methods("GET")
+	myRouter.HandleFunc("/collegeplayers/heisman/", controller.GetHeismanList).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/{teamID}/", controller.AllCollegePlayersByTeamID).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/nors/{teamID}/", controller.AllCollegePlayersByTeamIDWithoutRedshirts).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/export/{teamID}/", controller.ExportRosterToCSV).Methods("GET")
@@ -99,6 +100,7 @@ func handleRequests() {
 
 	// Stats Controls
 	myRouter.HandleFunc("/statistics/export/cfb/", controller.ExportStatisticsFromSim).Methods("POST")
+	myRouter.HandleFunc("/statistics/interface/cfb/", controller.GetStatsPageContentForCurrentSeason).Methods("GET")
 
 	// Team Controls
 	myRouter.HandleFunc("/teams/college/all/", controller.GetAllCollegeTeams).Methods("GET")

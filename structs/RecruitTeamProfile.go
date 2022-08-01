@@ -24,6 +24,7 @@ type RecruitingTeamProfile struct {
 	Rank247Score              float64
 	CompositeScore            float64
 	RecruitingClassRank       int
+	CaughtCheating            bool
 	Recruits                  []RecruitPlayerProfile `gorm:"foreignKey:ProfileID"`
 	Affinities                []ProfileAffinity      `gorm:"foreignKey:ProfileID"`
 }
@@ -84,4 +85,8 @@ func (r *RecruitingTeamProfile) AssignCompositeRank(score float64) {
 
 func (r *RecruitingTeamProfile) UpdateTotalSignedRecruits(num int) {
 	r.TotalCommitments = num
+}
+
+func (r *RecruitingTeamProfile) ApplyCaughtCheating() {
+	r.CaughtCheating = true
 }

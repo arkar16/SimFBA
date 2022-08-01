@@ -49,6 +49,8 @@ func CreateTeamRequest(request structs.TeamRequest) {
 func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 	db := dbprovider.GetInstance().GetDB()
 
+	timestamp := GetTimestamp()
+
 	// Approve Request
 	request.ApproveTeamRequest()
 
@@ -67,11 +69,17 @@ func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 
 	team.AssignUserToTeam(request.Username)
 
+	seasonalGames := GetCollegeGamesByTeamIdAndSeasonId(strconv.Itoa(request.TeamID), strconv.Itoa(timestamp.CollegeSeasonID))
+
+	for _, game := range seasonalGames {
+		game.UpdateCoach(request.TeamID, request.Username)
+
+		db.Save(&game)
+	}
+
 	db.Save(&team)
 
 	db.Save(&coach)
-
-	timestamp := GetTimestamp()
 
 	newsLog := structs.NewsLog{
 		WeekID:      timestamp.CollegeWeekID,

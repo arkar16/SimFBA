@@ -8,4 +8,6 @@ type TeamSeasonStats struct {
 	TotalYardsAllowed   int
 	Fumbles             int
 	QBRating            float64
+	Tackles             float64
+	Turnovers           int
 }

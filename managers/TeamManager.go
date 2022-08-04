@@ -170,7 +170,7 @@ func GetAllCollegeTeamsWithCurrentSeasonStats() []models.CollegeTeamResponse {
 	var teams []structs.CollegeTeam
 
 	db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ? and week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID-1))
+		return db.Where("season_id = ? and week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
 	}).Find(&teams)
 
 	var ctResponse []models.CollegeTeamResponse

@@ -93,6 +93,7 @@ func (p *PlayerStatDTO) MapTobasePlayerStatsObject() BasePlayerStats {
 		RecoveredFumbles:     p.RecoveredFumbles,
 		Safeties:             p.Safeties,
 		DefensiveTDs:         p.DefensiveTDs,
+		InterceptionsCaught:  p.INTs,
 		LongestFG:            p.LongestFG,
 		FGAttempts:           p.FGAttempts,
 		FGMade:               p.FGMade,

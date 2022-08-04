@@ -90,5 +90,9 @@ func (cpr *CollegePlayerResponse) MapSeasonalStats() {
 		ss.QBRating = numerator / float64(ss.PassAttempts)
 	}
 
+	ss.PassingAvg = float64(ss.PassingYards) / float64(ss.PassAttempts)
+	ss.RushingAvg = float64(ss.RushingYards) / float64(ss.RushAttempts)
+	ss.ReceivingAvg = float64(ss.ReceivingYards) / float64(ss.Catches)
+
 	cpr.SeasonStats = ss
 }

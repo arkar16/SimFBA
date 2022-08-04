@@ -88,11 +88,17 @@ func (cpr *CollegePlayerResponse) MapSeasonalStats() {
 	if ss.PassAttempts != 0 {
 		numerator := passingYards + passingTDs + passComps - ints
 		ss.QBRating = numerator / float64(ss.PassAttempts)
+		ss.PassingAvg = float64(ss.PassingYards) / float64(ss.PassAttempts)
 	}
 
-	ss.PassingAvg = float64(ss.PassingYards) / float64(ss.PassAttempts)
-	ss.RushingAvg = float64(ss.RushingYards) / float64(ss.RushAttempts)
-	ss.ReceivingAvg = float64(ss.ReceivingYards) / float64(ss.Catches)
+	if ss.RushAttempts > 0 {
+		ss.RushingAvg = float64(ss.RushingYards) / float64(ss.RushAttempts)
+
+	}
+
+	if ss.Catches > 0 {
+		ss.ReceivingAvg = float64(ss.ReceivingYards) / float64(ss.Catches)
+	}
 
 	cpr.SeasonStats = ss
 }

@@ -9,4 +9,5 @@ type PlayerSeasonStats struct {
 	RushingAvg   float64
 	PassingAvg   float64
 	ReceivingAvg float64
+	Completion   float64
 }

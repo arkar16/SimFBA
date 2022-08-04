@@ -43,6 +43,7 @@ func (cpr *CollegePlayerResponse) MapSeasonalStats() {
 		if stat.LongestReception > ss.LongestReception {
 			ss.LongestReception = stat.LongestReception
 		}
+		ss.Tackles = float64(ss.SoloTackles) + (float64(ss.AssistedTackles) / 2)
 		ss.AssistedTackles = ss.AssistedTackles + stat.AssistedTackles
 		ss.SoloTackles = ss.SoloTackles + stat.SoloTackles
 		ss.RecoveredFumbles = ss.RecoveredFumbles + stat.RecoveredFumbles

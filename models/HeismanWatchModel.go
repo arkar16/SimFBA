@@ -7,6 +7,7 @@ type HeismanWatchModel struct {
 	Archetype string
 	School    string
 	Score     float64
+	Games     int
 }
 
 // Sorting Funcs

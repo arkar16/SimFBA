@@ -99,7 +99,7 @@ func GetAllCollegePlayersWithCurrentYearStatistics(cMap map[int]int, cNMap map[i
 	ts := GetTimestamp()
 
 	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ? and week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID-1))
+		return db.Where("season_id = ? and week_id < ? and snaps > 0", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
 	}).Find(&collegePlayers)
 
 	var cpResponse []models.CollegePlayerResponse
@@ -160,7 +160,7 @@ func GetHeismanList() []models.HeismanWatchModel {
 	}
 
 	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("snaps > 0 and season_id = ?", strconv.Itoa(ts.CollegeSeasonID))
+		return db.Where("snaps > 0 and season_id = ? and week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
 	}).Find(&collegePlayers)
 
 	for _, cp := range collegePlayers {
@@ -177,6 +177,7 @@ func GetHeismanList() []models.HeismanWatchModel {
 			Archetype: cp.Archetype,
 			School:    cp.TeamAbbr,
 			Score:     score,
+			Games:     len(cp.Stats),
 		}
 
 		heismanCandidates = append(heismanCandidates, h)

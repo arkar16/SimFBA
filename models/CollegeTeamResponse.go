@@ -22,7 +22,9 @@ func (ctr *CollegeTeamResponse) MapSeasonalStats() {
 		ss.PassingTouchdowns = ss.PassingTouchdowns + stat.PassingTouchdowns
 		ss.PassingInterceptions = ss.PassingInterceptions + stat.PassingInterceptions
 		ss.QBSacks = ss.QBSacks + stat.QBSacks
-		ss.LongestPass = ss.LongestPass + stat.LongestPass
+		if stat.LongestPass > ss.LongestPass {
+			ss.LongestPass = stat.LongestPass
+		}
 		ss.RushAttempts = ss.RushAttempts + stat.RushAttempts
 		ss.RushingTouchdowns = ss.RushingTouchdowns + stat.RushingTouchdowns
 		ss.RushingYards = ss.RushingYards + stat.RushingYards
@@ -32,6 +34,7 @@ func (ctr *CollegeTeamResponse) MapSeasonalStats() {
 		ss.ReceivingTouchdowns = ss.ReceivingTouchdowns + stat.ReceivingTouchdowns
 		ss.ReceivingYards = ss.ReceivingYards + stat.ReceivingYards
 		ss.AssistedTackles = ss.AssistedTackles + stat.AssistedTackles
+		ss.Tackles = float64(ss.SoloTackles) + (float64(ss.AssistedTackles) / 2)
 		ss.SoloTackles = ss.SoloTackles + stat.SoloTackles
 		ss.FumblesRecovered = ss.FumblesRecovered + stat.FumblesRecovered
 		ss.DefensiveSacks = ss.DefensiveSacks + stat.DefensiveSacks
@@ -42,7 +45,9 @@ func (ctr *CollegeTeamResponse) MapSeasonalStats() {
 		ss.DefensiveTDs = ss.DefensiveTDs + stat.DefensiveTDs
 		ss.FieldGoalsMade = ss.FieldGoalsMade + stat.FieldGoalsMade
 		ss.FieldGoalsAttempted = ss.FieldGoalsAttempted + stat.FieldGoalsAttempted
-		ss.LongestFieldGoal = ss.LongestFieldGoal + stat.LongestFieldGoal
+		if stat.LongestFieldGoal > ss.LongestFieldGoal {
+			ss.LongestFieldGoal = stat.LongestFieldGoal
+		}
 		ss.ExtraPointsAttempted = ss.ExtraPointsAttempted + stat.ExtraPointsAttempted
 		ss.ExtraPointsMade = ss.ExtraPointsMade + stat.ExtraPointsMade
 		ss.KickoffTBs = ss.KickoffTBs + stat.KickoffTBs
@@ -62,8 +67,20 @@ func (ctr *CollegeTeamResponse) MapSeasonalStats() {
 		ss.PassingYardsAllowed = ss.PassingYardsAllowed + stat.PassingYardsAllowed
 		ss.RushingTDsAllowed = ss.RushingTDsAllowed + stat.RushingTDsAllowed
 		ss.RushingYardsAllowed = ss.RushingYardsAllowed + stat.RushingYardsAllowed
+		ss.Turnovers = ss.Turnovers + stat.DefensiveInterceptions + stat.FumblesRecovered
+		ss.OffensivePenalties = ss.OffensivePenalties + stat.OffensivePenalties
+		ss.DefensivePenalties = ss.DefensivePenalties + stat.DefensivePenalties
 	}
 	ss.TotalOffensiveYards = ss.PassingYards + ss.RushingYards
 	ss.TotalYardsAllowed = ss.PassingYardsAllowed + ss.RushingYardsAllowed
+	passingYards := float64(8.4) * float64(ss.PassingYards)
+	passingTDs := float64(330) * float64(ss.PassingTouchdowns)
+	passComps := float64(100) * float64(ss.PassingCompletions)
+	ints := float64(200) * float64(ss.PassingInterceptions)
+	if ss.PassingAttempts != 0 {
+		numerator := passingYards + passingTDs + passComps - ints
+		ss.QBRating = numerator / float64(ss.PassingAttempts)
+	}
+
 	ctr.SeasonStats = ss
 }

@@ -1,6 +1,8 @@
 package models
 
 import (
+	"sort"
+
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 )
@@ -38,6 +40,15 @@ type LeadingTeams struct {
 	Odds     float64
 }
 
+// Sorting Funcs
+type ByLeadingPoints []LeadingTeams
+
+func (rp ByLeadingPoints) Len() int      { return len(rp) }
+func (rp ByLeadingPoints) Swap(i, j int) { rp[i], rp[j] = rp[j], rp[i] }
+func (rp ByLeadingPoints) Less(i, j int) bool {
+	return rp[i].Odds > rp[j].Odds
+}
+
 func (c *Croot) Map(r structs.Recruit) {
 	c.ID = r.ID
 	c.PlayerID = r.PlayerID
@@ -67,7 +78,7 @@ func (c *Croot) Map(r structs.Recruit) {
 	var runningThreshold float64 = 0
 
 	for idx, recruitProfile := range r.RecruitPlayerProfiles {
-		if idx == 0 {
+		if idx == 0 && recruitProfile.Scholarship || runningThreshold == 0 {
 			runningThreshold = float64(recruitProfile.TotalPoints) / 2
 		}
 		if recruitProfile.TotalPoints >= runningThreshold {
@@ -87,4 +98,5 @@ func (c *Croot) Map(r structs.Recruit) {
 		}
 		c.LeadingTeams = append(c.LeadingTeams, leadingTeam)
 	}
+	sort.Sort(ByLeadingPoints(c.LeadingTeams))
 }

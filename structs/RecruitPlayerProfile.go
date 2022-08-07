@@ -35,16 +35,6 @@ func (rp *RecruitPlayerProfile) AddCurrentWeekPointsToTotal(CurrentPoints float6
 	// If user spends points on a recruit
 	if CurrentPoints > 0 {
 		rp.TotalPoints += CurrentPoints
-		// rp.SpendingCount += 1
-		// if rp.SpendingCount > 4 {
-		// 	rp.SpendingCount = 0
-		// 	if rp.AffinityOneEligible {
-		// 		rp.TotalPoints += 25
-		// 	}
-		// 	if rp.AffinityTwoEligible {
-		// 		rp.TotalPoints += 25
-		// 	}
-		// }
 	} else {
 		rp.TotalPoints = 0
 		rp.CaughtCheating = true

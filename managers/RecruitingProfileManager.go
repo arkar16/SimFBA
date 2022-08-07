@@ -53,15 +53,6 @@ func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) models.SimTeamBoard
 		log.Panicln(err)
 	}
 
-	// .Preload("Recruits", func(db *gorm.DB) *gorm.DB {
-	// 	return db.Order("total_points DESC").Where("total_points > 0")
-	// })
-
-	// err := db.Preload("Affinities").Preload("Recruits").Where("id = ?", TeamID).Find(&profile).Error
-	// if err != nil {
-	// 	log.Panicln(err)
-	// }
-
 	var teamProfileResponse models.SimTeamBoardResponse
 	var crootProfiles []models.CrootProfile
 
@@ -69,8 +60,6 @@ func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) models.SimTeamBoard
 	for i := 0; i < len(profile.Recruits); i++ {
 		var crootProfile models.CrootProfile
 		var croot models.Croot
-
-		// recruit := GetCollegeRecruitByRecruitIDForTeamBoard(recruitID)
 
 		croot.Map(profile.Recruits[i].Recruit)
 

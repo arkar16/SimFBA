@@ -153,7 +153,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 				if winningTeamID > 0 {
 					recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(winningTeamID))
-					if recruitTeamProfile.ScholarshipsAvailable > 0 && recruitTeamProfile.TotalCommitments < 25 {
+					if recruitTeamProfile.TotalCommitments < 25 {
 						teamAbbreviation := recruitTeamProfile.TeamAbbreviation
 						recruit.AssignCollege(teamAbbreviation)
 

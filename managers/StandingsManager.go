@@ -13,7 +13,8 @@ import (
 func GetStandingsByConferenceIDAndSeasonID(conferenceID string, seasonID string) []structs.CollegeStandings {
 	var standings []structs.CollegeStandings
 	db := dbprovider.GetInstance().GetDB()
-	err := db.Where("conference_id = ? AND season_id = ?", conferenceID, seasonID).Order("total_wins desc").
+	err := db.Where("conference_id = ? AND season_id = ?", conferenceID, seasonID).Order("conference_wins desc").
+		Order("total_wins desc").
 		Find(&standings).Error
 	if err != nil {
 		log.Fatal(err)

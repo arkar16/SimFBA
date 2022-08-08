@@ -222,7 +222,7 @@ func Get247TeamRanking(rp structs.RecruitingTeamProfile, signedCroots []structs.
 
 		expo := (-0.5 * (math.Pow(rank, 2)))
 
-		weightedScore := (croot.RivalsRank - 20) * math.Pow(math.E, expo)
+		weightedScore := (croot.Rank247 - 20) * math.Pow(math.E, expo)
 
 		Rank247 += (weightedScore)
 	}

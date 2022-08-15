@@ -12,6 +12,7 @@ type SimTeamBoardResponse struct {
 	WeeklyPoints              float64
 	SpentPoints               float64
 	TotalCommitments          int
+	RecruitClassSize          int
 	BaseEfficiencyScore       float64
 	RecruitingEfficiencyScore float64
 	PreviousOverallWinPer     float64
@@ -46,4 +47,5 @@ func (stbr *SimTeamBoardResponse) Map(rtp structs.RecruitingTeamProfile, c []Cro
 	stbr.RecruitingClassRank = rtp.RecruitingClassRank
 	stbr.Affinities = rtp.Affinities
 	stbr.Recruits = c
+	stbr.RecruitClassSize = rtp.RecruitClassSize
 }

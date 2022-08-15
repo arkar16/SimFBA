@@ -3,6 +3,8 @@ package structs
 type UpdateGameplanDTO struct {
 	GameplanID      string
 	UpdatedGameplan CollegeGameplan
+	Username        string
+	TeamName        string
 	// OffensiveScheme       string
 	// OffRunToPassRatio     int
 	// OffFormation1         int

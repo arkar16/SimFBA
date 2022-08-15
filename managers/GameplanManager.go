@@ -70,6 +70,19 @@ func UpdateGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 
 	currentGameplan := GetGameplanByGameplanID(gameplanID)
 
+	if currentGameplan.OffensiveScheme != updateGameplanDto.UpdatedGameplan.OffensiveScheme {
+		ts := GetTimestamp()
+
+		newsLog := structs.NewsLog{
+			WeekID:      ts.CollegeWeekID,
+			SeasonID:    ts.CollegeSeasonID,
+			MessageType: "Gameplan",
+			Message:     "Coach " + updateGameplanDto.Username + " has updated " + updateGameplanDto.TeamName + "'s offensive scheme from " + currentGameplan.OffensiveScheme + " to " + updateGameplanDto.UpdatedGameplan.OffensiveScheme,
+		}
+
+		db.Save(&newsLog)
+	}
+
 	currentGameplan.UpdateGameplan(updateGameplanDto.UpdatedGameplan)
 
 	db.Save(&currentGameplan)

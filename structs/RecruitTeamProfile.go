@@ -13,6 +13,7 @@ type RecruitingTeamProfile struct {
 	WeeklyPoints              float64
 	SpentPoints               float64
 	TotalCommitments          int
+	RecruitClassSize          int
 	BaseEfficiencyScore       float64
 	RecruitingEfficiencyScore float64
 	PreviousOverallWinPer     float64

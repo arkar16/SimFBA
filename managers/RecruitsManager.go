@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"sort"
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
@@ -28,6 +29,8 @@ func GetAllRecruits() []models.Croot {
 
 		croots = append(croots, croot)
 	}
+
+	sort.Sort(models.ByCrootRank(croots))
 
 	return croots
 }

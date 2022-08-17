@@ -13,11 +13,13 @@ import (
 func AssignAllRecruitRanks() {
 	db := dbprovider.GetInstance().GetDB()
 
+	rand.Seed(time.Now().UnixNano())
+
 	var recruits []structs.Recruit
 
 	// var recruitsToSync []structs.Recruit
 
-	db.Order("overall desc").Where("team_id = 0").Find(&recruits)
+	db.Order("overall desc").Find(&recruits)
 
 	rivalsModifiers := config.RivalsModifiers()
 
@@ -35,7 +37,13 @@ func AssignAllRecruitRanks() {
 			rivalsRank = GetRivalsRanking(croot.Stars, rivalsBonus)
 		}
 
-		croot.AssignRankValues(rank247, espnRank, rivalsRank)
+		var r float64 = croot.TopRankModifier
+
+		if croot.TopRankModifier == 0 {
+			r = 0.8 + rand.Float64()*(1.2-0.8)
+		}
+
+		croot.AssignRankValues(rank247, espnRank, rivalsRank, r)
 
 		db.Save(&croot)
 

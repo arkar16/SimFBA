@@ -74,7 +74,12 @@ func (c *Croot) Map(r structs.Recruit) {
 	c.College = r.College
 	c.OverallGrade = util.GetOverallGrade(r.Overall)
 	c.IsSigned = r.IsSigned
-	c.TotalRank = r.RivalsRank + r.ESPNRank + r.Rank247
+
+	mod := r.TopRankModifier
+	if mod == 0 {
+		mod = 1
+	}
+	c.TotalRank = (r.RivalsRank + r.ESPNRank + r.Rank247) / r.TopRankModifier
 
 	var totalPoints float64 = 0
 	var runningThreshold float64 = 0

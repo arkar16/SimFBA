@@ -21,6 +21,7 @@ type Recruit struct {
 	ESPNRank              float64
 	Rank247               float64
 	Top25Rank             float64
+	TopRankModifier       float64
 	RecruitPlayerProfiles []RecruitPlayerProfile   `gorm:"foreignKey:RecruitID"`
 	RecruitPoints         []RecruitPointAllocation `gorm:"foreignKey:RecruitID"`
 }
@@ -101,8 +102,9 @@ func (r *Recruit) AssignPlayerID(ID int) {
 	r.PlayerID = ID
 }
 
-func (r *Recruit) AssignRankValues(rank247 float64, espnRank float64, rivalsRank float64) {
+func (r *Recruit) AssignRankValues(rank247 float64, espnRank float64, rivalsRank float64, modifier float64) {
 	r.Rank247 = rank247
 	r.ESPNRank = espnRank
 	r.RivalsRank = rivalsRank
+	r.TopRankModifier = modifier
 }

@@ -43,3 +43,12 @@ func (cp *CrootProfile) Map(rp structs.RecruitPlayerProfile, c Croot) {
 	cp.CaughtCheating = rp.CaughtCheating
 	cp.Recruit = c
 }
+
+// Sorting Funcs
+type ByCrootProfileTotal []CrootProfile
+
+func (rp ByCrootProfileTotal) Len() int      { return len(rp) }
+func (rp ByCrootProfileTotal) Swap(i, j int) { rp[i], rp[j] = rp[j], rp[i] }
+func (rp ByCrootProfileTotal) Less(i, j int) bool {
+	return rp[i].TotalPoints > rp[j].TotalPoints
+}

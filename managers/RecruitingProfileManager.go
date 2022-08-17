@@ -3,6 +3,7 @@ package managers
 import (
 	"fmt"
 	"log"
+	"sort"
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
@@ -67,6 +68,8 @@ func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) models.SimTeamBoard
 
 		crootProfiles = append(crootProfiles, crootProfile)
 	}
+
+	sort.Sort(models.ByCrootProfileTotal(crootProfiles))
 
 	teamProfileResponse.Map(profile, crootProfiles)
 

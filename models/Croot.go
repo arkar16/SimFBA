@@ -31,6 +31,7 @@ type Croot struct {
 	AffinityTwo    string
 	IsSigned       bool
 	OverallGrade   string
+	TotalRank      float64
 	LeadingTeams   []LeadingTeams
 }
 
@@ -73,6 +74,7 @@ func (c *Croot) Map(r structs.Recruit) {
 	c.College = r.College
 	c.OverallGrade = util.GetOverallGrade(r.Overall)
 	c.IsSigned = r.IsSigned
+	c.TotalRank = r.RivalsRank + r.ESPNRank + r.Rank247
 
 	var totalPoints float64 = 0
 	var runningThreshold float64 = 0
@@ -99,4 +101,12 @@ func (c *Croot) Map(r structs.Recruit) {
 		c.LeadingTeams = append(c.LeadingTeams, leadingTeam)
 	}
 	sort.Sort(ByLeadingPoints(c.LeadingTeams))
+}
+
+type ByCrootRank []Croot
+
+func (c ByCrootRank) Len() int      { return len(c) }
+func (c ByCrootRank) Swap(i, j int) { c[i], c[j] = c[j], c[i] }
+func (c ByCrootRank) Less(i, j int) bool {
+	return c[i].TotalRank > c[j].TotalRank
 }

@@ -39,8 +39,8 @@ func AssignAllRecruitRanks() {
 
 		var r float64 = croot.TopRankModifier
 
-		if croot.TopRankModifier == 0 {
-			r = 0.8 + rand.Float64()*(1.2-0.8)
+		if croot.TopRankModifier == 0 || croot.TopRankModifier < 0.95 || croot.TopRankModifier > 1.05 {
+			r = 0.95 + rand.Float64()*(1.05-0.95)
 		}
 
 		croot.AssignRankValues(rank247, espnRank, rivalsRank, r)

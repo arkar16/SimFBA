@@ -85,10 +85,10 @@ func (c *Croot) Map(r structs.Recruit) {
 	var runningThreshold float64 = 0
 
 	for idx, recruitProfile := range r.RecruitPlayerProfiles {
-		if idx == 0 && recruitProfile.Scholarship || runningThreshold == 0 {
+		if idx == 0 && recruitProfile.Scholarship || (runningThreshold == 0 && recruitProfile.Scholarship && idx != 0) {
 			runningThreshold = float64(recruitProfile.TotalPoints) / 2
 		}
-		if recruitProfile.TotalPoints >= runningThreshold {
+		if recruitProfile.TotalPoints >= runningThreshold && recruitProfile.Scholarship {
 			totalPoints += float64(recruitProfile.TotalPoints)
 		}
 	}

@@ -51,6 +51,21 @@ func GetTeamByTeamID(teamId string) structs.CollegeTeam {
 	return team
 }
 
+func GetTeamByTeamIDForDiscord(teamId string) structs.CollegeTeam {
+	var team structs.CollegeTeam
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
+
+	err := db.Preload("TeamStandings", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ?", ts.CollegeSeasonID)
+	}).Where("id = ?", teamId).Find(&team).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return team
+}
+
 // GetTeamsByConferenceID
 func GetTeamsByConferenceID(conferenceID string) []structs.CollegeTeam {
 	var teams []structs.CollegeTeam

@@ -20,6 +20,18 @@ func GetTimestamp() structs.Timestamp {
 	return timestamp
 }
 
+func GetCollegeWeek(weekID string) structs.CollegeWeek {
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
+
+	var week structs.CollegeWeek
+
+	db.Where("week = ? AND season_id = ?", weekID, ts.CollegeSeasonID).Find(&week)
+
+	return week
+}
+
 // UpdateTimestamp - Update the timestamp
 func UpdateTimestamp(updateTimestampDto structs.UpdateTimestampDto) structs.Timestamp {
 	db := dbprovider.GetInstance().GetDB()

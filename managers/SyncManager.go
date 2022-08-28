@@ -40,7 +40,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 	var recruitProfiles []structs.RecruitPlayerProfile
 
-	var signeesLog []string
+	var allAllocations []structs.RecruitPointAllocation
 
 	// Get every recruit
 	recruits := GetAllUnsignedRecruits()
@@ -104,11 +104,12 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			recruitProfilePointsMap[recruitProfiles[i].TeamAbbreviation] += recruitProfiles[i].CurrentWeeksPoints
 
 			// Add RPA to point allocations list
-			err := db.Save(&rpa).Error
-			if err != nil {
-				fmt.Println(err.Error())
-				log.Fatalf("Could not save Point Allocation")
-			}
+			allAllocations = append(allAllocations, rpa)
+			// err := db.Save(&rpa).Error
+			// if err != nil {
+			// 	fmt.Println(err.Error())
+			// 	log.Fatalf("Could not save Point Allocation")
+			// }
 		}
 
 		sort.Sort(structs.ByPoints(recruitProfiles))
@@ -183,6 +184,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 								fmt.Println("Reallocated Scholarship to " + tp.TeamAbbreviation)
 							}
 						}
+
 					} else {
 						recruitProfilesWithScholarship = util.FilterOutRecruitingProfile(recruitProfilesWithScholarship, winningTeamID)
 						winningTeamID = 0
@@ -197,6 +199,13 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			}
 
 			recruit.UpdateTeamID(winningTeamID)
+			// Save Recruit
+			err := db.Save(&recruit).Error
+			if err != nil {
+				fmt.Println(err.Error())
+				log.Fatalf("Could not sync recruit")
+			}
+			fmt.Println("Save Recruit " + recruit.FirstName + " " + recruit.LastName)
 		}
 
 		// Save Player Files towards Recruit
@@ -210,14 +219,6 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 			fmt.Println("Save recruit profile from " + rp.TeamAbbreviation + " towards " + recruit.FirstName + " " + recruit.LastName)
 		}
-
-		// Save Recruit
-		err := db.Save(&recruit).Error
-		if err != nil {
-			fmt.Println(err.Error())
-			log.Fatalf("Could not sync recruit")
-		}
-		fmt.Println("Save Recruit " + recruit.FirstName + " " + recruit.LastName)
 	}
 
 	// Update rank system for all teams
@@ -275,8 +276,9 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		fmt.Println("Saved Rank Scores for Team " + rp.TeamAbbreviation)
 	}
 
-	for _, log := range signeesLog {
-		fmt.Println(log)
+	err := db.CreateInBatches(&allAllocations, len(allAllocations)).Error
+	if err != nil {
+		log.Panicln("Could not save all allocations!")
 	}
 }
 

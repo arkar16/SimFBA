@@ -111,6 +111,13 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/college/division/{divisionID}/", controller.GetTeamsByDivisionID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/sim/{HomeTeamAbbr}/{AwayTeamAbbr}/", controller.GetHomeAndAwayTeamData).Methods("GET")
 
+	// Discord Controls
+	myRouter.HandleFunc("/teams/ds/college/team/{teamID}/", controller.GetTeamByTeamIDForDiscord).Methods("GET")
+	myRouter.HandleFunc("/players/ds/college/player/{firstName}/{lastName}/{team}/{week}/", controller.GetCollegePlayerStatsByNameTeamAndWeek).Methods("GET")
+	myRouter.HandleFunc("/players/{firstName}/{lastName}/{teamID}", controller.GetCollegePlayerByNameAndTeam).Methods("GET")
+	myRouter.HandleFunc("/croots/ds/class/{teamID}/", controller.GetRecruitingClassByTeamID).Methods("GET")
+	myRouter.HandleFunc("/croots/ds/croot/{firstName}/{lastName}", controller.GetRecruitByFirstNameAndLastName).Methods("GET")
+
 	// Easter Controls
 	myRouter.HandleFunc("/easter/egg/collude/", controller.CollusionButton).Methods("POST")
 

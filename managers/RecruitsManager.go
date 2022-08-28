@@ -58,6 +58,23 @@ func GetCollegeRecruitByRecruitID(recruitID string) structs.Recruit {
 	return recruit
 }
 
+func GetCollegeRecruitByName(firstName string, lastName string) models.Croot {
+	db := dbprovider.GetInstance().GetDB()
+
+	var recruit structs.Recruit
+
+	err := db.Preload("RecruitPlayerProfiles").Where("first_name = ? and last_name = ?", firstName, lastName).Find(&recruit).Error
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	var croot models.Croot
+
+	croot.Map(recruit)
+
+	return croot
+}
+
 func GetCollegeRecruitByRecruitIDForTeamBoard(recruitID string) structs.Recruit {
 	db := dbprovider.GetInstance().GetDB()
 

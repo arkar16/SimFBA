@@ -76,6 +76,44 @@ func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) models.SimTeamBoard
 	return teamProfileResponse
 }
 
+func GetRecruitingClassByTeamID(TeamID string) models.SimTeamBoardResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	var profile structs.RecruitingTeamProfile
+
+	err := db.Preload("Recruits.Recruit", func(db *gorm.DB) *gorm.DB {
+		return db.Order("overall DESC").Where("team_id = ? AND is_signed = true", TeamID)
+	}).Where("id = ?", TeamID).Find(&profile).Error
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	var teamProfileResponse models.SimTeamBoardResponse
+	var crootProfiles []models.CrootProfile
+
+	// iterate through player recruit profiles --> get recruit with preload to player profiles
+	for i := 0; i < len(profile.Recruits); i++ {
+		if profile.Recruits[i].IsSigned && profile.Recruits[i].Recruit.College == profile.TeamAbbreviation {
+			var crootProfile models.CrootProfile
+
+			var croot models.Croot
+
+			croot.Map(profile.Recruits[i].Recruit)
+
+			crootProfile.Map(profile.Recruits[i], croot)
+
+			crootProfiles = append(crootProfiles, crootProfile)
+		}
+
+	}
+
+	sort.Sort(models.ByCrootProfileTotal(crootProfiles))
+
+	teamProfileResponse.Map(profile, crootProfiles)
+
+	return teamProfileResponse
+}
+
 func GetRecruitingProfileForRecruitSync() []structs.RecruitingTeamProfile {
 	db := dbprovider.GetInstance().GetDB()
 

@@ -9,6 +9,7 @@ import (
 	"github.com/CalebRose/SimFBA/managers"
 	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/gorilla/mux"
 )
 
 func ExportStatisticsFromSim(w http.ResponseWriter, r *http.Request) {
@@ -76,4 +77,20 @@ func GetStatsPageContentForCurrentSeason(w http.ResponseWriter, r *http.Request)
 	}
 
 	json.NewEncoder(w).Encode(response)
+}
+
+func GetCollegePlayerStatsByNameTeamAndWeek(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	firstName := vars["firstName"]
+	lastName := vars["lastName"]
+	teamID := vars["team"]
+	week := vars["week"]
+
+	if len(firstName) == 0 {
+		panic("User did not provide a first name")
+	}
+
+	player := managers.GetCollegePlayerByNameTeamAndWeek(firstName, lastName, teamID, week)
+
+	json.NewEncoder(w).Encode(player)
 }

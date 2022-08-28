@@ -63,6 +63,34 @@ func GetCollegePlayerByCollegePlayerId(CollegePlayerId string) structs.CollegePl
 	return CollegePlayer
 }
 
+func GetCollegePlayerByNameAndTeam(firstName string, lastName string, teamID string) models.CollegePlayerCSV {
+	db := dbprovider.GetInstance().GetDB()
+
+	var CollegePlayer structs.CollegePlayer
+
+	db.Where("first_name = ? and last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&CollegePlayer)
+
+	collegePlayerResponse := models.MapPlayerToCSVModel(CollegePlayer)
+
+	return collegePlayerResponse
+}
+
+func GetCollegePlayerByNameTeamAndWeek(firstName string, lastName string, teamID string, week string) models.CollegePlayerCSV {
+	db := dbprovider.GetInstance().GetDB()
+
+	collegeWeek := GetCollegeWeek(week)
+
+	var CollegePlayer structs.CollegePlayer
+
+	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ? AND week_id = ?", collegeWeek.SeasonID, collegeWeek.ID)
+	}).Where("first_name = ? and last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&CollegePlayer)
+
+	collegePlayerResponse := models.MapPlayerForStats(CollegePlayer)
+
+	return collegePlayerResponse
+}
+
 func UpdateCollegePlayer(cp structs.CollegePlayer) {
 	db := dbprovider.GetInstance().GetDB()
 	err := db.Save(&cp).Error

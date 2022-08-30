@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
 )
 
@@ -35,6 +36,52 @@ func GetCollegeGamesByTeamIdAndSeasonId(TeamID string, SeasonID string) []struct
 	db.Order("week_id asc").Where("season_id = ? AND (home_team_id = ? OR away_team_id = ?)", SeasonID, TeamID, TeamID).Find(&games)
 
 	return games
+}
+
+func GetTeamScheduleForBot(TeamID string, SeasonID string) []models.CollegeGameResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
+
+	var games []structs.CollegeGame
+
+	db.Order("week_id asc").Where("season_id = ? AND (home_team_id = ? OR away_team_id = ?)", SeasonID, TeamID, TeamID).Find(&games)
+
+	var gameResponses []models.CollegeGameResponse
+
+	for _, game := range games {
+		showGame := game.WeekID < ts.CollegeWeekID
+		gameResponse := models.CollegeGameResponse{
+			Week:                     game.Week,
+			SeasonID:                 game.SeasonID,
+			HomeTeamID:               game.HomeTeamID,
+			HomeTeam:                 game.HomeTeam,
+			HomeTeamCoach:            game.HomeTeamCoach,
+			HomeTeamWin:              game.HomeTeamWin,
+			HomeTeamScore:            game.HomeTeamScore,
+			AwayTeamID:               game.AwayTeamID,
+			AwayTeam:                 game.AwayTeam,
+			AwayTeamCoach:            game.AwayTeamCoach,
+			AwayTeamWin:              game.AwayTeamWin,
+			AwayTeamScore:            game.AwayTeamScore,
+			Stadium:                  game.Stadium,
+			City:                     game.City,
+			State:                    game.State,
+			IsNeutral:                game.IsNeutral,
+			IsConference:             game.IsConference,
+			IsDivisional:             game.IsDivisional,
+			IsConferenceChampionship: game.IsConferenceChampionship,
+			IsBowlGame:               game.IsBowlGame,
+			IsPlayoffGame:            game.IsPlayoffGame,
+			IsNationalChampionship:   game.IsNationalChampionship,
+			GameComplete:             game.GameComplete,
+			ShowGame:                 showGame,
+		}
+
+		gameResponses = append(gameResponses, gameResponse)
+	}
+
+	return gameResponses
 }
 
 func GetCollegeGamesByTeamId(TeamID string) []structs.CollegeGame {

@@ -46,17 +46,14 @@ func GetCollegeGamesByTimeslotWeekId(w http.ResponseWriter, r *http.Request) {
 func GetCollegeGamesByTeamIDAndSeasonID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamID := vars["teamID"]
+
 	seasonID := vars["seasonID"]
 
 	if len(teamID) == 0 {
-		panic("User did not provide weekID")
+		panic("User did not provide teamID")
 	}
 
-	if len(seasonID) == 0 {
-		panic("No time slot selected!")
-	}
-
-	collegeGames := managers.GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID)
+	collegeGames := managers.GetTeamScheduleForBot(teamID, seasonID)
 
 	json.NewEncoder(w).Encode(collegeGames)
 }

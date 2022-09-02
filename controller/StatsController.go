@@ -94,3 +94,18 @@ func GetCollegePlayerStatsByNameTeamAndWeek(w http.ResponseWriter, r *http.Reque
 
 	json.NewEncoder(w).Encode(player)
 }
+
+func GetCurrentSeasonCollegePlayerStatsByNameTeam(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	firstName := vars["firstName"]
+	lastName := vars["lastName"]
+	teamID := vars["team"]
+
+	if len(firstName) == 0 {
+		panic("User did not provide a first name")
+	}
+
+	player := managers.GetSeasonalCollegePlayerByNameTeam(firstName, lastName, teamID)
+
+	json.NewEncoder(w).Encode(player)
+}

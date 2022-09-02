@@ -20,10 +20,8 @@ func GetTimestamp() structs.Timestamp {
 	return timestamp
 }
 
-func GetCollegeWeek(weekID string) structs.CollegeWeek {
+func GetCollegeWeek(weekID string, ts structs.Timestamp) structs.CollegeWeek {
 	db := dbprovider.GetInstance().GetDB()
-
-	ts := GetTimestamp()
 
 	var week structs.CollegeWeek
 

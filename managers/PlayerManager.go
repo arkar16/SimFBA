@@ -78,15 +78,50 @@ func GetCollegePlayerByNameAndTeam(firstName string, lastName string, teamID str
 func GetCollegePlayerByNameTeamAndWeek(firstName string, lastName string, teamID string, week string) models.CollegePlayerCSV {
 	db := dbprovider.GetInstance().GetDB()
 
-	collegeWeek := GetCollegeWeek(week)
+	ts := GetTimestamp()
+
+	collegeWeek := GetCollegeWeek(week, ts)
+
+	if collegeWeek.ID == uint(ts.CollegeWeekID) {
+		return models.CollegePlayerCSV{}
+	} else {
+		var CollegePlayer structs.CollegePlayer
+
+		db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ? AND week_id = ?", collegeWeek.SeasonID, collegeWeek.ID)
+		}).Where("first_name = ? and last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&CollegePlayer)
+
+		collegePlayerResponse := models.MapPlayerForStats(CollegePlayer)
+
+		return collegePlayerResponse
+	}
+
+}
+
+func GetSeasonalCollegePlayerByNameTeam(firstName string, lastName string, teamID string) models.CollegePlayerResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
 
 	var CollegePlayer structs.CollegePlayer
 
 	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ? AND week_id = ?", collegeWeek.SeasonID, collegeWeek.ID)
+		return db.Where("season_id = ? AND week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
 	}).Where("first_name = ? and last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&CollegePlayer)
 
-	collegePlayerResponse := models.MapPlayerForStats(CollegePlayer)
+	collegePlayerResponse := models.CollegePlayerResponse{
+		ID:          int(CollegePlayer.ID),
+		BasePlayer:  CollegePlayer.BasePlayer,
+		TeamID:      CollegePlayer.TeamID,
+		TeamAbbr:    CollegePlayer.TeamAbbr,
+		City:        CollegePlayer.City,
+		State:       CollegePlayer.State,
+		Year:        CollegePlayer.Year,
+		IsRedshirt:  CollegePlayer.IsRedshirt,
+		PlayerStats: CollegePlayer.Stats,
+	}
+
+	collegePlayerResponse.MapSeasonalStats()
 
 	return collegePlayerResponse
 }

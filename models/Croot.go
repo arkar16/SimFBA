@@ -84,20 +84,29 @@ func (c *Croot) Map(r structs.Recruit) {
 	var totalPoints float64 = 0
 	var runningThreshold float64 = 0
 
-	for idx, recruitProfile := range r.RecruitPlayerProfiles {
-		if idx == 0 && recruitProfile.Scholarship || (runningThreshold == 0 && recruitProfile.Scholarship && idx != 0) {
-			runningThreshold = float64(recruitProfile.TotalPoints) / 2
+	sortedProfiles := r.RecruitPlayerProfiles
+
+	sort.Sort(structs.ByPoints(sortedProfiles))
+
+	for _, recruitProfile := range sortedProfiles {
+		if !recruitProfile.Scholarship {
+			continue
 		}
-		if recruitProfile.TotalPoints >= runningThreshold && recruitProfile.Scholarship {
+		if runningThreshold == 0 {
+			runningThreshold = float64(recruitProfile.TotalPoints) * 0.5
+		}
+
+		if recruitProfile.TotalPoints >= runningThreshold {
 			totalPoints += float64(recruitProfile.TotalPoints)
 		}
+
 	}
 
-	for i := 0; i < len(r.RecruitPlayerProfiles); i++ {
+	for i := 0; i < len(sortedProfiles); i++ {
 		var odds float64 = 0
 
-		if r.RecruitPlayerProfiles[i].TotalPoints >= runningThreshold && r.RecruitPlayerProfiles[i].Scholarship {
-			odds = float64(r.RecruitPlayerProfiles[i].TotalPoints) / totalPoints
+		if sortedProfiles[i].TotalPoints >= runningThreshold && sortedProfiles[i].Scholarship {
+			odds = float64(sortedProfiles[i].TotalPoints) / totalPoints
 		}
 		leadingTeam := LeadingTeams{
 			TeamAbbr: r.RecruitPlayerProfiles[i].TeamAbbreviation,

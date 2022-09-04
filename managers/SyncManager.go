@@ -95,10 +95,6 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				rpa.ApplyCaughtCheating()
 			}
 
-			if curr < 1 {
-				curr = 1
-			}
-
 			rpa.UpdatePointsSpent(recruitProfiles[i].CurrentWeeksPoints, curr)
 			recruitProfiles[i].AddCurrentWeekPointsToTotal(curr)
 			recruitProfilePointsMap[recruitProfiles[i].TeamAbbreviation] += recruitProfiles[i].CurrentWeeksPoints
@@ -161,7 +157,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 						newsLog := structs.NewsLog{
 							WeekID:      timestamp.CollegeWeekID + 1,
 							SeasonID:    timestamp.CollegeSeasonID,
-							MessageType: "Recruiting",
+							MessageType: "Commitment",
 							Message:     recruit.FirstName + " " + recruit.LastName + ", " + strconv.Itoa(recruit.Stars) + " star " + recruit.Position + " from " + recruit.City + ", " + recruit.State + " has signed with " + recruit.College + " with " + strconv.Itoa(int(odds)) + " percent odds.",
 						}
 

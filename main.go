@@ -100,6 +100,7 @@ func handleRequests() {
 
 	// Stats Controls
 	myRouter.HandleFunc("/statistics/export/cfb/", controller.ExportStatisticsFromSim).Methods("POST")
+	myRouter.HandleFunc("/statistics/export/players/", controller.ExportPlayerStatsToCSV).Methods("GET")
 	myRouter.HandleFunc("/statistics/interface/cfb/", controller.GetStatsPageContentForCurrentSeason).Methods("GET")
 
 	// Team Controls

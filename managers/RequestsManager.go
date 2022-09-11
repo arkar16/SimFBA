@@ -72,9 +72,11 @@ func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 	seasonalGames := GetCollegeGamesByTeamIdAndSeasonId(strconv.Itoa(request.TeamID), strconv.Itoa(timestamp.CollegeSeasonID))
 
 	for _, game := range seasonalGames {
-		game.UpdateCoach(request.TeamID, request.Username)
+		if game.Week >= timestamp.CollegeWeek {
+			game.UpdateCoach(request.TeamID, request.Username)
+			db.Save(&game)
+		}
 
-		db.Save(&game)
 	}
 
 	db.Save(&team)

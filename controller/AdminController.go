@@ -59,6 +59,9 @@ func GetNewsLogs(w http.ResponseWriter, r *http.Request) {
 // UpdateTeam
 
 // RunProgressionsForCollege
+func RunProgressionsForCollege(w http.ResponseWriter, r *http.Request) {
+
+}
 
 // RunProgressionsForNFL
 

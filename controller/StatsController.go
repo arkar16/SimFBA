@@ -29,7 +29,37 @@ func ExportStatisticsFromSim(w http.ResponseWriter, r *http.Request) {
 	managers.ExportStatisticsFromSim(exportStatsDTO)
 
 	fmt.Println(w, "Game Data Exported")
+}
 
+func ExportPlayerStatsToCSV(w http.ResponseWriter, r *http.Request) {
+	teamsChan := make(chan []structs.CollegeTeam)
+
+	go func() {
+		ct := managers.GetAllCollegeTeams()
+		teamsChan <- ct
+	}()
+
+	collegeTeams := <-teamsChan
+	close(teamsChan)
+
+	var conferenceMap = make(map[int]int)
+	var conferenceNameMap = make(map[int]string)
+
+	for _, team := range collegeTeams {
+		conferenceMap[int(team.ID)] = team.ConferenceID
+		conferenceNameMap[int(team.ID)] = team.Conference
+	}
+
+	playersChan := make(chan []models.CollegePlayerResponse)
+	go func() {
+		cp := managers.GetAllCollegePlayersWithCurrentYearStatistics(conferenceMap, conferenceNameMap)
+		playersChan <- cp
+	}()
+
+	collegePlayers := <-playersChan
+	close(playersChan)
+
+	managers.ExportPlayerStatsToCSV(collegePlayers, w)
 }
 
 func GetStatsPageContentForCurrentSeason(w http.ResponseWriter, r *http.Request) {

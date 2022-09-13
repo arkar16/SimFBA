@@ -26,6 +26,8 @@ type RecruitingTeamProfile struct {
 	CompositeScore            float64
 	RecruitingClassRank       int
 	CaughtCheating            bool
+	IsAI                      bool
+	AIBehavior                string
 	Recruits                  []RecruitPlayerProfile `gorm:"foreignKey:ProfileID"`
 	Affinities                []ProfileAffinity      `gorm:"foreignKey:ProfileID"`
 }
@@ -90,4 +92,8 @@ func (r *RecruitingTeamProfile) UpdateTotalSignedRecruits(num int) {
 
 func (r *RecruitingTeamProfile) ApplyCaughtCheating() {
 	r.CaughtCheating = true
+}
+
+func (r *RecruitingTeamProfile) ToggleAIBehavior() {
+	r.IsAI = !r.IsAI
 }

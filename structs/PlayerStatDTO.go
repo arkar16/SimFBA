@@ -30,6 +30,7 @@ type PlayerStatDTO struct {
 	Sacks             float64
 	ForcedFumbles     int
 	RecoveredFumbles  int
+	PassesDefensed    int
 	INTs              int
 	Safeties          int
 	DefensiveTDs      int
@@ -93,6 +94,7 @@ func (p *PlayerStatDTO) MapTobasePlayerStatsObject() BasePlayerStats {
 		RecoveredFumbles:     p.RecoveredFumbles,
 		Safeties:             p.Safeties,
 		DefensiveTDs:         p.DefensiveTDs,
+		PassDeflections:      p.PassesDefensed,
 		InterceptionsCaught:  p.INTs,
 		LongestFG:            p.LongestFG,
 		FGAttempts:           p.FGAttempts,

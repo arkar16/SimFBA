@@ -108,3 +108,136 @@ func (r *Recruit) AssignRankValues(rank247 float64, espnRank float64, rivalsRank
 	r.RivalsRank = rivalsRank
 	r.TopRankModifier = modifier
 }
+
+func (r *Recruit) ProgressUnsignedRecruit(attr CollegePlayerProgressions) {
+	r.Age++
+	r.Agility = attr.Agility
+	r.Speed = attr.Speed
+	r.FootballIQ = attr.FootballIQ
+	r.Carrying = attr.Carrying
+	r.Catching = attr.Catching
+	r.RouteRunning = attr.RouteRunning
+	r.PassBlock = attr.PassBlock
+	r.RunBlock = attr.RunBlock
+	r.PassRush = attr.PassRush
+	r.RunDefense = attr.RunDefense
+	r.Tackle = attr.Tackle
+	r.ManCoverage = attr.ManCoverage
+	r.ZoneCoverage = attr.ZoneCoverage
+	r.KickAccuracy = attr.KickAccuracy
+	r.KickPower = attr.KickPower
+	r.PuntAccuracy = attr.PuntAccuracy
+	r.PuntPower = attr.PuntPower
+	r.ThrowAccuracy = attr.ThrowAccuracy
+	r.ThrowPower = attr.ThrowPower
+}
+
+func (r *Recruit) GetOverall() {
+	var ovr float64 = 0
+	if r.Position == "QB" {
+		ovr = (0.1 * float64(r.Agility)) + (0.25 * float64(r.ThrowPower)) + (0.25 * float64(r.ThrowAccuracy)) + (0.1 * float64(r.Speed)) + (0.2 * float64(r.FootballIQ)) + (0.1 * float64(r.Strength))
+		r.Overall = int(ovr)
+	} else if r.Position == "RB" {
+		ovr = (0.2 * float64(r.Agility)) + (0.05 * float64(r.PassBlock)) +
+			(0.1 * float64(r.Carrying)) + (0.25 * float64(r.Speed)) +
+			(0.15 * float64(r.FootballIQ)) + (0.2 * float64(r.Strength)) +
+			(0.05 * float64(r.Catching))
+		r.Overall = int(ovr)
+	} else if r.Position == "FB" {
+		ovr = (0.1 * float64(r.Agility)) + (0.1 * float64(r.PassBlock)) +
+			(0.1 * float64(r.Carrying)) + (0.05 * float64(r.Speed)) +
+			(0.15 * float64(r.FootballIQ)) + (0.2 * float64(r.Strength)) +
+			(0.05 * float64(r.Catching)) + (0.25 * float64(r.RunBlock))
+		r.Overall = int(ovr)
+	} else if r.Position == "WR" {
+		ovr = (0.15 * float64(r.FootballIQ)) + (0.2 * float64(r.Speed)) +
+			(0.1 * float64(r.Agility)) + (0.05 * float64(r.Carrying)) +
+			(0.05 * float64(r.Strength)) + (0.25 * float64(r.Catching)) +
+			(0.2 * float64(r.RouteRunning))
+		r.Overall = int(ovr)
+	} else if r.Position == "TE" {
+		ovr = (0.15 * float64(r.FootballIQ)) + (0.1 * float64(r.Speed)) +
+			(0.1 * float64(r.Agility)) + (0.05 * float64(r.Carrying)) +
+			(0.05 * float64(r.PassBlock)) + (0.15 * float64(r.RunBlock)) +
+			(0.1 * float64(r.Strength)) + (0.20 * float64(r.Catching)) +
+			(0.1 * float64(r.RouteRunning))
+		r.Overall = int(ovr)
+	} else if r.Position == "OT" || r.Position == "OG" {
+		ovr = (0.15 * float64(r.FootballIQ)) + (0.05 * float64(r.Agility)) +
+			(0.3 * float64(r.RunBlock)) + (0.2 * float64(r.Strength)) +
+			(0.3 * float64(r.PassBlock))
+		r.Overall = int(ovr)
+	} else if r.Position == "C" {
+		ovr = (0.2 * float64(r.FootballIQ)) + (0.05 * float64(r.Agility)) +
+			(0.3 * float64(r.RunBlock)) + (0.15 * float64(r.Strength)) +
+			(0.3 * float64(r.PassBlock))
+		r.Overall = int(ovr)
+	} else if r.Position == "DT" {
+		ovr = (0.15 * float64(r.FootballIQ)) + (0.05 * float64(r.Agility)) +
+			(0.25 * float64(r.RunDefense)) + (0.2 * float64(r.Strength)) +
+			(0.15 * float64(r.PassRush)) + (0.2 * float64(r.Tackle)) +
+			(0.1 * float64(r.Agility))
+		r.Overall = int(ovr)
+	} else if r.Position == "DE" {
+		ovr = (0.15 * float64(r.FootballIQ)) + (0.1 * float64(r.Speed)) +
+			(0.15 * float64(r.RunDefense)) + (0.1 * float64(r.Strength)) +
+			(0.2 * float64(r.PassRush)) + (0.2 * float64(r.Tackle)) +
+			(0.1 * float64(r.Agility))
+		r.Overall = int(ovr)
+	} else if r.Position == "ILB" {
+		ovr = (0.2 * float64(r.FootballIQ)) + (0.1 * float64(r.Speed)) +
+			(0.15 * float64(r.RunDefense)) + (0.1 * float64(r.Strength)) +
+			(0.1 * float64(r.PassRush)) + (0.15 * float64(r.Tackle)) +
+			(0.1 * float64(r.ZoneCoverage)) + (0.05 * float64(r.ManCoverage)) +
+			(0.05 * float64(r.Agility))
+		r.Overall = int(ovr)
+	} else if r.Position == "OLB" {
+		ovr = (0.15 * float64(r.FootballIQ)) + (0.1 * float64(r.Speed)) +
+			(0.15 * float64(r.RunDefense)) + (0.1 * float64(r.Strength)) +
+			(0.15 * float64(r.PassRush)) + (0.15 * float64(r.Tackle)) +
+			(0.1 * float64(r.ZoneCoverage)) + (0.05 * float64(r.ManCoverage)) +
+			(0.05 * float64(r.Agility))
+		r.Overall = int(ovr)
+	} else if r.Position == "CB" {
+		ovr = (0.15 * float64(r.FootballIQ)) + (0.25 * float64(r.Speed)) +
+			(0.05 * float64(r.Tackle)) + (0.05 * float64(r.Strength)) +
+			(0.15 * float64(r.Agility)) + (0.15 * float64(r.ZoneCoverage)) +
+			(0.15 * float64(r.ManCoverage)) + (0.05 * float64(r.Catching))
+		r.Overall = int(ovr)
+	} else if r.Position == "FS" {
+		ovr = (0.2 * float64(r.FootballIQ)) + (0.2 * float64(r.Speed)) +
+			(0.05 * float64(r.RunDefense)) + (0.05 * float64(r.Strength)) +
+			(0.05 * float64(r.Catching)) + (0.05 * float64(r.Tackle)) +
+			(0.15 * float64(r.ZoneCoverage)) + (0.15 * float64(r.ManCoverage)) +
+			(0.1 * float64(r.Agility))
+		r.Overall = int(ovr)
+	} else if r.Position == "SS" {
+		ovr = (0.15 * float64(r.FootballIQ)) + (0.2 * float64(r.Speed)) +
+			(0.05 * float64(r.RunDefense)) + (0.05 * float64(r.Strength)) +
+			(0.05 * float64(r.Catching)) + (0.1 * float64(r.Tackle)) +
+			(0.15 * float64(r.ZoneCoverage)) + (0.15 * float64(r.ManCoverage)) +
+			(0.1 * float64(r.Agility))
+		r.Overall = int(ovr)
+	} else if r.Position == "K" {
+		ovr = (0.2 * float64(r.FootballIQ)) + (0.45 * float64(r.KickPower)) +
+			(0.45 * float64(r.KickAccuracy))
+		r.Overall = int(ovr)
+	} else if r.Position == "P" {
+		ovr = (0.2 * float64(r.FootballIQ)) + (0.45 * float64(r.PuntPower)) +
+			(0.45 * float64(r.PuntAccuracy))
+		r.Overall = int(ovr)
+	} else if r.Position == "ATH" {
+		ovr = (float64(r.FootballIQ) + float64(r.Speed) + float64(r.Agility) +
+			float64(r.Carrying) + float64(r.Catching) + float64(r.RouteRunning) +
+			float64(r.RunBlock) + float64(r.PassBlock) + float64(r.PassRush) +
+			float64(r.RunDefense) + float64(r.Tackle) + float64(r.Strength) +
+			float64(r.ZoneCoverage) + float64(r.ManCoverage) + float64(r.ThrowAccuracy) +
+			float64(r.ThrowPower) + float64(r.PuntAccuracy) + float64(r.PuntPower) +
+			float64(r.KickAccuracy) + float64(r.KickPower)) / 20
+		r.Overall = int(ovr)
+	}
+}
+
+func (r *Recruit) AssignJUCOSchool(school string) {
+	r.HighSchool = school
+}

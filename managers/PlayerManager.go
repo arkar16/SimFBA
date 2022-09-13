@@ -190,6 +190,18 @@ func GetAllCollegePlayersWithCurrentYearStatistics(cMap map[int]int, cNMap map[i
 	return cpResponse
 }
 
+func GetAllCollegePlayersWithStatsByTeamID(TeamID string, SeasonID string) []structs.CollegePlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var collegePlayers []structs.CollegePlayer
+
+	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ? and team_id = ? and snaps > 0", SeasonID, TeamID)
+	}).Find(&collegePlayers)
+
+	return collegePlayers
+}
+
 func GetHeismanList() []models.HeismanWatchModel {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -210,13 +222,14 @@ func GetHeismanList() []models.HeismanWatchModel {
 
 		currentYearStandings := team.TeamStandings[0]
 
-		var weight float64 = 1
+		var weight float64 = 0 // 1
 		if currentYearStandings.TotalLosses+currentYearStandings.TotalWins > 0 {
-			newWeight := (float64(currentYearStandings.TotalWins) / 12) + 1
+			// newWeight := (float64(currentYearStandings.TotalWins) / 12) + 1
 
-			if newWeight > weight {
-				weight = newWeight
-			}
+			// if newWeight > weight {
+			// 	weight = newWeight
+			// }
+			weight = float64(currentYearStandings.TotalWins) / 100
 		}
 
 		teamWeight[team.TeamAbbr] = weight

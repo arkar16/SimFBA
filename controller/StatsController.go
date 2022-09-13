@@ -139,3 +139,31 @@ func GetCurrentSeasonCollegePlayerStatsByNameTeam(w http.ResponseWriter, r *http
 
 	json.NewEncoder(w).Encode(player)
 }
+
+func GetWeeklyTeamStatsByTeamAbbrAndWeek(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["team"]
+	week := vars["week"]
+
+	if len(teamID) == 0 {
+		panic("User did not provide a first name")
+	}
+
+	team := managers.GetTeamStatsByWeekAndTeam(teamID, week)
+
+	json.NewEncoder(w).Encode(team)
+}
+
+func GetSeasonTeamStatsByTeamAbbrAndSeason(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["team"]
+	season := vars["season"]
+
+	if len(teamID) == 0 {
+		panic("User did not provide a first name")
+	}
+
+	team := managers.GetSeasonalTeamStats(teamID, season)
+
+	json.NewEncoder(w).Encode(team)
+}

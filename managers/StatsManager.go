@@ -6,7 +6,9 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
+	"gorm.io/gorm"
 )
 
 func GetCollegePlayerStatsByGame(PlayerID string, GameID string) structs.CollegePlayerStats {
@@ -59,15 +61,53 @@ func GetAllPlayerStatsByWeek(WeekID string) []structs.CollegePlayerStats {
 	return playerStats
 }
 
+func GetTeamStatsByWeekAndTeam(TeamID string, Week string) structs.CollegeTeam {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+
+	collegeWeek := GetCollegeWeek(Week, ts)
+	var collegeTeam structs.CollegeTeam
+
+	if collegeWeek.ID == uint(ts.CollegeWeekID) {
+		return structs.CollegeTeam{}
+	} else {
+		err := db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ? AND week_id = ?", collegeWeek.SeasonID, collegeWeek.ID)
+		}).Where("id = ?", TeamID).Find(&collegeTeam).Error
+		if err != nil {
+			fmt.Println("Could not find college team and stats from week")
+		}
+
+	}
+	return collegeTeam
+}
+
 // TEAM STATS
-func GetSeasonalTeamStats(TeamID string, SeasonID string) []structs.CollegeTeamStats {
+func GetSeasonalTeamStats(TeamID string, SeasonID string) models.CollegeTeamResponse {
 	db := dbprovider.GetInstance().GetDB()
 
-	var teamStats []structs.CollegeTeamStats
+	var collegeTeam structs.CollegeTeam
 
-	db.Where("team_id = ? AND season_id = ?", TeamID, SeasonID).Find(&teamStats)
+	err := db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ?", SeasonID)
+	}).Where("id = ?", TeamID).Find(&collegeTeam).Error
+	if err != nil {
+		fmt.Println("Could not find college team and stats from week")
+	}
 
-	return teamStats
+	ct := models.CollegeTeamResponse{
+		ID:           int(collegeTeam.ID),
+		BaseTeam:     collegeTeam.BaseTeam,
+		ConferenceID: collegeTeam.ConferenceID,
+		Conference:   collegeTeam.Conference,
+		DivisionID:   collegeTeam.DivisionID,
+		Division:     collegeTeam.Division,
+		TeamStats:    collegeTeam.TeamStats,
+	}
+
+	ct.MapSeasonalStats()
+
+	return ct
 }
 
 func GetCollegeTeamStatsByGame(GameID string) []structs.CollegeTeamStats {
@@ -232,5 +272,36 @@ func ExportStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
 	if err != nil {
 		log.Panicln("Could not save team stats!")
 	}
+}
 
+func GetAllCollegeTeamsWithCurrentSeasonStats() []models.CollegeTeamResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
+
+	var teams []structs.CollegeTeam
+
+	db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ? and week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
+	}).Find(&teams)
+
+	var ctResponse []models.CollegeTeamResponse
+
+	for _, team := range teams {
+		ct := models.CollegeTeamResponse{
+			ID:           int(team.ID),
+			BaseTeam:     team.BaseTeam,
+			ConferenceID: team.ConferenceID,
+			Conference:   team.Conference,
+			DivisionID:   team.DivisionID,
+			Division:     team.Division,
+			TeamStats:    team.TeamStats,
+		}
+
+		ct.MapSeasonalStats()
+
+		ctResponse = append(ctResponse, ct)
+	}
+
+	return ctResponse
 }

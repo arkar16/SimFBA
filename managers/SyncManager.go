@@ -40,8 +40,6 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 	var recruitProfiles []structs.RecruitPlayerProfile
 
-	var allAllocations []structs.RecruitPointAllocation
-
 	// Get every recruit
 	recruits := GetAllUnsignedRecruits()
 
@@ -100,12 +98,11 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			recruitProfilePointsMap[recruitProfiles[i].TeamAbbreviation] += recruitProfiles[i].CurrentWeeksPoints
 
 			// Add RPA to point allocations list
-			allAllocations = append(allAllocations, rpa)
-			// err := db.Save(&rpa).Error
-			// if err != nil {
-			// 	fmt.Println(err.Error())
-			// 	log.Fatalf("Could not save Point Allocation")
-			// }
+			err := db.Save(&rpa).Error
+			if err != nil {
+				fmt.Println(err.Error())
+				log.Fatalf("Could not save Point Allocation")
+			}
 		}
 
 		sort.Sort(structs.ByPoints(recruitProfiles))
@@ -270,11 +267,6 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			log.Fatalf("Could not save timestamp")
 		}
 		fmt.Println("Saved Rank Scores for Team " + rp.TeamAbbreviation)
-	}
-
-	err := db.CreateInBatches(&allAllocations, len(allAllocations)).Error
-	if err != nil {
-		log.Panicln("Could not save all allocations!")
 	}
 }
 

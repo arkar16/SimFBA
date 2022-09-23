@@ -161,9 +161,15 @@ func GetAllCollegePlayersWithCurrentYearStatistics(cMap map[int]int, cNMap map[i
 
 	ts := GetTimestamp()
 
+	var distinctCollegeStats []structs.CollegePlayerStats
+
+	db.Distinct("college_player_id").Where("snaps > 0").Find(&distinctCollegeStats)
+
+	distinctCollegePlayerIDs := util.GetCollegePlayerIDs(distinctCollegeStats)
+
 	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
 		return db.Where("season_id = ? and week_id < ? and snaps > 0", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
-	}).Find(&collegePlayers)
+	}).Where("id in ?", distinctCollegePlayerIDs).Find(&collegePlayers)
 
 	var cpResponse []models.CollegePlayerResponse
 
@@ -216,9 +222,14 @@ func GetHeismanList() []models.HeismanWatchModel {
 	var teamWeight = make(map[string]float64)
 
 	var homeTeamMapper = make(map[int]string)
+	var teamGameMapper = make(map[int][]structs.CollegeGame)
 
 	for _, team := range teamWithStandings {
 		homeTeamMapper[int(team.ID)] = team.TeamAbbr
+
+		games := GetCollegeGamesByTeamIdAndSeasonId(strconv.Itoa(int(team.ID)), strconv.Itoa(ts.CollegeSeasonID))
+
+		teamGameMapper[int(team.ID)] = games
 
 		currentYearStandings := team.TeamStandings[0]
 
@@ -235,16 +246,26 @@ func GetHeismanList() []models.HeismanWatchModel {
 		teamWeight[team.TeamAbbr] = weight
 	}
 
+	// db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+	// 	return db.Where("snaps > 0 and season_id = ? and week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
+	// }).Where("Stats.snaps > 0").Find(&collegePlayers)
+
+	var distinctCollegeStats []structs.CollegePlayerStats
+
+	db.Distinct("college_player_id").Where("snaps > 0").Find(&distinctCollegeStats)
+
+	distinctCollegePlayerIDs := util.GetCollegePlayerIDs(distinctCollegeStats)
+
 	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
 		return db.Where("snaps > 0 and season_id = ? and week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
-	}).Find(&collegePlayers)
+	}).Where("id IN ?", distinctCollegePlayerIDs).Find(&collegePlayers)
 
 	for _, cp := range collegePlayers {
 		if len(cp.Stats) == 0 {
 			continue
 		}
 
-		score := util.GetHeismanScore(cp, teamWeight, homeTeamMapper)
+		score := util.GetHeismanScore(cp, teamWeight, homeTeamMapper, teamGameMapper[cp.TeamID])
 
 		h := models.HeismanWatchModel{
 			FirstName: cp.FirstName,

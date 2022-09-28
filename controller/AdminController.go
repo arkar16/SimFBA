@@ -46,6 +46,25 @@ func GetNewsLogs(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newsLogs)
 }
 
+func GetAllNewsLogsForASeason(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	seasonID := vars["seasonID"]
+
+	newsLogs := managers.GetAllNewsLogs(seasonID)
+
+	json.NewEncoder(w).Encode(newsLogs)
+}
+
+func GetWeeksInSeason(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	seasonID := vars["seasonID"]
+	weekID := vars["weekID"]
+
+	weeks := managers.GetWeeksInASeason(seasonID, weekID)
+
+	json.NewEncoder(w).Encode(weeks)
+}
+
 // CreateCollegeRecruit?
 
 // CreateNFLPlayer -- Create NFL Player from template, and then synthetically progress them based on the year of input

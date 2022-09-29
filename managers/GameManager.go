@@ -38,6 +38,16 @@ func GetCollegeGamesByTeamIdAndSeasonId(TeamID string, SeasonID string) []struct
 	return games
 }
 
+func GetCollegeGamesBySeasonID(SeasonID string) []structs.CollegeGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	var games []structs.CollegeGame
+
+	db.Order("week_id asc").Where("season_id = ?", SeasonID).Find(&games)
+
+	return games
+}
+
 func GetTeamScheduleForBot(TeamID string, SeasonID string) []models.CollegeGameResponse {
 	db := dbprovider.GetInstance().GetDB()
 

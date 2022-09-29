@@ -122,7 +122,7 @@ func GetWeeksInASeason(seasonID string, weekID string) []structs.CollegeWeek {
 
 	var weeks []structs.CollegeWeek
 
-	err := db.Where("season_id = ? AND id <= ?", seasonID, weekID).Find(&weeks).Error
+	err := db.Where("season_id = ?", seasonID).Find(&weeks).Error
 	if err != nil {
 		fmt.Println(err)
 	}

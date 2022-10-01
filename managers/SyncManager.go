@@ -168,15 +168,18 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 								recruitProfiles[i].SignPlayer()
 							} else {
 								recruitProfiles[i].LockPlayer()
-								tp := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(recruitProfiles[i].ProfileID))
-								tp.ReallocateScholarship()
-								err := db.Save(&tp).Error
-								if err != nil {
-									fmt.Println(err.Error())
-									log.Fatalf("Could not sync recruiting profile.")
-								}
+								if recruitProfiles[i].Scholarship {
+									tp := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(recruitProfiles[i].ProfileID))
 
-								fmt.Println("Reallocated Scholarship to " + tp.TeamAbbreviation)
+									tp.ReallocateScholarship()
+									err := db.Save(&tp).Error
+									if err != nil {
+										fmt.Println(err.Error())
+										log.Fatalf("Could not sync recruiting profile.")
+									}
+
+									fmt.Println("Reallocated Scholarship to " + tp.TeamAbbreviation)
+								}
 							}
 						}
 					} else {

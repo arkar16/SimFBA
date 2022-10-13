@@ -33,7 +33,6 @@ func SyncTimestamp(w http.ResponseWriter, r *http.Request) {
 
 func SyncMissingRES(w http.ResponseWriter, r *http.Request) {
 	managers.SyncAllMissingEfficiencies()
-
 }
 
 func GetNewsLogs(w http.ResponseWriter, r *http.Request) {

@@ -469,6 +469,10 @@ func ProgressPlayer(cp structs.CollegePlayer, SeasonID string) structs.CollegePl
 
 	cp.Progress(progressions)
 
+	if cp.IsRedshirting {
+		cp.SetRedshirtStatus()
+	}
+
 	cp.GetOverall()
 
 	return cp

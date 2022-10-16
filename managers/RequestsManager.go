@@ -2,6 +2,7 @@ package managers
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
@@ -100,5 +101,8 @@ func RejectTeamRequest(request structs.TeamRequest) {
 
 	request.RejectTeamRequest()
 
-	db.Delete(&request)
+	err := db.Delete(&request).Error
+	if err != nil {
+		log.Fatalln("Could not delete request: " + err.Error())
+	}
 }

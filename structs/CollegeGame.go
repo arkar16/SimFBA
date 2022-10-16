@@ -31,6 +31,7 @@ type CollegeGame struct {
 	IsNationalChampionship   bool
 	IsRivalryGame            bool
 	GameComplete             bool
+	GameTitle                string // For rivalry match-ups, bowl games, championships, and more
 }
 
 func (cg *CollegeGame) UpdateScore(HomeScore int, AwayScore int) {

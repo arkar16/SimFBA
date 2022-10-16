@@ -25,4 +25,5 @@ type CollegeGameResponse struct {
 	IsNationalChampionship   bool
 	GameComplete             bool
 	ShowGame                 bool
+	GameTitle                string
 }

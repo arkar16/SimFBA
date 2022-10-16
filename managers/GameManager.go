@@ -86,6 +86,7 @@ func GetTeamScheduleForBot(TeamID string, SeasonID string) []models.CollegeGameR
 			IsNationalChampionship:   game.IsNationalChampionship,
 			GameComplete:             game.GameComplete,
 			ShowGame:                 showGame,
+			GameTitle:                game.GameTitle,
 		}
 
 		gameResponses = append(gameResponses, gameResponse)

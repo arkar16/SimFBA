@@ -15,7 +15,10 @@ func GetHeismanScore(cp structs.CollegePlayer, weightMap map[string]float64, hom
 
 	var totalMod float64 = 0
 
-	for _, stat := range stats {
+	for idx, stat := range stats {
+		if idx > 12 {
+			continue
+		}
 		var statScore float64 = 0
 
 		opposingTeam := stat.OpposingTeam
@@ -36,12 +39,12 @@ func GetHeismanScore(cp structs.CollegePlayer, weightMap map[string]float64, hom
 			statScore += (float64(stat.Catches) * 0.525)
 			statScore += (float64(stat.ReceivingYards) * 0.1125)
 			statScore += (float64(stat.ReceivingTDs) * 6)
-			statScore -= float64(drops) * 0.775
+			statScore -= float64(drops) * 0.75
 		} else {
 			statScore += (float64(stat.Catches) * 0.25)
 			statScore += (float64(stat.ReceivingYards) * 0.05)
 			statScore += (float64(stat.ReceivingTDs) * 4)
-			statScore -= float64(drops) * 0.775
+			statScore -= float64(drops) * 0.75
 		}
 		statScore -= (float64(stat.Fumbles) * 6)
 
@@ -72,7 +75,7 @@ func GetHeismanScore(cp structs.CollegePlayer, weightMap map[string]float64, hom
 		opposingTeamWeight := weightMap[opposingTeam]
 
 		if (game.HomeTeamWin && cp.TeamID != game.HomeTeamID) || (game.AwayTeamWin && cp.TeamID != game.AwayTeamID) {
-			opposingTeamWeight *= -.455
+			opposingTeamWeight *= -.425
 		}
 
 		totalMod += opposingTeamWeight

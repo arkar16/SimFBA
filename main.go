@@ -70,7 +70,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/rankings/assign/all/croots/", controller.AssignAllRecruitRanks).Methods("GET")
 
 	// Recruiting Controls
-	myRouter.HandleFunc("/recruiting/profile/dashboard/{teamID}/", controller.GetRecruitingProfileForDashboardByTeamID).Methods("GET")
+	myRouter.HandleFunc("/recruiting/overview/dashboard/{teamID}", controller.GetRecruitingProfileForDashboardByTeamID).Methods("GET")
 	myRouter.HandleFunc("/recruiting/profile/team/{teamID}/", controller.GetRecruitingProfileForTeamBoardByTeamID).Methods("GET")
 	myRouter.HandleFunc("/recruiting/profile/all/", controller.GetAllRecruitingProfiles).Methods("GET")
 	myRouter.HandleFunc("/recruiting/profile/only/{teamID}/", controller.GetOnlyRecruitingProfileByTeamID).Methods("GET")

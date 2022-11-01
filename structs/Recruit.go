@@ -22,6 +22,7 @@ type Recruit struct {
 	Rank247               float64
 	Top25Rank             float64
 	TopRankModifier       float64
+	RecruitingStatus      string
 	RecruitPlayerProfiles []RecruitPlayerProfile   `gorm:"foreignKey:RecruitID"`
 	RecruitPoints         []RecruitPointAllocation `gorm:"foreignKey:RecruitID"`
 }

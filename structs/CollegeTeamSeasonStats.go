@@ -1,21 +1,24 @@
-package models
+package structs
 
-import "github.com/CalebRose/SimFBA/structs"
+import "gorm.io/gorm"
 
-type CollegeTeamResponse struct {
-	ID int
-	structs.BaseTeam
-	ConferenceID int
-	Conference   string
-	DivisionID   int
-	Division     string
-	TeamStats    []structs.CollegeTeamStats
-	SeasonStats  structs.CollegeTeamSeasonStats
+type CollegeTeamSeasonStats struct {
+	gorm.Model
+	TeamID   uint
+	SeasonID uint
+	BaseTeamStats
+	GamesPlayed         int
+	TotalOffensiveYards int
+	TotalYardsAllowed   int
+	Fumbles             int
+	QBRating            float64
+	Tackles             float64
+	Turnovers           int
 }
 
-func (ctr *CollegeTeamResponse) MapSeasonalStats() {
-	var ss structs.CollegeTeamSeasonStats
-	for _, stat := range ctr.TeamStats {
+func (ss *CollegeTeamSeasonStats) MapStats(stats []CollegeTeamStats) {
+	for _, stat := range stats {
+		ss.GamesPlayed++
 		ss.PassingYards = ss.PassingYards + stat.PassingYards
 		ss.PassingAttempts = ss.PassingAttempts + stat.PassingAttempts
 		ss.PassingCompletions = ss.PassingCompletions + stat.PassingCompletions
@@ -81,6 +84,4 @@ func (ctr *CollegeTeamResponse) MapSeasonalStats() {
 		numerator := passingYards + passingTDs + passComps - ints
 		ss.QBRating = numerator / float64(ss.PassingAttempts)
 	}
-
-	ctr.SeasonStats = ss
 }

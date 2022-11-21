@@ -1,25 +1,25 @@
-package models
+package structs
 
-import "github.com/CalebRose/SimFBA/structs"
+import "gorm.io/gorm"
 
-type CollegePlayerResponse struct {
-	ID int
-	structs.BasePlayer
-	TeamID       int
-	TeamAbbr     string
-	City         string
-	State        string
-	Year         int
-	IsRedshirt   bool
-	ConferenceID int
-	Conference   string
-	PlayerStats  []structs.CollegePlayerStats
-	SeasonStats  structs.CollegePlayerSeasonStats
+type CollegePlayerSeasonStats struct {
+	gorm.Model
+	CollegePlayerID uint
+	TeamID          uint
+	SeasonID        uint
+	BasePlayerStats
+	GamesPlayed  int
+	QBRating     float64
+	Tackles      float64
+	RushingAvg   float64
+	PassingAvg   float64
+	ReceivingAvg float64
+	Completion   float64
 }
 
-func (cpr *CollegePlayerResponse) MapSeasonalStats() {
-	var ss structs.CollegePlayerSeasonStats
-	for _, stat := range cpr.PlayerStats {
+func (ss *CollegePlayerSeasonStats) MapStats(stats []CollegePlayerStats) {
+	for _, stat := range stats {
+		ss.GamesPlayed++
 		ss.PassingYards = ss.PassingYards + stat.PassingYards
 		ss.PassAttempts = ss.PassAttempts + stat.PassAttempts
 		ss.PassCompletions = ss.PassCompletions + stat.PassCompletions
@@ -88,7 +88,7 @@ func (cpr *CollegePlayerResponse) MapSeasonalStats() {
 	if ss.PassAttempts > 0 {
 		numerator := passingYards + passingTDs + passComps - ints
 		ss.QBRating = numerator / float64(ss.PassAttempts)
-		ss.PassingAvg = float64(ss.PassingYards) / float64(len(cpr.PlayerStats))
+		ss.PassingAvg = float64(ss.PassingYards) / float64(ss.GamesPlayed)
 		ss.Completion = float64(ss.PassCompletions) / float64(ss.PassAttempts)
 	}
 
@@ -100,6 +100,4 @@ func (cpr *CollegePlayerResponse) MapSeasonalStats() {
 	if ss.Catches > 0 {
 		ss.ReceivingAvg = float64(ss.ReceivingYards) / float64(ss.Catches)
 	}
-
-	cpr.SeasonStats = ss
 }

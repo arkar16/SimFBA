@@ -1,6 +1,7 @@
 package managers
 
 import (
+	"fmt"
 	"log"
 	"sort"
 	"strconv"
@@ -38,7 +39,10 @@ func GetAllCollegePlayersByTeamId(TeamID string) []structs.CollegePlayer {
 
 	var CollegePlayers []structs.CollegePlayer
 
-	db.Order("overall desc").Where("team_id = ?", TeamID).Where("has_graduated = ?", false).Find(&CollegePlayers)
+	err := db.Order("overall desc").Where("team_id = ?", TeamID).Where("has_graduated = ?", false).Find(&CollegePlayers).Error
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 
 	return CollegePlayers
 }
@@ -161,14 +165,19 @@ func GetAllCollegePlayersWithCurrentYearStatistics(cMap map[int]int, cNMap map[i
 
 	ts := GetTimestamp()
 
-	var distinctCollegeStats []structs.CollegePlayerStats
+	// var distinctCollegeStats []structs.CollegePlayerStats
+	var distinctCollegeStats []structs.CollegePlayerSeasonStats
 
 	db.Distinct("college_player_id").Where("snaps > 0").Find(&distinctCollegeStats)
 
-	distinctCollegePlayerIDs := util.GetCollegePlayerIDs(distinctCollegeStats)
+	distinctCollegePlayerIDs := util.GetCollegePlayerIDsBySeasonStats(distinctCollegeStats)
 
-	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ? and week_id < ? and snaps > 0", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
+	// db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+	// 	return db.Where("season_id = ? and week_id < ? and snaps > 0", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
+	// }).Where("id in ?", distinctCollegePlayerIDs).Find(&collegePlayers)
+
+	db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ?", strconv.Itoa(ts.CollegeSeasonID))
 	}).Where("id in ?", distinctCollegePlayerIDs).Find(&collegePlayers)
 
 	var cpResponse []models.CollegePlayerResponse
@@ -185,10 +194,10 @@ func GetAllCollegePlayersWithCurrentYearStatistics(cMap map[int]int, cNMap map[i
 			State:        player.State,
 			Year:         player.Year,
 			IsRedshirt:   player.IsRedshirt,
-			PlayerStats:  player.Stats,
+			SeasonStats:  player.SeasonStats,
 		}
 
-		cp.MapSeasonalStats()
+		// cp.MapSeasonalStats()
 
 		cpResponse = append(cpResponse, cp)
 	}
@@ -228,6 +237,10 @@ func GetHeismanList() []models.HeismanWatchModel {
 		homeTeamMapper[int(team.ID)] = team.TeamAbbr
 
 		games := GetCollegeGamesByTeamIdAndSeasonId(strconv.Itoa(int(team.ID)), strconv.Itoa(ts.CollegeSeasonID))
+
+		if len(games) == 0 || len(team.TeamStandings) == 0 {
+			continue
+		}
 
 		teamGameMapper[int(team.ID)] = games
 

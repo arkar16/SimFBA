@@ -104,11 +104,21 @@ func GetCollegeGameByGameID(games []structs.CollegeGame, gameID int) structs.Col
 	return structs.CollegeGame{}
 }
 
+func GetCollegePlayerIDsBySeasonStats(cps []structs.CollegePlayerSeasonStats) []string {
+	var list []string
+
+	for _, cp := range cps {
+		list = append(list, strconv.Itoa(int(cp.CollegePlayerID)))
+	}
+
+	return list
+}
+
 func GetCollegePlayerIDs(cps []structs.CollegePlayerStats) []string {
 	var list []string
 
 	for _, cp := range cps {
-		list = append(list, strconv.Itoa(cp.CollegePlayerID))
+		list = append(list, strconv.Itoa(int(cp.CollegePlayerID)))
 	}
 
 	return list

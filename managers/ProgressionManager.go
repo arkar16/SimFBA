@@ -77,9 +77,11 @@ func ProgressionMain() {
 		}
 
 		// Graduating players
-		err := db.CreateInBatches(&graduatingPlayers, len(graduatingPlayers)).Error
-		if err != nil {
-			log.Panicln("Could not save graduating players")
+		for _, grad := range graduatingPlayers {
+			err := db.Create(&grad).Error
+			if err != nil {
+				log.Panicln("Could not save graduating players")
+			}
 		}
 	}
 

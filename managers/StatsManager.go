@@ -145,7 +145,7 @@ func GetHistoricalTeamStats(TeamID string, SeasonID string) []structs.CollegeTea
 
 	var teamStats []structs.CollegeTeamStats
 
-	db.Where("team_id = ? AND season_id != ?", TeamID, SeasonID).Find(&teamStats)
+	db.Where("team_id = ? AND season_id = ?", TeamID, SeasonID).Find(&teamStats)
 
 	return teamStats
 }
@@ -281,8 +281,8 @@ func GetAllCollegeTeamsWithCurrentSeasonStats() []models.CollegeTeamResponse {
 
 	var teams []structs.CollegeTeam
 
-	db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ? and week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
+	db.Preload("TeamSeasonStats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ?", strconv.Itoa(ts.CollegeSeasonID))
 	}).Find(&teams)
 
 	var ctResponse []models.CollegeTeamResponse
@@ -295,13 +295,49 @@ func GetAllCollegeTeamsWithCurrentSeasonStats() []models.CollegeTeamResponse {
 			Conference:   team.Conference,
 			DivisionID:   team.DivisionID,
 			Division:     team.Division,
-			TeamStats:    team.TeamStats,
+			SeasonStats:  team.TeamSeasonStats,
 		}
-
-		ct.MapSeasonalStats()
 
 		ctResponse = append(ctResponse, ct)
 	}
 
 	return ctResponse
+}
+
+func MapAllStatsToSeason() {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+
+	teams := GetAllCollegeTeams()
+
+	for _, team := range teams {
+		teamStats := GetHistoricalTeamStats(strconv.Itoa(int(team.ID)), strconv.Itoa(ts.CollegeSeasonID))
+
+		seasonStats := structs.CollegeTeamSeasonStats{
+			TeamID:   team.ID,
+			SeasonID: uint(ts.CollegeSeasonID),
+		}
+
+		seasonStats.MapStats(teamStats)
+
+		db.Save(&seasonStats)
+		fmt.Println("Saved Season Stats for " + team.TeamName)
+	}
+
+	players := GetAllCollegePlayers()
+
+	for _, player := range players {
+		playerStats := GetCollegePlayerStatsByPlayerIDAndSeason(strconv.Itoa(int(player.ID)), strconv.Itoa(ts.CollegeSeasonID))
+
+		seasonStats := structs.CollegePlayerSeasonStats{
+			CollegePlayerID: player.ID,
+			TeamID:          uint(player.TeamID),
+			SeasonID:        uint(ts.CollegeSeasonID),
+		}
+
+		seasonStats.MapStats(playerStats)
+
+		db.Save(&seasonStats)
+		fmt.Println("Saved Season Stats for " + player.FirstName + " " + player.LastName + " " + player.Position)
+	}
 }

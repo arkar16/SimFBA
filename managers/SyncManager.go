@@ -185,7 +185,9 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 					} else {
 						recruitProfilesWithScholarship = util.FilterOutRecruitingProfile(recruitProfilesWithScholarship, winningTeamID)
 						winningTeamID = 0
-
+						if len(recruitProfilesWithScholarship) == 0 {
+							break
+						}
 						totalPointsOnRecruit = 0
 						for _, rp := range recruitProfilesWithScholarship {
 							totalPointsOnRecruit += rp.TotalPoints

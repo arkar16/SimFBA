@@ -110,6 +110,10 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		sort.Sort(structs.ByPoints(recruitProfiles))
 
 		for i := 0; i < len(recruitProfiles); i++ {
+			recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(recruitProfiles[i].ProfileID))
+			if recruitTeamProfile.TotalCommitments >= recruitTeamProfile.RecruitClassSize {
+				continue
+			}
 			if eligiblePointThreshold == 0 && recruitProfiles[i].Scholarship {
 				eligiblePointThreshold = float64(recruitProfiles[i].TotalPoints) * 0.5
 			}
@@ -132,14 +136,14 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			winningTeamID := 0
 			var odds float64 = 0
 
-			for winningTeamID == 0 {
-				percentageOdds := 1 + rand.Float64()*(totalPointsOnRecruit-1)
+			for winningTeamID == 0 && len(recruitProfilesWithScholarship) > 0 {
+				percentageOdds := rand.Float64() * (totalPointsOnRecruit)
 				var currentProbability float64 = 0
 
 				for i := 0; i < len(recruitProfilesWithScholarship); i++ {
 					// If a team has no available scholarships or if a team has 25 commitments, continue
 					currentProbability += recruitProfilesWithScholarship[i].TotalPoints
-					if currentProbability < float64(percentageOdds) {
+					if float64(percentageOdds) <= currentProbability {
 						// WINNING TEAM
 						winningTeamID = recruitProfilesWithScholarship[i].ProfileID
 						odds = float64(recruitProfilesWithScholarship[i].TotalPoints) / float64(totalPointsOnRecruit) * 100
@@ -147,9 +151,10 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 					}
 				}
 
-				if winningTeamID > 0 {
+				if winningTeamID > 0 && len(recruitProfilesWithScholarship) > 0 {
 					recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(winningTeamID))
 					if recruitTeamProfile.TotalCommitments < recruitTeamProfile.RecruitClassSize {
+						recruitTeamProfile.IncreaseCommitCount()
 						teamAbbreviation := recruitTeamProfile.TeamAbbreviation
 						recruit.AssignCollege(teamAbbreviation)
 
@@ -162,6 +167,9 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 						db.Create(&newsLog)
 						fmt.Println("Created new log!")
+
+						db.Save(&recruitTeamProfile)
+						fmt.Println("Saved " + recruitTeamProfile.TeamAbbreviation + " profile.")
 
 						for i := 0; i < len(recruitProfiles); i++ {
 							if recruitProfiles[i].ProfileID == winningTeamID {
@@ -414,4 +422,59 @@ func SyncAllMissingEfficiencies() {
 			fmt.Println("Saved profile from " + rp.Team + " towards " + strconv.Itoa(int(pp.ID)))
 		}
 	}
+}
+
+func SyncTeamRankings() {
+	db := dbprovider.GetInstance().GetDB()
+	// Update rank system for all teams
+	teamRecruitingProfiles := GetRecruitingProfileForRecruitSync()
+
+	var totalESPNScore float64 = 0
+	var total247Score float64 = 0
+	var totalRivalsScore float64 = 0
+
+	for i := 0; i < len(teamRecruitingProfiles); i++ {
+
+		signedRecruits := GetSignedRecruitsByTeamProfileID(strconv.Itoa(teamRecruitingProfiles[i].TeamID))
+
+		teamRecruitingProfiles[i].UpdateTotalSignedRecruits(len(signedRecruits))
+
+		team247Rank := Get247TeamRanking(teamRecruitingProfiles[i], signedRecruits)
+		teamESPNRank := GetESPNTeamRanking(teamRecruitingProfiles[i], signedRecruits)
+		teamRivalsRank := GetRivalsTeamRanking(teamRecruitingProfiles[i], signedRecruits)
+
+		teamRecruitingProfiles[i].Assign247Rank(team247Rank)
+		total247Score += team247Rank
+		teamRecruitingProfiles[i].AssignESPNRank(teamESPNRank)
+		totalESPNScore += teamESPNRank
+		teamRecruitingProfiles[i].AssignRivalsRank(teamRivalsRank)
+		totalRivalsScore += teamRivalsRank
+	}
+
+	averageESPNScore := totalESPNScore / 130
+	average247score := total247Score / 130
+	averageRivalScore := totalRivalsScore / 130
+
+	for _, rp := range teamRecruitingProfiles {
+
+		var avg float64 = 0
+		if averageESPNScore > 0 && average247score > 0 && averageRivalScore > 0 {
+			distributionESPN := rp.ESPNScore / averageESPNScore
+			distribution247 := rp.Rank247Score / average247score
+			distributionRivals := rp.RivalsScore / averageRivalScore
+
+			avg = (distributionESPN + distribution247 + distributionRivals) / 3
+
+			rp.AssignCompositeRank(avg)
+		}
+
+		// Save TEAM Recruiting Profile
+		err := db.Save(&rp).Error
+		if err != nil {
+			fmt.Println(err.Error())
+			log.Fatalf("Could not save timestamp")
+		}
+		fmt.Println("Saved Rank Scores for Team " + rp.TeamAbbreviation)
+	}
+
 }

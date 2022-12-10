@@ -125,5 +125,5 @@ type ByCrootRank []Croot
 func (c ByCrootRank) Len() int      { return len(c) }
 func (c ByCrootRank) Swap(i, j int) { c[i], c[j] = c[j], c[i] }
 func (c ByCrootRank) Less(i, j int) bool {
-	return c[i].TotalRank > c[j].TotalRank
+	return c[i].TotalRank > c[j].TotalRank || c[i].Stars > c[j].Stars
 }

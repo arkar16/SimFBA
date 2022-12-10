@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/CalebRose/SimFBA/managers"
@@ -81,6 +82,17 @@ func RunProgressionsForCollege(w http.ResponseWriter, r *http.Request) {
 
 }
 
+// GenerateWalkons
+func GenerateWalkOns(w http.ResponseWriter, r *http.Request) {
+	managers.GenerateWalkOns()
+	fmt.Println(w, "Walk ons successfully generated.")
+}
+
 // RunProgressionsForNFL
 
 // RunProgressionsForJuco?
+
+func SyncTeamRecruitingRanks(w http.ResponseWriter, r *http.Request) {
+	managers.SyncTeamRankings()
+	fmt.Println(w, "Team Ranks successfully generated.")
+}

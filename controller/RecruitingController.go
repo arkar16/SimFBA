@@ -259,7 +259,8 @@ func GenerateWalkOnRecruits(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	fmt.Println(w, "Walk ons successfully generated.")
+	managers.GenerateWalkOns()
+
 }
 
 func enableCors(w *http.ResponseWriter) {

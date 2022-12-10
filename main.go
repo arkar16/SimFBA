@@ -43,6 +43,9 @@ func handleRequests() {
 	myRouter.HandleFunc("/news/{weekID}/{seasonID}/", controller.GetNewsLogs).Methods("GET")
 	myRouter.HandleFunc("/cfb/news/all/{seasonID}/", controller.GetAllNewsLogsForASeason).Methods("GET")
 	myRouter.HandleFunc("/season/{seasonID}/weeks/{weekID}", controller.GetWeeksInSeason).Methods("GET")
+	// myRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")
+	// myRouter.HandleFunc("/admin/import/recruit/ai", controller.ImportRecruitAICSV).Methods("GET")
+	// myRouter.HandleFunc("/admin/teams/croot/sync", controller.SyncTeamRecruitingRanks).Methods("GET")
 
 	// Game Controls
 	myRouter.HandleFunc("/games/college/week/{weekID}/", controller.GetCollegeGamesByTimeslotWeekId).Methods("GET")

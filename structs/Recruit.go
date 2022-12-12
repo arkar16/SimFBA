@@ -33,7 +33,9 @@ func (r *Recruit) UpdatePlayerID(id int) {
 
 func (r *Recruit) UpdateTeamID(id int) {
 	r.TeamID = id
-	r.IsSigned = true
+	if id > 0 {
+		r.IsSigned = true
+	}
 }
 
 func (r *Recruit) AssignCollege(abbr string) {
@@ -101,6 +103,10 @@ func (r *Recruit) Map(createRecruitDTO CreateRecruitDTO, lastPlayerID uint) {
 
 func (r *Recruit) AssignPlayerID(ID int) {
 	r.PlayerID = ID
+}
+
+func (r *Recruit) AssignID(ID int) {
+	r.ID = uint(ID)
 }
 
 func (r *Recruit) AssignRankValues(rank247 float64, espnRank float64, rivalsRank float64, modifier float64) {
@@ -241,4 +247,11 @@ func (r *Recruit) GetOverall() {
 
 func (r *Recruit) AssignJUCOSchool(school string) {
 	r.HighSchool = school
+}
+
+func (r *Recruit) AssignWalkon(abbr string, teamID int, id uint) {
+	r.College = abbr
+	r.TeamID = teamID
+	r.PlayerID = int(id)
+	r.ID = id
 }

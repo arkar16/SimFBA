@@ -1,6 +1,11 @@
 package util
 
-import "github.com/CalebRose/SimFBA/structs"
+import (
+	"log"
+	"strconv"
+
+	"github.com/CalebRose/SimFBA/structs"
+)
 
 func GetWinsAndLossesForCollegeGames(games []structs.CollegeGame, TeamID int, ConferenceCheck bool) (int, int) {
 	wins := 0
@@ -56,7 +61,7 @@ func FilterOutRecruitingProfile(profiles []structs.RecruitPlayerProfile, ID int)
 	var rp []structs.RecruitPlayerProfile
 
 	for _, profile := range profiles {
-		if int(profile.ID) != ID {
+		if int(profile.ProfileID) != ID {
 			rp = append(rp, profile)
 		}
 	}
@@ -197,4 +202,13 @@ func GetTeamPointsMap() map[string]float64 {
 		"WISC": 0,
 		"WYOM": 0,
 	}
+}
+
+func ConvertStringToInt(num string) int {
+	val, err := strconv.Atoi(num)
+	if err != nil {
+		log.Fatalln("Could not convert string to int")
+	}
+
+	return val
 }

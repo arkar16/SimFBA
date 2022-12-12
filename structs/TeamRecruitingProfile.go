@@ -90,6 +90,10 @@ func (r *RecruitingTeamProfile) UpdateTotalSignedRecruits(num int) {
 	r.TotalCommitments = num
 }
 
+func (r *RecruitingTeamProfile) IncreaseCommitCount() {
+	r.TotalCommitments++
+}
+
 func (r *RecruitingTeamProfile) ApplyCaughtCheating() {
 	r.CaughtCheating = true
 }

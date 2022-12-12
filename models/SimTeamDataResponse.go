@@ -3,16 +3,17 @@ package models
 import "github.com/CalebRose/SimFBA/structs"
 
 type SimTeamDataResponse struct {
-	TeamName       string
-	Mascot         string
-	Coach          string
-	City           string
-	State          string
-	Stadium        string
-	ColorOne       string
-	ColorTwo       string
-	TeamGameplan   structs.CollegeGameplan
-	TeamDepthChart SimTeamDepthChartResponse
+	TeamName        string
+	Mascot          string
+	Coach           string
+	City            string
+	State           string
+	Stadium         string
+	StadiumCapacity int
+	ColorOne        string
+	ColorTwo        string
+	TeamGameplan    structs.CollegeGameplan
+	TeamDepthChart  SimTeamDepthChartResponse
 }
 
 type SimTeamDepthChartResponse struct {
@@ -35,6 +36,7 @@ func (stdr *SimTeamDataResponse) Map(team structs.CollegeTeam, dcr SimTeamDepthC
 	stdr.Stadium = team.Stadium
 	stdr.ColorOne = team.ColorOne
 	stdr.ColorTwo = team.ColorTwo
+	stdr.StadiumCapacity = team.StadiumCapacity
 	stdr.TeamGameplan = team.TeamGameplan
 	stdr.TeamDepthChart = dcr
 }

@@ -8,10 +8,13 @@ type CollegeStandings struct {
 	TeamName         string
 	SeasonID         int
 	Season           int
+	LeagueID         uint
+	LeagueName       string
 	ConferenceID     int
 	ConferenceName   string
 	DivisionID       int
 	PostSeasonStatus string
+	IsFBS            bool
 	BaseStandings
 }
 

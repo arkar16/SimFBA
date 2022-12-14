@@ -72,7 +72,7 @@ func (c *Croot) Map(r structs.Recruit) {
 	c.AffinityOne = r.AffinityOne
 	c.AffinityTwo = r.AffinityTwo
 	c.College = r.College
-	c.OverallGrade = util.GetOverallGrade(r.Overall)
+	c.OverallGrade = util.GetOverallGrade(r.Overall, 1)
 	c.IsSigned = r.IsSigned
 
 	mod := r.TopRankModifier

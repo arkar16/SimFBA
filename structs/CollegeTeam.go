@@ -13,6 +13,7 @@ type CollegeTeam struct {
 	AcademicPrestige  int
 	Facilities        int
 	IsFBS             bool
+	IsActive          bool
 	CollegeCoach      CollegeCoach           `gorm:"foreignKey:TeamID"`
 	RecruitingProfile RecruitingTeamProfile  `gorm:"foreignKey:TeamID"`
 	TeamStats         []CollegeTeamStats     `gorm:"foreignKey:TeamID"`

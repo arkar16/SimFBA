@@ -100,9 +100,10 @@ func GenerateWalkOns() {
 			playerRecord.AssignID(newID)
 			count++
 
-			db.Save(&recruit)
+			db.Create(&playerRecord)
 			db.Create(&recruit)
 			db.Create(&recruitPlayerRecord)
+			newID++
 		}
 	}
 }
@@ -113,7 +114,7 @@ func createRecruit(ethnicity string, position string, year int, firstNameList []
 	firstName := strings.Title(strings.ToLower(fName))
 	lastName := strings.Title(strings.ToLower(lName))
 	age := 18
-	state := ""
+	state := "" // Last thing to do
 	city := ""
 	highSchool := ""
 
@@ -144,7 +145,7 @@ func createRecruit(ethnicity string, position string, year int, firstNameList []
 	injury := util.GenerateIntFromRange(10, 100)
 	stamina := util.GenerateIntFromRange(10, 100)
 	discipline := util.GenerateIntFromRange(10, 100)
-	progression := util.GetProgressionRating()
+	progression := util.GenerateIntFromRange(1, 100)
 
 	freeAgency := util.GetFreeAgencyBias()
 	personality := util.GetPersonality()

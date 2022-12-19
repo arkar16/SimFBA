@@ -6,6 +6,7 @@ type CollegeTeamSeasonStats struct {
 	gorm.Model
 	TeamID   uint
 	SeasonID uint
+	Year     int
 	BaseTeamStats
 	GamesPlayed         int
 	TotalOffensiveYards int

@@ -59,3 +59,51 @@ func (n *NFLDraftee) Map(cp CollegePlayer) {
 	n.WorkEthic = cp.WorkEthic
 	n.AcademicBias = cp.AcademicBias
 }
+
+func (n *NFLDraftee) MapUnsignedPlayer(up UnsignedPlayer) {
+	n.ID = up.ID
+	n.PlayerID = int(up.PlayerID)
+	n.HighSchool = up.HighSchool
+	n.College = up.TeamAbbr
+	n.City = up.City
+	n.State = up.State
+	n.FirstName = up.FirstName
+	n.LastName = up.LastName
+	n.Position = up.Position
+	n.Archetype = up.Archetype
+	n.Height = up.Height
+	n.Weight = up.Weight
+	n.Age = up.Age
+	n.Stars = up.Stars
+	n.Overall = up.Overall
+	n.Stamina = up.Stamina
+	n.Injury = up.Injury
+	n.FootballIQ = up.FootballIQ
+	n.Speed = up.Speed
+	n.Carrying = up.Carrying
+	n.Agility = up.Agility
+	n.Catching = up.Catching
+	n.RouteRunning = up.RouteRunning
+	n.ZoneCoverage = up.ZoneCoverage
+	n.ManCoverage = up.ManCoverage
+	n.Strength = up.Strength
+	n.Tackle = up.Tackle
+	n.PassBlock = up.PassBlock
+	n.RunBlock = up.RunBlock
+	n.PassRush = up.PassRush
+	n.RunDefense = up.RunDefense
+	n.ThrowPower = up.ThrowPower
+	n.ThrowAccuracy = up.ThrowAccuracy
+	n.KickAccuracy = up.KickAccuracy
+	n.KickPower = up.KickPower
+	n.PuntAccuracy = up.PuntAccuracy
+	n.PuntPower = up.PuntPower
+	n.Progression = up.Progression
+	n.Discipline = up.Discipline
+	n.PotentialGrade = up.PotentialGrade
+	n.FreeAgency = up.FreeAgency
+	n.Personality = up.Personality
+	n.RecruitingBias = up.RecruitingBias
+	n.WorkEthic = up.WorkEthic
+	n.AcademicBias = up.AcademicBias
+}

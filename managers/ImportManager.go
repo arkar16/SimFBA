@@ -13,7 +13,7 @@ import (
 
 func ImportRecruitAICSV() {
 	db := dbprovider.GetInstance().GetDB()
-	completedCrootPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\AI_Croot_Weekly_Signings.csv"
+	completedCrootPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\FCS_Croot_Weekly_Signings.csv"
 	aiPoolPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2022_Croot_Class_AI.csv"
 	crootMap := make(map[string][]string)
 	f, err := os.Open(completedCrootPath)
@@ -48,7 +48,7 @@ func ImportRecruitAICSV() {
 				Scholarship:      false,
 				TotalPoints:      float64(points),
 				ProfileID:        teamID,
-				TeamAbbreviation: record[20],
+				TeamAbbreviation: record[19],
 				SeasonID:         2,
 			}
 

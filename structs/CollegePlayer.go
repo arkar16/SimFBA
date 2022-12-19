@@ -199,6 +199,7 @@ func (cp *CollegePlayer) Progress(attr CollegePlayerProgressions) {
 	cp.PassRush = attr.PassRush
 	cp.RunDefense = attr.RunDefense
 	cp.Tackle = attr.Tackle
+	cp.Strength = attr.Strength
 	cp.ManCoverage = attr.ManCoverage
 	cp.ZoneCoverage = attr.ZoneCoverage
 	cp.KickAccuracy = attr.KickAccuracy

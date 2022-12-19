@@ -274,15 +274,13 @@ func ExportStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
 	}
 }
 
-func GetAllCollegeTeamsWithCurrentSeasonStats() []models.CollegeTeamResponse {
+func GetAllCollegeTeamsWithStatsBySeasonID(seasonID string) []models.CollegeTeamResponse {
 	db := dbprovider.GetInstance().GetDB()
-
-	ts := GetTimestamp()
 
 	var teams []structs.CollegeTeam
 
 	db.Preload("TeamSeasonStats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ?", strconv.Itoa(ts.CollegeSeasonID))
+		return db.Where("season_id = ?", seasonID)
 	}).Find(&teams)
 
 	var ctResponse []models.CollegeTeamResponse

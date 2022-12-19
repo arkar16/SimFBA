@@ -96,3 +96,8 @@ func SyncTeamRecruitingRanks(w http.ResponseWriter, r *http.Request) {
 	managers.SyncTeamRankings()
 	fmt.Println(w, "Team Ranks successfully generated.")
 }
+
+func ProgressToNextSeason(w http.ResponseWriter, r *http.Request) {
+	managers.ProgressionMain()
+	fmt.Println(w, "Team Ranks successfully generated.")
+}

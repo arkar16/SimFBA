@@ -204,65 +204,6 @@ func SaveRecruitingBoard(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(crootProfile)
 }
 
-func GenerateWalkOnRecruits(w http.ResponseWriter, r *http.Request) {
-	/*
-		Get all teams and team profiles
-		Get all team needs for the season
-
-		Get all signed croots per team
-
-		Reduce needs for season
-
-		Add remaining needs into a string array
-
-		Shuffle array
-
-		For loop and generate a recruit
-	*/
-
-	var teamBoardResponses []models.TeamBoardTeamProfileResponse
-
-	teams := managers.GetAllCoachedCollegeTeams()
-
-	for _, team := range teams {
-		teamID := strconv.Itoa(int(team.ID))
-		var teamBoardResponse models.TeamBoardTeamProfileResponse
-
-		recruitingProfile := managers.GetRecruitingProfileForTeamBoardByTeamID(teamID)
-
-		teamBoardResponse.SetTeamProfile(recruitingProfile)
-		teamNeeds := managers.GetRecruitingNeeds(teamID)
-		teamBoardResponse.SetTeamNeedsMap(teamNeeds)
-
-		teamBoardResponses = append(teamBoardResponses, teamBoardResponse)
-	}
-
-	for _, board := range teamBoardResponses {
-		// teamID := board.TeamProfile.TeamID
-		var teamAbbr *string = &board.TeamProfile.TeamAbbreviation
-		var teamNeeds map[string]int = board.TeamNeedsMap
-		croots := board.TeamProfile.Recruits
-
-		var remainingNeedsList []string
-
-		for _, croot := range croots {
-			if croot.IsSigned && croot.Recruit.College == *teamAbbr {
-				teamNeeds[croot.Recruit.Position] -= 1
-			}
-		}
-
-		for k, v := range teamNeeds {
-			for i := 0; i < v; i++ {
-				remainingNeedsList = append(remainingNeedsList, k)
-			}
-		}
-
-	}
-
-	managers.GenerateWalkOns()
-
-}
-
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 	(*w).Header().Set("Access-Control-Allow-Headers", "Content-Type")

@@ -34,6 +34,16 @@ func GetAllCollegePlayers() []structs.CollegePlayer {
 	return CollegePlayers
 }
 
+func GetAllUnsignedPlayers() []structs.UnsignedPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var unsignedPlayers []structs.UnsignedPlayer
+
+	db.Find(&unsignedPlayers)
+
+	return unsignedPlayers
+}
+
 func GetAllCollegePlayersByTeamId(TeamID string) []structs.CollegePlayer {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -158,17 +168,19 @@ func GetAllNFLDraftees() []structs.NFLDraftee {
 	return NFLDraftees
 }
 
-func GetAllCollegePlayersWithCurrentYearStatistics(cMap map[int]int, cNMap map[int]string) []models.CollegePlayerResponse {
+func GetAllCollegePlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]string, seasonID string) []models.CollegePlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 
-	var collegePlayers []structs.CollegePlayer
-
 	ts := GetTimestamp()
+
+	seasonIDVal := util.ConvertStringToInt(seasonID)
+
+	var collegePlayers []structs.CollegePlayer
 
 	// var distinctCollegeStats []structs.CollegePlayerStats
 	var distinctCollegeStats []structs.CollegePlayerSeasonStats
 
-	db.Distinct("college_player_id").Where("snaps > 0").Find(&distinctCollegeStats)
+	db.Distinct("college_player_id").Where("snaps > 0 AND season_id = ?", seasonID).Find(&distinctCollegeStats)
 
 	distinctCollegePlayerIDs := util.GetCollegePlayerIDsBySeasonStats(distinctCollegeStats)
 
@@ -177,7 +189,7 @@ func GetAllCollegePlayersWithCurrentYearStatistics(cMap map[int]int, cNMap map[i
 	// }).Where("id in ?", distinctCollegePlayerIDs).Find(&collegePlayers)
 
 	db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ?", strconv.Itoa(ts.CollegeSeasonID))
+		return db.Where("season_id = ?", seasonID)
 	}).Where("id in ?", distinctCollegePlayerIDs).Find(&collegePlayers)
 
 	var cpResponse []models.CollegePlayerResponse
@@ -202,6 +214,32 @@ func GetAllCollegePlayersWithCurrentYearStatistics(cMap map[int]int, cNMap map[i
 		cpResponse = append(cpResponse, cp)
 	}
 
+	// If viewing a past season, get all past season players too
+	if seasonIDVal < ts.CollegeSeasonID {
+		var historicCollegePlayers []structs.HistoricCollegePlayer
+		db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ?", seasonID)
+		}).Where("id in ?", distinctCollegePlayerIDs).Find(&historicCollegePlayers)
+
+		for _, player := range historicCollegePlayers {
+			cp := models.CollegePlayerResponse{
+				ID:           int(player.ID),
+				BasePlayer:   player.BasePlayer,
+				ConferenceID: cMap[player.TeamID],
+				Conference:   cNMap[player.TeamID],
+				TeamID:       player.TeamID,
+				TeamAbbr:     player.TeamAbbr,
+				City:         player.City,
+				State:        player.State,
+				Year:         player.Year,
+				IsRedshirt:   player.IsRedshirt,
+				SeasonStats:  player.SeasonStats,
+			}
+
+			cpResponse = append(cpResponse, cp)
+		}
+	}
+
 	return cpResponse
 }
 
@@ -212,7 +250,7 @@ func GetAllCollegePlayersWithStatsByTeamID(TeamID string, SeasonID string) []str
 
 	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
 		return db.Where("season_id = ? and team_id = ? and snaps > 0", SeasonID, TeamID)
-	}).Find(&collegePlayers)
+	}).Where("team_id = ?", TeamID).Find(&collegePlayers)
 
 	return collegePlayers
 }

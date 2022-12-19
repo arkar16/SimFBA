@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/CalebRose/SimFBA/managers"
 	"github.com/CalebRose/SimFBA/models"
@@ -32,6 +33,9 @@ func ExportStatisticsFromSim(w http.ResponseWriter, r *http.Request) {
 }
 
 func ExportPlayerStatsToCSV(w http.ResponseWriter, r *http.Request) {
+
+	ts := managers.GetTimestamp()
+
 	teamsChan := make(chan []structs.CollegeTeam)
 
 	go func() {
@@ -52,7 +56,7 @@ func ExportPlayerStatsToCSV(w http.ResponseWriter, r *http.Request) {
 
 	playersChan := make(chan []models.CollegePlayerResponse)
 	go func() {
-		cp := managers.GetAllCollegePlayersWithCurrentYearStatistics(conferenceMap, conferenceNameMap)
+		cp := managers.GetAllCollegePlayersWithStatsBySeasonID(conferenceMap, conferenceNameMap, strconv.Itoa(ts.CollegeSeasonID))
 		playersChan <- cp
 	}()
 
@@ -62,12 +66,18 @@ func ExportPlayerStatsToCSV(w http.ResponseWriter, r *http.Request) {
 	managers.ExportPlayerStatsToCSV(collegePlayers, w)
 }
 
-func GetStatsPageContentForCurrentSeason(w http.ResponseWriter, r *http.Request) {
+func GetStatsPageContentForSeason(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	seasonID := vars["seasonID"]
+
+	if len(seasonID) == 0 {
+		panic("User did not provide TeamID")
+	}
 
 	teamsChan := make(chan []models.CollegeTeamResponse)
 
 	go func() {
-		ct := managers.GetAllCollegeTeamsWithCurrentSeasonStats()
+		ct := managers.GetAllCollegeTeamsWithStatsBySeasonID(seasonID)
 		teamsChan <- ct
 	}()
 
@@ -84,7 +94,7 @@ func GetStatsPageContentForCurrentSeason(w http.ResponseWriter, r *http.Request)
 
 	playersChan := make(chan []models.CollegePlayerResponse)
 	go func() {
-		cp := managers.GetAllCollegePlayersWithCurrentYearStatistics(conferenceMap, conferenceNameMap)
+		cp := managers.GetAllCollegePlayersWithStatsBySeasonID(conferenceMap, conferenceNameMap, seasonID)
 		playersChan <- cp
 	}()
 

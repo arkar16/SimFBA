@@ -14,6 +14,8 @@ type CollegeTeam struct {
 	Facilities        int
 	IsFBS             bool
 	IsActive          bool
+	PlayersProgressed bool
+	RecruitsAdded     bool
 	CollegeCoach      CollegeCoach           `gorm:"foreignKey:TeamID"`
 	RecruitingProfile RecruitingTeamProfile  `gorm:"foreignKey:TeamID"`
 	TeamStats         []CollegeTeamStats     `gorm:"foreignKey:TeamID"`
@@ -23,4 +25,12 @@ type CollegeTeam struct {
 	TeamGameplan      CollegeGameplan        `gorm:"foreignKey:TeamID"`
 	TeamDepthChart    CollegeTeamDepthChart  `gorm:"foreignKey:TeamID"`
 	TeamStandings     []CollegeStandings     `gorm:"foreignKey:TeamID"`
+}
+
+func (ct *CollegeTeam) TogglePlayersProgressed() {
+	ct.PlayersProgressed = !ct.PlayersProgressed
+}
+
+func (ct *CollegeTeam) ToggleRecruitsAdded() {
+	ct.RecruitsAdded = !ct.RecruitsAdded
 }

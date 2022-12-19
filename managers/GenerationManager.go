@@ -24,6 +24,7 @@ func GenerateWalkOns() {
 	AllTeams := GetRecruitingProfileForRecruitSync()
 	count := 0
 	attributeBlob := getAttributeBlob()
+	highSchoolBlob := getCrootLocations()
 
 	firstNameMap, lastNameMap := getNameMaps()
 
@@ -37,17 +38,16 @@ func GenerateWalkOns() {
 	newID := lastPlayerRecord.ID + 1
 
 	for _, team := range AllTeams {
-		if team.TotalCommitments == team.RecruitClassSize {
+		id := strconv.Itoa(int(team.ID))
+		signedRecruits := GetSignedRecruitsByTeamProfileID(id)
+		if len(signedRecruits) == team.RecruitClassSize {
 			continue
 		}
-
-		limit := team.RecruitClassSize - team.TotalCommitments
 		positionList := []string{}
-		id := strconv.Itoa(int(team.ID))
 
 		// Get Team Needs
 		teamNeeds := GetRecruitingNeeds(id)
-		signedRecruits := GetSignedRecruitsByTeamProfileID(id)
+		limit := team.RecruitClassSize - len(signedRecruits)
 
 		for _, recruit := range signedRecruits {
 			if teamNeeds[recruit.Position] > 0 {
@@ -78,7 +78,9 @@ func GenerateWalkOns() {
 			year := 1
 			ethnicity := pickEthnicity()
 
-			recruit := createRecruit(ethnicity, pos, year, firstNameMap[ethnicity], lastNameMap[ethnicity], newID, attributeBlob)
+			state := pickState(team.State)
+
+			recruit := createRecruit(ethnicity, pos, year, firstNameMap[ethnicity], lastNameMap[ethnicity], newID, attributeBlob, state, highSchoolBlob[state])
 
 			recruit.AssignWalkon(team.TeamAbbreviation, int(team.ID), newID)
 
@@ -104,22 +106,27 @@ func GenerateWalkOns() {
 			db.Create(&recruit)
 			db.Create(&recruitPlayerRecord)
 			newID++
+			team.IncreaseCommitCount()
+			db.Save(&team)
 		}
+		count = 0
+		fmt.Println("Finished walkon generation for " + team.TeamAbbreviation)
 	}
 }
 
-func createRecruit(ethnicity string, position string, year int, firstNameList [][]string, lastNameList [][]string, id uint, blob map[string]map[string]map[string]map[string]interface{}) structs.Recruit {
+func createRecruit(ethnicity string, position string, year int, firstNameList [][]string, lastNameList [][]string, id uint, blob map[string]map[string]map[string]map[string]interface{}, state string, hsBlob []structs.CrootLocation) structs.Recruit {
 	fName := getName(firstNameList)
 	lName := getName(lastNameList)
 	firstName := strings.Title(strings.ToLower(fName))
 	lastName := strings.Title(strings.ToLower(lName))
 	age := 18
-	state := "" // Last thing to do
-	city := ""
-	highSchool := ""
+	city, highSchool := getCityAndHighSchool(hsBlob)
 
 	archetype := getArchetype(position)
 	stars := getStarRating()
+	if stars == 5 {
+		fmt.Println("WE'VE GOT A FIVE STAR")
+	}
 	height := getAttributeValue(position, archetype, stars, "Height", blob)
 	weight := getAttributeValue(position, archetype, stars, "Weight", blob)
 	footballIQ := getAttributeValue(position, archetype, stars, "Football IQ", blob)
@@ -157,8 +164,10 @@ func createRecruit(ethnicity string, position string, year int, firstNameList []
 	basePlayer := structs.BasePlayer{
 		FirstName:      firstName,
 		LastName:       lastName,
+		Position:       position,
+		Archetype:      archetype,
 		Age:            age,
-		Stars:          stars,
+		Stars:          0,
 		Height:         height,
 		Weight:         weight,
 		Stamina:        stamina,
@@ -193,6 +202,8 @@ func createRecruit(ethnicity string, position string, year int, firstNameList []
 		AcademicBias:   academicBias,
 	}
 
+	basePlayer.GetOverall()
+
 	return structs.Recruit{
 		BasePlayer: basePlayer,
 		City:       city,
@@ -217,6 +228,121 @@ func pickEthnicity() string {
 		return "Asian"
 	}
 	return "NativeAmerican"
+}
+
+func pickState(state string) string {
+	if state == "AL" {
+		return util.PickFromStringList([]string{"AL", "LA", "MS", "TN", "GA", "FL"})
+	} else if state == "AR" {
+		return util.PickFromStringList([]string{"AR", "LA", "MO", "TN", "TX"})
+	} else if state == "AZ" {
+		return util.PickFromStringList([]string{"AZ", "NM", "CA"})
+	} else if state == "CA" {
+		return util.PickFromStringList([]string{"CA", "AZ"})
+	} else if state == "CO" {
+		return util.PickFromStringList([]string{"CO", "KS", "UT", "WY"})
+	} else if state == "CT" {
+		return util.PickFromStringList([]string{"CT", "NY", "NJ", "RI"})
+	} else if state == "DC" {
+		return util.PickFromStringList([]string{"DC", "MD", "VA"})
+	} else if state == "FL" {
+		return util.PickFromStringList([]string{"FL", "GA", "AL"})
+	} else if state == "GA" {
+		return util.PickFromStringList([]string{"GA", "FL", "SC", "AL"})
+	} else if state == "HI" {
+		return util.PickFromStringList([]string{"HI"})
+	} else if state == "IA" {
+		return util.PickFromStringList([]string{"IA", "MN", "WI", "NE"})
+	} else if state == "ID" {
+		return util.PickFromStringList([]string{"ID", "WA", "UT"})
+	} else if state == "IL" {
+		return util.PickFromStringList([]string{"IL", "IN", "WI", "MI"})
+	} else if state == "KS" {
+		return util.PickFromStringList([]string{"KS", "MO", "NE"})
+	} else if state == "KY" {
+		return util.PickFromStringList([]string{"KY", "OH", "TN"})
+	} else if state == "LA" {
+		return util.PickFromStringList([]string{"LA", "TX", "MS"})
+	} else if state == "MA" {
+		return util.PickFromStringList([]string{"MA", "CT", "RI", "NH", "VT", "ME"})
+	} else if state == "MD" {
+		return util.PickFromStringList([]string{"DC", "MD", "VA", "DE"})
+	} else if state == "MI" {
+		return util.PickFromStringList([]string{"MI", "OH", "IN"})
+	} else if state == "MN" {
+		return util.PickFromStringList([]string{"MN", "WI", "IA"})
+	} else if state == "MO" {
+		return util.PickFromStringList([]string{"MO", "AR", "KS"})
+	} else if state == "MS" {
+		return util.PickFromStringList([]string{"MS", "LA", "AL"})
+	} else if state == "MT" {
+		return util.PickFromStringList([]string{"MT", "ID", "WY"})
+	} else if state == "NC" {
+		return util.PickFromStringList([]string{"NC", "SC", "VA"})
+	} else if state == "ND" {
+		return util.PickFromStringList([]string{"ND", "SD", "MN"})
+	} else if state == "NE" {
+		return util.PickFromStringList([]string{"NE", "KS", "SD", "IA"})
+	} else if state == "NH" {
+		return util.PickFromStringList([]string{"NH", "VT", "ME", "MA"})
+	} else if state == "NJ" {
+		return util.PickFromStringList([]string{"NJ", "DE", "NY", "CT", "PA"})
+	} else if state == "NM" {
+		return util.PickFromStringList([]string{"NM", "AZ", "TX"})
+	} else if state == "NV" {
+		return util.PickFromStringList([]string{"NV", "UT", "CA"})
+	} else if state == "NY" {
+		return util.PickFromStringList([]string{"NY", "NJ", "PA", "CT"})
+	} else if state == "OH" {
+		return util.PickFromStringList([]string{"OH", "KY", "MI", "PA"})
+	} else if state == "OK" {
+		return util.PickFromStringList([]string{"OK", "TX", "KS", "AR"})
+	} else if state == "OR" {
+		return util.PickFromStringList([]string{"OR", "WA", "CA"})
+	} else if state == "PA" {
+		return util.PickFromStringList([]string{"PA", "NJ", "DE", "OH", "WV"})
+	} else if state == "RI" {
+		return util.PickFromStringList([]string{"RI", "MA", "CT", "NY"})
+	} else if state == "SC" {
+		return util.PickFromStringList([]string{"SC", "NC", "GA"})
+	} else if state == "SD" {
+		return util.PickFromStringList([]string{"SD", "ND", "MN", "NE"})
+	} else if state == "TN" {
+		return util.PickFromStringList([]string{"TN", "KY", "GA", "AL", "AR"})
+	} else if state == "TX" {
+		return util.PickFromStringList([]string{"TX"})
+	} else if state == "UT" {
+		return util.PickFromStringList([]string{"UT", "CO", "ID", "AZ"})
+	} else if state == "VA" {
+		return util.PickFromStringList([]string{"VA", "WV", "DC", "MD"})
+	} else if state == "WA" {
+		return util.PickFromStringList([]string{"WA", "OR", "ID"})
+	} else if state == "WI" {
+		return util.PickFromStringList([]string{"WI", "MN", "IL", "MI"})
+	} else if state == "WV" {
+		return util.PickFromStringList([]string{"WV", "PA", "VA"})
+	} else if state == "WY" {
+		return util.PickFromStringList([]string{"WY", "CO", "UT", "MO", "ID"})
+	}
+
+	return "AK"
+}
+
+func getCrootLocations() map[string][]structs.CrootLocation {
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\HS.json"
+
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatalln("Error when opening file: ", err)
+	}
+
+	var payload map[string][]structs.CrootLocation
+	err = json.Unmarshal(content, &payload)
+	if err != nil {
+		log.Fatal("Error during unmarshal: ", err)
+	}
+
+	return payload
 }
 
 func getAttributeBlob() map[string]map[string]map[string]map[string]interface{} {
@@ -412,14 +538,14 @@ func getAttributeValue(pos string, arch string, star int, attr string, blob map[
 	} else if pos == "OT" || pos == "OG" {
 		if attr == "Carrying" || attr == "Catching" || attr == "Zone Coverage" || attr == "Man Coverage" || attr == "Tackle" {
 			return getValueFromInterfaceRange(starStr, blob["Default"]["Default"]["Default"])
-		} else if attr == "Kick Accuracy" || attr == "Kick Power" || attr == "Punt Accuracy" || attr == "Punt Power" || attr == "Pass Rush" || attr == "Run Defense" || attr == "Route Running" {
+		} else if attr == "Kick Accuracy" || attr == "Kick Power" || attr == "Punt Accuracy" || attr == "Punt Power" || attr == "Pass Rush" || attr == "Run Defense" || attr == "Route Running" || attr == "Throw Power" || attr == "Throw Accuracy" {
 			return getValueFromInterfaceRange(starStr, blob["Under"]["Under"]["Under"])
 		}
 		return getValueFromInterfaceRange(starStr, blob[pos][arch][attr])
 	} else if pos == "C" {
 		if attr == "Carrying" || attr == "Catching" || attr == "Zone Coverage" || attr == "Man Coverage" || attr == "Tackle" {
 			return getValueFromInterfaceRange(starStr, blob["Default"]["Default"]["Default"])
-		} else if attr == "Kick Accuracy" || attr == "Kick Power" || attr == "Punt Accuracy" || attr == "Punt Power" || attr == "Pass Rush" || attr == "Run Defense" || attr == "Route Running" {
+		} else if attr == "Kick Accuracy" || attr == "Kick Power" || attr == "Punt Accuracy" || attr == "Punt Power" || attr == "Pass Rush" || attr == "Run Defense" || attr == "Route Running" || attr == "Throw Power" || attr == "Throw Accuracy" {
 			return getValueFromInterfaceRange(starStr, blob["Under"]["Under"]["Under"])
 		}
 		return getValueFromInterfaceRange(starStr, blob[pos][arch][attr])
@@ -453,7 +579,7 @@ func getAttributeValue(pos string, arch string, star int, attr string, blob map[
 		}
 		return getValueFromInterfaceRange(starStr, blob[pos][arch][attr])
 	} else if pos == "CB" {
-		if attr == "Carrying" || attr == "Throw Power" || attr == "Throw Accuracy" {
+		if attr == "Carrying" || attr == "Throw Power" || attr == "Throw Accuracy" || attr == "Route Running" {
 			return getValueFromInterfaceRange(starStr, blob["Default"]["Default"]["Default"])
 		} else if attr == "Kick Accuracy" || attr == "Kick Power" || attr == "Punt Accuracy" || attr == "Punt Power" || attr == "Pass Block" || attr == "Run Block" || attr == "Pass Rush" || attr == "Run Defense" {
 			return getValueFromInterfaceRange(starStr, blob["Under"]["Under"]["Under"])
@@ -462,14 +588,14 @@ func getAttributeValue(pos string, arch string, star int, attr string, blob map[
 	} else if pos == "FS" {
 		if attr == "Carrying" || attr == "Throw Power" || attr == "Throw Accuracy" {
 			return getValueFromInterfaceRange(starStr, blob["Default"]["Default"]["Default"])
-		} else if attr == "Kick Accuracy" || attr == "Kick Power" || attr == "Punt Accuracy" || attr == "Punt Power" || attr == "Pass Block" || attr == "Run Block" || attr == "Pass Rush" {
+		} else if attr == "Kick Accuracy" || attr == "Kick Power" || attr == "Punt Accuracy" || attr == "Punt Power" || attr == "Pass Block" || attr == "Run Block" || attr == "Pass Rush" || attr == "Route Running" {
 			return getValueFromInterfaceRange(starStr, blob["Under"]["Under"]["Under"])
 		}
 		return getValueFromInterfaceRange(starStr, blob[pos][arch][attr])
 	} else if pos == "SS" {
 		if attr == "Carrying" || attr == "Throw Power" || attr == "Throw Accuracy" {
 			return getValueFromInterfaceRange(starStr, blob["Default"]["Default"]["Default"])
-		} else if attr == "Kick Accuracy" || attr == "Kick Power" || attr == "Punt Accuracy" || attr == "Punt Power" || attr == "Pass Block" || attr == "Run Block" || attr == "Pass Rush" {
+		} else if attr == "Kick Accuracy" || attr == "Kick Power" || attr == "Punt Accuracy" || attr == "Punt Power" || attr == "Pass Block" || attr == "Run Block" || attr == "Pass Rush" || attr == "Route Running" {
 			return getValueFromInterfaceRange(starStr, blob["Under"]["Under"]["Under"])
 		}
 		return getValueFromInterfaceRange(starStr, blob[pos][arch][attr])
@@ -491,13 +617,33 @@ func getAttributeValue(pos string, arch string, star int, attr string, blob map[
 	return util.GenerateIntFromRange(5, 15)
 }
 
+func getCityAndHighSchool(schools []structs.CrootLocation) (string, string) {
+	randInt := util.GenerateIntFromRange(0, len(schools)-1)
+
+	return schools[randInt].City, schools[randInt].HighSchool
+}
+
 func getValueFromInterfaceRange(star string, starMap map[string]interface{}) int {
-	u, ok := starMap[star].([]int)
+	u, ok := starMap[star]
 	if ok {
 		fmt.Println("Was able to get value)")
 	}
 
-	return util.GenerateIntFromRange(u[0], u[1])
+	minMax, ok := u.([]interface{})
+	if !ok {
+		fmt.Printf("This is not an int")
+	}
+
+	min, ok := minMax[0].(float64)
+	if !ok {
+		fmt.Printf("This is not an int")
+	}
+
+	max, ok := minMax[1].(float64)
+	if !ok {
+		fmt.Printf("This is not an int")
+	}
+	return util.GenerateIntFromRange(int(min), int(max))
 }
 
 func getStarRating() int {

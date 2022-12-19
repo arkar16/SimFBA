@@ -46,6 +46,7 @@ func handleRequests() {
 	// myRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/recruit/ai", controller.ImportRecruitAICSV).Methods("GET")
 	// myRouter.HandleFunc("/admin/teams/croot/sync", controller.SyncTeamRecruitingRanks).Methods("GET")
+	myRouter.HandleFunc("/admin/overall/progressions/next/season", controller.ProgressToNextSeason).Methods("GET")
 
 	// Game Controls
 	myRouter.HandleFunc("/games/college/week/{weekID}/", controller.GetCollegeGamesByTimeslotWeekId).Methods("GET")
@@ -108,7 +109,7 @@ func handleRequests() {
 	// Stats Controls
 	myRouter.HandleFunc("/statistics/export/cfb/", controller.ExportStatisticsFromSim).Methods("POST")
 	myRouter.HandleFunc("/statistics/export/players/", controller.ExportPlayerStatsToCSV).Methods("GET")
-	myRouter.HandleFunc("/statistics/interface/cfb/", controller.GetStatsPageContentForCurrentSeason).Methods("GET")
+	myRouter.HandleFunc("/statistics/interface/cfb/{seasonID}", controller.GetStatsPageContentForSeason).Methods("GET")
 	myRouter.HandleFunc("/statistics/map/season/", controller.MapAllStatsToSeason).Methods("GET")
 
 	// Team Controls
@@ -134,7 +135,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/easter/egg/collude/", controller.CollusionButton).Methods("POST")
 
 	// Draft Controls
-	// myRouter.HandleFunc("/nfl/draft/draftees/export/{season}", controller.ExportDrafteesToCSV).Methods("GET")
+	myRouter.HandleFunc("/nfl/draft/draftees/export/{season}", controller.ExportDrafteesToCSV).Methods("GET")
 
 	// Handle Controls
 	handler := cors.AllowAll().Handler(myRouter)

@@ -15,6 +15,8 @@ type UnsignedPlayer struct {
 	IsRedshirt    bool
 	IsRedshirting bool
 	HasGraduated  bool
+	Stats         []CollegePlayerStats     `gorm:"foreignKey:CollegePlayerID"`
+	SeasonStats   CollegePlayerSeasonStats `gorm:"foreignKey:CollegePlayerID"`
 }
 
 func (up *UnsignedPlayer) GraduatePlayer() {

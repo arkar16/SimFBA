@@ -1,6 +1,8 @@
 package util
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"log"
 	"strconv"
 
@@ -211,4 +213,73 @@ func ConvertStringToInt(num string) int {
 	}
 
 	return val
+}
+
+func IsAITeamContendingForCroot(profiles []structs.RecruitPlayerProfile) float64 {
+	if len(profiles) == 0 {
+		return 0
+	}
+	var leadingVal float64 = 0
+	for _, profile := range profiles {
+		if profile.TotalPoints != 0 && profile.TotalPoints > float64(leadingVal) {
+			leadingVal = profile.TotalPoints
+		}
+	}
+
+	return leadingVal
+}
+
+func ReadJson(path string) []byte {
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatal("Error when opening file: ", err)
+	}
+	return content
+}
+
+func GetStateRegionMatcher() map[string]map[string]string {
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\regionMatcher.json"
+
+	content := ReadJson(path)
+
+	var payload map[string]map[string]string
+
+	err := json.Unmarshal(content, &payload)
+	if err != nil {
+		log.Fatalln("Error during unmarshal: ", err)
+	}
+
+	return payload
+}
+
+func GetStateMatcher() map[string][]string {
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\stateMatcher.json"
+
+	content := ReadJson(path)
+
+	var payload map[string][]string
+
+	err := json.Unmarshal(content, &payload)
+	if err != nil {
+		log.Fatalln("Error during unmarshal: ", err)
+	}
+
+	return payload
+}
+
+func IsCrootCloseToHome(crootState string, crootCity string, teamState string, abbr string, stateMatcher map[string][]string, regionMatcher map[string]map[string]string) bool {
+	if crootState == teamState {
+		return true
+	}
+	state := crootState
+	if crootState == "TX" || crootState == "CA" || crootState == "FL" {
+		state = regionMatcher[crootState][crootCity]
+	}
+
+	for _, s := range stateMatcher[state] {
+		if s == abbr {
+			return true
+		}
+	}
+	return false
 }

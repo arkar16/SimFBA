@@ -9,3 +9,7 @@ import (
 func ImportRecruitAICSV(w http.ResponseWriter, r *http.Request) {
 	managers.ImportRecruitAICSV()
 }
+
+func GetMissingRecruitingClasses(w http.ResponseWriter, r *http.Request) {
+	managers.GetMissingRecruitingClasses()
+}

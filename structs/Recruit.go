@@ -13,18 +13,18 @@ type Recruit struct {
 	AffinityOne           string
 	AffinityTwo           string
 	IsSigned              bool
+	IsCustomCroot         bool
+	CustomCrootFor        string
 	College               string
-	CommitmentChoiceVal   float64
-	CalculatedRanking     float64
 	OverallRank           float64
 	RivalsRank            float64
 	ESPNRank              float64
 	Rank247               float64
-	Top25Rank             float64
 	TopRankModifier       float64
+	RecruitingModifier    float64
 	RecruitingStatus      string
-	RecruitPlayerProfiles []RecruitPlayerProfile   `gorm:"foreignKey:RecruitID"`
-	RecruitPoints         []RecruitPointAllocation `gorm:"foreignKey:RecruitID"`
+	RecruitPlayerProfiles []RecruitPlayerProfile `gorm:"foreignKey:RecruitID"`
+	// RecruitPoints         []RecruitPointAllocation `gorm:"foreignKey:RecruitID"`
 }
 
 func (r *Recruit) UpdatePlayerID(id int) {
@@ -44,10 +44,6 @@ func (r *Recruit) AssignCollege(abbr string) {
 
 func (r *Recruit) UpdateSigningStatus() {
 	r.IsSigned = true
-}
-
-func (r *Recruit) SetCommitmentChoiceVal(val float64) {
-	r.CommitmentChoiceVal = val
 }
 
 func (r *Recruit) Map(createRecruitDTO CreateRecruitDTO, lastPlayerID uint) {
@@ -97,8 +93,6 @@ func (r *Recruit) Map(createRecruitDTO CreateRecruitDTO, lastPlayerID uint) {
 	r.RecruitingBias = createRecruitDTO.RecruitingBias
 	r.AcademicBias = createRecruitDTO.AcademicBias
 	r.IsSigned = false
-	r.CommitmentChoiceVal = 0
-	r.CalculatedRanking = 0
 }
 
 func (r *Recruit) AssignPlayerID(ID int) {

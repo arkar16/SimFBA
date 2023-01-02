@@ -103,6 +103,21 @@ func GetRecruitsByTeamProfileID(ProfileID string) []structs.RecruitPlayerProfile
 	return croots
 }
 
+func GetRecruitsForAIPointSync(ProfileID string) []structs.RecruitPlayerProfile {
+	db := dbprovider.GetInstance().GetDB()
+
+	var croots []structs.RecruitPlayerProfile
+
+	err := db.Preload("Recruit", func(db *gorm.DB) *gorm.DB {
+		return db.Order("stars DESC")
+	}).Where("profile_id = ? AND removed_from_board = ?", ProfileID, false).Order("total_points DESC").Find(&croots).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return croots
+}
+
 func GetOnlyRecruitProfilesByTeamProfileID(ProfileID string) []structs.RecruitPlayerProfile {
 	db := dbprovider.GetInstance().GetDB()
 

@@ -12,6 +12,7 @@ type RecruitPlayerProfile struct {
 	ProfileID                 int
 	TotalPoints               float64
 	CurrentWeeksPoints        float64
+	PreviousWeekPoints        float64
 	SpendingCount             int
 	RecruitingEfficiencyScore float64
 	Scholarship               bool
@@ -23,8 +24,8 @@ type RecruitPlayerProfile struct {
 	IsSigned                  bool
 	IsLocked                  bool
 	CaughtCheating            bool
-	Recruit                   Recruit                  `gorm:"foreignKey:RecruitID"`
-	RecruitPoints             []RecruitPointAllocation `gorm:"foreignKey:RecruitID"`
+	Recruit                   Recruit `gorm:"foreignKey:RecruitID"`
+	// RecruitPoints             []RecruitPointAllocation `gorm:"foreignKey:RecruitProfileID"`
 }
 
 func (rp *RecruitPlayerProfile) AllocateCurrentWeekPoints(points float64) {
@@ -35,11 +36,15 @@ func (rp *RecruitPlayerProfile) AddCurrentWeekPointsToTotal(CurrentPoints float6
 	// If user spends points on a recruit
 	if CurrentPoints > 0 {
 		rp.TotalPoints += CurrentPoints
+		if rp.SpendingCount < 5 {
+			rp.SpendingCount++
+		}
 	} else {
 		rp.TotalPoints = 0
 		rp.CaughtCheating = true
 		rp.SpendingCount = 0
 	}
+	rp.PreviousWeekPoints = rp.CurrentWeeksPoints
 	rp.CurrentWeeksPoints = 0
 }
 
@@ -74,6 +79,10 @@ func (rp *RecruitPlayerProfile) SignPlayer() {
 
 func (rp *RecruitPlayerProfile) LockPlayer() {
 	rp.IsLocked = true
+}
+
+func (rp *RecruitPlayerProfile) ResetSpendingCount() {
+	rp.SpendingCount = 0
 }
 
 func (rp *RecruitPlayerProfile) AssignRES(res float64) {

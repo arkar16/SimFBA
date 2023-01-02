@@ -66,6 +66,11 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		for i := 0; i < len(recruitProfiles); i++ {
 
 			if recruitProfiles[i].CurrentWeeksPoints == 0 {
+				if recruitProfiles[i].SpendingCount > 0 {
+					recruitProfiles[i].ResetSpendingCount()
+					db.Save(&recruitProfiles[i])
+					fmt.Println("Resetting spending count for " + recruitProfiles[i].Recruit.FirstName + " " + recruitProfiles[i].Recruit.LastName + " for " + recruitProfiles[i].TeamAbbreviation)
+				}
 				continue
 			}
 
@@ -78,7 +83,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 			var curr float64 = 0
 
-			res := recruitProfiles[i].RecruitingEfficiencyScore
+			var res float64 = 1 // recruitProfiles[i].RecruitingEfficiencyScore
 			if recruitProfiles[i].AffinityOneEligible {
 				res += .1
 				rpa.ApplyAffinityOne()
@@ -89,6 +94,11 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			}
 
 			curr = float64(recruitProfiles[i].CurrentWeeksPoints) * res
+
+			if recruitProfiles[i].SpendingCount > 0 {
+				streakFormula := .1 * float64(recruitProfiles[i].SpendingCount)
+				curr *= (1 + streakFormula)
+			}
 
 			if recruitProfiles[i].CurrentWeeksPoints < 0 || recruitProfiles[i].CurrentWeeksPoints > 20 {
 				curr = 0
@@ -129,7 +139,10 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		// Assign point totals
 		// If there are any modifiers
 		// Evaluate
-		signThreshold = float64(recruitModifiers.ModifierOne-timestamp.CollegeWeek) * ((float64(eligibleTeams) / recruitModifiers.ModifierTwo) * math.Log10(float64(recruitModifiers.WeeksOfRecruiting-timestamp.CollegeWeek)))
+		firstMod := float64(recruitModifiers.ModifierOne - timestamp.CollegeWeek)
+		secondMod := float64(eligibleTeams) / float64(recruit.RecruitingModifier)
+		thirdMod := math.Log10(float64(recruitModifiers.WeeksOfRecruiting - timestamp.CollegeWeek))
+		signThreshold = firstMod * secondMod * thirdMod
 
 		// Change logic to withold teams without available scholarships
 		if float64(totalPointsOnRecruit) > signThreshold && eligibleTeams > 0 {
@@ -476,5 +489,348 @@ func SyncTeamRankings() {
 		}
 		fmt.Println("Saved Rank Scores for Team " + rp.TeamAbbreviation)
 	}
+}
 
+func FillAIRecruitingBoards() {
+	db := dbprovider.GetInstance().GetDB()
+	fmt.Println(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())
+	ts := GetTimestamp()
+
+	AITeams := GetOnlyAITeamRecruitingProfiles()
+	UnsignedRecruits := GetAllUnsignedRecruits()
+	stateMatcher := util.GetStateMatcher()
+	regionMatcher := util.GetStateRegionMatcher()
+
+	boardCount := 100
+
+	if ts.CollegeWeek > 5 {
+		boardCount = 75
+	}
+
+	for _, team := range AITeams {
+		count := 0
+		if !team.IsAI || team.TotalCommitments == team.RecruitClassSize {
+			continue
+		}
+
+		existingBoard := GetOnlyRecruitProfilesByTeamProfileID(strconv.Itoa(int(team.ID)))
+		teamNeeds := GetRecruitingNeeds(strconv.Itoa(int(team.ID)))
+		// Get Current Count of the existing board
+		for _, r := range existingBoard {
+			if r.RemovedFromBoard {
+				continue
+			}
+
+			if r.IsSigned {
+				teamNeeds[r.Recruit.Position] -= 1
+			}
+
+			count++
+		}
+
+		for k := range teamNeeds {
+			if teamNeeds[k] > 0 {
+				teamNeeds[k] *= 4
+			}
+		}
+
+		for _, croot := range UnsignedRecruits {
+			if count == boardCount {
+				break
+			}
+
+			if teamNeeds[croot.Position] < 1 {
+				continue
+			}
+
+			// Conditions in which the team should not recruit this particular recruit
+			if (croot.Stars == 5 && !isBlueBlood(team.AIBehavior)) ||
+				(croot.Stars > 3 && !team.IsFBS && (isAcademicCroot(croot.AffinityOne, croot.AffinityTwo)) && !isIvyLeague(team.AIBehavior)) ||
+				(croot.Stars > 3 && !team.IsFBS) {
+				continue
+			}
+
+			crootProfile := GetRecruitProfileByPlayerId(strconv.Itoa(int(croot.ID)), strconv.Itoa(int(team.ID)))
+			if crootProfile.RemovedFromBoard || crootProfile.IsLocked {
+				continue
+			}
+
+			crootProfiles := GetRecruitPlayerProfilesByRecruitId(strconv.Itoa(int(croot.ID)))
+
+			leadingVal := util.IsAITeamContendingForCroot(crootProfiles)
+			if leadingVal > 11 {
+				continue
+			}
+
+			odds := 5
+
+			if ts.CollegeWeek > 5 {
+				odds = 10
+			}
+
+			if croot.State == team.State {
+				odds = 25
+			}
+
+			closeToHome := util.IsCrootCloseToHome(croot.State, croot.City, team.State, team.TeamAbbreviation, stateMatcher, regionMatcher)
+			// In Region
+			if closeToHome && croot.State != team.State {
+				odds = 15
+			}
+
+			affinityOneApplicable := false
+			affinityTwoApplicable := false
+
+			if team.AIBehavior == "G5" {
+				odds -= 5
+			}
+
+			if team.AIBehavior == "Doormat" {
+				if croot.Stars > 2 {
+					odds -= 10
+				} else {
+					odds += 10
+				}
+			}
+
+			for _, affinity := range team.Affinities {
+				if (doesCrootHaveAffinity("Close to Home", croot)) && closeToHome {
+					odds += 33
+					if croot.AffinityOne == "Close to Home" {
+						affinityOneApplicable = true
+					}
+
+					if croot.AffinityTwo == "Close to Home" {
+						affinityTwoApplicable = true
+					}
+				}
+
+				if doesCrootHaveAffinity("Academics", croot) && isAffinityApplicable("Academics", affinity) {
+					odds += 33
+
+					if croot.AffinityOne == "Academics" {
+						affinityOneApplicable = true
+					}
+
+					if croot.AffinityTwo == "Academics" {
+						affinityTwoApplicable = true
+					}
+				}
+
+				if doesCrootHaveAffinity("Frontrunner", croot) && isAffinityApplicable("Frontrunner", affinity) {
+					odds += 33
+
+					if isBlueBlood(team.AIBehavior) || team.AIBehavior == "Playoff Buster" {
+						odds += 5
+					}
+
+					if croot.AffinityOne == "Frontrunner" {
+						affinityOneApplicable = true
+					}
+
+					if croot.AffinityTwo == "Frontrunner" {
+						affinityTwoApplicable = true
+					}
+				}
+
+				if doesCrootHaveAffinity("Religion", croot) && isAffinityApplicable("Religion", affinity) {
+					odds += 33
+
+					if croot.AffinityOne == "Religion" {
+						affinityOneApplicable = true
+					}
+
+					if croot.AffinityTwo == "Religion" {
+						affinityTwoApplicable = true
+					}
+				}
+
+				if doesCrootHaveAffinity("Service", croot) && isAffinityApplicable("Service", affinity) {
+					odds += 33
+
+					if croot.AffinityOne == "Service" {
+						affinityOneApplicable = true
+					}
+
+					if croot.AffinityTwo == "Service" {
+						affinityTwoApplicable = true
+					}
+				}
+
+				if doesCrootHaveAffinity("Small School", croot) && isAffinityApplicable("Small School", affinity) {
+					odds += 33
+
+					if croot.AffinityOne == "Small School" {
+						affinityOneApplicable = true
+					}
+
+					if croot.AffinityTwo == "Small School" {
+						affinityTwoApplicable = true
+					}
+				}
+			}
+
+			chance := util.GenerateIntFromRange(1, 100)
+
+			if chance <= odds {
+				playerProfile := structs.RecruitPlayerProfile{
+					RecruitID:                 int(croot.ID),
+					ProfileID:                 int(team.ID),
+					SeasonID:                  ts.CollegeSeasonID,
+					TotalPoints:               0,
+					CurrentWeeksPoints:        0,
+					SpendingCount:             0,
+					Scholarship:               false,
+					ScholarshipRevoked:        false,
+					TeamAbbreviation:          team.TeamAbbreviation,
+					AffinityOneEligible:       affinityOneApplicable,
+					AffinityTwoEligible:       affinityTwoApplicable,
+					RecruitingEfficiencyScore: 1,
+					IsSigned:                  false,
+					IsLocked:                  false,
+				}
+
+				err := db.Create(&playerProfile).Error
+				if err != nil {
+					log.Fatalln("Could not add " + croot.FirstName + " " + croot.LastName + " to " + team.TeamAbbreviation + "'s Recruiting Board.")
+				}
+
+				teamNeeds[croot.Position] -= 1
+				count++
+			}
+		}
+	}
+}
+
+func AllocatePointsToAIBoards() {
+	db := dbprovider.GetInstance().GetDB()
+	fmt.Println(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())
+	ts := GetTimestamp()
+
+	AITeams := GetOnlyAITeamRecruitingProfiles()
+
+	for _, team := range AITeams {
+		if team.SpentPoints >= team.WeeklyPoints || team.TotalCommitments >= team.RecruitClassSize {
+			continue
+		}
+
+		teamID := strconv.Itoa(int(team.ID))
+
+		teamRecruits := GetRecruitsForAIPointSync(teamID)
+
+		for _, croot := range teamRecruits {
+			pointsRemaining := team.WeeklyPoints - team.SpentPoints
+			if team.SpentPoints >= team.WeeklyPoints || pointsRemaining <= 0 || (pointsRemaining < 1 && pointsRemaining > 0) {
+				break
+			}
+
+			if croot.IsSigned || croot.CurrentWeeksPoints > 0 {
+				continue
+			}
+
+			removeCrootFromBoard := false
+			var num float64 = 0
+			recruitID := strconv.Itoa(int(croot.RecruitID))
+
+			if croot.IsLocked && croot.TeamAbbreviation != croot.Recruit.College {
+				removeCrootFromBoard = true
+			}
+
+			if !removeCrootFromBoard {
+				profiles := GetRecruitPlayerProfilesByRecruitId(recruitID)
+
+				if croot.PreviousWeekPoints > 0 {
+					leadingTeamVal := util.IsAITeamContendingForCroot(profiles)
+
+					if croot.PreviousWeekPoints+croot.TotalPoints >= leadingTeamVal*0.75 || leadingTeamVal < 15 {
+						num = croot.PreviousWeekPoints
+						if num > pointsRemaining {
+							num = pointsRemaining
+						}
+					} else {
+						removeCrootFromBoard = true
+					}
+				} else {
+					maxChance := 2
+					if ts.CollegeWeek > 3 {
+						maxChance = 4
+					}
+					chance := util.GenerateIntFromRange(1, maxChance)
+					if (chance < 2 && ts.CollegeWeek <= 3) || (chance < 4 && ts.CollegeWeek > 3) {
+						continue
+					}
+
+					min := 5
+					max := 15
+
+					if team.AIBehavior == "Blue Blood" || team.AIBehavior == "Playoff Buster" {
+						min = 8
+					} else if team.AIBehavior == "Doormat" {
+						max = 10
+					}
+
+					num = float64(util.GenerateIntFromRange(min, max))
+					if num > pointsRemaining {
+						num = pointsRemaining
+					}
+
+					leadingTeamVal := util.IsAITeamContendingForCroot(profiles)
+
+					if float64(num)+croot.TotalPoints < leadingTeamVal*0.75 {
+						removeCrootFromBoard = true
+					}
+					if leadingTeamVal < 15 {
+						removeCrootFromBoard = false
+					}
+				}
+			}
+
+			if removeCrootFromBoard || (team.ScholarshipsAvailable == 0 && !croot.Scholarship) {
+				if croot.Scholarship {
+					croot.ToggleScholarship(false, true)
+					team.ReallocateScholarship()
+				}
+				croot.ToggleRemoveFromBoard()
+				fmt.Println("Because " + croot.Recruit.FirstName + " " + croot.Recruit.LastName + " is heavily considering other teams, they are being removed from " + team.TeamAbbreviation + "'s Recruiting Board.")
+				db.Save(&croot)
+				continue
+			}
+
+			croot.AllocateCurrentWeekPoints(num)
+			if croot.Scholarship && team.ScholarshipsAvailable > 0 {
+				croot.ToggleScholarship(true, false)
+				team.SubtractScholarshipsAvailable()
+			}
+
+			team.AIAllocateSpentPoints(num)
+			db.Save(&croot)
+			fmt.Println(team.TeamAbbreviation + " allocating " + strconv.Itoa(int(num)) + " points to " + croot.Recruit.FirstName + " " + croot.Recruit.LastName)
+
+		}
+		// Save Team Profile after iterating through recruits
+		fmt.Println("Saved " + team.TeamAbbreviation + " Recruiting Board!")
+		db.Save(&team)
+	}
+}
+
+func isBlueBlood(behavior string) bool {
+	return behavior == "Blue Blood"
+}
+
+func isIvyLeague(behavior string) bool {
+	return behavior == "Ivy"
+}
+
+func isAcademicCroot(af1 string, af2 string) bool {
+	return af1 == "Academics" || af2 == "Academics"
+}
+
+func isAffinityApplicable(affinity string, af structs.ProfileAffinity) bool {
+	return af.AffinityName == affinity && af.IsApplicable
+}
+
+func doesCrootHaveAffinity(affinity string, croot structs.Recruit) bool {
+	return croot.AffinityOne == affinity || croot.AffinityTwo == affinity
 }

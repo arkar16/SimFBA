@@ -125,7 +125,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				continue
 			}
 			if eligiblePointThreshold == 0 && recruitProfiles[i].Scholarship {
-				eligiblePointThreshold = float64(recruitProfiles[i].TotalPoints) * 0.5
+				eligiblePointThreshold = float64(recruitProfiles[i].TotalPoints) * 0.75
 			}
 
 			if recruitProfiles[i].Scholarship && recruitProfiles[i].TotalPoints > eligiblePointThreshold {
@@ -143,6 +143,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		secondMod := float64(eligibleTeams) / float64(recruit.RecruitingModifier)
 		thirdMod := math.Log10(float64(recruitModifiers.WeeksOfRecruiting - timestamp.CollegeWeek))
 		signThreshold = firstMod * secondMod * thirdMod
+		recruit.ApplyRecruitingStatus(totalPointsOnRecruit, signThreshold)
 
 		// Change logic to withold teams without available scholarships
 		if float64(totalPointsOnRecruit) > signThreshold && eligibleTeams > 0 {
@@ -544,10 +545,22 @@ func FillAIRecruitingBoards() {
 				continue
 			}
 
+			passOnRecruit := false
+
+			if croot.Stars == 5 && !isBlueBlood(team.AIBehavior) {
+				passOnRecruit = true
+			}
+
+			if croot.Stars > 3 && !team.IsFBS {
+				if isAcademicCroot(croot.AffinityOne, croot.AffinityTwo) && isIvyLeague(team.AIBehavior) {
+					passOnRecruit = false
+				} else {
+					passOnRecruit = true
+				}
+			}
+
 			// Conditions in which the team should not recruit this particular recruit
-			if (croot.Stars == 5 && !isBlueBlood(team.AIBehavior)) ||
-				(croot.Stars > 3 && !team.IsFBS && (isAcademicCroot(croot.AffinityOne, croot.AffinityTwo)) && !isIvyLeague(team.AIBehavior)) ||
-				(croot.Stars > 3 && !team.IsFBS) {
+			if passOnRecruit {
 				continue
 			}
 
@@ -559,7 +572,7 @@ func FillAIRecruitingBoards() {
 			crootProfiles := GetRecruitPlayerProfilesByRecruitId(strconv.Itoa(int(croot.ID)))
 
 			leadingVal := util.IsAITeamContendingForCroot(crootProfiles)
-			if leadingVal > 11 {
+			if leadingVal > 15 {
 				continue
 			}
 
@@ -583,12 +596,16 @@ func FillAIRecruitingBoards() {
 			affinityTwoApplicable := false
 
 			if team.AIBehavior == "G5" {
-				odds -= 5
+				if croot.Stars > 3 {
+					odds -= 15
+				} else {
+					odds += 5
+				}
 			}
 
 			if team.AIBehavior == "Doormat" {
 				if croot.Stars > 2 {
-					odds -= 10
+					odds -= 20
 				} else {
 					odds += 10
 				}
@@ -596,7 +613,12 @@ func FillAIRecruitingBoards() {
 
 			for _, affinity := range team.Affinities {
 				if (doesCrootHaveAffinity("Close to Home", croot)) && closeToHome {
-					odds += 33
+					if team.IsFBS {
+						odds += 33
+					} else {
+						odds += 20
+					}
+
 					if croot.AffinityOne == "Close to Home" {
 						affinityOneApplicable = true
 					}
@@ -607,7 +629,11 @@ func FillAIRecruitingBoards() {
 				}
 
 				if doesCrootHaveAffinity("Academics", croot) && isAffinityApplicable("Academics", affinity) {
-					odds += 33
+					if team.IsFBS {
+						odds += 33
+					} else {
+						odds += 17
+					}
 
 					if croot.AffinityOne == "Academics" {
 						affinityOneApplicable = true
@@ -619,7 +645,11 @@ func FillAIRecruitingBoards() {
 				}
 
 				if doesCrootHaveAffinity("Frontrunner", croot) && isAffinityApplicable("Frontrunner", affinity) {
-					odds += 33
+					if team.IsFBS {
+						odds += 33
+					} else {
+						odds += 17
+					}
 
 					if isBlueBlood(team.AIBehavior) || team.AIBehavior == "Playoff Buster" {
 						odds += 5
@@ -635,7 +665,11 @@ func FillAIRecruitingBoards() {
 				}
 
 				if doesCrootHaveAffinity("Religion", croot) && isAffinityApplicable("Religion", affinity) {
-					odds += 33
+					if team.IsFBS {
+						odds += 33
+					} else {
+						odds += 17
+					}
 
 					if croot.AffinityOne == "Religion" {
 						affinityOneApplicable = true
@@ -647,7 +681,11 @@ func FillAIRecruitingBoards() {
 				}
 
 				if doesCrootHaveAffinity("Service", croot) && isAffinityApplicable("Service", affinity) {
-					odds += 33
+					if team.IsFBS {
+						odds += 33
+					} else {
+						odds += 17
+					}
 
 					if croot.AffinityOne == "Service" {
 						affinityOneApplicable = true
@@ -659,7 +697,11 @@ func FillAIRecruitingBoards() {
 				}
 
 				if doesCrootHaveAffinity("Small School", croot) && isAffinityApplicable("Small School", affinity) {
-					odds += 33
+					if team.IsFBS {
+						odds += 33
+					} else {
+						odds += 17
+					}
 
 					if croot.AffinityOne == "Small School" {
 						affinityOneApplicable = true
@@ -767,7 +809,7 @@ func AllocatePointsToAIBoards() {
 
 					if team.AIBehavior == "Blue Blood" || team.AIBehavior == "Playoff Buster" {
 						min = 8
-					} else if team.AIBehavior == "Doormat" {
+					} else if team.AIBehavior == "Doormat" || isIvyLeague(team.AIBehavior) {
 						max = 10
 					}
 
@@ -820,7 +862,7 @@ func isBlueBlood(behavior string) bool {
 }
 
 func isIvyLeague(behavior string) bool {
-	return behavior == "Ivy"
+	return behavior == "Ivy League"
 }
 
 func isAcademicCroot(af1 string, af2 string) bool {

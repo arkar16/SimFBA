@@ -101,3 +101,8 @@ func ProgressToNextSeason(w http.ResponseWriter, r *http.Request) {
 	managers.ProgressionMain()
 	fmt.Println(w, "Team Ranks successfully generated.")
 }
+
+func FillAIBoards(w http.ResponseWriter, r *http.Request) {
+	managers.FillAIRecruitingBoards()
+	fmt.Println(w, "Team Ranks successfully generated.")
+}

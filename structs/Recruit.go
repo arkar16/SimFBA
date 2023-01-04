@@ -42,6 +42,24 @@ func (r *Recruit) AssignCollege(abbr string) {
 	r.College = abbr
 }
 
+func (r *Recruit) ApplyRecruitingStatus(num float64, threshold float64) {
+	percentage := num / threshold
+
+	if threshold == 0 || num == 0 || percentage < 0.26 {
+		r.RecruitingStatus = "Not Ready"
+	} else if percentage < 0.51 {
+		r.RecruitingStatus = "Hearing Offers"
+	} else if percentage < 0.76 {
+		r.RecruitingStatus = "Narrowing Down Offers"
+	} else if percentage < 0.96 {
+		r.RecruitingStatus = "Finalizing Decisions"
+	} else if percentage < 1 {
+		r.RecruitingStatus = "Ready to Sign"
+	} else {
+		r.RecruitingStatus = "Signed"
+	}
+}
+
 func (r *Recruit) UpdateSigningStatus() {
 	r.IsSigned = true
 }

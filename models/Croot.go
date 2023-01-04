@@ -95,7 +95,7 @@ func (c *Croot) Map(r structs.Recruit) {
 			continue
 		}
 		if runningThreshold == 0 {
-			runningThreshold = float64(recruitProfile.TotalPoints) * 0.5
+			runningThreshold = float64(recruitProfile.TotalPoints) * 0.75
 		}
 
 		if recruitProfile.TotalPoints >= runningThreshold {

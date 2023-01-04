@@ -109,7 +109,7 @@ func GetAllNewsLogs(seasonID string) []structs.NewsLog {
 
 	var logs []structs.NewsLog
 
-	err := db.Where("season_id = ?", seasonID).Find(&logs).Error
+	err := db.Where("season_id <= ?", seasonID).Find(&logs).Error
 	if err != nil {
 		fmt.Println(err)
 	}

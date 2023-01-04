@@ -26,6 +26,7 @@ type RecruitingTeamProfile struct {
 	CompositeScore            float64
 	RecruitingClassRank       int
 	CaughtCheating            bool
+	IsFBS                     bool
 	IsAI                      bool
 	AIBehavior                string
 	Recruits                  []RecruitPlayerProfile `gorm:"foreignKey:ProfileID"`
@@ -60,6 +61,10 @@ func (r *RecruitingTeamProfile) ResetScholarshipCount() {
 
 func (r *RecruitingTeamProfile) AllocateSpentPoints(points float64) {
 	r.SpentPoints = points
+}
+
+func (r *RecruitingTeamProfile) AIAllocateSpentPoints(points float64) {
+	r.SpentPoints += points
 }
 
 func (r *RecruitingTeamProfile) ResetWeeklyPoints(points float64) {
@@ -100,4 +105,15 @@ func (r *RecruitingTeamProfile) ApplyCaughtCheating() {
 
 func (r *RecruitingTeamProfile) ToggleAIBehavior() {
 	r.IsAI = !r.IsAI
+}
+
+func (r *RecruitingTeamProfile) SetRecruitingClassSize(val int) {
+	if val > 25 && r.IsFBS {
+		r.RecruitClassSize = 25
+	} else if val > 20 && !r.IsFBS {
+		r.RecruitClassSize = 20
+	} else {
+		r.RecruitClassSize = val
+	}
+
 }

@@ -77,3 +77,9 @@ func GetTeamsByDivisionID(w http.ResponseWriter, r *http.Request) {
 	team := managers.GetTeamByTeamID(divisionID)
 	json.NewEncoder(w).Encode(team)
 }
+
+// GetTeamsByDivisionID
+func GetRecruitingClassSizeForTeams(w http.ResponseWriter, r *http.Request) {
+	managers.GetRecruitingClassSizeForTeams()
+	json.NewEncoder(w).Encode("Sync for Class Size complete")
+}

@@ -267,3 +267,9 @@ func (cp *CollegePlayer) MapFromRecruit(r Recruit, t CollegeTeam) {
 	cp.WorkEthic = r.WorkEthic
 	cp.AcademicBias = r.AcademicBias
 }
+
+func (cp *CollegePlayer) AssignTeamValues(t CollegeTeam) {
+	cp.TeamID = int(t.ID)
+	cp.TeamAbbr = t.TeamAbbr
+
+}

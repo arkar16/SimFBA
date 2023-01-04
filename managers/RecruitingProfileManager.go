@@ -76,6 +76,19 @@ func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) models.SimTeamBoard
 	return teamProfileResponse
 }
 
+func GetOnlyAITeamRecruitingProfiles() []structs.RecruitingTeamProfile {
+	db := dbprovider.GetInstance().GetDB()
+
+	var profiles []structs.RecruitingTeamProfile
+
+	err := db.Preload("Affinities").Where("is_ai = ?", true).Find(&profiles).Error
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	return profiles
+}
+
 func GetRecruitingClassByTeamID(TeamID string) models.SimTeamBoardResponse {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -237,4 +250,39 @@ func UpdateRecruitingProfile(updateRecruitingBoardDto structs.UpdateRecruitingBo
 	db.Save(&teamProfile)
 
 	return teamProfile
+}
+
+func GetRecruitingClassSizeForTeams() {
+	db := dbprovider.GetInstance().GetDB()
+	profiles := GetRecruitingProfileForRecruitSync()
+
+	for _, team := range profiles {
+		count := 0
+
+		players := GetAllCollegePlayersByTeamId(strconv.Itoa(int(team.ID)))
+
+		rosterSize := len(players)
+
+		for _, player := range players {
+			if (player.Year == 4 && !player.IsRedshirt) || (player.Year == 5 && player.IsRedshirt) && player.Stars > 0 {
+				count++
+			}
+
+			if player.Year == 4 && player.IsRedshirt && player.Overall > 55 && player.Stars > 0 {
+				count++
+			}
+		}
+
+		if rosterSize > 105 {
+			diff := rosterSize - 105
+			count = count - diff
+		} else if rosterSize < 85 && team.IsFBS && count < 25 {
+			diff := 85 - rosterSize
+			count = count + diff
+		}
+
+		team.SetRecruitingClassSize(count)
+
+		db.Save(&team)
+	}
 }

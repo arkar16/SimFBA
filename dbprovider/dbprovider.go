@@ -56,7 +56,6 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.CollegeGame{})
 	// db.AutoMigrate(&structs.CollegeCoach{})
 	// db.AutoMigrate(&structs.CollegeStandings{})
-
 	// db.AutoMigrate(&structs.Recruit{})
 	// db.AutoMigrate(&structs.RecruitPlayerProfile{})
 	// db.AutoMigrate(&structs.RecruitingTeamProfile{})

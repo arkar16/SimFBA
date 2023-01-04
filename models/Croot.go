@@ -8,31 +8,32 @@ import (
 )
 
 type Croot struct {
-	ID             uint
-	PlayerID       int
-	TeamID         int
-	College        string
-	FirstName      string
-	LastName       string
-	Position       string
-	Archetype      string
-	Height         int
-	Weight         int
-	Stars          int
-	PotentialGrade string
-	Personality    string
-	RecruitingBias string
-	AcademicBias   string
-	WorkEthic      string
-	HighSchool     string
-	City           string
-	State          string
-	AffinityOne    string
-	AffinityTwo    string
-	IsSigned       bool
-	OverallGrade   string
-	TotalRank      float64
-	LeadingTeams   []LeadingTeams
+	ID               uint
+	PlayerID         int
+	TeamID           int
+	College          string
+	FirstName        string
+	LastName         string
+	Position         string
+	Archetype        string
+	Height           int
+	Weight           int
+	Stars            int
+	PotentialGrade   string
+	Personality      string
+	RecruitingBias   string
+	AcademicBias     string
+	WorkEthic        string
+	HighSchool       string
+	City             string
+	State            string
+	AffinityOne      string
+	AffinityTwo      string
+	RecruitingStatus string
+	IsSigned         bool
+	OverallGrade     string
+	TotalRank        float64
+	LeadingTeams     []LeadingTeams
 }
 
 type LeadingTeams struct {
@@ -74,6 +75,7 @@ func (c *Croot) Map(r structs.Recruit) {
 	c.College = r.College
 	c.OverallGrade = util.GetOverallGrade(r.Overall, 1)
 	c.IsSigned = r.IsSigned
+	c.RecruitingStatus = r.RecruitingStatus
 
 	mod := r.TopRankModifier
 	if mod == 0 {
@@ -93,7 +95,7 @@ func (c *Croot) Map(r structs.Recruit) {
 			continue
 		}
 		if runningThreshold == 0 {
-			runningThreshold = float64(recruitProfile.TotalPoints) * 0.5
+			runningThreshold = float64(recruitProfile.TotalPoints) * 0.75
 		}
 
 		if recruitProfile.TotalPoints >= runningThreshold {

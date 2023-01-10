@@ -4,15 +4,15 @@ import "github.com/jinzhu/gorm"
 
 type NFLDraftPick struct {
 	gorm.Model
-	PickNumber     int
-	OriginalTeamID int
+	OriginalTeamID uint
 	OriginalTeam   string
-	CurrentTeamID  int
-	CurrentTeam    string
+	TeamID         uint
+	Team           string
 	PickSelection  string
-	PlayerID       int
-	Round          string
-	SeasonID       int
-	Season         int
-	TradeValue     int
+	PlayerID       uint
+	Round          uint
+	PickNumber     uint
+	SeasonID       uint
+	Season         uint
+	TradeValue     uint
 }

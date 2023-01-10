@@ -94,7 +94,9 @@ func ExportCrootsToCSV(w http.ResponseWriter) {
 		var leadingAbbr []string
 
 		for _, lt := range croot.LeadingTeams {
-			leadingAbbr = append(leadingAbbr, lt.TeamAbbr)
+			if lt.Odds > 0 {
+				leadingAbbr = append(leadingAbbr, lt.TeamAbbr)
+			}
 		}
 
 		crootRow := []string{

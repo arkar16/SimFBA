@@ -32,6 +32,14 @@ func SyncTimestamp(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newTimestamp)
 }
 
+func SyncRecruiting(w http.ResponseWriter, r *http.Request) {
+	ts := managers.GetTimestamp()
+
+	managers.SyncRecruiting(ts)
+
+	json.NewEncoder(w).Encode("Sync Complete")
+}
+
 func SyncMissingRES(w http.ResponseWriter, r *http.Request) {
 	managers.SyncAllMissingEfficiencies()
 }
@@ -104,5 +112,10 @@ func ProgressToNextSeason(w http.ResponseWriter, r *http.Request) {
 
 func FillAIBoards(w http.ResponseWriter, r *http.Request) {
 	managers.FillAIRecruitingBoards()
+	fmt.Println(w, "Team Ranks successfully generated.")
+}
+
+func SyncAIBoards(w http.ResponseWriter, r *http.Request) {
+	managers.AllocatePointsToAIBoards()
 	fmt.Println(w, "Team Ranks successfully generated.")
 }

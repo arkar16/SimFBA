@@ -273,12 +273,14 @@ func GetRecruitingClassSizeForTeams() {
 			}
 		}
 
-		if rosterSize > 105 {
-			diff := rosterSize - 105
-			count = count - diff
-		} else if rosterSize < 85 && team.IsFBS && count < 25 {
-			diff := 85 - rosterSize
-			count = count + diff
+		rosterMinusGrads := rosterSize - count
+
+		if rosterMinusGrads+25 > 105 {
+			count = 105 - rosterMinusGrads
+		} else if rosterMinusGrads+25 < 85 {
+			count = 85 - rosterMinusGrads
+		} else {
+			count = 25
 		}
 
 		team.SetRecruitingClassSize(count)

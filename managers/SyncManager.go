@@ -61,15 +61,20 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 		var signThreshold float64
 
+		pointsPlaced := false
+		spendingCountAdjusted := false
+
 		for i := 0; i < len(recruitProfiles); i++ {
 
 			if recruitProfiles[i].CurrentWeeksPoints == 0 {
-				if recruitProfiles[i].SpendingCount > 0 {
+				if recruitProfiles[i].SpendingCount > 0 && recruit.ID > 79370 {
 					recruitProfiles[i].ResetSpendingCount()
-					db.Save(&recruitProfiles[i])
-					fmt.Println("Resetting spending count for " + recruitProfiles[i].Recruit.FirstName + " " + recruitProfiles[i].Recruit.LastName + " for " + recruitProfiles[i].TeamAbbreviation)
+					spendingCountAdjusted = true
+					fmt.Println("Resetting spending count for " + recruit.FirstName + " " + recruit.LastName + " for " + recruitProfiles[i].TeamAbbreviation)
 				}
 				continue
+			} else {
+				pointsPlaced = true
 			}
 
 			rpa := structs.RecruitPointAllocation{
@@ -115,9 +120,14 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			}
 		}
 
+		if !pointsPlaced && !spendingCountAdjusted {
+			fmt.Println("Skipping over " + recruit.FirstName + " " + recruit.LastName)
+			continue
+		}
+
 		sort.Sort(structs.ByPoints(recruitProfiles))
 
-		for i := 0; i < len(recruitProfiles); i++ {
+		for i := 0; i < len(recruitProfiles) && pointsPlaced; i++ {
 			recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(recruitProfiles[i].ProfileID))
 			if recruitTeamProfile.TotalCommitments >= recruitTeamProfile.RecruitClassSize {
 				continue
@@ -144,7 +154,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		recruit.ApplyRecruitingStatus(totalPointsOnRecruit, signThreshold)
 
 		// Change logic to withold teams without available scholarships
-		if float64(totalPointsOnRecruit) > signThreshold && eligibleTeams > 0 {
+		if float64(totalPointsOnRecruit) > signThreshold && eligibleTeams > 0 && pointsPlaced {
 			winningTeamID := 0
 			var odds float64 = 0
 
@@ -172,6 +182,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 						newsLog := structs.NewsLog{
 							WeekID:      timestamp.CollegeWeekID + 1,
+							Week:        timestamp.CollegeWeek,
 							SeasonID:    timestamp.CollegeSeasonID,
 							MessageType: "Commitment",
 							Message:     recruit.FirstName + " " + recruit.LastName + ", " + strconv.Itoa(recruit.Stars) + " star " + recruit.Position + " from " + recruit.City + ", " + recruit.State + " has signed with " + recruit.College + " with " + strconv.Itoa(int(odds)) + " percent odds.",
@@ -756,13 +767,22 @@ func AllocatePointsToAIBoards() {
 
 		teamRecruits := GetRecruitsForAIPointSync(teamID)
 
+		teamNeedsMap := GetRecruitingNeeds(teamID)
+
+		// Safety check to make sure teams aren't recruiting too many in one position
+		for _, croot := range teamRecruits {
+			if croot.IsSigned && croot.TeamAbbreviation == team.TeamAbbreviation {
+				teamNeedsMap[croot.Recruit.Position] -= 1
+			}
+		}
+
 		for _, croot := range teamRecruits {
 			pointsRemaining := team.WeeklyPoints - team.SpentPoints
 			if team.SpentPoints >= team.WeeklyPoints || pointsRemaining <= 0 || (pointsRemaining < 1 && pointsRemaining > 0) {
 				break
 			}
 
-			if croot.IsSigned || croot.CurrentWeeksPoints > 0 {
+			if croot.IsSigned || croot.CurrentWeeksPoints > 0 || teamNeedsMap[croot.Recruit.Position] <= 0 {
 				continue
 			}
 
@@ -835,7 +855,7 @@ func AllocatePointsToAIBoards() {
 			}
 
 			croot.AllocateCurrentWeekPoints(num)
-			if croot.Scholarship && team.ScholarshipsAvailable > 0 {
+			if !croot.Scholarship && team.ScholarshipsAvailable > 0 {
 				croot.ToggleScholarship(true, false)
 				team.SubtractScholarshipsAvailable()
 			}

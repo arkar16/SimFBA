@@ -2,6 +2,7 @@ package util
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"strconv"
@@ -213,6 +214,15 @@ func ConvertStringToInt(num string) int {
 	}
 
 	return val
+}
+
+func ConvertStringToFloat(num string) float64 {
+	floatNum, error := strconv.ParseFloat(num, 64)
+	if error != nil {
+		fmt.Println("Could not convert string to float 64, resetting as 0.")
+		return 0
+	}
+	return floatNum
 }
 
 func IsAITeamContendingForCroot(profiles []structs.RecruitPlayerProfile) float64 {

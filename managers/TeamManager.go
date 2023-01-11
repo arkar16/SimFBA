@@ -120,6 +120,7 @@ func RemoveUserFromTeam(teamId string) {
 	newsLog := structs.NewsLog{
 		WeekID:      timestamp.CollegeWeekID,
 		SeasonID:    timestamp.CollegeSeasonID,
+		Week:        timestamp.CollegeWeek,
 		MessageType: "CoachJob",
 		Message:     coach.CoachName + " has decided to step down as the head coach of the " + team.TeamName + " " + team.Mascot + "!",
 	}

@@ -75,12 +75,13 @@ func UpdateGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 
 		newsLog := structs.NewsLog{
 			WeekID:      ts.CollegeWeekID,
+			Week:        ts.CollegeWeek,
 			SeasonID:    ts.CollegeSeasonID,
 			MessageType: "Gameplan",
 			Message:     "Coach " + updateGameplanDto.Username + " has updated " + updateGameplanDto.TeamName + "'s offensive scheme from " + currentGameplan.OffensiveScheme + " to " + updateGameplanDto.UpdatedGameplan.OffensiveScheme,
 		}
 
-		db.Save(&newsLog)
+		db.Create(&newsLog)
 	}
 
 	currentGameplan.UpdateGameplan(updateGameplanDto.UpdatedGameplan)

@@ -22,7 +22,16 @@ type CollegeGame struct {
 	Stadium                  string
 	City                     string
 	State                    string
+	LowTemp                  float64
+	HighTemp                 float64
+	GameTemp                 float64
+	Cloud                    string
+	Precip                   string
+	WindSpeed                float64
+	WindCategory             string
 	IsNeutral                bool
+	IsDomed                  bool
+	IsNightGame              bool
 	IsConference             bool
 	IsDivisional             bool
 	IsConferenceChampionship bool

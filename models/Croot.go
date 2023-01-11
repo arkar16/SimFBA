@@ -30,6 +30,7 @@ type Croot struct {
 	AffinityOne      string
 	AffinityTwo      string
 	RecruitingStatus string
+	RecruitModifier  float64
 	IsSigned         bool
 	OverallGrade     string
 	TotalRank        float64
@@ -76,6 +77,7 @@ func (c *Croot) Map(r structs.Recruit) {
 	c.OverallGrade = util.GetOverallGrade(r.Overall, 1)
 	c.IsSigned = r.IsSigned
 	c.RecruitingStatus = r.RecruitingStatus
+	c.RecruitModifier = r.RecruitingModifier
 
 	mod := r.TopRankModifier
 	if mod == 0 {

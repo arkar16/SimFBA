@@ -238,6 +238,8 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			}
 
 			recruit.UpdateTeamID(int(winningTeamID))
+
+			db.Save(&recruit)
 		}
 
 		// Save Player Files towards Recruit

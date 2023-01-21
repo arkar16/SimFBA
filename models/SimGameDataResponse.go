@@ -10,6 +10,11 @@ type SimGameDataResponse struct {
 	GameID         int
 	WeekID         int
 	SeasonID       int
+	GameTemp       float64
+	Cloud          string
+	Precip         string
+	WindSpeed      float64
+	WindCategory   string
 }
 
 func (sgdr *SimGameDataResponse) AssignHomeTeam(team SimTeamDataResponse, roster []structs.CollegePlayer) {
@@ -20,4 +25,12 @@ func (sgdr *SimGameDataResponse) AssignHomeTeam(team SimTeamDataResponse, roster
 func (sgdr *SimGameDataResponse) AssignAwayTeam(team SimTeamDataResponse, roster []structs.CollegePlayer) {
 	sgdr.AwayTeam = team
 	sgdr.AwayTeamRoster = roster
+}
+
+func (sgdr *SimGameDataResponse) AssignWeather(temp float64, cloud string, precip string, wind string, windspeed float64) {
+	sgdr.GameTemp = temp
+	sgdr.Cloud = cloud
+	sgdr.Precip = precip
+	sgdr.WindSpeed = windspeed
+	sgdr.WindCategory = wind
 }

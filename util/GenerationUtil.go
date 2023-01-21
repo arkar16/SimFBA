@@ -8,6 +8,10 @@ func GenerateIntFromRange(min int, max int) int {
 	return rand.Intn(max-min+1) + min
 }
 
+func GenerateFloatFromRange(min float64, max float64) float64 {
+	return min + rand.Float64()*(max-min)
+}
+
 func PickFromStringList(list []string) string {
 	return list[rand.Intn(len(list))]
 }

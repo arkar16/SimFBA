@@ -28,3 +28,22 @@ func GetCollegeCoachByCoachName(name string) structs.CollegeCoach {
 
 	return coach
 }
+
+func GetNFLUserByUsername(username string) structs.NFLUser {
+	db := dbprovider.GetInstance().GetDB()
+
+	var user structs.NFLUser
+
+	err := db.Where("coach_name = ?", username).Find(&user).Error
+	if err != nil || user.ID == 0 {
+		user = structs.NFLUser{
+			Username:    username,
+			TeamID:      0,
+			TotalWins:   0,
+			TotalLosses: 0,
+			IsActive:    true,
+		}
+	}
+
+	return user
+}

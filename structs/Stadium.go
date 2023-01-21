@@ -11,6 +11,7 @@ type Stadium struct {
 	State            string
 	Country          string
 	Region           string
+	WeatherRegion    string
 	Capacity         uint
 	RecordAttendance uint
 	FirstSeason      uint

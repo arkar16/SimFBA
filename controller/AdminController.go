@@ -116,6 +116,12 @@ func FillAIBoards(w http.ResponseWriter, r *http.Request) {
 }
 
 func SyncAIBoards(w http.ResponseWriter, r *http.Request) {
+	managers.ResetAIBoardsForCompletedTeams()
 	managers.AllocatePointsToAIBoards()
 	fmt.Println(w, "Team Ranks successfully generated.")
+}
+
+func WeatherGenerator(w http.ResponseWriter, r *http.Request) {
+	managers.GenerateWeatherForGames()
+	fmt.Println(w, "Congrats, you generated the GODDAM WEATHER!")
 }

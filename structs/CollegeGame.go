@@ -19,9 +19,11 @@ type CollegeGame struct {
 	HomeTeamScore            int
 	AwayTeamScore            int
 	TimeSlot                 string
+	StadiumID                uint
 	Stadium                  string
 	City                     string
 	State                    string
+	Region                   string
 	LowTemp                  float64
 	HighTemp                 float64
 	GameTemp                 float64
@@ -60,4 +62,15 @@ func (cg *CollegeGame) UpdateCoach(TeamID int, Username string) {
 	} else if cg.AwayTeamID == TeamID {
 		cg.AwayTeamCoach = Username
 	}
+}
+
+func (cg *CollegeGame) ApplyWeather(precip string, lowTemp float64, highTemp float64, gameTemp float64, cloud string, wind float64, windCategory string, region string) {
+	cg.Precip = precip
+	cg.LowTemp = lowTemp
+	cg.HighTemp = highTemp
+	cg.WindSpeed = wind
+	cg.WindCategory = windCategory
+	cg.Region = region
+	cg.GameTemp = gameTemp
+	cg.Cloud = cloud
 }

@@ -38,6 +38,14 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 	recruitModifiers := GetRecruitingModifiers()
 
+	teamRecruitingProfiles := GetRecruitingProfileForRecruitSync()
+
+	teamMap := make(map[string]*structs.RecruitingTeamProfile)
+
+	for i := 0; i < len(teamRecruitingProfiles); i++ {
+		teamMap[strconv.Itoa(int(teamRecruitingProfiles[i].ID))] = &teamRecruitingProfiles[i]
+	}
+
 	var recruitProfiles []structs.RecruitPlayerProfile
 
 	// Get every recruit
@@ -48,6 +56,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		recruitProfiles = GetRecruitPlayerProfilesByRecruitId(strconv.Itoa(int(recruit.ID)))
 
 		if len(recruitProfiles) == 0 {
+			fmt.Println("Skipping over " + recruit.FirstName + " " + recruit.LastName + " because no one is recruiting them.")
 			continue
 		}
 
@@ -128,7 +137,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		sort.Sort(structs.ByPoints(recruitProfiles))
 
 		for i := 0; i < len(recruitProfiles) && pointsPlaced; i++ {
-			recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(recruitProfiles[i].ProfileID))
+			recruitTeamProfile := teamMap[strconv.Itoa(recruitProfiles[i].ProfileID)]
 			if recruitTeamProfile.TotalCommitments >= recruitTeamProfile.RecruitClassSize {
 				continue
 			}
@@ -174,7 +183,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				}
 
 				if winningTeamID > 0 && len(recruitProfilesWithScholarship) > 0 {
-					recruitTeamProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(winningTeamID))
+					recruitTeamProfile := teamMap[strconv.Itoa(winningTeamID)]
 					if recruitTeamProfile.TotalCommitments < recruitTeamProfile.RecruitClassSize {
 						recruitTeamProfile.IncreaseCommitCount()
 						teamAbbreviation := recruitTeamProfile.TeamAbbreviation
@@ -200,8 +209,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 							} else {
 								recruitProfiles[i].LockPlayer()
 								if recruitProfiles[i].Scholarship {
-									tp := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(recruitProfiles[i].ProfileID))
-
+									tp := teamMap[strconv.Itoa(recruitProfiles[i].ProfileID)]
 									tp.ReallocateScholarship()
 									err := db.Save(&tp).Error
 									if err != nil {
@@ -229,14 +237,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				}
 			}
 
-			recruit.UpdateTeamID(winningTeamID)
-			// Save Recruit
-			err := db.Save(&recruit).Error
-			if err != nil {
-				fmt.Println(err.Error())
-				log.Fatalf("Could not sync recruit")
-			}
-			fmt.Println("Save Recruit " + recruit.FirstName + " " + recruit.LastName)
+			recruit.UpdateTeamID(int(winningTeamID))
 		}
 
 		// Save Player Files towards Recruit
@@ -253,8 +254,6 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 	}
 
 	// Update rank system for all teams
-	teamRecruitingProfiles := GetRecruitingProfileForRecruitSync()
-
 	var totalESPNScore float64 = 0
 	var total247Score float64 = 0
 	var totalRivalsScore float64 = 0
@@ -511,7 +510,7 @@ func FillAIRecruitingBoards() {
 	boardCount := 100
 
 	if ts.CollegeWeek > 5 {
-		boardCount = 75
+		boardCount = 125
 	}
 
 	for _, team := range AITeams {
@@ -569,12 +568,23 @@ func FillAIRecruitingBoards() {
 				continue
 			}
 
+			// Check and see if the croot already exists on the player's board
 			crootProfile := GetRecruitProfileByPlayerId(strconv.Itoa(int(croot.ID)), strconv.Itoa(int(team.ID)))
-			if crootProfile.RemovedFromBoard || crootProfile.IsLocked {
+			if uint(crootProfile.ProfileID) == team.ID || crootProfile.ID > 0 || crootProfile.RemovedFromBoard || crootProfile.IsLocked {
+				fmt.Println(croot.FirstName + " " + croot.LastName + " is already on " + team.TeamAbbreviation + "'s board.")
 				continue
 			}
 
 			crootProfiles := GetRecruitPlayerProfilesByRecruitId(strconv.Itoa(int(croot.ID)))
+			affinityMod := 0
+			teamCount := 0
+
+			for _, crootProfile := range crootProfiles {
+				if crootProfile.RemovedFromBoard {
+					continue
+				}
+				teamCount++
+			}
 
 			leadingVal := util.IsAITeamContendingForCroot(crootProfiles)
 			if leadingVal > 15 {
@@ -626,10 +636,12 @@ func FillAIRecruitingBoards() {
 
 					if croot.AffinityOne == "Close to Home" {
 						affinityOneApplicable = true
+						affinityMod += 5
 					}
 
 					if croot.AffinityTwo == "Close to Home" {
 						affinityTwoApplicable = true
+						affinityMod += 5
 					}
 				}
 
@@ -642,10 +654,12 @@ func FillAIRecruitingBoards() {
 
 					if croot.AffinityOne == "Academics" {
 						affinityOneApplicable = true
+						affinityMod += 5
 					}
 
 					if croot.AffinityTwo == "Academics" {
 						affinityTwoApplicable = true
+						affinityMod += 5
 					}
 				}
 
@@ -662,10 +676,12 @@ func FillAIRecruitingBoards() {
 
 					if croot.AffinityOne == "Frontrunner" {
 						affinityOneApplicable = true
+						affinityMod += 5
 					}
 
 					if croot.AffinityTwo == "Frontrunner" {
 						affinityTwoApplicable = true
+						affinityMod += 5
 					}
 				}
 
@@ -678,10 +694,12 @@ func FillAIRecruitingBoards() {
 
 					if croot.AffinityOne == "Religion" {
 						affinityOneApplicable = true
+						affinityMod += 5
 					}
 
 					if croot.AffinityTwo == "Religion" {
 						affinityTwoApplicable = true
+						affinityMod += 5
 					}
 				}
 
@@ -694,10 +712,12 @@ func FillAIRecruitingBoards() {
 
 					if croot.AffinityOne == "Service" {
 						affinityOneApplicable = true
+						affinityMod += 5
 					}
 
 					if croot.AffinityTwo == "Service" {
 						affinityTwoApplicable = true
+						affinityMod += 5
 					}
 				}
 
@@ -710,17 +730,21 @@ func FillAIRecruitingBoards() {
 
 					if croot.AffinityOne == "Small School" {
 						affinityOneApplicable = true
+						affinityMod += 5
 					}
 
 					if croot.AffinityTwo == "Small School" {
 						affinityTwoApplicable = true
+						affinityMod += 5
 					}
 				}
 			}
 
 			chance := util.GenerateIntFromRange(1, 100)
 
-			if chance <= odds {
+			willAddToBoard := isHighlyContestedCroot(affinityMod, teamCount)
+
+			if chance <= odds && willAddToBoard {
 				playerProfile := structs.RecruitPlayerProfile{
 					RecruitID:                 int(croot.ID),
 					ProfileID:                 int(team.ID),
@@ -782,7 +806,7 @@ func AllocatePointsToAIBoards() {
 				break
 			}
 
-			if croot.IsSigned || croot.CurrentWeeksPoints > 0 || teamNeedsMap[croot.Recruit.Position] <= 0 {
+			if croot.IsSigned || croot.CurrentWeeksPoints > 0 {
 				continue
 			}
 
@@ -790,7 +814,7 @@ func AllocatePointsToAIBoards() {
 			var num float64 = 0
 			recruitID := strconv.Itoa(int(croot.RecruitID))
 
-			if croot.IsLocked && croot.TeamAbbreviation != croot.Recruit.College {
+			if (croot.IsLocked && croot.TeamAbbreviation != croot.Recruit.College) || teamNeedsMap[croot.Recruit.Position] <= 0 {
 				removeCrootFromBoard = true
 			}
 
@@ -871,6 +895,31 @@ func AllocatePointsToAIBoards() {
 	}
 }
 
+func ResetAIBoardsForCompletedTeams() {
+	db := dbprovider.GetInstance().GetDB()
+
+	AITeams := GetOnlyAITeamRecruitingProfiles()
+
+	for _, team := range AITeams {
+		// If a team already has the maximum allowed for their recruiting class, take all Recruit Profiles for that team where the recruit hasn't signed, and reset their total points.
+		// This is so that these unsigned recruits can be recruited for and will allow the AI to put points onto those recruits.
+
+		if team.TotalCommitments >= team.RecruitClassSize {
+			teamRecruits := GetRecruitsByTeamProfileID(strconv.Itoa(int(team.ID)))
+
+			for _, croot := range teamRecruits {
+				if croot.IsSigned || croot.IsLocked {
+					continue
+				}
+				croot.ResetTotalPoints()
+				db.Save(&croot)
+			}
+			team.ResetSpentPoints()
+			db.Save(&team)
+		}
+	}
+}
+
 func isBlueBlood(behavior string) bool {
 	return behavior == "Blue Blood"
 }
@@ -889,4 +938,11 @@ func isAffinityApplicable(affinity string, af structs.ProfileAffinity) bool {
 
 func doesCrootHaveAffinity(affinity string, croot structs.Recruit) bool {
 	return croot.AffinityOne == affinity || croot.AffinityTwo == affinity
+}
+
+func isHighlyContestedCroot(mod int, teams int) bool {
+	chance := util.GenerateIntFromRange(1, 20)
+	chance += mod
+
+	return chance > teams
 }

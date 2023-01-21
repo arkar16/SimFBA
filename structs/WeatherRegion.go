@@ -1,7 +1,11 @@
 package structs
 
 type WeatherRegion struct {
-	RegionName      string
+	RegionName string
+	Forecasts  map[int]WeatherForecast
+}
+
+type WeatherForecast struct {
 	ReferenceWeek   string
 	Week            uint
 	MinLow          int
@@ -25,4 +29,17 @@ type WeatherRegion struct {
 	WindSpeedMin    float64
 	WindSpeedAvg    float64
 	WindSpeedMax    float64
+}
+
+type WeatherChance struct {
+	Weather       string
+	DaysOfWeather float64
+}
+
+func (w *WeatherRegion) AssignForecast(week int, forecast WeatherForecast) {
+	w.Forecasts[week] = forecast
+}
+
+func (w *WeatherChance) ApplyChances(prev float64) {
+	w.DaysOfWeather += prev
 }

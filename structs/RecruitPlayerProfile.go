@@ -84,6 +84,9 @@ func (rp *RecruitPlayerProfile) LockPlayer() {
 func (rp *RecruitPlayerProfile) ResetSpendingCount() {
 	rp.SpendingCount = 0
 }
+func (rp *RecruitPlayerProfile) ResetTotalPoints() {
+	rp.TotalPoints = 0
+}
 
 func (rp *RecruitPlayerProfile) AssignRES(res float64) {
 	rp.RecruitingEfficiencyScore = res

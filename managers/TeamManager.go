@@ -50,6 +50,28 @@ func GetTeamByTeamID(teamId string) structs.CollegeTeam {
 	return team
 }
 
+// GetTeamByTeamID - straightforward
+func GetAllNFLTeams() []structs.NFLTeam {
+	var teams []structs.NFLTeam
+	db := dbprovider.GetInstance().GetDB()
+	err := db.Find(&teams).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return teams
+}
+
+// GetTeamByTeamID - straightforward
+func GetNFLTeamByTeamID(teamId string) structs.NFLTeam {
+	var team structs.NFLTeam
+	db := dbprovider.GetInstance().GetDB()
+	err := db.Where("id = ?", teamId).Find(&team).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return team
+}
+
 func GetTeamByTeamIDForDiscord(teamId string) structs.CollegeTeam {
 	var team structs.CollegeTeam
 	db := dbprovider.GetInstance().GetDB()
@@ -98,34 +120,6 @@ func GetTeamsByDivisionID(conferenceID string) []structs.CollegeTeam {
 		log.Fatal(err)
 	}
 	return teams
-}
-
-func RemoveUserFromTeam(teamId string) {
-	db := dbprovider.GetInstance().GetDB()
-
-	team := GetTeamByTeamID(teamId)
-
-	coach := GetCollegeCoachByCoachName(team.Coach)
-
-	coach.SetAsInactive()
-
-	team.RemoveUserFromTeam()
-
-	db.Save(&team)
-
-	db.Save(&coach)
-
-	timestamp := GetTimestamp()
-
-	newsLog := structs.NewsLog{
-		WeekID:      timestamp.CollegeWeekID,
-		SeasonID:    timestamp.CollegeSeasonID,
-		Week:        timestamp.CollegeWeek,
-		MessageType: "CoachJob",
-		Message:     coach.CoachName + " has decided to step down as the head coach of the " + team.TeamName + " " + team.Mascot + "!",
-	}
-
-	db.Create(&newsLog)
 }
 
 func GetTeamsInConference(conference string) []structs.CollegeTeam {

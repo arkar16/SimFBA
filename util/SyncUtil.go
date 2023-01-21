@@ -1,10 +1,12 @@
 package util
 
 import (
+	"encoding/csv"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/structs"
@@ -64,7 +66,7 @@ func FilterOutRecruitingProfile(profiles []structs.RecruitPlayerProfile, ID int)
 	var rp []structs.RecruitPlayerProfile
 
 	for _, profile := range profiles {
-		if int(profile.ProfileID) != ID {
+		if profile.ProfileID != ID {
 			rp = append(rp, profile)
 		}
 	}
@@ -245,6 +247,22 @@ func ReadJson(path string) []byte {
 		log.Fatal("Error when opening file: ", err)
 	}
 	return content
+}
+
+func ReadCSV(path string) [][]string {
+	f, err := os.Open(path)
+	if err != nil {
+		log.Fatal("Unable to read input file "+path, err)
+	}
+	defer f.Close()
+
+	csvReader := csv.NewReader(f)
+	rows, err := csvReader.ReadAll()
+	if err != nil {
+		log.Fatal("Unable to parse file as CSV for "+path, err)
+	}
+
+	return rows
 }
 
 func GetStateRegionMatcher() map[string]map[string]string {

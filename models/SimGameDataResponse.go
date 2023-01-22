@@ -15,6 +15,7 @@ type SimGameDataResponse struct {
 	Precip         string
 	WindSpeed      float64
 	WindCategory   string
+	IsDomed        bool
 }
 
 func (sgdr *SimGameDataResponse) AssignHomeTeam(team SimTeamDataResponse, roster []structs.CollegePlayer) {
@@ -33,4 +34,8 @@ func (sgdr *SimGameDataResponse) AssignWeather(temp float64, cloud string, preci
 	sgdr.Precip = precip
 	sgdr.WindSpeed = windspeed
 	sgdr.WindCategory = wind
+}
+
+func (sgdr *SimGameDataResponse) AssignStadium(isDomed bool) {
+	sgdr.IsDomed = isDomed
 }

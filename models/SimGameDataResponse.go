@@ -7,6 +7,7 @@ type SimGameDataResponse struct {
 	HomeTeamRoster []structs.CollegePlayer
 	AwayTeam       SimTeamDataResponse
 	AwayTeamRoster []structs.CollegePlayer
+	Stadium        structs.Stadium
 	GameID         int
 	WeekID         int
 	SeasonID       int
@@ -15,7 +16,6 @@ type SimGameDataResponse struct {
 	Precip         string
 	WindSpeed      float64
 	WindCategory   string
-	IsDomed        bool
 }
 
 func (sgdr *SimGameDataResponse) AssignHomeTeam(team SimTeamDataResponse, roster []structs.CollegePlayer) {
@@ -36,6 +36,6 @@ func (sgdr *SimGameDataResponse) AssignWeather(temp float64, cloud string, preci
 	sgdr.WindCategory = wind
 }
 
-func (sgdr *SimGameDataResponse) AssignStadium(isDomed bool) {
-	sgdr.IsDomed = isDomed
+func (sgdr *SimGameDataResponse) AssignStadium(s structs.Stadium) {
+	sgdr.Stadium = s
 }

@@ -68,7 +68,7 @@ func GetHomeAndAwayTeamData(w http.ResponseWriter, r *http.Request) {
 	stadium := managers.GetStadiumByStadiumID(stadiumID)
 
 	responseModel.AssignWeather(game.GameTemp, game.Cloud, game.Precip, game.WindCategory, game.WindSpeed)
-	responseModel.AssignStadium(stadium.IsDomed)
+	responseModel.AssignStadium(stadium)
 
 	json.NewEncoder(w).Encode(responseModel)
 }

@@ -14,3 +14,13 @@ func GetAllStadiums() []structs.Stadium {
 
 	return stadiums
 }
+
+func GetStadiumByStadiumID(id string) structs.Stadium {
+	db := dbprovider.GetInstance().GetDB()
+
+	var stadium structs.Stadium
+
+	db.Where("id = ?", id).Find(&stadium)
+
+	return stadium
+}

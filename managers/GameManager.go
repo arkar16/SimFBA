@@ -117,3 +117,16 @@ func GetCollegeGameByAbbreviationsWeekAndSeasonID(HomeTeamAbbr string, WeekID st
 
 	return game
 }
+
+func GetCollegeGameByGameID(gameID string) structs.CollegeGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	var game structs.CollegeGame
+
+	err := db.Where("id = ?", gameID).Find(&game).Error
+	if err != nil {
+		fmt.Println("Could not find game!")
+	}
+
+	return game
+}

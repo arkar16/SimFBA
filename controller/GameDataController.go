@@ -13,13 +13,14 @@ import (
 // GetHomeAndAwayTeamData
 func GetHomeAndAwayTeamData(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	homeTeamAbbr := vars["HomeTeamAbbr"]
-	awayTeamAbbr := vars["AwayTeamAbbr"]
+	gameID := vars["gameID"]
+
+	game := managers.GetCollegeGameByGameID(gameID)
 
 	var responseModel models.SimGameDataResponse
 
-	homeTeam := managers.GetTeamByTeamAbbr(homeTeamAbbr)
-	awayTeam := managers.GetTeamByTeamAbbr(awayTeamAbbr)
+	homeTeam := managers.GetTeamByTeamAbbr(game.HomeTeam)
+	awayTeam := managers.GetTeamByTeamAbbr(game.AwayTeam)
 
 	homeTeamID := strconv.Itoa(int(homeTeam.ID))
 	awayTeamID := strconv.Itoa(int(awayTeam.ID))
@@ -58,10 +59,6 @@ func GetHomeAndAwayTeamData(w http.ResponseWriter, r *http.Request) {
 
 	responseModel.AssignHomeTeam(homeTeamResponse, homeTeamRoster)
 	responseModel.AssignAwayTeam(awayTeamResponse, awayTeamRoster)
-
-	ts := managers.GetTimestamp()
-
-	game := managers.GetCollegeGameByAbbreviationsWeekAndSeasonID(homeTeamAbbr, strconv.Itoa(ts.CollegeWeekID), strconv.Itoa(ts.CollegeSeasonID))
 
 	stadiumID := strconv.Itoa(int(game.StadiumID))
 

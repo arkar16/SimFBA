@@ -131,7 +131,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/college/team/{teamID}/", controller.GetTeamByTeamID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/conference/{conferenceID}/", controller.GetTeamsByConferenceID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/division/{divisionID}/", controller.GetTeamsByDivisionID).Methods("GET")
-	myRouter.HandleFunc("/teams/college/sim/{HomeTeamAbbr}/{AwayTeamAbbr}/", controller.GetHomeAndAwayTeamData).Methods("GET")
+	myRouter.HandleFunc("/teams/college/sim/{gameID}/", controller.GetHomeAndAwayTeamData).Methods("GET")
 
 	// Discord Controls
 	myRouter.HandleFunc("/teams/ds/college/team/{teamID}/", controller.GetTeamByTeamIDForDiscord).Methods("GET")

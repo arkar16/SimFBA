@@ -16,6 +16,11 @@ func GetAllCollegeTeams(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetAllNFLTeams
+func GetAllNFLTeams(w http.ResponseWriter, r *http.Request) {
+	nflTeams := managers.GetAllNFLTeams()
+
+	json.NewEncoder(w).Encode(nflTeams)
+}
 
 // GetAllActiveCollegeTeams
 func GetAllActiveCollegeTeams(w http.ResponseWriter, r *http.Request) {

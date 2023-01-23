@@ -106,6 +106,11 @@ func handleRequests() {
 	myRouter.HandleFunc("/requests/approve/", controller.ApproveTeamRequest).Methods("PUT")
 	myRouter.HandleFunc("/requests/reject/", controller.RejectTeamRequest).Methods("DELETE")
 	myRouter.HandleFunc("/requests/remove/{teamID}", controller.RemoveUserFromTeam).Methods("PUT")
+	myRouter.HandleFunc("/nfl/requests/all/", controller.GetNFLTeamRequests).Methods("GET")
+	myRouter.HandleFunc("/nfl/requests/create/", controller.CreateNFLTeamRequest).Methods("POST")
+	myRouter.HandleFunc("/nfl/requests/approve/", controller.ApproveNFLTeamRequest).Methods("POST")
+	myRouter.HandleFunc("/nfl/requests/reject/", controller.RejectNFLTeamRequest).Methods("DELETE")
+	myRouter.HandleFunc("/nfl/requests/remove/{teamID}", controller.RemoveNFLUserFromNFLTeam).Methods("POST")
 
 	// Standings Controls
 	myRouter.HandleFunc("/standings/cfb/season/{seasonID}/", controller.GetAllCollegeStandings).Methods("GET")
@@ -120,6 +125,7 @@ func handleRequests() {
 
 	// Team Controls
 	myRouter.HandleFunc("/teams/college/all/", controller.GetAllCollegeTeams).Methods("GET")
+	myRouter.HandleFunc("/teams/nfl/all/", controller.GetAllNFLTeams).Methods("GET")
 	myRouter.HandleFunc("/teams/college/active/", controller.GetAllActiveCollegeTeams).Methods("GET")
 	myRouter.HandleFunc("/teams/college/available/", controller.GetAllAvailableCollegeTeams).Methods("GET")
 	myRouter.HandleFunc("/teams/college/team/{teamID}/", controller.GetTeamByTeamID).Methods("GET")

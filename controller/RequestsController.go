@@ -76,6 +76,20 @@ func RemoveUserFromTeam(w http.ResponseWriter, r *http.Request) {
 	// json.NewEncoder(w).Encode(team)
 }
 
+func CreateNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
+	var request structs.NFLRequest
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.CreateNFLTeamRequest(request)
+
+	fmt.Fprintf(w, "Request Successfully Created")
+}
+
 func ApproveNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
 	var request structs.NFLRequest
 

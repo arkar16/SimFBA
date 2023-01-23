@@ -61,7 +61,7 @@ func CreateNFLTeamRequest(request structs.NFLRequest) {
 	db := dbprovider.GetInstance().GetDB()
 
 	var existingRequest structs.NFLRequest
-	err := db.Where("username = ? AND team_id = ? AND is_owner = ? AND is_manager = ? AND is_head_coach = ? AND is_assistant = ? AND is_approved = false AND deleted_at is null", request.Username, request.NFLTeamID, request.IsOwner, request.IsManager, request.IsCoach, request.IsAssistant).Find(&existingRequest).Error
+	err := db.Where("username = ? AND nfl_team_id = ? AND is_owner = ? AND is_manager = ? AND is_coach = ? AND is_assistant = ? AND is_approved = false AND deleted_at is null", request.Username, request.NFLTeamID, request.IsOwner, request.IsManager, request.IsCoach, request.IsAssistant).Find(&existingRequest).Error
 	if err != nil {
 		// Then there's no existing record, I guess? Which is fine.
 		fmt.Println("Creating Team Request for TEAM " + strconv.Itoa(int(request.NFLTeamID)))

@@ -34,7 +34,7 @@ func GetNFLUserByUsername(username string) structs.NFLUser {
 
 	var user structs.NFLUser
 
-	err := db.Where("coach_name = ?", username).Find(&user).Error
+	err := db.Where("username = ?", username).Find(&user).Error
 	if err != nil || user.ID == 0 {
 		user = structs.NFLUser{
 			Username:    username,

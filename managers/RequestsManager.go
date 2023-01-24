@@ -95,19 +95,22 @@ func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 
 	coach.SetTeam(request.TeamID)
 
-	team.AssignUserToTeam(request.Username)
+	team.AssignUserToTeam(coach.CoachName)
 
 	seasonalGames := GetCollegeGamesByTeamIdAndSeasonId(strconv.Itoa(request.TeamID), strconv.Itoa(timestamp.CollegeSeasonID))
 
 	for _, game := range seasonalGames {
 		if game.Week >= timestamp.CollegeWeek {
-			game.UpdateCoach(request.TeamID, request.Username)
+			game.UpdateCoach(request.TeamID, coach.CoachName)
 			db.Save(&game)
 		}
 
 	}
 
-	db.Save(&team)
+	err := db.Save(&team).Error
+	if err != nil {
+		log.Fatalln("Could not assign user to team for some reason?")
+	}
 
 	db.Save(&coach)
 

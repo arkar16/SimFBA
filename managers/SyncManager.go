@@ -263,9 +263,12 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 	}
 
 	// Update rank system for all teams
-	var totalESPNScore float64 = 0
-	var total247Score float64 = 0
-	var totalRivalsScore float64 = 0
+	var maxESPNScore float64 = 0
+	var minESPNScore float64 = 100000
+	var maxRivalsScore float64 = 0
+	var minRivalsScore float64 = 100000
+	var max247Score float64 = 0
+	var min247Score float64 = 100000
 
 	for i := 0; i < len(teamRecruitingProfiles); i++ {
 
@@ -276,18 +279,33 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		team247Rank := Get247TeamRanking(teamRecruitingProfiles[i], signedRecruits)
 		teamESPNRank := GetESPNTeamRanking(teamRecruitingProfiles[i], signedRecruits)
 		teamRivalsRank := GetRivalsTeamRanking(teamRecruitingProfiles[i], signedRecruits)
+		if teamESPNRank > maxESPNScore {
+			maxESPNScore = teamESPNRank
+		}
+		if teamESPNRank < minESPNScore {
+			minESPNScore = teamESPNRank
+		}
+		if teamRivalsRank > maxRivalsScore {
+			maxRivalsScore = teamRivalsRank
+		}
+		if teamRivalsRank < minRivalsScore {
+			minRivalsScore = teamRivalsRank
+		}
+		if team247Rank > max247Score {
+			max247Score = team247Rank
+		}
+		if team247Rank < min247Score {
+			min247Score = team247Rank
+		}
 
 		teamRecruitingProfiles[i].Assign247Rank(team247Rank)
-		total247Score += team247Rank
 		teamRecruitingProfiles[i].AssignESPNRank(teamESPNRank)
-		totalESPNScore += teamESPNRank
 		teamRecruitingProfiles[i].AssignRivalsRank(teamRivalsRank)
-		totalRivalsScore += teamRivalsRank
 	}
 
-	averageESPNScore := totalESPNScore / 130
-	average247score := total247Score / 130
-	averageRivalScore := totalRivalsScore / 130
+	espnDivisor := (maxESPNScore - minESPNScore)
+	divisor247 := (max247Score - min247Score)
+	rivalsDivisor := (maxRivalsScore - minRivalsScore)
 
 	for _, rp := range teamRecruitingProfiles {
 		if recruitProfilePointsMap[rp.TeamAbbreviation] > rp.WeeklyPoints {
@@ -295,12 +313,12 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		}
 
 		var avg float64 = 0
-		if averageESPNScore > 0 && average247score > 0 && averageRivalScore > 0 {
-			distributionESPN := rp.ESPNScore / averageESPNScore
-			distribution247 := rp.Rank247Score / average247score
-			distributionRivals := rp.RivalsScore / averageRivalScore
+		if espnDivisor > 0 && divisor247 > 0 && rivalsDivisor > 0 {
+			distributionESPN := (rp.ESPNScore - minESPNScore) / espnDivisor
+			distribution247 := (rp.Rank247Score - min247Score) / divisor247
+			distributionRivals := (rp.RivalsScore - minRivalsScore) / rivalsDivisor
 
-			avg = (distributionESPN + distribution247 + distributionRivals) / 3
+			avg = (distributionESPN + distribution247 + distributionRivals)
 
 			rp.AssignCompositeRank(avg)
 		}
@@ -460,9 +478,12 @@ func SyncTeamRankings() {
 	// Update rank system for all teams
 	teamRecruitingProfiles := GetRecruitingProfileForRecruitSync()
 
-	var totalESPNScore float64 = 0
-	var total247Score float64 = 0
-	var totalRivalsScore float64 = 0
+	var maxESPNScore float64 = 0
+	var minESPNScore float64 = 100000
+	var maxRivalsScore float64 = 0
+	var minRivalsScore float64 = 100000
+	var max247Score float64 = 0
+	var min247Score float64 = 100000
 
 	for i := 0; i < len(teamRecruitingProfiles); i++ {
 
@@ -475,26 +496,41 @@ func SyncTeamRankings() {
 		teamRivalsRank := GetRivalsTeamRanking(teamRecruitingProfiles[i], signedRecruits)
 
 		teamRecruitingProfiles[i].Assign247Rank(team247Rank)
-		total247Score += team247Rank
 		teamRecruitingProfiles[i].AssignESPNRank(teamESPNRank)
-		totalESPNScore += teamESPNRank
 		teamRecruitingProfiles[i].AssignRivalsRank(teamRivalsRank)
-		totalRivalsScore += teamRivalsRank
+		if teamESPNRank > maxESPNScore {
+			maxESPNScore = teamESPNRank
+		}
+		if teamESPNRank < minESPNScore {
+			minESPNScore = teamESPNRank
+		}
+		if teamRivalsRank > maxRivalsScore {
+			maxRivalsScore = teamRivalsRank
+		}
+		if teamRivalsRank < minRivalsScore {
+			minRivalsScore = teamRivalsRank
+		}
+		if team247Rank > max247Score {
+			max247Score = team247Rank
+		}
+		if team247Rank < min247Score {
+			min247Score = team247Rank
+		}
 	}
 
-	averageESPNScore := totalESPNScore / 130
-	average247score := total247Score / 130
-	averageRivalScore := totalRivalsScore / 130
+	espnDivisor := (maxESPNScore - minESPNScore)
+	divisor247 := (max247Score - min247Score)
+	rivalsDivisor := (maxRivalsScore - minRivalsScore)
 
 	for _, rp := range teamRecruitingProfiles {
 
 		var avg float64 = 0
-		if averageESPNScore > 0 && average247score > 0 && averageRivalScore > 0 {
-			distributionESPN := rp.ESPNScore / averageESPNScore
-			distribution247 := rp.Rank247Score / average247score
-			distributionRivals := rp.RivalsScore / averageRivalScore
+		if espnDivisor > 0 && divisor247 > 0 && rivalsDivisor > 0 {
+			distributionESPN := (rp.ESPNScore - minESPNScore) / espnDivisor
+			distribution247 := (rp.Rank247Score - min247Score) / divisor247
+			distributionRivals := (rp.RivalsScore - minRivalsScore) / rivalsDivisor
 
-			avg = (distributionESPN + distribution247 + distributionRivals) / 3
+			avg = (distributionESPN + distribution247 + distributionRivals)
 
 			rp.AssignCompositeRank(avg)
 		}

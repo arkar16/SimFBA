@@ -48,7 +48,7 @@ func handleRequests() {
 	// myRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/recruit/ai", controller.ImportRecruitAICSV).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/missing/recruits", controller.GetMissingRecruitingClasses).Methods("GET")
-	// myRouter.HandleFunc("/admin/teams/croot/sync", controller.SyncTeamRecruitingRanks).Methods("GET")
+	myRouter.HandleFunc("/admin/teams/croot/sync", controller.SyncTeamRecruitingRanks).Methods("GET")
 	myRouter.HandleFunc("/admin/recruiting/class/size", controller.GetRecruitingClassSizeForTeams).Methods("GET")
 	myRouter.HandleFunc("/admin/ai/fill/boards", controller.FillAIBoards).Methods("GET")
 	myRouter.HandleFunc("/admin/ai/sync/boards", controller.SyncAIBoards).Methods("GET")
@@ -115,6 +115,7 @@ func handleRequests() {
 	// Standings Controls
 	myRouter.HandleFunc("/standings/cfb/season/{seasonID}/", controller.GetAllCollegeStandings).Methods("GET")
 	myRouter.HandleFunc("/standings/cfb/{conferenceID}/{seasonID}/", controller.GetCollegeStandingsByConferenceIDAndSeasonID).Methods("GET")
+	myRouter.HandleFunc("/standings/nfl/{divisionID}/{seasonID}/", controller.GetNFLStandingsByDivisionIDAndSeasonID).Methods("GET")
 	myRouter.HandleFunc("/standings/cfb/history/team/{teamID}/", controller.GetHistoricalRecordsByTeamID).Methods("GET")
 
 	// Stats Controls
@@ -129,6 +130,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/college/active/", controller.GetAllActiveCollegeTeams).Methods("GET")
 	myRouter.HandleFunc("/teams/college/available/", controller.GetAllAvailableCollegeTeams).Methods("GET")
 	myRouter.HandleFunc("/teams/college/team/{teamID}/", controller.GetTeamByTeamID).Methods("GET")
+	myRouter.HandleFunc("/teams/nfl/team/{teamID}/", controller.GetTeamByTeamID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/conference/{conferenceID}/", controller.GetTeamsByConferenceID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/division/{divisionID}/", controller.GetTeamsByDivisionID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/sim/{gameID}/", controller.GetHomeAndAwayTeamData).Methods("GET")

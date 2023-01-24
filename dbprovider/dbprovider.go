@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	config "github.com/CalebRose/SimFBA/secrets"
-	"github.com/CalebRose/SimFBA/structs"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -68,7 +67,7 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.CollegeWeek{})
 	// db.AutoMigrate(&structs.CollegeSeason{})
 	// db.AutoMigrate(&structs.NFLPlayer{})
-	db.AutoMigrate(&structs.NFLUser{})
+	// db.AutoMigrate(&structs.NFLUser{})
 	// db.AutoMigrate(&structs.NFLTeam{})
 	// db.AutoMigrate(&structs.NFLGameplan{})
 	// db.AutoMigrate(&structs.NFLStandings{})

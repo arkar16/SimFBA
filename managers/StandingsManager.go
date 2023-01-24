@@ -22,6 +22,18 @@ func GetStandingsByConferenceIDAndSeasonID(conferenceID string, seasonID string)
 	return standings
 }
 
+func GetNFLStandingsByDivisionIDAndSeasonID(divisionID string, seasonID string) []structs.CollegeStandings {
+	var standings []structs.CollegeStandings
+	db := dbprovider.GetInstance().GetDB()
+	err := db.Where("division_id = ? AND season_id = ?", divisionID, seasonID).Order("division_losses asc").Order("division_ties asc").Order("division_wins desc").
+		Order("total_losses asc").Order("total_ties asc").Order("total_wins desc").
+		Find(&standings).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return standings
+}
+
 // GetHistoricalRecordsByTeamID
 func GetHistoricalRecordsByTeamID(TeamID string) models.TeamRecordResponse {
 	tsChn := make(chan structs.Timestamp)

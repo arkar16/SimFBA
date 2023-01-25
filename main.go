@@ -59,6 +59,8 @@ func handleRequests() {
 	myRouter.HandleFunc("/games/college/timeslot/{timeSlot}/{weekID}", controller.GetCollegeGamesByTimeslotWeekId).Methods("GET")
 	myRouter.HandleFunc("/games/college/team/{teamID}/{seasonID}", controller.GetCollegeGamesByTeamIDAndSeasonID).Methods("GET")
 	myRouter.HandleFunc("/games/college/season/{seasonID}", controller.GetCollegeGamesBySeasonID).Methods("GET")
+	myRouter.HandleFunc("/games/nfl/team/{teamID}/{seasonID}", controller.GetNFLGamesByTeamIDAndSeasonID).Methods("GET")
+	myRouter.HandleFunc("/games/nfl/season/{seasonID}", controller.GetNFLGamesBySeasonID).Methods("GET")
 
 	// Gameplan Controls
 	myRouter.HandleFunc("/gameplan/college/team/{teamID}/", controller.GetTeamGameplanByTeamID).Methods("GET")
@@ -130,7 +132,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/college/active/", controller.GetAllActiveCollegeTeams).Methods("GET")
 	myRouter.HandleFunc("/teams/college/available/", controller.GetAllAvailableCollegeTeams).Methods("GET")
 	myRouter.HandleFunc("/teams/college/team/{teamID}/", controller.GetTeamByTeamID).Methods("GET")
-	myRouter.HandleFunc("/teams/nfl/team/{teamID}/", controller.GetTeamByTeamID).Methods("GET")
+	myRouter.HandleFunc("/teams/nfl/team/{teamID}/", controller.GetNFLTeamByTeamID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/conference/{conferenceID}/", controller.GetTeamsByConferenceID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/division/{divisionID}/", controller.GetTeamsByDivisionID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/sim/{gameID}/", controller.GetHomeAndAwayTeamData).Methods("GET")

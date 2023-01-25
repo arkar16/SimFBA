@@ -76,3 +76,30 @@ func GetCollegeGamesBySeasonID(w http.ResponseWriter, r *http.Request) {
 // GetNFLGamesByTimeslotAndWeekID
 
 // GetNFLGamesByTeamIDAndSeasonID
+func GetNFLGamesByTeamIDAndSeasonID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+
+	seasonID := vars["seasonID"]
+
+	if len(teamID) == 0 {
+		panic("User did not provide teamID")
+	}
+
+	nflGames := managers.GetNFLGamesByTeamIdAndSeasonId(teamID, seasonID)
+
+	json.NewEncoder(w).Encode(nflGames)
+}
+
+func GetNFLGamesBySeasonID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	seasonID := vars["seasonID"]
+
+	if len(seasonID) == 0 {
+		panic("User did not provide teamID")
+	}
+
+	nflGames := managers.GetNFLGamesBySeasonID(seasonID)
+
+	json.NewEncoder(w).Encode(nflGames)
+}

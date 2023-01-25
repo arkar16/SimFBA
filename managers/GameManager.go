@@ -48,6 +48,26 @@ func GetCollegeGamesBySeasonID(SeasonID string) []structs.CollegeGame {
 	return games
 }
 
+func GetNFLGamesByTeamIdAndSeasonId(TeamID string, SeasonID string) []structs.NFLGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	var games []structs.NFLGame
+
+	db.Order("week_id asc").Where("season_id = ? AND (home_team_id = ? OR away_team_id = ?)", SeasonID, TeamID, TeamID).Find(&games)
+
+	return games
+}
+
+func GetNFLGamesBySeasonID(SeasonID string) []structs.NFLGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	var games []structs.NFLGame
+
+	db.Order("week_id asc").Where("season_id = ?", SeasonID).Find(&games)
+
+	return games
+}
+
 func GetTeamScheduleForBot(TeamID string, SeasonID string) []models.CollegeGameResponse {
 	db := dbprovider.GetInstance().GetDB()
 

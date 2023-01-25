@@ -6,6 +6,7 @@ type NFLStandings struct {
 	gorm.Model
 	TeamID           uint
 	TeamName         string
+	Mascot           string
 	SeasonID         uint
 	Season           uint
 	LeagueID         uint

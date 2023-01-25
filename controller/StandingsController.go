@@ -22,12 +22,12 @@ func GetCollegeStandingsByConferenceIDAndSeasonID(w http.ResponseWriter, r *http
 
 func GetNFLStandingsByDivisionIDAndSeasonID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	conferenceID := vars["conferenceID"]
+	divisionID := vars["divisionID"]
 	seasonID := vars["seasonID"]
-	if len(conferenceID) == 0 || len(seasonID) == 0 {
+	if len(divisionID) == 0 || len(seasonID) == 0 {
 		panic("User did not provide enough information")
 	}
-	standings := managers.GetNFLStandingsByDivisionIDAndSeasonID(conferenceID, seasonID)
+	standings := managers.GetNFLStandingsByDivisionIDAndSeasonID(divisionID, seasonID)
 	json.NewEncoder(w).Encode(standings)
 }
 

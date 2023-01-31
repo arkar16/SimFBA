@@ -39,9 +39,6 @@ func GenerateWeatherForGames() {
 	collegeGames := GetCollegeGamesBySeasonID(seasonID)
 
 	for _, game := range collegeGames {
-		if game.HomeTeamID == 88 {
-			fmt.Println("R U T G E R S")
-		}
 		regionName := teamRegions[game.HomeTeam]
 		region := regions[regionName]
 		chances := []structs.WeatherChance{}

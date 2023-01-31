@@ -107,6 +107,12 @@ func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 
 	}
 
+	recruitingProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(request.TeamID))
+
+	recruitingProfile.ToggleAIBehavior()
+
+	db.Save(&recruitingProfile)
+
 	err := db.Save(&team).Error
 	if err != nil {
 		log.Fatalln("Could not assign user to team for some reason?")
@@ -214,6 +220,12 @@ func RemoveUserFromTeam(teamId string) {
 	db.Save(&coach)
 
 	timestamp := GetTimestamp()
+
+	recruitingProfile := GetOnlyRecruitingProfileByTeamID(teamId)
+
+	recruitingProfile.ToggleAIBehavior()
+
+	db.Save(&recruitingProfile)
 
 	newsLog := structs.NewsLog{
 		WeekID:      timestamp.CollegeWeekID,

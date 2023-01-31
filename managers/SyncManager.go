@@ -564,7 +564,7 @@ func FillAIRecruitingBoards() {
 
 	for _, team := range AITeams {
 		count := 0
-		if !team.IsAI || team.TotalCommitments == team.RecruitClassSize {
+		if !team.IsAI || team.TotalCommitments >= team.RecruitClassSize {
 			continue
 		}
 
@@ -844,7 +844,7 @@ func AllocatePointsToAIBoards() {
 
 		// Safety check to make sure teams aren't recruiting too many in one position
 		for _, croot := range teamRecruits {
-			if croot.IsSigned && croot.TeamAbbreviation == team.TeamAbbreviation {
+			if croot.IsSigned && croot.TeamAbbreviation == team.TeamAbbreviation && ts.CollegeWeek > 17 {
 				teamNeedsMap[croot.Recruit.Position] -= 1
 			}
 		}
@@ -855,7 +855,7 @@ func AllocatePointsToAIBoards() {
 				break
 			}
 
-			if croot.IsSigned || croot.CurrentWeeksPoints > 0 {
+			if croot.IsSigned || croot.CurrentWeeksPoints > 0 || croot.ScholarshipRevoked {
 				continue
 			}
 

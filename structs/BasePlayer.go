@@ -1,45 +1,49 @@
 package structs
 
 type BasePlayer struct {
-	FirstName      string
-	LastName       string
-	Position       string
-	Archetype      string
-	Height         int
-	Weight         int
-	Age            int
-	Stars          int
-	Overall        int
-	Stamina        int
-	Injury         int
-	FootballIQ     int
-	Speed          int
-	Carrying       int
-	Agility        int
-	Catching       int
-	RouteRunning   int
-	ZoneCoverage   int
-	ManCoverage    int
-	Strength       int
-	Tackle         int
-	PassBlock      int
-	RunBlock       int
-	PassRush       int
-	RunDefense     int
-	ThrowPower     int
-	ThrowAccuracy  int
-	KickAccuracy   int
-	KickPower      int
-	PuntAccuracy   int
-	PuntPower      int
-	Progression    int
-	Discipline     int
-	PotentialGrade string
-	FreeAgency     string
-	Personality    string
-	RecruitingBias string
-	WorkEthic      string
-	AcademicBias   string
+	FirstName       string
+	LastName        string
+	Position        string
+	Archetype       string
+	Height          int
+	Weight          int
+	Age             int
+	Stars           int
+	Overall         int
+	Stamina         int
+	Injury          int
+	FootballIQ      int
+	Speed           int
+	Carrying        int
+	Agility         int
+	Catching        int
+	RouteRunning    int
+	ZoneCoverage    int
+	ManCoverage     int
+	Strength        int
+	Tackle          int
+	PassBlock       int
+	RunBlock        int
+	PassRush        int
+	RunDefense      int
+	ThrowPower      int
+	ThrowAccuracy   int
+	KickAccuracy    int
+	KickPower       int
+	PuntAccuracy    int
+	PuntPower       int
+	Progression     int
+	Discipline      int
+	PotentialGrade  string
+	FreeAgency      string
+	Personality     string
+	RecruitingBias  string
+	WorkEthic       string
+	AcademicBias    string
+	IsInjured       bool
+	InjuryName      string
+	InjuryType      string
+	WeeksOfRecovery uint
 }
 
 func (cp *BasePlayer) GetOverall() {
@@ -145,5 +149,18 @@ func (cp *BasePlayer) GetOverall() {
 			float64(cp.ThrowPower) + float64(cp.PuntAccuracy) + float64(cp.PuntPower) +
 			float64(cp.KickAccuracy) + float64(cp.KickPower)) / 20
 		cp.Overall = int(ovr)
+	}
+}
+
+func (cp *BasePlayer) SetIsInjured() {
+	cp.IsInjured = true
+}
+
+func (cp *BasePlayer) RecoveryCheck() {
+	cp.WeeksOfRecovery--
+	if cp.WeeksOfRecovery == 0 {
+		cp.InjuryName = ""
+		cp.InjuryType = ""
+		cp.IsInjured = false
 	}
 }

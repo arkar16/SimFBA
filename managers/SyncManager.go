@@ -553,7 +553,7 @@ func FillAIRecruitingBoards() {
 
 	for _, team := range AITeams {
 		count := 0
-		if !team.IsAI || team.TotalCommitments == team.RecruitClassSize {
+		if !team.IsAI || team.TotalCommitments >= team.RecruitClassSize {
 			continue
 		}
 
@@ -674,12 +674,12 @@ func FillAIRecruitingBoards() {
 
 					if croot.AffinityOne == "Close to Home" {
 						affinityOneApplicable = true
-						affinityMod += 5
+						affinityMod += 3
 					}
 
 					if croot.AffinityTwo == "Close to Home" {
 						affinityTwoApplicable = true
-						affinityMod += 5
+						affinityMod += 3
 					}
 				}
 
@@ -692,12 +692,12 @@ func FillAIRecruitingBoards() {
 
 					if croot.AffinityOne == "Academics" {
 						affinityOneApplicable = true
-						affinityMod += 5
+						affinityMod += 3
 					}
 
 					if croot.AffinityTwo == "Academics" {
 						affinityTwoApplicable = true
-						affinityMod += 5
+						affinityMod += 3
 					}
 				}
 
@@ -714,12 +714,12 @@ func FillAIRecruitingBoards() {
 
 					if croot.AffinityOne == "Frontrunner" {
 						affinityOneApplicable = true
-						affinityMod += 5
+						affinityMod += 3
 					}
 
 					if croot.AffinityTwo == "Frontrunner" {
 						affinityTwoApplicable = true
-						affinityMod += 5
+						affinityMod += 3
 					}
 				}
 
@@ -732,12 +732,12 @@ func FillAIRecruitingBoards() {
 
 					if croot.AffinityOne == "Religion" {
 						affinityOneApplicable = true
-						affinityMod += 5
+						affinityMod += 3
 					}
 
 					if croot.AffinityTwo == "Religion" {
 						affinityTwoApplicable = true
-						affinityMod += 5
+						affinityMod += 3
 					}
 				}
 
@@ -750,12 +750,12 @@ func FillAIRecruitingBoards() {
 
 					if croot.AffinityOne == "Service" {
 						affinityOneApplicable = true
-						affinityMod += 5
+						affinityMod += 3
 					}
 
 					if croot.AffinityTwo == "Service" {
 						affinityTwoApplicable = true
-						affinityMod += 5
+						affinityMod += 3
 					}
 				}
 
@@ -768,12 +768,12 @@ func FillAIRecruitingBoards() {
 
 					if croot.AffinityOne == "Small School" {
 						affinityOneApplicable = true
-						affinityMod += 5
+						affinityMod += 3
 					}
 
 					if croot.AffinityTwo == "Small School" {
 						affinityTwoApplicable = true
-						affinityMod += 5
+						affinityMod += 3
 					}
 				}
 			}
@@ -833,7 +833,7 @@ func AllocatePointsToAIBoards() {
 
 		// Safety check to make sure teams aren't recruiting too many in one position
 		for _, croot := range teamRecruits {
-			if croot.IsSigned && croot.TeamAbbreviation == team.TeamAbbreviation {
+			if croot.IsSigned && croot.TeamAbbreviation == team.TeamAbbreviation && ts.CollegeWeek > 17 {
 				teamNeedsMap[croot.Recruit.Position] -= 1
 			}
 		}
@@ -844,7 +844,7 @@ func AllocatePointsToAIBoards() {
 				break
 			}
 
-			if croot.IsSigned || croot.CurrentWeeksPoints > 0 {
+			if croot.IsSigned || croot.CurrentWeeksPoints > 0 || croot.ScholarshipRevoked {
 				continue
 			}
 
@@ -979,7 +979,7 @@ func doesCrootHaveAffinity(affinity string, croot structs.Recruit) bool {
 }
 
 func isHighlyContestedCroot(mod int, teams int) bool {
-	chance := util.GenerateIntFromRange(1, 20)
+	chance := util.GenerateIntFromRange(1, 5)
 	chance += mod
 
 	return chance > teams

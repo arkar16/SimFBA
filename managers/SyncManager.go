@@ -833,7 +833,7 @@ func AllocatePointsToAIBoards() {
 
 		// Safety check to make sure teams aren't recruiting too many in one position
 		for _, croot := range teamRecruits {
-			if croot.IsSigned && croot.TeamAbbreviation == team.TeamAbbreviation && ts.CollegeWeek > 17 {
+			if croot.IsSigned && croot.TeamAbbreviation == team.TeamAbbreviation && ts.CollegeWeek < 17 {
 				teamNeedsMap[croot.Recruit.Position] -= 1
 			}
 		}

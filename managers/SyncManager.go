@@ -791,7 +791,7 @@ func FillAIRecruitingBoards() {
 
 			chance := util.GenerateIntFromRange(1, 100)
 
-			willAddToBoard := isHighlyContestedCroot(affinityMod, teamCount)
+			willAddToBoard := isHighlyContestedCroot(affinityMod, teamCount, ts.CollegeWeek)
 
 			if chance <= odds && willAddToBoard {
 				playerProfile := structs.RecruitPlayerProfile{
@@ -927,6 +927,10 @@ func AllocatePointsToAIBoards() {
 				continue
 			}
 
+			if ts.CollegeWeek == 20 {
+				num = 2
+			}
+
 			croot.AllocateCurrentWeekPoints(num)
 			if !croot.Scholarship && team.ScholarshipsAvailable > 0 {
 				croot.ToggleScholarship(true, false)
@@ -957,7 +961,7 @@ func ResetAIBoardsForCompletedTeams() {
 			teamRecruits := GetRecruitsByTeamProfileID(strconv.Itoa(int(team.ID)))
 
 			for _, croot := range teamRecruits {
-				if croot.IsSigned || croot.IsLocked {
+				if croot.IsSigned || croot.IsLocked || croot.TotalPoints == 0 {
 					continue
 				}
 				croot.ResetTotalPoints()
@@ -989,7 +993,10 @@ func doesCrootHaveAffinity(affinity string, croot structs.Recruit) bool {
 	return croot.AffinityOne == affinity || croot.AffinityTwo == affinity
 }
 
-func isHighlyContestedCroot(mod int, teams int) bool {
+func isHighlyContestedCroot(mod int, teams int, CollegeWeek int) bool {
+	if CollegeWeek == 20 && teams > 1 {
+		return false
+	}
 	chance := util.GenerateIntFromRange(1, 5)
 	chance += mod
 

@@ -34,6 +34,16 @@ func GetAllCollegePlayers() []structs.CollegePlayer {
 	return CollegePlayers
 }
 
+func GetAllNFLPlayers() []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var nflPlayers []structs.NFLPlayer
+
+	db.Find(&nflPlayers)
+
+	return nflPlayers
+}
+
 func GetAllUnsignedPlayers() []structs.UnsignedPlayer {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -335,4 +345,24 @@ func GetHeismanList() []models.HeismanWatchModel {
 	sort.Sort(models.ByScore(heismanCandidates))
 
 	return heismanCandidates
+}
+
+func GetGlobalPlayerRecord(playerID string) structs.Player {
+	db := dbprovider.GetInstance().GetDB()
+
+	var player structs.Player
+
+	db.Where("id = ?", playerID).Find(&player)
+
+	return player
+}
+
+func GetNFLPlayerRecord(playerID string) structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var player structs.NFLPlayer
+
+	db.Where("id = ?", playerID).Find(&player)
+
+	return player
 }

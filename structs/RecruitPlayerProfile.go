@@ -24,6 +24,7 @@ type RecruitPlayerProfile struct {
 	IsSigned                  bool
 	IsLocked                  bool
 	CaughtCheating            bool
+	TeamReachedMax            bool
 	Recruit                   Recruit `gorm:"foreignKey:RecruitID"`
 	// RecruitPoints             []RecruitPointAllocation `gorm:"foreignKey:RecruitProfileID"`
 }
@@ -86,6 +87,7 @@ func (rp *RecruitPlayerProfile) ResetSpendingCount() {
 }
 func (rp *RecruitPlayerProfile) ResetTotalPoints() {
 	rp.TotalPoints = 0
+	rp.TeamReachedMax = true
 }
 
 func (rp *RecruitPlayerProfile) AssignRES(res float64) {

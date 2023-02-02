@@ -217,3 +217,64 @@ func GetLeftoverRecruits() []structs.UnsignedPlayer {
 
 	return unsignedPlayers
 }
+
+func ImportNFLPlayersCSV() {
+	db := dbprovider.GetInstance().GetDB()
+	playerPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\NFL_Progressed.csv"
+
+	nflCSV := util.ReadCSV(playerPath)
+
+	for idx, row := range nflCSV {
+		if idx < 2 {
+			continue
+		}
+
+		playerID := util.ConvertStringToInt(row[0])
+		academic := row[35]
+		fa := row[36]
+		personality := row[37]
+		recruit := row[38]
+		we := row[39]
+		progression := util.ConvertStringToInt(row[40])
+
+		gp := GetGlobalPlayerRecord(row[0])
+		if gp.ID == 0 {
+			player := structs.Player{
+				NFLPlayerID: playerID,
+			}
+			player.AssignID(uint(playerID))
+
+			db.Create(&player)
+		}
+
+		NFLPlayerRecord := GetNFLPlayerRecord(row[0])
+		if NFLPlayerRecord.ID == 0 {
+			log.Fatalln("Something is wrong, this player was not uploaded.")
+		}
+		NFLPlayerRecord.AssignMissingValues(progression, academic, fa, personality, recruit, we)
+
+		db.Save(&NFLPlayerRecord)
+	}
+}
+
+func RetireAndFreeAgentPlayers() {
+	db := dbprovider.GetInstance().GetDB()
+
+	nflPlayers := GetAllNFLPlayers()
+
+	for _, record := range nflPlayers {
+
+		if !record.IsActive {
+			retiredPlayerRecord := (structs.NFLRetiredPlayer)(record)
+
+			db.Create(&retiredPlayerRecord)
+			db.Delete(&record)
+			continue
+		}
+
+		if record.TeamID == 0 {
+			record.ToggleIsFreeAgent()
+			db.Save(&record)
+		}
+	}
+}

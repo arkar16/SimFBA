@@ -17,6 +17,7 @@ type NFLTeam struct {
 	NFLGMName        string
 	NFLAssistantID   uint
 	NFLAssistantName string
+	Capsheet         NFLCapsheet    `gorm:"foreignKey:NFLTeamID"`
 	Contracts        []NFLContract  `gorm:"foreignKey:TeamID"`
 	DraftPicks       []NFLDraftPick `gorm:"foreignKey:TeamID"`
 	// NFLCoach     NFLUser        `gorm:"foreignKey:TeamID"`

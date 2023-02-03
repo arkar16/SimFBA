@@ -268,9 +268,9 @@ func GetRecruitingClassSizeForTeams() {
 				count++
 			}
 
-			if player.Year == 4 && player.IsRedshirt && player.Overall > 55 && player.Stars > 0 {
-				count++
-			}
+			// if player.Year == 4 && player.IsRedshirt && player.Overall > 55 && player.Stars > 0 {
+			// 	count++
+			// }
 		}
 
 		rosterMinusGrads := rosterSize - count

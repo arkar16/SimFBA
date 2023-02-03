@@ -128,6 +128,10 @@ func (r *Recruit) AssignRankValues(rank247 float64, espnRank float64, rivalsRank
 	r.TopRankModifier = modifier
 }
 
+func (r *Recruit) AssignRecruitingModifier(recruitingMod float64) {
+	r.RecruitingModifier = recruitingMod
+}
+
 func (r *Recruit) ProgressUnsignedRecruit(attr CollegePlayerProgressions) {
 	r.Age++
 	r.Agility = attr.Agility

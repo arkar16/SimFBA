@@ -8,6 +8,7 @@ import (
 	"github.com/CalebRose/SimFBA/dbprovider"
 	config "github.com/CalebRose/SimFBA/secrets"
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/CalebRose/SimFBA/util"
 )
 
 func AssignAllRecruitRanks() {
@@ -44,6 +45,10 @@ func AssignAllRecruitRanks() {
 		}
 
 		croot.AssignRankValues(rank247, espnRank, rivalsRank, r)
+
+		recruitingModifier := getRecruitingModifier(croot.Stars)
+
+		croot.AssignRecruitingModifier(recruitingModifier)
 
 		db.Save(&croot)
 
@@ -258,4 +263,24 @@ func GetRivalsTeamRanking(rp structs.RecruitingTeamProfile, signedCroots []struc
 	}
 
 	return rivalsRank
+}
+
+func getRecruitingModifier(stars int) float64 {
+	num := util.GenerateIntFromRange(1, 100)
+	mod := 0.0
+	if num < 11 {
+		mod = util.GenerateFloatFromRange(1.80, 2.00)
+	} else if num < 31 {
+		mod = util.GenerateFloatFromRange(1.66, 1.79)
+	} else if num < 71 {
+		mod = util.GenerateFloatFromRange(1.45, 1.65)
+	} else if num < 91 {
+		mod = util.GenerateFloatFromRange(1.25, 1.44)
+	} else {
+		mod = util.GenerateFloatFromRange(1.1, 1.29)
+	}
+	if stars == 5 {
+		mod -= util.GenerateFloatFromRange(0.05, 0.15)
+	}
+	return mod
 }

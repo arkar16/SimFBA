@@ -144,10 +144,10 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 				continue
 			}
 			if eligiblePointThreshold == 0 && recruitProfiles[i].Scholarship {
-				eligiblePointThreshold = float64(recruitProfiles[i].TotalPoints) * 0.75
+				eligiblePointThreshold = float64(recruitProfiles[i].TotalPoints) * 0.66
 			}
 
-			if recruitProfiles[i].Scholarship && recruitProfiles[i].TotalPoints > eligiblePointThreshold {
+			if recruitProfiles[i].Scholarship && recruitProfiles[i].TotalPoints >= eligiblePointThreshold {
 				totalPointsOnRecruit += recruitProfiles[i].TotalPoints
 				eligibleTeams += 1
 				recruitProfilesWithScholarship = append(recruitProfilesWithScholarship, recruitProfiles[i])
@@ -605,11 +605,7 @@ func FillAIRecruitingBoards() {
 			}
 
 			if croot.Stars > 3 && !team.IsFBS {
-				if isAcademicCroot(croot.AffinityOne, croot.AffinityTwo) && isIvyLeague(team.AIBehavior) {
-					passOnRecruit = false
-				} else {
-					passOnRecruit = true
-				}
+				passOnRecruit = true
 			}
 
 			// Conditions in which the team should not recruit this particular recruit
@@ -873,7 +869,7 @@ func AllocatePointsToAIBoards() {
 				if croot.PreviousWeekPoints > 0 {
 					leadingTeamVal := util.IsAITeamContendingForCroot(profiles)
 
-					if croot.PreviousWeekPoints+croot.TotalPoints >= leadingTeamVal*0.75 || leadingTeamVal < 15 {
+					if croot.PreviousWeekPoints+croot.TotalPoints >= leadingTeamVal*0.66 || leadingTeamVal < 15 {
 						num = croot.PreviousWeekPoints
 						if num > pointsRemaining {
 							num = pointsRemaining
@@ -896,7 +892,11 @@ func AllocatePointsToAIBoards() {
 
 					if team.AIBehavior == "Blue Blood" || team.AIBehavior == "Playoff Buster" {
 						min = 8
-					} else if team.AIBehavior == "Doormat" || isIvyLeague(team.AIBehavior) {
+					} else if team.AIBehavior == "Doormat" {
+						max = 7
+						min = 1
+					} else if team.AIBehavior == "G5" {
+						min = 1
 						max = 10
 					}
 
@@ -907,7 +907,7 @@ func AllocatePointsToAIBoards() {
 
 					leadingTeamVal := util.IsAITeamContendingForCroot(profiles)
 
-					if float64(num)+croot.TotalPoints < leadingTeamVal*0.75 {
+					if float64(num)+croot.TotalPoints < leadingTeamVal*0.66 {
 						removeCrootFromBoard = true
 					}
 					if leadingTeamVal < 15 {
@@ -975,14 +975,6 @@ func ResetAIBoardsForCompletedTeams() {
 
 func isBlueBlood(behavior string) bool {
 	return behavior == "Blue Blood"
-}
-
-func isIvyLeague(behavior string) bool {
-	return behavior == "Ivy League"
-}
-
-func isAcademicCroot(af1 string, af2 string) bool {
-	return af1 == "Academics" || af2 == "Academics"
 }
 
 func isAffinityApplicable(affinity string, af structs.ProfileAffinity) bool {

@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
 	"gorm.io/gorm"
 )
@@ -61,11 +62,35 @@ func GetAllNFLTeams() []structs.NFLTeam {
 	return teams
 }
 
+// Get NFL Records for Roster Page
+func GetNFLRecordsForRosterPage(teamId string) models.NFLRosterPageResponse {
+
+	team := GetNFLTeamWithCapsheetByTeamID(teamId)
+
+	players := GetNFLPlayersWithContractsByTeamID(teamId)
+
+	return models.NFLRosterPageResponse{
+		Team:   team,
+		Roster: players,
+	}
+}
+
 // GetTeamByTeamID - straightforward
 func GetNFLTeamByTeamID(teamId string) structs.NFLTeam {
 	var team structs.NFLTeam
 	db := dbprovider.GetInstance().GetDB()
 	err := db.Where("id = ?", teamId).Find(&team).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return team
+}
+
+// GetTeamByTeamID - straightforward
+func GetNFLTeamWithCapsheetByTeamID(teamId string) structs.NFLTeam {
+	var team structs.NFLTeam
+	db := dbprovider.GetInstance().GetDB()
+	err := db.Preload("Capsheet").Where("id = ?", teamId).Find(&team).Error
 	if err != nil {
 		log.Fatal(err)
 	}

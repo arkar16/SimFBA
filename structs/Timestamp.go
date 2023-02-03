@@ -30,6 +30,11 @@ type Timestamp struct {
 	IsOffSeason                bool
 	IsNFLOffSeason             bool
 	IsRecruitingLocked         bool
+	Y1Capspace                 float64
+	Y2Capspace                 float64
+	Y3Capspace                 float64
+	Y4Capspace                 float64
+	Y5Capspace                 float64
 }
 
 func (t *Timestamp) MoveUpWeekCollege() {

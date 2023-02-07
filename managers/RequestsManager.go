@@ -125,6 +125,7 @@ func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 		SeasonID:    timestamp.CollegeSeasonID,
 		Week:        timestamp.CollegeWeek,
 		MessageType: "CoachJob",
+		League:      "CFB",
 		Message:     "Breaking News! The " + team.TeamName + " " + team.Mascot + " have hired " + coach.CoachName + " as their new coach for the " + strconv.Itoa(timestamp.Season) + " season!",
 	}
 
@@ -185,6 +186,7 @@ func ApproveNFLTeamRequest(request structs.NFLRequest) structs.NFLRequest {
 		SeasonID:    timestamp.NFLSeasonID,
 		Week:        timestamp.NFLWeek,
 		MessageType: "CoachJob",
+		League:      "NFL",
 		Message:     "Breaking News! The " + team.TeamName + " " + team.Mascot + " have hired " + coach.Username + " to their staff for the " + strconv.Itoa(timestamp.Season) + " season!",
 	}
 
@@ -232,6 +234,7 @@ func RemoveUserFromTeam(teamId string) {
 		SeasonID:    timestamp.CollegeSeasonID,
 		Week:        timestamp.CollegeWeek,
 		MessageType: "CoachJob",
+		League:      "CFB",
 		Message:     coach.CoachName + " has decided to step down as the head coach of the " + team.TeamName + " " + team.Mascot + "!",
 	}
 
@@ -283,6 +286,7 @@ func RemoveUserFromNFLTeam(request structs.NFLRequest) {
 		Week:        timestamp.NFLWeek,
 		MessageType: "CoachJob",
 		Message:     message,
+		League:      "NFL",
 	}
 
 	db.Create(&newsLog)

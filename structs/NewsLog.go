@@ -9,4 +9,5 @@ type NewsLog struct {
 	SeasonID    int
 	MessageType string
 	Message     string
+	League      string
 }

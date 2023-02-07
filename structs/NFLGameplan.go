@@ -58,9 +58,30 @@ type NFLGameplan struct {
 	MaximumFGDistance     int
 	GoFor4AndShort        int
 	GoFor4AndLong         int
+	HasSchemePenalty      bool
+	OffenseSchemePenalty  uint
+	DefenseSchemePenalty  uint
 }
 
-func (ng *NFLGameplan) UpdateGameplan(dto CollegeGameplan) {
+func (ng *NFLGameplan) ApplySchemePenalty(IsOffense bool) {
+	ng.HasSchemePenalty = true
+	if IsOffense {
+		ng.OffenseSchemePenalty = 3
+	} else {
+		ng.DefenseSchemePenalty = 3
+	}
+}
+
+func (ng *NFLGameplan) LowerPenalty() {
+	if ng.OffenseSchemePenalty > 0 {
+		ng.OffenseSchemePenalty--
+	}
+	if ng.DefenseSchemePenalty > 0 {
+		ng.DefenseSchemePenalty--
+	}
+}
+
+func (ng *NFLGameplan) UpdateGameplan(dto NFLGameplan) {
 	// Validation is done in UI, so we're just passing data along in API
 	ng.OffensiveScheme = dto.OffensiveScheme
 	ng.OffRunToPassRatio = dto.OffRunToPassRatio

@@ -26,6 +26,7 @@ func CollusionButton(w http.ResponseWriter, r *http.Request) {
 		Week:        ts.CollegeWeek,
 		SeasonID:    collusionButton.SeasonID,
 		MessageType: "Collusion",
+		League:      "CFB",
 		Message:     collusionButton.Message,
 	}
 

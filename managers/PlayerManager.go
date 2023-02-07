@@ -367,6 +367,16 @@ func GetNFLPlayerRecord(playerID string) structs.NFLPlayer {
 	return player
 }
 
+func GetNFLPlayersForDCPage(TeamID string) []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Preload("Contract").Where("team_id = ? AND is_practice_squad = ?", TeamID, false).Find(&players)
+
+	return players
+}
+
 func GetNFLPlayersWithContractsByTeamID(TeamID string) []structs.NFLPlayer {
 	db := dbprovider.GetInstance().GetDB()
 

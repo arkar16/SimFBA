@@ -250,6 +250,7 @@ func SendScholarshipToRecruit(updateRecruitPointsDto structs.UpdateRecruitPoints
 				SeasonID:    ts.CollegeSeasonID,
 				MessageType: "Recruiting",
 				Message:     message,
+				League:      "CFB",
 			}
 
 			db.Save(&newLog)

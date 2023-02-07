@@ -69,6 +69,11 @@ func handleRequests() {
 	myRouter.HandleFunc("/gameplan/college/depthchart/{teamID}/", controller.GetTeamDepthchartByTeamID).Methods("GET")
 	myRouter.HandleFunc("/gameplan/college/depthchart/positions/{depthChartID}/", controller.GetDepthChartPositionsByDepthChartID).Methods("GET")
 	myRouter.HandleFunc("/gameplan/college/updatedepthchart", controller.UpdateDepthChart).Methods("PUT")
+	myRouter.HandleFunc("/gameplan/nfl/team/{teamID}/", controller.GetNFLGameplanByTeamID).Methods("GET")
+	myRouter.HandleFunc("/gameplan/nfl/updategameplan", controller.UpdateNFLGameplan).Methods("POST")
+	// DO THESE THREE
+	myRouter.HandleFunc("/gameplan/nfl/depthchart/{teamID}/", controller.GetNFLDepthChart).Methods("GET")
+	myRouter.HandleFunc("/gameplan/nfl/updatedepthchart", controller.UpdateNFLDepthChart).Methods("POST")
 
 	// Player Controls
 	myRouter.HandleFunc("/players/all/", controller.AllPlayers).Methods("GET")
@@ -77,6 +82,8 @@ func handleRequests() {
 	myRouter.HandleFunc("/collegeplayers/team/nors/{teamID}/", controller.AllCollegePlayersByTeamIDWithoutRedshirts).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/export/{teamID}/", controller.ExportRosterToCSV).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/assign/redshirt/", controller.ToggleRedshirtStatusForPlayer).Methods("POST")
+	myRouter.HandleFunc("/nflplayers/team/{teamID}/", controller.AllNFLPlayersByTeamIDForDC).Methods("GET")
+	myRouter.HandleFunc("/nflplayers/team/export/{teamID}/", controller.ExportNFLRosterToCSV).Methods("GET")
 	// myRouter.HandleFunc("/collegeplayers/teams/export/", controller.ExportAllRostersToCSV).Methods("GET") // DO NOT USE
 
 	// Rankings Controls

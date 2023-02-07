@@ -35,6 +35,20 @@ func AllCollegePlayersByTeamID(w http.ResponseWriter, r *http.Request) {
 }
 
 // AllCollegePlayersByTeamIDWithoutRedshirts
+func AllNFLPlayersByTeamIDForDC(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamId := vars["teamID"]
+
+	if len(teamId) == 0 {
+		panic("User did not provide TeamID")
+	}
+
+	players := managers.GetNFLPlayersForDCPage(teamId)
+
+	json.NewEncoder(w).Encode(players)
+}
+
+// AllCollegePlayersByTeamIDWithoutRedshirts
 func AllCollegePlayersByTeamIDWithoutRedshirts(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamId := vars["teamID"]
@@ -117,6 +131,21 @@ func ExportRosterToCSV(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.ExportTeamToCSV(teamId, w)
+
+	// ?
+}
+
+func ExportNFLRosterToCSV(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/csv")
+
+	vars := mux.Vars(r)
+	teamId := vars["teamID"]
+
+	if len(teamId) == 0 {
+		panic("User did not provide TeamID")
+	}
+
+	managers.ExportNFLTeamToCSV(teamId, w)
 
 	// ?
 }

@@ -196,6 +196,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 							Week:        timestamp.CollegeWeek,
 							SeasonID:    timestamp.CollegeSeasonID,
 							MessageType: "Commitment",
+							League:      "CFB",
 							Message:     recruit.FirstName + " " + recruit.LastName + ", " + strconv.Itoa(recruit.Stars) + " star " + recruit.Position + " from " + recruit.City + ", " + recruit.State + " has signed with " + recruit.College + " with " + strconv.Itoa(int(odds)) + " percent odds.",
 						}
 

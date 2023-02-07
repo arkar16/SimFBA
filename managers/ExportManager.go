@@ -70,7 +70,7 @@ func ExportTeamToCSV(TeamID string, w http.ResponseWriter) {
 
 func ExportNFLTeamToCSV(TeamID string, w http.ResponseWriter) {
 	// Get Team Data
-	team := GetTeamByTeamID(TeamID)
+	team := GetNFLTeamByTeamID(TeamID)
 	w.Header().Set("Content-Disposition", "attachment;filename="+team.TeamName+".csv")
 	w.Header().Set("Transfer-Encoding", "chunked")
 	// Initialize writer

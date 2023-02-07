@@ -58,6 +58,27 @@ type CollegeGameplan struct {
 	MaximumFGDistance     int
 	GoFor4AndShort        int
 	GoFor4AndLong         int
+	HasSchemePenalty      bool
+	OffenseSchemePenalty  uint
+	DefenseSchemePenalty  uint
+}
+
+func (cg *CollegeGameplan) ApplySchemePenalty(IsOffense bool) {
+	cg.HasSchemePenalty = true
+	if IsOffense {
+		cg.OffenseSchemePenalty = 3
+	} else {
+		cg.DefenseSchemePenalty = 3
+	}
+}
+
+func (cg *CollegeGameplan) LowerPenalty() {
+	if cg.OffenseSchemePenalty > 0 {
+		cg.OffenseSchemePenalty--
+	}
+	if cg.DefenseSchemePenalty > 0 {
+		cg.DefenseSchemePenalty--
+	}
 }
 
 func (cg *CollegeGameplan) UpdateGameplan(dto CollegeGameplan) {

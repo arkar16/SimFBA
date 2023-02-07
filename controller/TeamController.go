@@ -51,6 +51,16 @@ func GetTeamByTeamID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(team)
 }
 
+func GetNFLRecordsForRosterPage(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+	if len(teamID) == 0 {
+		panic("User did not provide TeamID")
+	}
+	team := managers.GetNFLRecordsForRosterPage(teamID)
+	json.NewEncoder(w).Encode(team)
+}
+
 func GetNFLTeamByTeamID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamID := vars["teamID"]

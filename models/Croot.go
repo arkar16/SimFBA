@@ -38,9 +38,10 @@ type Croot struct {
 }
 
 type LeadingTeams struct {
-	TeamName string
-	TeamAbbr string
-	Odds     float64
+	TeamName       string
+	TeamAbbr       string
+	Odds           float64
+	HasScholarship bool
 }
 
 // Sorting Funcs
@@ -93,11 +94,11 @@ func (c *Croot) Map(r structs.Recruit) {
 	sort.Sort(structs.ByPoints(sortedProfiles))
 
 	for _, recruitProfile := range sortedProfiles {
-		if (!recruitProfile.Scholarship && r.College == "") || recruitProfile.TeamReachedMax {
+		if recruitProfile.TeamReachedMax {
 			continue
 		}
 		if runningThreshold == 0 {
-			runningThreshold = float64(recruitProfile.TotalPoints) * 0.75
+			runningThreshold = float64(recruitProfile.TotalPoints) * 0.66
 		}
 
 		if recruitProfile.TotalPoints >= runningThreshold {
@@ -107,7 +108,7 @@ func (c *Croot) Map(r structs.Recruit) {
 	}
 
 	for i := 0; i < len(sortedProfiles); i++ {
-		if (!sortedProfiles[i].Scholarship && r.College == "") || sortedProfiles[i].TeamReachedMax {
+		if sortedProfiles[i].TeamReachedMax {
 			continue
 		}
 		var odds float64 = 0
@@ -116,8 +117,9 @@ func (c *Croot) Map(r structs.Recruit) {
 			odds = float64(sortedProfiles[i].TotalPoints) / totalPoints
 		}
 		leadingTeam := LeadingTeams{
-			TeamAbbr: r.RecruitPlayerProfiles[i].TeamAbbreviation,
-			Odds:     odds,
+			TeamAbbr:       r.RecruitPlayerProfiles[i].TeamAbbreviation,
+			Odds:           odds,
+			HasScholarship: r.RecruitPlayerProfiles[i].Scholarship,
 		}
 		c.LeadingTeams = append(c.LeadingTeams, leadingTeam)
 	}

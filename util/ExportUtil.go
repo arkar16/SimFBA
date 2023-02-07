@@ -1,5 +1,7 @@
 package util
 
+import "strconv"
+
 func GetNFLOverallGrade(value int) string {
 	if value > 63 {
 		return "A+"
@@ -169,4 +171,11 @@ func GetYearAndRedshirtStatus(year int, redshirt bool) (string, string) {
 		return "(Sr)", status
 	}
 	return "Super Sr", status
+}
+
+func GetNFLYear(year uint) string {
+	if year < 2 {
+		return "R"
+	}
+	return strconv.Itoa(int(year))
 }

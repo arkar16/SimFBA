@@ -37,6 +37,19 @@ func GetTeamDepthchartByTeamID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(depthchart)
 }
 
+// GetDepthChartByTeamID
+func GetNFLDepthChart(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+	if len(teamID) == 0 {
+		panic("User did not provide a teamID")
+	}
+
+	depthchart := managers.GetNFLDepthchartByTeamID(teamID)
+
+	json.NewEncoder(w).Encode(depthchart)
+}
+
 // GetDepthChartPositionsByDepthChartID
 func GetDepthChartPositionsByDepthChartID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -74,6 +87,48 @@ func UpdateDepthChart(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.UpdateDepthChart(updateDepthChartDto)
+
+	fmt.Println("Updated Depth Chart for Team " + strconv.Itoa(updateDepthChartDto.DepthChartID))
+}
+
+// NFL //
+// GetGameplanByTeamID
+func GetNFLGameplanByTeamID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+	if len(teamID) == 0 {
+		panic("User did not provide a teamID")
+	}
+
+	gamePlan := managers.GetNFLGameplanByTeamID(teamID)
+
+	json.NewEncoder(w).Encode(gamePlan)
+}
+
+// UpdateGameplan
+func UpdateNFLGameplan(w http.ResponseWriter, r *http.Request) {
+	var updateGameplanDto structs.UpdateGameplanDTO
+	err := json.NewDecoder(r.Body).Decode(&updateGameplanDto)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.UpdateNFLGameplan(updateGameplanDto)
+
+	fmt.Println("Updated Team Gameplan")
+}
+
+// UpdateDepthChart
+func UpdateNFLDepthChart(w http.ResponseWriter, r *http.Request) {
+	var updateDepthChartDto structs.UpdateNFLDepthChartDTO
+	err := json.NewDecoder(r.Body).Decode(&updateDepthChartDto)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.UpdateNFLDepthChart(updateDepthChartDto)
 
 	fmt.Println("Updated Depth Chart for Team " + strconv.Itoa(updateDepthChartDto.DepthChartID))
 }

@@ -306,6 +306,32 @@ func ImportWorkEthic() {
 	}
 }
 
+func ImportFAPreferences() {
+	fmt.Println(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())
+	db := dbprovider.GetInstance().GetDB()
+
+	nflPlayers := GetAllNFLPlayers()
+
+	for _, p := range nflPlayers {
+		NegotiationRound := 0
+		if p.Overall > 70 {
+			NegotiationRound = util.GenerateIntFromRange(2, 4)
+		} else {
+			NegotiationRound = util.GenerateIntFromRange(3, 6)
+		}
+
+		SigningRound := NegotiationRound + util.GenerateIntFromRange(2, 4)
+		if SigningRound > 10 {
+			SigningRound = 10
+		}
+
+		p.AssignFAPreferences(uint(NegotiationRound), uint(SigningRound))
+
+		db.Save(&p)
+	}
+}
+
 func RetireAndFreeAgentPlayers() {
 	db := dbprovider.GetInstance().GetDB()
 

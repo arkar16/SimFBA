@@ -50,6 +50,15 @@ func (t *Timestamp) MoveUpWeekNFL() {
 	t.NFLWeek++
 }
 
+func (t *Timestamp) MoveUpFreeAgencyRound() {
+	t.FreeAgencyRound++
+	if t.FreeAgencyRound > 10 {
+		t.FreeAgencyRound = 0
+		t.IsFreeAgencyLocked = true
+		t.IsDraftTime = true
+	}
+}
+
 func (t *Timestamp) MoveUpSeason() {
 	t.CollegeSeasonID++
 	t.Season++

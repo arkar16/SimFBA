@@ -104,3 +104,8 @@ func (np *NFLPlayer) AssignPersonality(we string) {
 func (np *NFLPlayer) AssignFreeAgency(we string) {
 	np.FreeAgency = we
 }
+
+func (np *NFLPlayer) AssignFAPreferences(negotiation uint, signing uint) {
+	np.NegotiationRound = negotiation
+	np.SigningRound = signing
+}

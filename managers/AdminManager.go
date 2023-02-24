@@ -105,6 +105,14 @@ func CreateCollegeSeason() {
 
 }
 
+// Season Funcs
+func MoveUpInOffseasonFreeAgency() {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+	ts.MoveUpFreeAgencyRound()
+	db.Save(&ts)
+}
+
 func GetNewsLogs(weekID string, seasonID string) []structs.NewsLog {
 	db := dbprovider.GetInstance().GetDB()
 

@@ -9,6 +9,48 @@ import (
 	"github.com/CalebRose/SimFBA/structs"
 )
 
+func GetAllCollegeGameplans() []structs.CollegeGameplan {
+	db := dbprovider.GetInstance().GetDB()
+
+	gameplans := []structs.CollegeGameplan{}
+
+	db.Find(&gameplans)
+
+	return gameplans
+}
+
+func GetAllNFLGameplans() []structs.NFLGameplan {
+	db := dbprovider.GetInstance().GetDB()
+
+	gameplans := []structs.NFLGameplan{}
+
+	db.Find(&gameplans)
+
+	return gameplans
+}
+
+func UpdateGameplanPenalties() {
+	db := dbprovider.GetInstance().GetDB()
+
+	collegeGPs := GetAllCollegeGameplans()
+
+	for _, gp := range collegeGPs {
+		if gp.HasSchemePenalty {
+			gp.LowerPenalty()
+			db.Save(&gp)
+		}
+	}
+
+	nflGPs := GetAllNFLGameplans()
+
+	for _, gp := range nflGPs {
+		if gp.HasSchemePenalty {
+			gp.LowerPenalty()
+			db.Save(&gp)
+		}
+	}
+}
+
 func GetGameplanByTeamID(teamID string) structs.CollegeGameplan {
 	db := dbprovider.GetInstance().GetDB()
 

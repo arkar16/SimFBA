@@ -40,6 +40,18 @@ func SyncRecruiting(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Sync Complete")
 }
 
+func SyncWeek(w http.ResponseWriter, r *http.Request) {
+	newTimestamp := managers.MoveUpWeek()
+
+	json.NewEncoder(w).Encode(newTimestamp)
+}
+
+func SyncFreeAgencyRound(w http.ResponseWriter, r *http.Request) {
+	managers.MoveUpInOffseasonFreeAgency()
+	managers.SyncFreeAgencyOffers()
+	json.NewEncoder(w).Encode("Moved to next free agency round")
+}
+
 func SyncMissingRES(w http.ResponseWriter, r *http.Request) {
 	managers.SyncAllMissingEfficiencies()
 }

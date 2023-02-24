@@ -4,7 +4,9 @@ import (
 	"encoding/csv"
 	"fmt"
 	"log"
+	"math/rand"
 	"os"
+	"time"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/structs"
@@ -254,6 +256,79 @@ func ImportNFLPlayersCSV() {
 		NFLPlayerRecord.AssignMissingValues(progression, academic, fa, personality, recruit, we)
 
 		db.Save(&NFLPlayerRecord)
+	}
+}
+
+func ImportMinimumFAValues() {
+	db := dbprovider.GetInstance().GetDB()
+	playerPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023_Free_Agency_expected_Values_CSV.csv"
+
+	nflCSV := util.ReadCSV(playerPath)
+
+	for idx, row := range nflCSV {
+		if idx < 1 {
+			continue
+		}
+
+		playerID := row[0]
+		value := util.ConvertStringToFloat(row[5])
+
+		NFLPlayerRecord := GetNFLPlayerRecord(playerID)
+		if NFLPlayerRecord.ID == 0 {
+			log.Fatalln("Something is wrong, this player was not uploaded.")
+		}
+
+		NFLPlayerRecord.AssignMinimumValue(value)
+
+		db.Save(&NFLPlayerRecord)
+	}
+}
+
+func ImportWorkEthic() {
+	fmt.Println(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())
+	db := dbprovider.GetInstance().GetDB()
+
+	nflPlayers := GetAllNFLPlayers()
+
+	for _, p := range nflPlayers {
+		WorkEthic := util.GetWorkEthic()
+		if p.ID == 10 {
+			FreeAgency := "Highly Unlikely to Play for the Miami Dolphins."
+			Personality := "Worships Himself"
+			p.AssignPersonality(Personality)
+			p.AssignFreeAgency(FreeAgency)
+		}
+
+		p.AssignWorkEthic(WorkEthic)
+
+		db.Save(&p)
+	}
+}
+
+func ImportFAPreferences() {
+	fmt.Println(time.Now().UnixNano())
+	rand.Seed(time.Now().UnixNano())
+	db := dbprovider.GetInstance().GetDB()
+
+	nflPlayers := GetAllNFLPlayers()
+
+	for _, p := range nflPlayers {
+		NegotiationRound := 0
+		if p.Overall > 70 {
+			NegotiationRound = util.GenerateIntFromRange(2, 4)
+		} else {
+			NegotiationRound = util.GenerateIntFromRange(3, 6)
+		}
+
+		SigningRound := NegotiationRound + util.GenerateIntFromRange(2, 4)
+		if SigningRound > 10 {
+			SigningRound = 10
+		}
+
+		p.AssignFAPreferences(uint(NegotiationRound), uint(SigningRound))
+
+		db.Save(&p)
 	}
 }
 

@@ -20,6 +20,7 @@ type NFLTeam struct {
 	Capsheet         NFLCapsheet    `gorm:"foreignKey:NFLTeamID"`
 	Contracts        []NFLContract  `gorm:"foreignKey:TeamID"`
 	DraftPicks       []NFLDraftPick `gorm:"foreignKey:TeamID"`
+	// Offers           []FreeAgencyOffer `gorm:"foreignKey:TeamID"`
 	// NFLCoach     NFLUser        `gorm:"foreignKey:TeamID"`
 	// NFLOwner     NFLUser        `gorm:"foreignKey:TeamID"`
 	// NFLGM        NFLUser        `gorm:"foreignKey:TeamID"`

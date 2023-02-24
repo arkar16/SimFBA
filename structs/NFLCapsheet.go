@@ -27,6 +27,22 @@ func (nc *NFLCapsheet) AssignCapsheet(id uint) {
 	nc.NFLTeamID = id
 }
 
+func (nc *NFLCapsheet) ResetCapsheet(id uint) {
+	nc.Y1Bonus = 0
+	nc.Y1Salary = 0
+	nc.Y2Bonus = 0
+	nc.Y2Salary = 0
+	nc.Y3Bonus = 0
+	nc.Y3Salary = 0
+	nc.Y4Bonus = 0
+	nc.Y4Salary = 0
+	nc.Y5Bonus = 0
+	nc.Y5Salary = 0
+	nc.Y1CapHit = 0
+	nc.Y2CapHit = 0
+	nc.Y3CapHit = 0
+}
+
 func (nc *NFLCapsheet) AddContractToCapsheet(contract NFLContract) {
 	nc.Y1Bonus += contract.Y1Bonus
 	nc.Y1Salary += contract.Y1BaseSalary
@@ -41,16 +57,16 @@ func (nc *NFLCapsheet) AddContractToCapsheet(contract NFLContract) {
 }
 
 func (nc *NFLCapsheet) SubtractFromCapsheet(contract NFLContract) {
-	nc.Y1Bonus -= contract.Y1Bonus
-	nc.Y1Salary -= contract.Y1BaseSalary
 	nc.Y1CapHit += contract.Y1Bonus
+	nc.Y1Bonus -= contract.Y1Bonus
 	nc.Y2Bonus -= contract.Y2Bonus
-	nc.Y2Salary -= contract.Y2BaseSalary
 	nc.Y3Bonus -= contract.Y3Bonus
-	nc.Y3Salary -= contract.Y3BaseSalary
 	nc.Y4Bonus -= contract.Y4Bonus
-	nc.Y4Salary -= contract.Y4BaseSalary
 	nc.Y5Bonus -= contract.Y5Bonus
+	nc.Y1Salary -= contract.Y1BaseSalary
+	nc.Y2Salary -= contract.Y2BaseSalary
+	nc.Y3Salary -= contract.Y3BaseSalary
+	nc.Y4Salary -= contract.Y4BaseSalary
 	nc.Y5Salary -= contract.Y5BaseSalary
 }
 

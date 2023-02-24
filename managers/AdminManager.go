@@ -30,6 +30,20 @@ func GetCollegeWeek(weekID string, ts structs.Timestamp) structs.CollegeWeek {
 	return week
 }
 
+func MoveUpWeek() structs.Timestamp {
+	db := dbprovider.GetInstance().GetDB()
+	timestamp := GetTimestamp()
+	if timestamp.RecruitingSynced {
+		// Sync to Next Week
+		UpdateStandings(timestamp)
+		UpdateGameplanPenalties()
+		timestamp.SyncToNextWeek()
+		db.Save(&timestamp)
+	}
+
+	return timestamp
+}
+
 // UpdateTimestamp - Update the timestamp
 func UpdateTimestamp(updateTimestampDto structs.UpdateTimestampDto) structs.Timestamp {
 	db := dbprovider.GetInstance().GetDB()
@@ -41,38 +55,38 @@ func UpdateTimestamp(updateTimestampDto structs.UpdateTimestampDto) structs.Time
 
 		// Sync to Next Week
 		UpdateStandings(timestamp)
+		UpdateGameplanPenalties()
 		timestamp.SyncToNextWeek()
-
-	} else if updateTimestampDto.ThursdayGames && !timestamp.ThursdayGames {
-		timestamp.ToggleThursdayGames()
-	} else if updateTimestampDto.FridayGames && !timestamp.FridayGames {
-		timestamp.ToggleFridayGames()
-	} else if updateTimestampDto.SaturdayMorning && !timestamp.SaturdayMorning {
-		timestamp.ToggleSaturdayMorningGames()
-	} else if updateTimestampDto.SaturdayNoon && !timestamp.SaturdayNoon {
-		timestamp.ToggleSaturdayNoonGames()
-	} else if updateTimestampDto.SaturdayEvening && !timestamp.SaturdayEvening {
-		timestamp.ToggleSaturdayEveningGames()
-	} else if updateTimestampDto.SaturdayNight && !timestamp.SaturdayNight {
-		timestamp.ToggleSaturdayNightGames()
 	}
+	// else if updateTimestampDto.ThursdayGames && !timestamp.ThursdayGames {
+	// 	timestamp.ToggleThursdayGames()
+	// } else if updateTimestampDto.FridayGames && !timestamp.FridayGames {
+	// 	timestamp.ToggleFridayGames()
+	// } else if updateTimestampDto.SaturdayMorning && !timestamp.SaturdayMorning {
+	// 	timestamp.ToggleSaturdayMorningGames()
+	// } else if updateTimestampDto.SaturdayNoon && !timestamp.SaturdayNoon {
+	// 	timestamp.ToggleSaturdayNoonGames()
+	// } else if updateTimestampDto.SaturdayEvening && !timestamp.SaturdayEvening {
+	// 	timestamp.ToggleSaturdayEveningGames()
+	// } else if updateTimestampDto.SaturdayNight && !timestamp.SaturdayNight {
+	// 	timestamp.ToggleSaturdayNightGames()
+	// }
 
 	if updateTimestampDto.ToggleRecruitingLock {
 		timestamp.ToggleLockRecruiting()
 	}
 
-	if updateTimestampDto.RESSynced && !timestamp.RecruitingEfficiencySynced {
-		timestamp.ToggleRES()
-		SyncRecruitingEfficiency(timestamp)
-	}
+	// if updateTimestampDto.RESSynced && !timestamp.RecruitingEfficiencySynced {
+	// 	timestamp.ToggleRES()
+	// 	SyncRecruitingEfficiency(timestamp)
+	// }
 
-	if updateTimestampDto.RecruitingSynced && !timestamp.RecruitingSynced && timestamp.RecruitingEfficiencySynced {
+	if updateTimestampDto.RecruitingSynced && !timestamp.RecruitingSynced && timestamp.IsRecruitingLocked {
 		SyncRecruiting(timestamp)
 		timestamp.ToggleRecruiting()
-
 	}
 
-	err := db.Save(timestamp).Error
+	err := db.Save(&timestamp).Error
 	if err != nil {
 		fmt.Println(err.Error())
 		log.Fatalf("Could not save timestamp")
@@ -89,6 +103,14 @@ func CreateCollegeWeek() {
 // Season Funcs
 func CreateCollegeSeason() {
 
+}
+
+// Season Funcs
+func MoveUpInOffseasonFreeAgency() {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+	ts.MoveUpFreeAgencyRound()
+	db.Save(&ts)
 }
 
 func GetNewsLogs(weekID string, seasonID string) []structs.NewsLog {

@@ -36,13 +36,17 @@ func (p *Provider) InitDatabase() bool {
 	}
 
 	// AutoMigrations -- uncomment when needing to update a table
+	//
+	// General
+	// db.AutoMigrate(&structs.Stadium{})
+
+	// College
 	// db.AutoMigrate(&structs.CollegePlayer{})
 	// db.AutoMigrate(&structs.CollegePlayerSeasonStats{})
 	// db.AutoMigrate(&structs.HistoricCollegePlayer{})
 	// db.AutoMigrate(&structs.Player{})
 	// db.AutoMigrate(&structs.CollegePlayerStats{})
 	// db.AutoMigrate(&structs.UnsignedPlayer{})
-
 	// db.AutoMigrate(&structs.CollegeTeam{})
 	// db.AutoMigrate(&structs.CollegeRival{})
 	// db.AutoMigrate(&structs.League{})
@@ -56,6 +60,10 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.CollegeGame{})
 	// db.AutoMigrate(&structs.CollegeCoach{})
 	// db.AutoMigrate(&structs.CollegeStandings{})
+	// db.AutoMigrate(&structs.CollegeWeek{})
+	// db.AutoMigrate(&structs.CollegeSeason{})
+
+	// Recruit
 	// db.AutoMigrate(&structs.Recruit{})
 	// db.AutoMigrate(&structs.RecruitPlayerProfile{})
 	// db.AutoMigrate(&structs.RecruitingTeamProfile{})
@@ -63,15 +71,15 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.RecruitRegion{})
 	// db.AutoMigrate(&structs.RecruitState{})
 	// db.AutoMigrate(&structs.ProfileAffinity{})
-	// db.AutoMigrate(&structs.Stadium{})
-	// db.AutoMigrate(&structs.CollegeWeek{})
-	// db.AutoMigrate(&structs.CollegeSeason{})
+
+	// NFL
 	// db.AutoMigrate(&structs.NFLDraftPick{})
 	// db.AutoMigrate(&structs.NFLDepthChart{})
 	// db.AutoMigrate(&structs.NFLDepthChartPosition{})
 	// db.AutoMigrate(&structs.NFLCapsheet{})
 	// db.AutoMigrate(&structs.NFLTradeProposal{})
 	// db.AutoMigrate(&structs.NFLTradeOption{})
+	// db.AutoMigrate(&structs.FreeAgencyOffer{})
 	// db.AutoMigrate(&structs.NFLContract{})
 	// db.AutoMigrate(&structs.NFLPlayer{})
 	// db.AutoMigrate(&structs.NFLRetiredPlayer{})

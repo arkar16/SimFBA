@@ -40,6 +40,12 @@ func SyncRecruiting(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Sync Complete")
 }
 
+func SyncWeek(w http.ResponseWriter, r *http.Request) {
+	newTimestamp := managers.MoveUpWeek()
+
+	json.NewEncoder(w).Encode(newTimestamp)
+}
+
 func SyncMissingRES(w http.ResponseWriter, r *http.Request) {
 	managers.SyncAllMissingEfficiencies()
 }

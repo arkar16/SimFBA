@@ -386,3 +386,24 @@ func GetNFLPlayersWithContractsByTeamID(TeamID string) []structs.NFLPlayer {
 
 	return players
 }
+
+func CutNFLPlayer(playerId string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	player := GetNFLPlayerRecord(playerId)
+	contract := GetContractByPlayerID(playerId)
+	capsheet := GetCapsheetByTeamID(strconv.Itoa(int(player.TeamID)))
+	ts := GetTimestamp()
+
+	if player.Experience < 4 && !ts.IsNFLOffSeason {
+		player.WaivePlayer()
+	} else {
+		player.ToggleIsFreeAgent()
+		contract.DeactivateContract()
+	}
+
+	capsheet.SubtractFromCapsheet(contract)
+	db.Save(&contract)
+	db.Save(&player)
+	db.Save(&capsheet)
+}

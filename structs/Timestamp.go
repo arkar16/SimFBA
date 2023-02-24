@@ -37,6 +37,7 @@ type Timestamp struct {
 	Y3Capspace                 float64
 	Y4Capspace                 float64
 	Y5Capspace                 float64
+	FreeAgencyRound            uint
 }
 
 func (t *Timestamp) MoveUpWeekCollege() {
@@ -100,6 +101,7 @@ func (t *Timestamp) ToggleLockRecruiting() {
 
 func (t *Timestamp) SyncToNextWeek() {
 	t.MoveUpWeekCollege()
+	t.MoveUpWeekNFL()
 	if t.CollegeWeek > 20 {
 		t.MoveUpSeason()
 	}
@@ -110,7 +112,7 @@ func (t *Timestamp) SyncToNextWeek() {
 	// t.ToggleSaturdayNoonGames()
 	// t.ToggleSaturdayEveningGames()
 	// t.ToggleSaturdayNightGames()
-	t.ToggleRES()
+	// t.ToggleRES()
 	t.ToggleRecruiting()
 	// t.ToggleGMActions()
 

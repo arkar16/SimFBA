@@ -2,6 +2,7 @@ package managers
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
@@ -46,4 +47,17 @@ func AllocateCapsheets() {
 
 		db.Save(&Capsheet)
 	}
+}
+
+func GetContractByPlayerID(PlayerID string) structs.NFLContract {
+	db := dbprovider.GetInstance().GetDB()
+
+	contract := structs.NFLContract{}
+
+	err := db.Where("nfl_player_id = ? AND is_active = ?", PlayerID, true).Find(&contract).Error
+	if err != nil {
+		log.Fatalln("Could not find active contract for player" + PlayerID)
+	}
+
+	return contract
 }

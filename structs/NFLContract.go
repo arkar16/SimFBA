@@ -23,7 +23,35 @@ type NFLContract struct {
 	Y5Bonus         float64
 	BonusPercentage float64
 	ContractType    string // Pro Bowl, Starter, Veteran, New ?
+	ContractValue   float64
 	IsActive        bool
 	IsComplete      bool
 	IsExtended      bool
+}
+
+func (c *NFLContract) DeactivateContract() {
+	c.IsActive = false
+}
+
+func (c *NFLContract) TradePlayer(TeamID uint, Team string) {
+	c.TeamID = TeamID
+	c.Team = Team
+}
+
+func (c *NFLContract) ProgressContract() {
+	c.Y1BaseSalary = c.Y2BaseSalary
+	c.Y1Bonus = c.Y2Bonus
+	c.Y2BaseSalary = c.Y3BaseSalary
+	c.Y2Bonus = c.Y3Bonus
+	c.Y3BaseSalary = c.Y4BaseSalary
+	c.Y3Bonus = c.Y4Bonus
+	c.Y4BaseSalary = c.Y5BaseSalary
+	c.Y4Bonus = c.Y5Bonus
+	c.Y5BaseSalary = 0
+	c.Y5Bonus = 0
+
+	if c.Y1BaseSalary == 0 && c.Y1Bonus == 0 {
+		c.IsComplete = true
+		c.DeactivateContract()
+	}
 }

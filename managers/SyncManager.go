@@ -78,7 +78,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		for i := 0; i < len(recruitProfiles); i++ {
 
 			if recruitProfiles[i].CurrentWeeksPoints == 0 {
-				if recruitProfiles[i].SpendingCount > 0 && recruit.ID > 79370 {
+				if recruitProfiles[i].SpendingCount > 0 {
 					recruitProfiles[i].ResetSpendingCount()
 					spendingCountAdjusted = true
 					fmt.Println("Resetting spending count for " + recruit.FirstName + " " + recruit.LastName + " for " + recruitProfiles[i].TeamAbbreviation)
@@ -235,10 +235,8 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 							totalPointsOnRecruit += rp.TotalPoints
 						}
 					}
-
 				}
 			}
-
 			recruit.UpdateTeamID(int(winningTeamID))
 		}
 

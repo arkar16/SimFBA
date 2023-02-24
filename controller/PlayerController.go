@@ -120,6 +120,16 @@ func ToggleRedshirtStatusForPlayer(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(w, "College Player successfully redshirted.")
 }
 
+// ToggleRedshirtStatusForPlayer
+func CutNFLPlayerFromRoster(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	PlayerID := vars["PlayerID"]
+
+	managers.CutNFLPlayer(PlayerID)
+
+	fmt.Println(w, "NFL Player Cut from Roster")
+}
+
 func ExportRosterToCSV(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/csv")
 

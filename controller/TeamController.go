@@ -67,7 +67,7 @@ func GetNFLTeamByTeamID(w http.ResponseWriter, r *http.Request) {
 	if len(teamID) == 0 {
 		panic("User did not provide TeamID")
 	}
-	team := managers.GetNFLTeamByTeamID(teamID)
+	team := managers.GetNFLTeamWithCapsheetByTeamID(teamID)
 	json.NewEncoder(w).Encode(team)
 }
 

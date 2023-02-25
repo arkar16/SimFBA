@@ -27,7 +27,7 @@ func (nc *NFLCapsheet) AssignCapsheet(id uint) {
 	nc.NFLTeamID = id
 }
 
-func (nc *NFLCapsheet) ResetCapsheet(id uint) {
+func (nc *NFLCapsheet) ResetCapsheet() {
 	nc.Y1Bonus = 0
 	nc.Y1Salary = 0
 	nc.Y2Bonus = 0

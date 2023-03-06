@@ -74,3 +74,16 @@ func (nc *NFLCapsheet) NegotiateSalaryDifference(SalaryDifference float64, CapHi
 	nc.Y1Salary -= SalaryDifference
 	nc.Y1CapHit += CapHit
 }
+
+func (nc *NFLCapsheet) AddContractViaTrade(contract NFLContract, differenceValue float64) {
+	nc.Y1Bonus += contract.Y1Bonus
+	nc.Y1Salary += differenceValue
+	nc.Y2Bonus += contract.Y2Bonus
+	nc.Y2Salary += contract.Y2BaseSalary
+	nc.Y3Bonus += contract.Y3Bonus
+	nc.Y3Salary += contract.Y3BaseSalary
+	nc.Y4Bonus += contract.Y4Bonus
+	nc.Y4Salary += contract.Y4BaseSalary
+	nc.Y5Bonus += contract.Y5Bonus
+	nc.Y5Salary += contract.Y5BaseSalary
+}

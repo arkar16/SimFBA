@@ -377,6 +377,16 @@ func GetNFLPlayersForDCPage(TeamID string) []structs.NFLPlayer {
 	return players
 }
 
+func GetTradableNFLPlayersByTeamID(TeamID string) []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Preload("Contract").Where("team_id = ? AND is_on_trade_block = ?", TeamID, true).Find(&players)
+
+	return players
+}
+
 func GetNFLPlayersWithContractsByTeamID(TeamID string) []structs.NFLPlayer {
 	db := dbprovider.GetInstance().GetDB()
 

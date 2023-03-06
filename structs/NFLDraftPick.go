@@ -16,3 +16,8 @@ type NFLDraftPick struct {
 	Season         uint
 	TradeValue     uint
 }
+
+func (p *NFLDraftPick) TradePick(id uint, team string) {
+	p.TeamID = id
+	p.Team = team
+}

@@ -68,8 +68,8 @@ func (np *NFLPlayer) ToggleIsPracticeSquad() {
 	np.IsPracticeSquad = true
 }
 
-func (np *NFLPlayer) PlaceOnTradeBlock() {
-	np.IsOnTradeBlock = true
+func (np *NFLPlayer) ToggleTradeBlock() {
+	np.IsOnTradeBlock = !np.IsOnTradeBlock
 }
 
 func (np *NFLPlayer) RemoveFromTradeBlock() {
@@ -108,4 +108,11 @@ func (np *NFLPlayer) AssignFreeAgency(we string) {
 func (np *NFLPlayer) AssignFAPreferences(negotiation uint, signing uint) {
 	np.NegotiationRound = negotiation
 	np.SigningRound = signing
+}
+
+func (np *NFLPlayer) TradePlayer(id uint, team string) {
+	np.PreviousTeam = np.TeamAbbr
+	np.PreviousTeamID = uint(np.TeamID)
+	np.TeamID = int(id)
+	np.TeamAbbr = team
 }

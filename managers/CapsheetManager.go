@@ -39,6 +39,8 @@ func AllocateCapsheets() {
 			Capsheet.AssignCapsheet(team.ID)
 		}
 
+		Capsheet.ResetCapsheet()
+
 		for _, player := range players {
 			contract := player.Contract
 

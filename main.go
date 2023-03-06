@@ -56,6 +56,9 @@ func handleRequests() {
 	myRouter.HandleFunc("/admin/ai/fill/boards", controller.FillAIBoards).Methods("GET")
 	myRouter.HandleFunc("/admin/ai/sync/boards", controller.SyncAIBoards).Methods("GET")
 	// myRouter.HandleFunc("/admin/overall/progressions/next/season", controller.ProgressToNextSeason).Methods("GET")
+	myRouter.HandleFunc("/admin/trades/accept/sync/{proposalID}", controller.SyncAcceptedTrade).Methods("GET")
+	myRouter.HandleFunc("/admin/trades/veto/sync/{proposalID}", controller.VetoAcceptedTrade).Methods("GET")
+	myRouter.HandleFunc("/admin/trades/cleanup", controller.CleanUpRejectedTrades).Methods("GET")
 
 	// Capsheet Controls
 	myRouter.HandleFunc("/nfl/capsheet/generate", controller.GenerateCapsheets).Methods("GET")
@@ -158,6 +161,13 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/college/conference/{conferenceID}/", controller.GetTeamsByConferenceID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/division/{divisionID}/", controller.GetTeamsByDivisionID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/sim/{gameID}/", controller.GetHomeAndAwayTeamData).Methods("GET")
+
+	// Trade Controls
+	myRouter.HandleFunc("/trades/nfl/block/{teamID}", controller.GetNFLTradeBlockDataByTeamID).Methods("GET")
+	myRouter.HandleFunc("/trades/nfl/place/block/{playerID}", controller.PlaceNFLPlayerOnTradeBlock).Methods("GET")
+	myRouter.HandleFunc("/trades/nfl/create/proposal", controller.CreateNFLTradeProposal).Methods("POST")
+	myRouter.HandleFunc("/trades/nfl/proposal/accept/{proposalID}", controller.AcceptTradeOffer).Methods("GET")
+	myRouter.HandleFunc("/trades/nfl/proposal/reject/{proposalID}", controller.RejectTradeOffer).Methods("GET")
 
 	// Discord Controls
 	myRouter.HandleFunc("/teams/ds/college/team/{teamID}/", controller.GetTeamByTeamIDForDiscord).Methods("GET")

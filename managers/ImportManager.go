@@ -353,3 +353,18 @@ func RetireAndFreeAgentPlayers() {
 		}
 	}
 }
+
+func ImportTradePreferences() {
+	db := dbprovider.GetInstance().GetDB()
+
+	nflTeams := GetAllNFLTeams()
+
+	for _, t := range nflTeams {
+
+		pref := structs.NFLTradePreferences{
+			NFLTeamID: t.ID,
+		}
+
+		db.Create(&pref)
+	}
+}

@@ -22,6 +22,10 @@ func ImportFAPreferences(w http.ResponseWriter, r *http.Request) {
 	managers.ImportFAPreferences()
 }
 
+func ImportTradePreferences(w http.ResponseWriter, r *http.Request) {
+	managers.ImportTradePreferences()
+}
+
 func GetMissingRecruitingClasses(w http.ResponseWriter, r *http.Request) {
 	managers.GetMissingRecruitingClasses()
 }

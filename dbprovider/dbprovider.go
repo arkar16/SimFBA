@@ -77,6 +77,7 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.NFLDepthChart{})
 	// db.AutoMigrate(&structs.NFLDepthChartPosition{})
 	// db.AutoMigrate(&structs.NFLCapsheet{})
+	// db.AutoMigrate(&structs.NFLTradePreferences{})
 	// db.AutoMigrate(&structs.NFLTradeProposal{})
 	// db.AutoMigrate(&structs.NFLTradeOption{})
 	// db.AutoMigrate(&structs.FreeAgencyOffer{})

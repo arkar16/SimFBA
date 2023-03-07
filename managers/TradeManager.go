@@ -14,11 +14,12 @@ import (
 
 func GetTradeBlockDataByTeamID(TeamID string) structs.NFLTradeBlockResponse {
 	var waitgroup sync.WaitGroup
-	waitgroup.Add(4)
+	waitgroup.Add(5)
 	nflTeamChan := make(chan structs.NFLTeam)
 	playersChan := make(chan []structs.NFLPlayer)
 	picksChan := make(chan []structs.NFLDraftPick)
 	proposalsChan := make(chan structs.NFLTeamProposals)
+	preferencesChan := make(chan structs.NFLTradePreferences)
 
 	go func() {
 		waitgroup.Wait()
@@ -26,6 +27,7 @@ func GetTradeBlockDataByTeamID(TeamID string) structs.NFLTradeBlockResponse {
 		close(playersChan)
 		close(picksChan)
 		close(proposalsChan)
+		close(preferencesChan)
 	}()
 
 	go func() {
@@ -52,10 +54,17 @@ func GetTradeBlockDataByTeamID(TeamID string) structs.NFLTradeBlockResponse {
 		proposalsChan <- proposals
 	}()
 
+	go func() {
+		defer waitgroup.Done()
+		pref := GetTradePreferencesByTeamID(TeamID)
+		preferencesChan <- pref
+	}()
+
 	nflTeam := <-nflTeamChan
 	tradablePlayers := <-playersChan
 	draftPicks := <-picksChan
 	teamProposals := <-proposalsChan
+	tradePreferences := <-preferencesChan
 
 	// close(nflTeamChan)
 	// close(playersChan)
@@ -68,6 +77,7 @@ func GetTradeBlockDataByTeamID(TeamID string) structs.NFLTradeBlockResponse {
 		DraftPicks:             draftPicks,
 		SentTradeProposals:     teamProposals.SentTradeProposals,
 		ReceivedTradeProposals: teamProposals.ReceivedTradeProposals,
+		TradePreferences:       tradePreferences,
 	}
 }
 
@@ -79,6 +89,36 @@ func GetOnlyTradeProposalByProposalID(proposalID string) structs.NFLTradeProposa
 	db.Preload("NFLTeamTradeOptions").Preload("RecepientTeamTradeOptions").Where("id = ?", proposalID).Find(&proposal)
 
 	return proposal
+}
+
+func GetTradePreferencesByTeamID(TeamID string) structs.NFLTradePreferences {
+	db := dbprovider.GetInstance().GetDB()
+
+	preferences := structs.NFLTradePreferences{}
+
+	db.Where("id = ?", TeamID).Find(&preferences)
+
+	return preferences
+}
+
+func UpdateTradePreferences(pref structs.NFLTradePreferencesDTO) {
+	db := dbprovider.GetInstance().GetDB()
+
+	preferences := GetTradePreferencesByTeamID(strconv.Itoa(int(pref.NFLTeamID)))
+
+	preferences.UpdatePreferences(pref)
+
+	db.Save(&preferences)
+}
+
+func GetAcceptedTradeProposals() []structs.NFLTradeProposal {
+	db := dbprovider.GetInstance().GetDB()
+
+	proposals := []structs.NFLTradeProposal{}
+
+	db.Preload("NFLTeamTradeOptions").Preload("RecepientTeamTradeOptions").Where("is_trade_accepted = ?", true).Find(&proposals)
+
+	return proposals
 }
 
 func GetRejectedTradeProposals() []structs.NFLTradeProposal {

@@ -23,6 +23,13 @@ func GetNFLTradeBlockDataByTeamID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// Get Trade Block Data for Trade Block Page
+func GetAllAcceptedTrades(w http.ResponseWriter, r *http.Request) {
+	response := managers.GetAcceptedTradeProposals()
+
+	json.NewEncoder(w).Encode(response)
+}
+
 // Place player on NFL Trade block
 func PlaceNFLPlayerOnTradeBlock(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -34,6 +41,19 @@ func PlaceNFLPlayerOnTradeBlock(w http.ResponseWriter, r *http.Request) {
 	managers.PlaceNFLPlayerOnTradeBlock(playerID)
 
 	json.NewEncoder(w).Encode("Player " + playerID + " placed on trade block.")
+}
+
+// Update Trade Preferences
+func UpdateTradePreferences(w http.ResponseWriter, r *http.Request) {
+
+	var tradePreferenceDTO structs.NFLTradePreferencesDTO
+	err := json.NewDecoder(r.Body).Decode(&tradePreferenceDTO)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Fprintf(w, "Trade Preferences Updated")
 }
 
 // Create NFL Trade Proposal

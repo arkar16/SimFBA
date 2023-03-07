@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/CalebRose/SimFBA/managers"
+	"github.com/CalebRose/SimFBA/structs"
 	"github.com/gorilla/mux"
 )
 
@@ -102,4 +103,17 @@ func GetNFLGamesBySeasonID(w http.ResponseWriter, r *http.Request) {
 	nflGames := managers.GetNFLGamesBySeasonID(seasonID)
 
 	json.NewEncoder(w).Encode(nflGames)
+}
+
+func UpdateTimeslot(w http.ResponseWriter, r *http.Request) {
+	var timeslotDTO structs.UpdateTimeslotDTO
+	err := json.NewDecoder(r.Body).Decode(&timeslotDTO)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.UpdateTimeslot(timeslotDTO)
+
+	json.NewEncoder(w).Encode("Updated Timeslot")
 }

@@ -2,6 +2,7 @@ package managers
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
@@ -149,4 +150,31 @@ func GetCollegeGameByGameID(gameID string) structs.CollegeGame {
 	}
 
 	return game
+}
+
+func GetNFLGameByGameID(gameID string) structs.NFLGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	var game structs.NFLGame
+
+	err := db.Where("id = ?", gameID).Find(&game).Error
+	if err != nil {
+		fmt.Println("Could not find game!")
+	}
+
+	return game
+}
+
+func UpdateTimeslot(dto structs.UpdateTimeslotDTO) {
+	db := dbprovider.GetInstance().GetDB()
+	gameID := strconv.Itoa(int(dto.GameID))
+	if dto.League == "CFB" {
+		game := GetCollegeGameByGameID(gameID)
+		game.UpdateTimeslot(dto.Timeslot)
+		db.Save(&game)
+	} else {
+		game := GetNFLGameByGameID(gameID)
+		game.UpdateTimeslot(dto.Timeslot)
+		db.Save(&game)
+	}
 }

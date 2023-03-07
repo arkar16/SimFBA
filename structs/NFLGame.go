@@ -73,3 +73,7 @@ func (ng *NFLGame) ApplyWeather(precip string, lowTemp float64, highTemp float64
 	ng.GameTemp = gameTemp
 	ng.Cloud = cloud
 }
+
+func (ng *NFLGame) UpdateTimeslot(ts string) {
+	ng.TimeSlot = ts
+}

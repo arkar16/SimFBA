@@ -74,3 +74,7 @@ func (cg *CollegeGame) ApplyWeather(precip string, lowTemp float64, highTemp flo
 	cg.GameTemp = gameTemp
 	cg.Cloud = cloud
 }
+
+func (cg *CollegeGame) UpdateTimeslot(ts string) {
+	cg.TimeSlot = ts
+}

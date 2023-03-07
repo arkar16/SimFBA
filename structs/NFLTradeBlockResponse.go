@@ -6,4 +6,5 @@ type NFLTradeBlockResponse struct {
 	DraftPicks             []NFLDraftPick
 	SentTradeProposals     []NFLTradeProposalDTO
 	ReceivedTradeProposals []NFLTradeProposalDTO
+	TradePreferences       NFLTradePreferences
 }

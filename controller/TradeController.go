@@ -53,6 +53,8 @@ func UpdateTradePreferences(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	managers.UpdateTradePreferences(tradePreferenceDTO)
+
 	fmt.Fprintf(w, "Trade Preferences Updated")
 }
 

@@ -7,4 +7,5 @@ type CreateRecruitDTO struct {
 	State       string
 	AffinityOne string
 	AffinityTwo string
+	CreatedFor  string
 }

@@ -112,6 +112,8 @@ func (r *Recruit) Map(createRecruitDTO CreateRecruitDTO, lastPlayerID uint) {
 	r.RecruitingBias = createRecruitDTO.RecruitingBias
 	r.AcademicBias = createRecruitDTO.AcademicBias
 	r.IsSigned = false
+	r.CustomCrootFor = createRecruitDTO.CreatedFor
+	r.IsCustomCroot = true
 }
 
 func (r *Recruit) AssignPlayerID(ID int) {

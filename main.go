@@ -47,11 +47,6 @@ func handleRequests() {
 	myRouter.HandleFunc("/news/{weekID}/{seasonID}/", controller.GetNewsLogs).Methods("GET")
 	myRouter.HandleFunc("/cfb/news/all/{seasonID}/", controller.GetAllNewsLogsForASeason).Methods("GET")
 	myRouter.HandleFunc("/season/{seasonID}/weeks/{weekID}", controller.GetWeeksInSeason).Methods("GET")
-	// myRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")
-	// myRouter.HandleFunc("/admin/import/recruit/ai", controller.ImportRecruitAICSV).Methods("GET")
-	// myRouter.HandleFunc("/admin/import/nfl/players", controller.ImportFAPreferences).Methods("GET")
-	// myRouter.HandleFunc("/admin/import/missing/recruits", controller.GetMissingRecruitingClasses).Methods("GET")
-	// myRouter.HandleFunc("/admin/import/preferences", controller.ImportTradePreferences).Methods("GET")
 	myRouter.HandleFunc("/admin/teams/croot/sync", controller.SyncTeamRecruitingRanks).Methods("GET")
 	myRouter.HandleFunc("/admin/recruiting/class/size", controller.GetRecruitingClassSizeForTeams).Methods("GET")
 	myRouter.HandleFunc("/admin/ai/fill/boards", controller.FillAIBoards).Methods("GET")
@@ -90,6 +85,16 @@ func handleRequests() {
 	myRouter.HandleFunc("/gameplan/nfl/updategameplan", controller.UpdateNFLGameplan).Methods("POST")
 	myRouter.HandleFunc("/gameplan/nfl/depthchart/{teamID}/", controller.GetNFLDepthChart).Methods("GET")
 	myRouter.HandleFunc("/gameplan/nfl/updatedepthchart", controller.UpdateNFLDepthChart).Methods("POST")
+
+	// Generation Controls
+	// myRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")
+
+	// Import Controls
+	// myRouter.HandleFunc("/admin/import/recruit/ai", controller.ImportRecruitAICSV).Methods("GET")
+	// myRouter.HandleFunc("/admin/import/nfl/players", controller.ImportFAPreferences).Methods("GET")
+	// myRouter.HandleFunc("/admin/import/missing/recruits", controller.GetMissingRecruitingClasses).Methods("GET")
+	// myRouter.HandleFunc("/admin/import/preferences", controller.ImportTradePreferences).Methods("GET")
+	// myRouter.HandleFunc("/import/custom/croots", controller.ImportCustomCroots).Methods("GET")
 
 	// Player Controls
 	myRouter.HandleFunc("/players/all/", controller.AllPlayers).Methods("GET")

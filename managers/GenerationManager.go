@@ -15,6 +15,7 @@ import (
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
+	"gorm.io/gorm"
 )
 
 func GenerateWalkOns() {
@@ -28,14 +29,7 @@ func GenerateWalkOns() {
 
 	firstNameMap, lastNameMap := getNameMaps()
 
-	var lastPlayerRecord structs.Player
-
-	err := db.Last(&lastPlayerRecord).Error
-	if err != nil {
-		log.Fatalln("Could not grab last player record from players table...")
-	}
-
-	newID := lastPlayerRecord.ID + 1
+	newID := getLatestRecord(db)
 
 	for _, team := range AllTeams {
 		id := strconv.Itoa(int(team.ID))
@@ -111,6 +105,33 @@ func GenerateWalkOns() {
 		}
 		count = 0
 		fmt.Println("Finished walkon generation for " + team.TeamAbbreviation)
+	}
+}
+
+func CreateCustomCroots() {
+	db := dbprovider.GetInstance().GetDB()
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023_Custom_Croot_Class.csv"
+	crootCSV := util.ReadCSV(path)
+	attributeBlob := getAttributeBlob()
+	latestID := getLatestRecord(db)
+
+	crootList := []structs.Recruit{}
+
+	for idx, row := range crootCSV {
+		if idx < 2 {
+			continue
+		}
+		if row[0] == "" {
+			break
+		}
+		croot := createCustomCroot(row, latestID, attributeBlob)
+		croot.AssignID(int(latestID))
+		latestID++
+		crootList = append(crootList, croot)
+	}
+
+	for _, croot := range crootList {
+		db.Create(&croot)
 	}
 }
 
@@ -210,6 +231,106 @@ func createRecruit(ethnicity string, position string, year int, firstNameList []
 		HighSchool: highSchool,
 		State:      state,
 		IsSigned:   true,
+	}
+}
+
+func createCustomCroot(croot []string, id uint, blob map[string]map[string]map[string]map[string]interface{}) structs.Recruit {
+	firstName := croot[0]
+	lastName := croot[1]
+	position := croot[2]
+	archetype := croot[3]
+	stars := util.ConvertStringToInt(croot[4])
+	height := util.ConvertStringToInt(croot[5])
+	weight := util.ConvertStringToInt(croot[6])
+	city := croot[7]
+	highSchool := croot[8]
+	state := croot[9]
+	crootFor := croot[10]
+	age := 18
+	footballIQ := getAttributeValue(position, archetype, stars, "Football IQ", blob)
+	speed := getAttributeValue(position, archetype, stars, "Speed", blob)
+	agility := getAttributeValue(position, archetype, stars, "Agility", blob)
+	carrying := getAttributeValue(position, archetype, stars, "Carrying", blob)
+	catching := getAttributeValue(position, archetype, stars, "Catching", blob)
+	routeRunning := getAttributeValue(position, archetype, stars, "Route Running", blob)
+	zoneCoverage := getAttributeValue(position, archetype, stars, "Zone Coverage", blob)
+	manCoverage := getAttributeValue(position, archetype, stars, "Man Coverage", blob)
+	strength := getAttributeValue(position, archetype, stars, "Strength", blob)
+	tackle := getAttributeValue(position, archetype, stars, "Tackle", blob)
+	passBlock := getAttributeValue(position, archetype, stars, "Pass Block", blob)
+	runBlock := getAttributeValue(position, archetype, stars, "Run Block", blob)
+	passRush := getAttributeValue(position, archetype, stars, "Pass Rush", blob)
+	runDefense := getAttributeValue(position, archetype, stars, "Run Defense", blob)
+	throwPower := getAttributeValue(position, archetype, stars, "Throw Power", blob)
+	throwAccuracy := getAttributeValue(position, archetype, stars, "Throw Accuracy", blob)
+	kickAccuracy := getAttributeValue(position, archetype, stars, "Kick Accuracy", blob)
+	kickPower := getAttributeValue(position, archetype, stars, "Kick Power", blob)
+	puntAccuracy := getAttributeValue(position, archetype, stars, "Punt Accuracy", blob)
+	puntPower := getAttributeValue(position, archetype, stars, "Punt Power", blob)
+	injury := util.GenerateIntFromRange(40, 100)
+	stamina := util.GenerateIntFromRange(40, 100)
+	discipline := util.GenerateIntFromRange(40, 100)
+	progression := util.GenerateIntFromRange(40, 80)
+	freeAgency := util.GetFreeAgencyBias()
+	personality := util.GetPersonality()
+	recruitingBias := "Prefers to play for a specific coach"
+	workEthic := util.GetWorkEthic()
+	academicBias := util.GetAcademicBias()
+	potentialGrade := util.GetWeightedPotentialGrade(progression)
+
+	basePlayer := structs.BasePlayer{
+		FirstName:      firstName,
+		LastName:       lastName,
+		Position:       position,
+		Archetype:      archetype,
+		Age:            age,
+		Stars:          stars,
+		Height:         height,
+		Weight:         weight,
+		Stamina:        stamina,
+		Injury:         injury,
+		FootballIQ:     footballIQ,
+		Speed:          speed,
+		Carrying:       carrying,
+		Agility:        agility,
+		Catching:       catching,
+		RouteRunning:   routeRunning,
+		ZoneCoverage:   zoneCoverage,
+		ManCoverage:    manCoverage,
+		Strength:       strength,
+		Tackle:         tackle,
+		PassBlock:      passBlock,
+		RunBlock:       runBlock,
+		PassRush:       passRush,
+		RunDefense:     runDefense,
+		ThrowPower:     throwPower,
+		ThrowAccuracy:  throwAccuracy,
+		KickAccuracy:   kickAccuracy,
+		KickPower:      kickPower,
+		PuntAccuracy:   puntAccuracy,
+		PuntPower:      puntPower,
+		Progression:    progression,
+		Discipline:     discipline,
+		PotentialGrade: potentialGrade,
+		FreeAgency:     freeAgency,
+		Personality:    personality,
+		RecruitingBias: recruitingBias,
+		WorkEthic:      workEthic,
+		AcademicBias:   academicBias,
+	}
+
+	basePlayer.GetOverall()
+
+	return structs.Recruit{
+		BasePlayer:     basePlayer,
+		PlayerID:       int(id),
+		City:           city,
+		HighSchool:     highSchool,
+		State:          state,
+		IsSigned:       false,
+		IsCustomCroot:  true,
+		CustomCrootFor: crootFor,
+		AffinityOne:    "Close to Home",
 	}
 }
 
@@ -659,4 +780,15 @@ func getStarRating() int {
 		return 4
 	}
 	return 5
+}
+
+func getLatestRecord(db *gorm.DB) uint {
+	var lastPlayerRecord structs.Player
+
+	err := db.Last(&lastPlayerRecord).Error
+	if err != nil {
+		log.Fatalln("Could not grab last player record from players table...")
+	}
+
+	return lastPlayerRecord.ID + 1
 }

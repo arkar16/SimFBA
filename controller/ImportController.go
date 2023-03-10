@@ -6,6 +6,10 @@ import (
 	"github.com/CalebRose/SimFBA/managers"
 )
 
+func ImportCustomCroots(w http.ResponseWriter, r *http.Request) {
+	managers.CreateCustomCroots()
+}
+
 func ImportRecruitAICSV(w http.ResponseWriter, r *http.Request) {
 	managers.ImportRecruitAICSV()
 }

@@ -37,6 +37,7 @@ type NFLTradeOption struct {
 	NFLTeamID        uint
 	NFLPlayerID      uint
 	NFLDraftPickID   uint
+	OptionType       string
 	SalaryPercentage float64 // Will be a percentage that the recepient team (TEAM B) will pay for Y1. Will be between 0 and 100.
 	// Player           NFLPlayer    // `gorm:"foreignKey:PlayerID"`       // If the NFLPlayerID is greater than 0, it will return a player.
 	// Draftpick        NFLDraftPick // `gorm:"foreignKey:NFLDraftPickID"` // If the NFLDraftPickID is greater than 0, it will return a draft pick.
@@ -48,6 +49,7 @@ type NFLTradeOptionObj struct {
 	NFLTeamID        uint
 	NFLPlayerID      uint
 	NFLDraftPickID   uint
+	OptionType       string
 	SalaryPercentage float64      // Will be a percentage that the recepient team (TEAM B) will pay. Will be between 0 and 100.
 	Player           NFLPlayer    // If the NFLPlayerID is greater than 0, it will return a player.
 	Draftpick        NFLDraftPick // If the NFLDraftPickID is greater than 0, it will return a draft pick.

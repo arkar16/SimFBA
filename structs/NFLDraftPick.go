@@ -17,7 +17,7 @@ type NFLDraftPick struct {
 	PickNumber     uint
 	SeasonID       uint
 	Season         uint
-	TradeValue     uint
+	TradeValue     float64
 }
 
 func (p *NFLDraftPick) TradePick(id uint, team string) {

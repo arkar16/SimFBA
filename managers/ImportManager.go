@@ -259,6 +259,62 @@ func ImportNFLPlayersCSV() {
 	}
 }
 
+// Imports 2023-25 Draft Picks
+func ImportNFLDraftPicks() {
+	db := dbprovider.GetInstance().GetDB()
+	draftpickPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\NFL_Draft_Picks.csv"
+
+	nflCSV := util.ReadCSV(draftpickPath)
+
+	nflTeams := GetAllNFLTeams()
+	teamMap := make(map[string]uint)
+
+	for _, team := range nflTeams {
+		teamMap[team.TeamAbbr] = team.ID
+	}
+
+	for idx, row := range nflCSV {
+		if idx < 2 {
+			continue
+		}
+
+		season := util.ConvertStringToInt(row[0])
+		season_id := 2
+		if season == 2024 {
+			season_id = 3
+		} else if season == 2025 {
+			season_id = 4
+		}
+		round := util.ConvertStringToInt(row[1])
+		pick := util.ConvertStringToInt(row[2])
+		team := row[3]
+		teamID := teamMap[team]
+		previousTeam := row[4]
+		previousTeamID := teamMap[previousTeam]
+		originalTeam := row[5]
+		originalTeamID := teamMap[originalTeam]
+		notes := row[6]
+		tradeValue := util.ConvertStringToFloat(row[7])
+
+		draftPick := structs.NFLDraftPick{
+			SeasonID:       uint(season_id),
+			Season:         uint(season),
+			Round:          uint(round),
+			PickNumber:     uint(pick),
+			Team:           team,
+			TeamID:         teamID,
+			PreviousTeam:   previousTeam,
+			PreviousTeamID: previousTeamID,
+			OriginalTeamID: originalTeamID,
+			OriginalTeam:   originalTeam,
+			Notes:          notes,
+			TradeValue:     tradeValue,
+		}
+
+		db.Save(&draftPick)
+	}
+}
+
 func ImportMinimumFAValues() {
 	db := dbprovider.GetInstance().GetDB()
 	playerPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023_Free_Agency_expected_Values_CSV.csv"

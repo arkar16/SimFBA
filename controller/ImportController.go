@@ -10,6 +10,10 @@ func ImportCustomCroots(w http.ResponseWriter, r *http.Request) {
 	managers.CreateCustomCroots()
 }
 
+func ImportNFLDraftPicks(w http.ResponseWriter, r *http.Request) {
+	managers.ImportNFLDraftPicks()
+}
+
 func ImportRecruitAICSV(w http.ResponseWriter, r *http.Request) {
 	managers.ImportRecruitAICSV()
 }

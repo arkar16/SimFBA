@@ -63,3 +63,27 @@ func GetContractByPlayerID(PlayerID string) structs.NFLContract {
 
 	return contract
 }
+
+func GetAllContracts() []structs.NFLContract {
+	db := dbprovider.GetInstance().GetDB()
+
+	contracts := []structs.NFLContract{}
+
+	err := db.Where("is_active = ?", true).Find(&contracts).Error
+	if err != nil {
+		log.Fatalln("Could not find all active contracts")
+	}
+
+	return contracts
+}
+
+func CalculateContractValues() {
+	db := dbprovider.GetInstance().GetDB()
+
+	contracts := GetAllContracts()
+
+	for _, c := range contracts {
+		c.CalculateContract()
+		db.Save(&c)
+	}
+}

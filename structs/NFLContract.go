@@ -55,3 +55,18 @@ func (c *NFLContract) ProgressContract() {
 		c.DeactivateContract()
 	}
 }
+
+func (c *NFLContract) CalculateContract() {
+	// Calculate Value
+	y1SalaryVal := c.Y1BaseSalary * 0.8
+	y1BonusVal := c.Y1Bonus * 1
+	y2SalaryVal := c.Y2BaseSalary * 0.4
+	y2BonusVal := c.Y2Bonus * 0.9
+	y3SalaryVal := c.Y3BaseSalary * 0.2
+	y3BonusVal := c.Y3Bonus * 0.8
+	y4SalaryVal := c.Y4BaseSalary * 0.1
+	y4BonusVal := c.Y4Bonus * 0.7
+	y5SalaryVal := c.Y5BaseSalary * 0.05
+	y5BonusVal := c.Y5Bonus * 0.6
+	c.ContractValue = y1SalaryVal + y1BonusVal + y2SalaryVal + y2BonusVal + y3SalaryVal + y3BonusVal + y4SalaryVal + y4BonusVal + y5SalaryVal + y5BonusVal
+}

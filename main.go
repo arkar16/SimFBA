@@ -58,6 +58,7 @@ func handleRequests() {
 
 	// Capsheet Controls
 	myRouter.HandleFunc("/nfl/capsheet/generate", controller.GenerateCapsheets).Methods("GET")
+	myRouter.HandleFunc("/nfl/contracts/get/value", controller.CalculateContracts).Methods("GET")
 
 	// Draft Controls
 	myRouter.HandleFunc("/nfl/draft/draftees/export/{season}", controller.ExportDrafteesToCSV).Methods("GET")
@@ -95,6 +96,7 @@ func handleRequests() {
 	// myRouter.HandleFunc("/admin/import/missing/recruits", controller.GetMissingRecruitingClasses).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/preferences", controller.ImportTradePreferences).Methods("GET")
 	// myRouter.HandleFunc("/import/custom/croots", controller.ImportCustomCroots).Methods("GET")
+	// myRouter.HandleFunc("/import/draft/picks", controller.ImportNFLDraftPicks).Methods("GET")
 
 	// Player Controls
 	myRouter.HandleFunc("/players/all/", controller.AllPlayers).Methods("GET")

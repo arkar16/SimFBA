@@ -14,6 +14,11 @@ func GenerateCapsheets(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(w, "Congrats, you generated the Capsheets!")
 }
 
+func CalculateContracts(w http.ResponseWriter, r *http.Request) {
+	managers.CalculateContractValues()
+	fmt.Println(w, "All contract values generated.")
+}
+
 // GetTeamByTeamID
 func GetNFLCapsheetByTeamID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

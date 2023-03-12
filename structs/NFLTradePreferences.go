@@ -77,6 +77,8 @@ type NFLTradePreferencesDTO struct {
 	KickerType            string
 	Punters               bool
 	PunterType            string
+	DraftPicks            bool
+	DraftPickType         string
 }
 
 func (tp *NFLTradePreferences) UpdatePreferences(pref NFLTradePreferencesDTO) {

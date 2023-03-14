@@ -144,10 +144,9 @@ func GetTradeProposalsByNFLID(TeamID string) structs.NFLTeamProposals {
 
 	id := uint(util.ConvertStringToInt(TeamID))
 
-	sentOptions := []structs.NFLTradeOptionObj{}
-	receivedOptions := []structs.NFLTradeOptionObj{}
-
 	for _, proposal := range proposals {
+		sentOptions := []structs.NFLTradeOptionObj{}
+		receivedOptions := []structs.NFLTradeOptionObj{}
 		for _, option := range proposal.NFLTeamTradeOptions {
 			opt := structs.NFLTradeOptionObj{
 				ID:               option.Model.ID,

@@ -116,7 +116,7 @@ func GetAcceptedTradeProposals() []structs.NFLTradeProposal {
 
 	proposals := []structs.NFLTradeProposal{}
 
-	db.Preload("NFLTeamTradeOptions").Preload("RecepientTeamTradeOptions").Where("is_trade_accepted = ?", true).Find(&proposals)
+	db.Preload("NFLTeamTradeOptions").Where("is_trade_accepted = ?", true).Find(&proposals)
 
 	return proposals
 }
@@ -261,31 +261,31 @@ func AcceptTradeProposal(proposalID string) {
 	newsLogMessage := proposal.RecepientTeam + " has accepted a trade offer from " + proposal.NFLTeam + " for trade the following players:\n\n"
 
 	for _, options := range proposal.NFLTeamTradeOptions {
-		if options.NFLPlayerID > 0 {
-			playerRecord := GetNFLPlayerRecord(strconv.Itoa(int(options.NFLPlayerID)))
-			newsLogMessage += playerRecord.Position + " " + playerRecord.FirstName + " " + playerRecord.LastName + " to " + proposal.RecepientTeam + "\n"
-		} else if options.NFLDraftPickID > 0 {
-			draftPick := GetDraftPickByDraftPickID(strconv.Itoa(int(options.NFLDraftPickID)))
-			pickRound := strconv.Itoa(int(draftPick.Round))
-			roundAbbreviation := util.GetRoundAbbreviation(pickRound)
-			season := strconv.Itoa(int(draftPick.Season))
-			newsLogMessage += season + " " + roundAbbreviation + " pick to " + proposal.RecepientTeam + "\n"
+		if options.NFLTeamID == proposal.NFLTeamID {
+			if options.NFLPlayerID > 0 {
+				playerRecord := GetNFLPlayerRecord(strconv.Itoa(int(options.NFLPlayerID)))
+				newsLogMessage += playerRecord.Position + " " + playerRecord.FirstName + " " + playerRecord.LastName + " to " + proposal.RecepientTeam + "\n"
+			} else if options.NFLDraftPickID > 0 {
+				draftPick := GetDraftPickByDraftPickID(strconv.Itoa(int(options.NFLDraftPickID)))
+				pickRound := strconv.Itoa(int(draftPick.Round))
+				roundAbbreviation := util.GetRoundAbbreviation(pickRound)
+				season := strconv.Itoa(int(draftPick.Season))
+				newsLogMessage += season + " " + roundAbbreviation + " pick to " + proposal.RecepientTeam + "\n"
+			}
+		} else {
+			if options.NFLPlayerID > 0 {
+				playerRecord := GetNFLPlayerRecord(strconv.Itoa(int(options.NFLPlayerID)))
+				newsLogMessage += playerRecord.Position + " " + playerRecord.FirstName + " " + playerRecord.LastName + " to " + proposal.NFLTeam + "\n"
+			} else if options.NFLDraftPickID > 0 {
+				draftPick := GetDraftPickByDraftPickID(strconv.Itoa(int(options.NFLDraftPickID)))
+				pickRound := strconv.Itoa(int(draftPick.Round))
+				roundAbbreviation := util.GetRoundAbbreviation(pickRound)
+				season := strconv.Itoa(int(draftPick.Season))
+				newsLogMessage += season + " " + roundAbbreviation + " pick to " + proposal.NFLTeam + "\n"
+			}
 		}
 	}
 	newsLogMessage += "\n"
-
-	for _, options := range proposal.RecepientTeamTradeOptions {
-		if options.NFLPlayerID > 0 {
-			playerRecord := GetNFLPlayerRecord(strconv.Itoa(int(options.NFLPlayerID)))
-			newsLogMessage += playerRecord.Position + " " + playerRecord.FirstName + " " + playerRecord.LastName + " to " + proposal.NFLTeam + "\n"
-		} else if options.NFLDraftPickID > 0 {
-			draftPick := GetDraftPickByDraftPickID(strconv.Itoa(int(options.NFLDraftPickID)))
-			pickRound := strconv.Itoa(int(draftPick.Round))
-			roundAbbreviation := util.GetRoundAbbreviation(pickRound)
-			season := strconv.Itoa(int(draftPick.Season))
-			newsLogMessage += season + " " + roundAbbreviation + " pick to " + proposal.NFLTeam + "\n"
-		}
-	}
 
 	newsLog := structs.NewsLog{
 		WeekID:      ts.NFLWeekID,

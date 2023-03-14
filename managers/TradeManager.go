@@ -86,7 +86,7 @@ func GetOnlyTradeProposalByProposalID(proposalID string) structs.NFLTradeProposa
 
 	proposal := structs.NFLTradeProposal{}
 
-	db.Preload("NFLTeamTradeOptions").Preload("RecepientTeamTradeOptions").Where("id = ?", proposalID).Find(&proposal)
+	db.Preload("NFLTeamTradeOptions").Where("id = ?", proposalID).Find(&proposal)
 
 	return proposal
 }
@@ -126,7 +126,7 @@ func GetRejectedTradeProposals() []structs.NFLTradeProposal {
 
 	proposals := []structs.NFLTradeProposal{}
 
-	db.Preload("NFLTeamTradeOptions").Preload("RecepientTeamTradeOptions").Where("is_trade_rejected = ?", true).Find(&proposals)
+	db.Preload("NFLTeamTradeOptions").Where("is_trade_rejected = ?", true).Find(&proposals)
 
 	return proposals
 }
@@ -137,7 +137,7 @@ func GetTradeProposalsByNFLID(TeamID string) structs.NFLTeamProposals {
 
 	proposals := []structs.NFLTradeProposal{}
 
-	db.Preload("NFLTeamTradeOptions").Preload("RecepientTeamTradeOptions").Where("nfl_team_id = ? OR recepient_team_id = ?", TeamID, TeamID).Find(&proposals)
+	db.Preload("NFLTeamTradeOptions").Where("nfl_team_id = ? OR recepient_team_id = ?", TeamID, TeamID).Find(&proposals)
 
 	SentProposals := []structs.NFLTradeProposalDTO{}
 	ReceivedProposals := []structs.NFLTradeProposalDTO{}
@@ -148,38 +148,26 @@ func GetTradeProposalsByNFLID(TeamID string) structs.NFLTeamProposals {
 	receivedOptions := []structs.NFLTradeOptionObj{}
 
 	for _, proposal := range proposals {
-		for _, sentOption := range proposal.NFLTeamTradeOptions {
+		for _, option := range proposal.NFLTeamTradeOptions {
 			opt := structs.NFLTradeOptionObj{
-				ID:               sentOption.Model.ID,
-				TradeProposalID:  sentOption.TradeProposalID,
-				NFLTeamID:        sentOption.NFLTeamID,
-				SalaryPercentage: sentOption.SalaryPercentage,
+				ID:               option.Model.ID,
+				TradeProposalID:  option.TradeProposalID,
+				NFLTeamID:        option.NFLTeamID,
+				SalaryPercentage: option.SalaryPercentage,
+				OptionType:       option.OptionType,
 			}
-			if sentOption.NFLPlayerID > 0 {
-				player := GetNFLPlayerRecord(strconv.Itoa(int(sentOption.NFLPlayerID)))
+			if option.NFLPlayerID > 0 {
+				player := GetNFLPlayerRecord(strconv.Itoa(int(option.NFLPlayerID)))
 				opt.AssignPlayer(player)
-			} else if sentOption.NFLDraftPickID > 0 {
-				draftPick := GetDraftPickByDraftPickID(strconv.Itoa((int(sentOption.NFLDraftPickID))))
+			} else if option.NFLDraftPickID > 0 {
+				draftPick := GetDraftPickByDraftPickID(strconv.Itoa((int(option.NFLDraftPickID))))
 				opt.AssignPick(draftPick)
 			}
-			sentOptions = append(sentOptions, opt)
-		}
-
-		for _, receivedOption := range proposal.RecepientTeamTradeOptions {
-			opt := structs.NFLTradeOptionObj{
-				ID:               receivedOption.Model.ID,
-				TradeProposalID:  receivedOption.TradeProposalID,
-				NFLTeamID:        receivedOption.NFLTeamID,
-				SalaryPercentage: receivedOption.SalaryPercentage,
+			if option.NFLTeamID == proposal.NFLTeamID {
+				sentOptions = append(sentOptions, opt)
+			} else {
+				receivedOptions = append(receivedOptions, opt)
 			}
-			if receivedOption.NFLPlayerID > 0 {
-				player := GetNFLPlayerRecord(strconv.Itoa(int(receivedOption.NFLPlayerID)))
-				opt.AssignPlayer(player)
-			} else if receivedOption.NFLDraftPickID > 0 {
-				draftPick := GetDraftPickByDraftPickID(strconv.Itoa((int(receivedOption.NFLDraftPickID))))
-				opt.AssignPick(draftPick)
-			}
-			receivedOptions = append(receivedOptions, opt)
 		}
 
 		proposalResponse := structs.NFLTradeProposalDTO{
@@ -196,7 +184,7 @@ func GetTradeProposalsByNFLID(TeamID string) structs.NFLTeamProposals {
 
 		if proposal.NFLTeamID == id {
 			SentProposals = append(SentProposals, proposalResponse)
-		} else if proposal.RecepientTeamID == id {
+		} else {
 			ReceivedProposals = append(ReceivedProposals, proposalResponse)
 		}
 	}
@@ -220,6 +208,19 @@ func CreateTradeProposal(TradeProposal structs.NFLTradeProposalDTO) {
 	db := dbprovider.GetInstance().GetDB()
 	latestID := GetLatestProposalInDB(db)
 
+	// Create Trade Proposal Object
+	proposal := structs.NFLTradeProposal{
+		NFLTeamID:       TradeProposal.NFLTeamID,
+		NFLTeam:         TradeProposal.NFLTeam,
+		RecepientTeamID: TradeProposal.RecepientTeamID,
+		RecepientTeam:   TradeProposal.RecepientTeam,
+		IsTradeAccepted: false,
+		IsTradeRejected: false,
+	}
+	proposal.AssignID(latestID)
+
+	db.Create(&proposal)
+
 	// Create Trade Options
 	SentTradeOptions := TradeProposal.NFLTeamTradeOptions
 	ReceivedTradeOptions := TradeProposal.RecepientTeamTradeOptions
@@ -231,6 +232,7 @@ func CreateTradeProposal(TradeProposal structs.NFLTradeProposalDTO) {
 			NFLPlayerID:      sentOption.NFLPlayerID,
 			NFLDraftPickID:   sentOption.NFLDraftPickID,
 			SalaryPercentage: sentOption.SalaryPercentage,
+			OptionType:       sentOption.OptionType,
 		}
 		db.Create(&tradeOption)
 	}
@@ -238,26 +240,14 @@ func CreateTradeProposal(TradeProposal structs.NFLTradeProposalDTO) {
 	for _, recepientOption := range ReceivedTradeOptions {
 		tradeOption := structs.NFLTradeOption{
 			TradeProposalID:  latestID,
-			NFLTeamID:        TradeProposal.NFLTeamID,
+			NFLTeamID:        TradeProposal.RecepientTeamID,
 			NFLPlayerID:      recepientOption.NFLPlayerID,
 			NFLDraftPickID:   recepientOption.NFLDraftPickID,
 			SalaryPercentage: recepientOption.SalaryPercentage,
+			OptionType:       recepientOption.OptionType,
 		}
 		db.Create(&tradeOption)
 	}
-
-	// Create Trade Proposal Object
-	proposal := structs.NFLTradeProposal{
-		NFLTeamID:       TradeProposal.NFLTeamID,
-		NFLTeam:         TradeProposal.NFLTeam,
-		RecepientTeamID: TradeProposal.RecepientTeamID,
-		RecepientTeam:   TradeProposal.NFLTeam,
-		IsTradeAccepted: false,
-		IsTradeRejected: false,
-	}
-	proposal.AssignID(latestID)
-
-	db.Create(&proposal)
 }
 
 func AcceptTradeProposal(proposalID string) {
@@ -352,9 +342,7 @@ func RemoveRejectedTrades() {
 
 	for _, proposal := range rejectedProposals {
 		sentOptions := proposal.NFLTeamTradeOptions
-		recepientOptions := proposal.RecepientTeamTradeOptions
 		deleteOptions(db, sentOptions)
-		deleteOptions(db, recepientOptions)
 
 		// Delete Proposal
 		db.Delete(&proposal)
@@ -366,10 +354,8 @@ func SyncAcceptedTrade(proposalID string) {
 
 	proposal := GetOnlyTradeProposalByProposalID(proposalID)
 	SentOptions := proposal.NFLTeamTradeOptions
-	RecepientOptions := proposal.RecepientTeamTradeOptions
 
 	syncAcceptedOptions(db, SentOptions, proposal.NFLTeamID, proposal.NFLTeam, proposal.RecepientTeamID, proposal.RecepientTeam)
-	syncAcceptedOptions(db, RecepientOptions, proposal.RecepientTeamID, proposal.RecepientTeam, proposal.NFLTeamID, proposal.NFLTeam)
 
 	proposal.ToggleSyncStatus()
 
@@ -380,9 +366,16 @@ func syncAcceptedOptions(db *gorm.DB, options []structs.NFLTradeOption, senderID
 	for _, option := range options {
 		if option.NFLPlayerID > 0 {
 			playerRecord := GetNFLPlayerRecord(strconv.Itoa(int(option.NFLPlayerID)))
-			playerRecord.TradePlayer(recepientID, recepientTeam)
-			// Contract
 			contract := playerRecord.Contract
+			if playerRecord.TeamID == int(senderID) {
+				playerRecord.TradePlayer(recepientID, recepientTeam)
+				contract.TradePlayer(recepientID, recepientTeam)
+			} else {
+				playerRecord.TradePlayer(senderID, senderTeam)
+				contract.TradePlayer(senderID, senderTeam)
+			}
+
+			// Contract
 			percentage := option.SalaryPercentage
 
 			// Subtract Contract from Senders's Capsheet
@@ -400,7 +393,12 @@ func syncAcceptedOptions(db *gorm.DB, options []structs.NFLTradeOption, senderID
 
 		} else if option.NFLDraftPickID > 0 {
 			draftPick := GetDraftPickByDraftPickID(strconv.Itoa(int(option.NFLDraftPickID)))
-			draftPick.TradePick(recepientID, recepientTeam)
+			if draftPick.TeamID == senderID {
+				draftPick.TradePick(recepientID, recepientTeam)
+			} else {
+				draftPick.TradePick(senderID, senderTeam)
+			}
+
 			db.Save(&draftPick)
 		}
 
@@ -413,10 +411,8 @@ func VetoTrade(proposalID string) {
 
 	proposal := GetOnlyTradeProposalByProposalID(proposalID)
 	SentOptions := proposal.NFLTeamTradeOptions
-	RecepientOptions := proposal.RecepientTeamTradeOptions
 
 	deleteOptions(db, SentOptions)
-	deleteOptions(db, RecepientOptions)
 
 	db.Delete(&proposal)
 }

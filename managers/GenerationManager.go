@@ -131,7 +131,16 @@ func CreateCustomCroots() {
 	}
 
 	for _, croot := range crootList {
+		gp := structs.Player{
+			CollegePlayerID: int(croot.ID),
+			NFLPlayerID:     int(croot.ID),
+			RecruitID:       int(croot.ID),
+		}
+
+		gp.AssignID(croot.ID)
+
 		db.Create(&croot)
+		db.Create(&gp)
 	}
 }
 

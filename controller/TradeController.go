@@ -30,6 +30,13 @@ func GetAllAcceptedTrades(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// Get Trade Block Data for Trade Block Page
+func GetAllRejectedTrades(w http.ResponseWriter, r *http.Request) {
+	response := managers.GetRejectedTradeProposals()
+
+	json.NewEncoder(w).Encode(response)
+}
+
 // Place player on NFL Trade block
 func PlaceNFLPlayerOnTradeBlock(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -100,6 +107,19 @@ func RejectTradeOffer(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Proposal " + proposalID + " has been accepted.")
 }
 
+// Cancels Trade Offer
+func CancelTradeOffer(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	proposalID := vars["proposalID"]
+	if len(proposalID) == 0 {
+		panic("User did not provide a proposalID")
+	}
+
+	managers.CancelTradeProposal(proposalID)
+
+	json.NewEncoder(w).Encode("Proposal " + proposalID + " has been accepted.")
+}
+
 // SyncAcceptedTrade -- Admin approve a trade
 func SyncAcceptedTrade(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
@@ -121,7 +141,7 @@ func VetoAcceptedTrade(w http.ResponseWriter, r *http.Request) {
 		panic("User did not provide a proposalID")
 	}
 
-	managers.SyncAcceptedTrade(proposalID)
+	managers.VetoTrade(proposalID)
 
 	json.NewEncoder(w).Encode("Proposal " + proposalID + " has been accepted.")
 }

@@ -33,6 +33,15 @@ type NFLPlayer struct {
 	Offers            []FreeAgencyOffer `gorm:"foreignKey:NFLPlayerID"`
 }
 
+// Sorting Funcs
+type ByOverall []NFLPlayer
+
+func (rp ByOverall) Len() int      { return len(rp) }
+func (rp ByOverall) Swap(i, j int) { rp[i], rp[j] = rp[j], rp[i] }
+func (rp ByOverall) Less(i, j int) bool {
+	return rp[i].Overall > rp[j].Overall
+}
+
 func (np *NFLPlayer) AssignMissingValues(pr int, aca string, fa string, per string, rec string, we string) {
 	np.Progression = pr
 	np.AcademicBias = aca
@@ -115,4 +124,5 @@ func (np *NFLPlayer) TradePlayer(id uint, team string) {
 	np.PreviousTeamID = uint(np.TeamID)
 	np.TeamID = int(id)
 	np.TeamAbbr = team
+	np.IsOnTradeBlock = false
 }

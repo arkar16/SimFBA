@@ -362,7 +362,7 @@ func GetNFLPlayerRecord(playerID string) structs.NFLPlayer {
 
 	var player structs.NFLPlayer
 
-	db.Where("id = ?", playerID).Find(&player)
+	db.Preload("Contract").Where("id = ?", playerID).Find(&player)
 
 	return player
 }

@@ -3,6 +3,7 @@ package managers
 import (
 	"fmt"
 	"log"
+	"sort"
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
@@ -41,7 +42,12 @@ func AllocateCapsheets() {
 
 		Capsheet.ResetCapsheet()
 
-		for _, player := range players {
+		sort.Sort(structs.ByOverall(players))
+
+		for idx, player := range players {
+			if idx > 50 {
+				break
+			}
 			contract := player.Contract
 
 			Capsheet.AddContractToCapsheet(contract)

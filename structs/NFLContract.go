@@ -33,9 +33,10 @@ func (c *NFLContract) DeactivateContract() {
 	c.IsActive = false
 }
 
-func (c *NFLContract) TradePlayer(TeamID uint, Team string) {
+func (c *NFLContract) TradePlayer(TeamID uint, Team string, percentage float64) {
 	c.TeamID = TeamID
 	c.Team = Team
+	c.Y1BaseSalary = c.Y1BaseSalary * percentage
 }
 
 func (c *NFLContract) ProgressContract() {

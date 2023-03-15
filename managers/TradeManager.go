@@ -436,7 +436,7 @@ func syncAcceptedOptions(db *gorm.DB, options []structs.NFLTradeOption, senderID
 			percentage := option.SalaryPercentage
 
 			// Subtract Contract from Senders's Capsheet
-			sendersPercentage := 100 - percentage
+			sendersPercentage := percentage
 			SendersCapsheet := GetCapsheetByTeamID(strconv.Itoa(int(senderID)))
 			SendersCapsheet.SubtractFromCapsheet(contract)
 			SendersCapsheet.NegotiateSalaryDifference(contract.Y1BaseSalary, float64(contract.Y1BaseSalary*sendersPercentage))
@@ -444,8 +444,9 @@ func syncAcceptedOptions(db *gorm.DB, options []structs.NFLTradeOption, senderID
 			db.Save(&SendersCapsheet)
 
 			// Add to Recepient Capsheet
+			receiversPercentage := 100 - percentage
 			recepientCapsheet := GetCapsheetByTeamID(strconv.Itoa(int(recepientID)))
-			recepientCapsheet.AddContractViaTrade(contract, float64(percentage*contract.Y1BaseSalary))
+			recepientCapsheet.AddContractViaTrade(contract, float64(contract.Y1BaseSalary*receiversPercentage))
 			db.Save(&recepientCapsheet)
 
 		} else if option.NFLDraftPickID > 0 {

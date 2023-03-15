@@ -357,6 +357,16 @@ func GetGlobalPlayerRecord(playerID string) structs.Player {
 	return player
 }
 
+func GetOnlyNFLPlayerRecord(playerID string) structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var player structs.NFLPlayer
+
+	db.Where("id = ?", playerID).Find(&player)
+
+	return player
+}
+
 func GetNFLPlayerRecord(playerID string) structs.NFLPlayer {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -400,7 +410,7 @@ func GetNFLPlayersWithContractsByTeamID(TeamID string) []structs.NFLPlayer {
 func CutNFLPlayer(playerId string) {
 	db := dbprovider.GetInstance().GetDB()
 
-	player := GetNFLPlayerRecord(playerId)
+	player := GetOnlyNFLPlayerRecord(playerId)
 	contract := GetContractByPlayerID(playerId)
 	capsheet := GetCapsheetByTeamID(strconv.Itoa(int(player.TeamID)))
 	ts := GetTimestamp()
@@ -412,7 +422,7 @@ func CutNFLPlayer(playerId string) {
 		contract.DeactivateContract()
 	}
 
-	capsheet.SubtractFromCapsheet(contract)
+	capsheet.CutPlayerFromCapsheet(contract)
 	db.Save(&contract)
 	db.Save(&player)
 	db.Save(&capsheet)

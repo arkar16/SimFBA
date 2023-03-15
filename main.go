@@ -173,12 +173,14 @@ func handleRequests() {
 
 	// Trade Controls
 	myRouter.HandleFunc("/trades/nfl/all/accepted", controller.GetAllAcceptedTrades).Methods("GET")
+	myRouter.HandleFunc("/trades/nfl/all/rejected", controller.GetAllRejectedTrades).Methods("GET")
 	myRouter.HandleFunc("/trades/nfl/block/{teamID}", controller.GetNFLTradeBlockDataByTeamID).Methods("GET")
 	myRouter.HandleFunc("/trades/nfl/place/block/{playerID}", controller.PlaceNFLPlayerOnTradeBlock).Methods("GET")
 	myRouter.HandleFunc("/trades/nfl/preferences/update", controller.UpdateTradePreferences).Methods("POST")
 	myRouter.HandleFunc("/trades/nfl/create/proposal", controller.CreateNFLTradeProposal).Methods("POST")
 	myRouter.HandleFunc("/trades/nfl/proposal/accept/{proposalID}", controller.AcceptTradeOffer).Methods("GET")
 	myRouter.HandleFunc("/trades/nfl/proposal/reject/{proposalID}", controller.RejectTradeOffer).Methods("GET")
+	myRouter.HandleFunc("/trades/nfl/proposal/cancel/{proposalID}", controller.CancelTradeOffer).Methods("GET")
 
 	// Discord Controls
 	myRouter.HandleFunc("/teams/ds/college/team/{teamID}/", controller.GetTeamByTeamIDForDiscord).Methods("GET")

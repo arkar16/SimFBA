@@ -37,6 +37,7 @@ func (c *NFLContract) TradePlayer(TeamID uint, Team string, percentage float64) 
 	c.TeamID = TeamID
 	c.Team = Team
 	c.Y1BaseSalary = c.Y1BaseSalary * percentage
+	c.Y1Bonus = 0
 }
 
 func (c *NFLContract) ProgressContract() {

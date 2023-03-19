@@ -433,18 +433,18 @@ func syncAcceptedOptions(db *gorm.DB, options []structs.NFLTradeOption, senderID
 			if playerRecord.TeamID == int(senderID) {
 				sendersPercentage := percentage
 				receiversPercentage := (100 - percentage) * 0.01
-				playerRecord.TradePlayer(recepientID, receivingTeam.TeamAbbr)
-				contract.TradePlayer(recepientID, receivingTeam.TeamAbbr, receiversPercentage)
 				SendersCapsheet.SubtractFromCapsheetViaTrade(contract)
 				SendersCapsheet.NegotiateSalaryDifference(contract.Y1BaseSalary, float64(contract.Y1BaseSalary*sendersPercentage))
 				recepientCapsheet.AddContractViaTrade(contract, float64(contract.Y1BaseSalary*receiversPercentage))
+				playerRecord.TradePlayer(recepientID, receivingTeam.TeamAbbr)
+				contract.TradePlayer(recepientID, receivingTeam.TeamAbbr, receiversPercentage)
 			} else {
 				receiversPercentage := percentage
 				sendersPercentage := (100 - percentage) * 0.01
-				playerRecord.TradePlayer(senderID, sendingTeam.TeamAbbr)
-				contract.TradePlayer(senderID, sendingTeam.TeamAbbr, sendersPercentage)
 				recepientCapsheet.SubtractFromCapsheetViaTrade(contract)
 				recepientCapsheet.NegotiateSalaryDifference(contract.Y1BaseSalary, float64(contract.Y1BaseSalary*receiversPercentage))
+				playerRecord.TradePlayer(senderID, sendingTeam.TeamAbbr)
+				contract.TradePlayer(senderID, sendingTeam.TeamAbbr, sendersPercentage)
 				SendersCapsheet.AddContractViaTrade(contract, float64(contract.Y1BaseSalary*sendersPercentage))
 			}
 

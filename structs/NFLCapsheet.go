@@ -38,9 +38,6 @@ func (nc *NFLCapsheet) ResetCapsheet() {
 	nc.Y4Salary = 0
 	nc.Y5Bonus = 0
 	nc.Y5Salary = 0
-	nc.Y1CapHit = 0
-	nc.Y2CapHit = 0
-	nc.Y3CapHit = 0
 }
 
 func (nc *NFLCapsheet) AddContractToCapsheet(contract NFLContract) {
@@ -103,7 +100,7 @@ func (nc *NFLCapsheet) NegotiateSalaryDifference(SalaryDifference float64, CapHi
 }
 
 func (nc *NFLCapsheet) AddContractViaTrade(contract NFLContract, differenceValue float64) {
-	nc.Y1Bonus += contract.Y1Bonus
+	// nc.Y1Bonus += contract.Y1Bonus
 	nc.Y1Salary += differenceValue
 	nc.Y2Bonus += contract.Y2Bonus
 	nc.Y2Salary += contract.Y2BaseSalary

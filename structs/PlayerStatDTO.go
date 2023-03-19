@@ -59,6 +59,9 @@ type PlayerStatDTO struct {
 	Snaps             int
 	Games             int
 	GamesStarted      int
+	IsInjured         bool
+	InjuryType        string
+	WeeksOfRecovery   uint
 }
 
 func (p *PlayerStatDTO) GetPlayerID() int {

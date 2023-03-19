@@ -34,12 +34,16 @@ type NFLPlayer struct {
 }
 
 // Sorting Funcs
-type ByOverall []NFLPlayer
+type ByTotalContract []NFLPlayer
 
-func (rp ByOverall) Len() int      { return len(rp) }
-func (rp ByOverall) Swap(i, j int) { rp[i], rp[j] = rp[j], rp[i] }
-func (rp ByOverall) Less(i, j int) bool {
-	return rp[i].Overall > rp[j].Overall
+func (rp ByTotalContract) Len() int      { return len(rp) }
+func (rp ByTotalContract) Swap(i, j int) { rp[i], rp[j] = rp[j], rp[i] }
+func (rp ByTotalContract) Less(i, j int) bool {
+	p1 := rp[i].Contract
+	p2 := rp[j].Contract
+	p1Total := p1.Y1BaseSalary + p1.Y1Bonus + p1.Y2BaseSalary + p1.Y2Bonus + p1.Y3BaseSalary + p1.Y3Bonus + p1.Y4BaseSalary + p1.Y4Bonus + p1.Y5BaseSalary + p1.Y5Bonus
+	p2Total := p2.Y1BaseSalary + p2.Y1Bonus + p2.Y2BaseSalary + p2.Y2Bonus + p2.Y3BaseSalary + p2.Y3Bonus + p2.Y4BaseSalary + p2.Y4Bonus + p2.Y5BaseSalary + p2.Y5Bonus
+	return p1Total > p2Total
 }
 
 func (np *NFLPlayer) AssignMissingValues(pr int, aca string, fa string, per string, rec string, we string) {

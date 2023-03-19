@@ -42,7 +42,7 @@ func AllocateCapsheets() {
 
 		Capsheet.ResetCapsheet()
 
-		sort.Sort(structs.ByOverall(players))
+		sort.Sort(structs.ByTotalContract(players))
 
 		for idx, player := range players {
 			if idx > 50 {

@@ -45,7 +45,6 @@ func handleRequests() {
 	myRouter.HandleFunc("/simfba/sync/missing/", controller.SyncMissingRES).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/weather/", controller.WeatherGenerator).Methods("GET")
 	myRouter.HandleFunc("/news/{weekID}/{seasonID}/", controller.GetNewsLogs).Methods("GET")
-	myRouter.HandleFunc("/cfb/news/all/{seasonID}/", controller.GetAllNewsLogsForASeason).Methods("GET")
 	myRouter.HandleFunc("/season/{seasonID}/weeks/{weekID}", controller.GetWeeksInSeason).Methods("GET")
 	myRouter.HandleFunc("/admin/teams/croot/sync", controller.SyncTeamRecruitingRanks).Methods("GET")
 	myRouter.HandleFunc("/admin/recruiting/class/size", controller.GetRecruitingClassSizeForTeams).Methods("GET")
@@ -97,6 +96,10 @@ func handleRequests() {
 	// myRouter.HandleFunc("/admin/import/preferences", controller.ImportTradePreferences).Methods("GET")
 	// myRouter.HandleFunc("/import/custom/croots", controller.ImportCustomCroots).Methods("GET")
 	// myRouter.HandleFunc("/import/draft/picks", controller.ImportNFLDraftPicks).Methods("GET")
+
+	// News Controls
+	myRouter.HandleFunc("/cfb/news/all/{seasonID}/", controller.GetAllNewsLogsForASeason).Methods("GET")
+	myRouter.HandleFunc("/nfl/news/all/{seasonID}/", controller.GetAllNFLNewsBySeason).Methods("GET")
 
 	// Player Controls
 	myRouter.HandleFunc("/players/all/", controller.AllPlayers).Methods("GET")

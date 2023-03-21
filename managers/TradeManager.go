@@ -431,7 +431,7 @@ func syncAcceptedOptions(db *gorm.DB, options []structs.NFLTradeOption, senderID
 			playerRecord := GetNFLPlayerRecord(strconv.Itoa(int(option.NFLPlayerID)))
 			contract := playerRecord.Contract
 			if playerRecord.TeamID == int(senderID) {
-				sendersPercentage := percentage
+				sendersPercentage := percentage * 0.01
 				receiversPercentage := (100 - percentage) * 0.01
 				SendersCapsheet.SubtractFromCapsheetViaTrade(contract)
 				SendersCapsheet.NegotiateSalaryDifference(contract.Y1BaseSalary, float64(contract.Y1BaseSalary*sendersPercentage))
@@ -439,13 +439,13 @@ func syncAcceptedOptions(db *gorm.DB, options []structs.NFLTradeOption, senderID
 				playerRecord.TradePlayer(recepientID, receivingTeam.TeamAbbr)
 				contract.TradePlayer(recepientID, receivingTeam.TeamAbbr, receiversPercentage)
 			} else {
-				receiversPercentage := percentage
+				receiversPercentage := percentage * 0.01
 				sendersPercentage := (100 - percentage) * 0.01
 				recepientCapsheet.SubtractFromCapsheetViaTrade(contract)
 				recepientCapsheet.NegotiateSalaryDifference(contract.Y1BaseSalary, float64(contract.Y1BaseSalary*receiversPercentage))
+				SendersCapsheet.AddContractViaTrade(contract, float64(contract.Y1BaseSalary*sendersPercentage))
 				playerRecord.TradePlayer(senderID, sendingTeam.TeamAbbr)
 				contract.TradePlayer(senderID, sendingTeam.TeamAbbr, sendersPercentage)
-				SendersCapsheet.AddContractViaTrade(contract, float64(contract.Y1BaseSalary*sendersPercentage))
 			}
 
 			db.Save(&playerRecord)

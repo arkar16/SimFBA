@@ -420,10 +420,17 @@ func CutNFLPlayer(playerId string) {
 	} else {
 		player.ToggleIsFreeAgent()
 		contract.DeactivateContract()
+
+		// Get Minimum Value
+
 	}
 
 	capsheet.CutPlayerFromCapsheet(contract)
 	db.Save(&contract)
 	db.Save(&player)
 	db.Save(&capsheet)
+}
+
+func getMinimumValue(ovr int, pos string) {
+
 }

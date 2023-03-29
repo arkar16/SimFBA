@@ -128,42 +128,7 @@ func CancelOffer(offer structs.FreeAgencyOfferDTO) {
 	db.Save(&freeAgentOffer)
 }
 
-// Mid-Season
-func SignFreeAgentInRegularSeason(offer structs.FreeAgencyOfferDTO) {
-	db := dbprovider.GetInstance().GetDB()
-
-	FreeAgent := GetNFLPlayerRecord(strconv.Itoa(int(offer.NFLPlayerID)))
-	NFLTeam := GetNFLTeamByTeamID(strconv.Itoa(int(offer.TeamID)))
-	FreeAgent.SignPlayer(int(NFLTeam.ID), NFLTeam.TeamAbbr)
-
-	Contract := structs.NFLContract{
-		PlayerID:       FreeAgent.PlayerID,
-		NFLPlayerID:    FreeAgent.PlayerID,
-		TeamID:         NFLTeam.ID,
-		Team:           NFLTeam.TeamAbbr,
-		OriginalTeamID: NFLTeam.ID,
-		OriginalTeam:   NFLTeam.TeamAbbr,
-		ContractLength: offer.ContractLength,
-		Y1BaseSalary:   offer.Y1BaseSalary,
-		Y1Bonus:        offer.Y1Bonus,
-		Y2BaseSalary:   offer.Y2BaseSalary,
-		Y2Bonus:        offer.Y2Bonus,
-		Y3BaseSalary:   offer.Y3BaseSalary,
-		Y3Bonus:        offer.Y3Bonus,
-		Y4BaseSalary:   offer.Y4BaseSalary,
-		Y4Bonus:        offer.Y4Bonus,
-		Y5BaseSalary:   offer.Y5BaseSalary,
-		Y5Bonus:        offer.Y5Bonus,
-		IsActive:       true,
-		IsComplete:     false,
-		IsExtended:     false,
-	}
-
-	db.Create(&Contract)
-	db.Save(&FreeAgent)
-}
-
-func SignFreeAgentInOffseason(offer structs.FreeAgencyOffer, FreeAgent structs.NFLPlayer, ts structs.Timestamp) {
+func SignFreeAgent(offer structs.FreeAgencyOffer, FreeAgent structs.NFLPlayer, ts structs.Timestamp) {
 	db := dbprovider.GetInstance().GetDB()
 
 	NFLTeam := GetNFLTeamByTeamID(strconv.Itoa(int(offer.TeamID)))
@@ -217,20 +182,24 @@ func SyncFreeAgencyOffers() {
 	FreeAgents := GetAllFreeAgents()
 
 	for _, FA := range FreeAgents {
-
-		// Check if still accepting offers
-		if FA.IsAcceptingOffers && ts.FreeAgencyRound < FA.NegotiationRound {
+		// If the Free Agent is not available in off-season free agency anymore
+		if ts.IsNFLOffSeason && !FA.IsNegotiating && !FA.IsAcceptingOffers {
 			continue
 		}
 
-		if FA.IsAcceptingOffers && ts.FreeAgencyRound >= FA.NegotiationRound {
+		// Check if still accepting offers
+		if ts.IsNFLOffSeason && FA.IsAcceptingOffers && ts.FreeAgencyRound < FA.NegotiationRound {
+			continue
+		}
+
+		if ts.IsNFLOffSeason && FA.IsAcceptingOffers && ts.FreeAgencyRound >= FA.NegotiationRound {
 			FA.ToggleIsNegotiating()
 			db.Save(&FA)
 			continue
 		}
 
 		// Check if still negotiation
-		if FA.IsNegotiating && ts.FreeAgencyRound < FA.SigningRound {
+		if ts.IsNFLOffSeason && FA.IsNegotiating && ts.FreeAgencyRound < FA.SigningRound {
 			continue
 		}
 
@@ -254,7 +223,12 @@ func SyncFreeAgencyOffers() {
 			db.Save(&Offer)
 		}
 
-		SignFreeAgentInOffseason(WinningOffer, FA, ts)
+		if WinningOffer.ID > 0 {
+			SignFreeAgent(WinningOffer, FA, ts)
+		} else {
+			FA.WaitUntilAfterDraft()
+			db.Save(&FA)
+		}
 	}
 }
 

@@ -434,3 +434,13 @@ func CutNFLPlayer(playerId string) {
 func getMinimumValue(ovr int, pos string) {
 
 }
+
+func GetNFLRosterForSimulation(TeamID string) []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Where("team_id = ? AND is_practice_squad = ?", TeamID, false).Find(&players)
+
+	return players
+}

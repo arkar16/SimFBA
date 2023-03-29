@@ -152,8 +152,10 @@ func (cp *BasePlayer) GetOverall() {
 	}
 }
 
-func (cp *BasePlayer) SetIsInjured() {
-	cp.IsInjured = true
+func (cp *BasePlayer) SetIsInjured(isInjured bool, injuryType string, weeksOfRecovery uint) {
+	cp.IsInjured = isInjured
+	cp.InjuryType = injuryType
+	cp.WeeksOfRecovery = weeksOfRecovery
 }
 
 func (cp *BasePlayer) RecoveryCheck() {

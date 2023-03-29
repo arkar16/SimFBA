@@ -39,6 +39,8 @@ type NFLTradePreferences struct {
 	KickerType            string
 	Punters               bool
 	PunterType            string
+	DraftPicks            bool
+	DraftPickType         string
 }
 
 type NFLTradePreferencesDTO struct {
@@ -149,5 +151,9 @@ func (tp *NFLTradePreferences) UpdatePreferences(pref NFLTradePreferencesDTO) {
 	tp.Kickers = pref.Kickers
 	if tp.Kickers {
 		tp.KickerType = pref.KickerType
+	}
+	tp.DraftPicks = pref.DraftPicks
+	if tp.DraftPicks {
+		tp.DraftPickType = pref.DraftPickType
 	}
 }

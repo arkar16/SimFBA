@@ -157,7 +157,8 @@ func handleRequests() {
 	myRouter.HandleFunc("/standings/cfb/history/team/{teamID}/", controller.GetHistoricalRecordsByTeamID).Methods("GET")
 
 	// Stats Controls
-	myRouter.HandleFunc("/statistics/export/cfb/", controller.ExportStatisticsFromSim).Methods("POST")
+	myRouter.HandleFunc("/statistics/export/cfb/", controller.ExportCFBStatisticsFromSim).Methods("POST")
+	myRouter.HandleFunc("/statistics/export/nfl/", controller.ExportNFLStatisticsFromSim).Methods("POST")
 	myRouter.HandleFunc("/statistics/export/players/", controller.ExportPlayerStatsToCSV).Methods("GET")
 	myRouter.HandleFunc("/statistics/interface/cfb/{seasonID}", controller.GetStatsPageContentForSeason).Methods("GET")
 	myRouter.HandleFunc("/statistics/map/season/", controller.MapAllStatsToSeason).Methods("GET")
@@ -173,6 +174,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/college/conference/{conferenceID}/", controller.GetTeamsByConferenceID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/division/{divisionID}/", controller.GetTeamsByDivisionID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/sim/{gameID}/", controller.GetHomeAndAwayTeamData).Methods("GET")
+	myRouter.HandleFunc("/teams/nfl/sim/{gameID}/", controller.GetNFLHomeAndAwayTeamData).Methods("GET")
 
 	// Trade Controls
 	myRouter.HandleFunc("/trades/nfl/all/accepted", controller.GetAllAcceptedTrades).Methods("GET")

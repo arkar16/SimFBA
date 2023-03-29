@@ -150,7 +150,7 @@ func GetHistoricalTeamStats(TeamID string, SeasonID string) []structs.CollegeTea
 	return teamStats
 }
 
-func ExportStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
+func ExportCFBStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
 	db := dbprovider.GetInstance().GetDB()
 	fmt.Println("START")
 
@@ -226,6 +226,11 @@ func ExportStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
 		// Player Stat Export
 		// HomePlayers
 		for _, player := range gameDataDTO.HomePlayers {
+			if player.IsInjured && player.WeeksOfRecovery > 0 {
+				playerRecord := GetCollegePlayerByCollegePlayerId(strconv.Itoa(player.PlayerID))
+				playerRecord.SetIsInjured(player.IsInjured, player.InjuryType, player.WeeksOfRecovery)
+				db.Save(&playerRecord)
+			}
 			collegePlayerStats := structs.CollegePlayerStats{
 				CollegePlayerID: player.GetPlayerID(),
 				TeamID:          homeTeam.TeamID,
@@ -240,6 +245,11 @@ func ExportStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
 
 		// AwayPlayers
 		for _, player := range gameDataDTO.AwayPlayers {
+			if player.IsInjured && player.WeeksOfRecovery > 0 {
+				playerRecord := GetCollegePlayerByCollegePlayerId(strconv.Itoa(player.PlayerID))
+				playerRecord.SetIsInjured(player.IsInjured, player.InjuryType, player.WeeksOfRecovery)
+				db.Save(&playerRecord)
+			}
 			collegePlayerStats := structs.CollegePlayerStats{
 				CollegePlayerID: player.GetPlayerID(),
 				TeamID:          awayTeam.TeamID,
@@ -337,5 +347,141 @@ func MapAllStatsToSeason() {
 
 		db.Save(&seasonStats)
 		fmt.Println("Saved Season Stats for " + player.FirstName + " " + player.LastName + " " + player.Position)
+	}
+}
+
+func ExportNFLStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
+	db := dbprovider.GetInstance().GetDB()
+	fmt.Println("START")
+
+	tsChn := make(chan structs.Timestamp)
+
+	go func() {
+		ts := GetTimestamp()
+		tsChn <- ts
+	}()
+
+	timestamp := <-tsChn
+	close(tsChn)
+
+	var teamStats []structs.NFLTeamStats
+
+	for _, gameDataDTO := range exportStatsDTO.GameStatDTOs {
+
+		record := make(chan structs.NFLGame)
+
+		go func() {
+			asynchronousGame := GetNFLGameByAbbreviationsWeekAndSeasonID(gameDataDTO.HomeTeam.Abbreviation, strconv.Itoa(timestamp.NFLWeekID), strconv.Itoa(timestamp.NFLSeasonID))
+			record <- asynchronousGame
+		}()
+
+		gameRecord := <-record
+		close(record)
+		var playerStats []structs.NFLPlayerStats
+
+		// Team Stats Export
+		homeTeamChn := make(chan structs.NFLTeam)
+
+		go func() {
+			homeTeam := GetNFLTeamByTeamAbbr(gameDataDTO.HomeTeam.Abbreviation)
+			homeTeamChn <- homeTeam
+		}()
+
+		ht := <-homeTeamChn
+		close(homeTeamChn)
+
+		homeTeam := structs.NFLTeamStats{
+			TeamID:        ht.ID,
+			GameID:        gameRecord.ID,
+			WeekID:        uint(gameRecord.WeekID),
+			SeasonID:      uint(gameRecord.SeasonID),
+			OpposingTeam:  gameDataDTO.AwayTeam.Abbreviation,
+			BaseTeamStats: gameDataDTO.HomeTeam.MapToBaseTeamStatsObject(),
+		}
+
+		teamStats = append(teamStats, homeTeam)
+
+		// Away Team
+		awayTeamChn := make(chan structs.NFLTeam)
+
+		go func() {
+			awayTeam := GetNFLTeamByTeamAbbr(gameDataDTO.AwayTeam.Abbreviation)
+			awayTeamChn <- awayTeam
+		}()
+
+		at := <-awayTeamChn
+		close(awayTeamChn)
+
+		awayTeam := structs.NFLTeamStats{
+			TeamID:        at.ID,
+			GameID:        gameRecord.ID,
+			WeekID:        uint(gameRecord.WeekID),
+			SeasonID:      uint(gameRecord.SeasonID),
+			OpposingTeam:  gameDataDTO.HomeTeam.Abbreviation,
+			BaseTeamStats: gameDataDTO.AwayTeam.MapToBaseTeamStatsObject(),
+		}
+
+		teamStats = append(teamStats, awayTeam)
+
+		// Player Stat Export
+		// HomePlayers
+		for _, player := range gameDataDTO.HomePlayers {
+			if player.IsInjured && player.WeeksOfRecovery > 0 {
+				playerRecord := GetNFLPlayerRecord(strconv.Itoa(player.PlayerID))
+				playerRecord.SetIsInjured(player.IsInjured, player.InjuryType, player.WeeksOfRecovery)
+				db.Save(&playerRecord)
+			}
+			nflPlayerStats := structs.NFLPlayerStats{
+				NFLPlayerID:     player.GetPlayerID(),
+				TeamID:          int(homeTeam.TeamID),
+				GameID:          int(homeTeam.GameID),
+				WeekID:          gameRecord.WeekID,
+				SeasonID:        gameRecord.SeasonID,
+				OpposingTeam:    gameDataDTO.AwayTeam.Abbreviation,
+				BasePlayerStats: player.MapTobasePlayerStatsObject(),
+			}
+			playerStats = append(playerStats, nflPlayerStats)
+		}
+
+		// AwayPlayers
+		for _, player := range gameDataDTO.AwayPlayers {
+			if player.IsInjured && player.WeeksOfRecovery > 0 {
+				playerRecord := GetNFLPlayerRecord(strconv.Itoa(player.PlayerID))
+				playerRecord.SetIsInjured(player.IsInjured, player.InjuryType, player.WeeksOfRecovery)
+				db.Save(&playerRecord)
+			}
+
+			nflPlayerStats := structs.NFLPlayerStats{
+				NFLPlayerID:     player.GetPlayerID(),
+				TeamID:          int(awayTeam.TeamID),
+				GameID:          int(awayTeam.GameID),
+				WeekID:          gameRecord.WeekID,
+				SeasonID:        gameRecord.SeasonID,
+				OpposingTeam:    gameDataDTO.HomeTeam.Abbreviation,
+				BasePlayerStats: player.MapTobasePlayerStatsObject(),
+			}
+
+			playerStats = append(playerStats, nflPlayerStats)
+		}
+
+		// Update Game
+		gameRecord.UpdateScore(gameDataDTO.HomeScore, gameDataDTO.AwayScore)
+
+		err := db.Save(&gameRecord).Error
+		if err != nil {
+			log.Panicln("Could not save Game " + strconv.Itoa(int(gameRecord.ID)) + "Between " + gameRecord.HomeTeam + " and " + gameRecord.AwayTeam)
+		}
+
+		err = db.CreateInBatches(&playerStats, len(playerStats)).Error
+		if err != nil {
+			log.Panicln("Could not save player stats from week " + strconv.Itoa(timestamp.CollegeWeek))
+		}
+
+		fmt.Println("Finished Game " + strconv.Itoa(int(gameRecord.ID)) + " Between " + gameRecord.HomeTeam + " and " + gameRecord.AwayTeam)
+	}
+
+	err := db.CreateInBatches(&teamStats, len(teamStats)).Error
+	if err != nil {
+		log.Panicln("Could not save team stats!")
 	}
 }

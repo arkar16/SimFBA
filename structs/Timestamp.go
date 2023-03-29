@@ -59,6 +59,13 @@ func (t *Timestamp) MoveUpFreeAgencyRound() {
 	}
 }
 
+func (t *Timestamp) DraftIsOver() {
+	t.IsDraftTime = false
+	t.IsNFLOffSeason = false
+	t.NFLPreseason = true
+	t.IsOffSeason = false
+}
+
 func (t *Timestamp) MoveUpSeason() {
 	t.CollegeSeasonID++
 	t.Season++

@@ -271,5 +271,4 @@ func (cp *CollegePlayer) MapFromRecruit(r Recruit, t CollegeTeam) {
 func (cp *CollegePlayer) AssignTeamValues(t CollegeTeam) {
 	cp.TeamID = int(t.ID)
 	cp.TeamAbbr = t.TeamAbbr
-
 }

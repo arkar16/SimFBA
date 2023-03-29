@@ -52,4 +52,7 @@ type BasePlayerStats struct {
 	SacksAllowed         int
 	PlayedGame           int
 	StartedGame          int
+	WasInjured           bool
+	WeeksOfRecovery      uint
+	InjuryType           string
 }

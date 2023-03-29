@@ -121,5 +121,8 @@ func (p *PlayerStatDTO) MapTobasePlayerStatsObject() BasePlayerStats {
 		Snaps:                p.Snaps,
 		PlayedGame:           p.Games,
 		StartedGame:          p.GamesStarted,
+		WasInjured:           p.IsInjured,
+		InjuryType:           p.InjuryType,
+		WeeksOfRecovery:      p.WeeksOfRecovery,
 	}
 }

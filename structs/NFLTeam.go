@@ -22,6 +22,9 @@ type NFLTeam struct {
 	DraftPicks       []NFLDraftPick       `gorm:"foreignKey:TeamID"`
 	TeamStats        []NFLTeamStats       `gorm:"foreignKey:TeamID"`
 	TeamSeasonStats  []NFLTeamSeasonStats `gorm:"foreignKey:TeamID"`
+	TeamDepthChart   NFLDepthChart        `gorm:"foreignKey:TeamID"`
+	TeamGameplan     NFLGameplan          `gorm:"foreignKey:TeamID"`
+
 	// Offers           []FreeAgencyOffer `gorm:"foreignKey:TeamID"`
 	// NFLCoach     NFLUser        `gorm:"foreignKey:TeamID"`
 	// NFLOwner     NFLUser        `gorm:"foreignKey:TeamID"`

@@ -67,6 +67,7 @@ func (np *NFLPlayer) ToggleIsFreeAgent() {
 	np.TeamAbbr = ""
 	np.IsAcceptingOffers = true
 	np.IsNegotiating = false
+	np.IsOnTradeBlock = false
 }
 
 func (np *NFLPlayer) SignPlayer(TeamID int, Abbr string) {
@@ -103,6 +104,11 @@ func (np *NFLPlayer) ConvertWaivedPlayerToFA() {
 
 func (np *NFLPlayer) ToggleIsNegotiating() {
 	np.IsNegotiating = true
+	np.IsAcceptingOffers = false
+}
+
+func (np *NFLPlayer) WaitUntilAfterDraft() {
+	np.IsNegotiating = false
 	np.IsAcceptingOffers = false
 }
 

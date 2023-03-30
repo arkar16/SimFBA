@@ -216,7 +216,7 @@ func SyncFreeAgencyOffers() {
 			if Offer.IsActive && WinningOffer.ID == 0 {
 				WinningOffer = Offer
 			}
-			if Offer.IsActive && WinningOffer.ID != 0 && WinningOffer.ID != Offer.ID {
+			if Offer.IsActive {
 				Offer.CancelOffer()
 			}
 

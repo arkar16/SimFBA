@@ -198,10 +198,11 @@ func UpdateNFLGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 	gameplanID := updateGameplanDto.GameplanID
 
 	currentGameplan := GetNFLGameplanByTeamID(gameplanID)
+	UpdatedGameplan := updateGameplanDto.UpdatedNFLGameplan
 
 	schemeChange := false
 	ts := GetTimestamp()
-	if currentGameplan.OffensiveScheme != updateGameplanDto.UpdatedGameplan.OffensiveScheme {
+	if currentGameplan.OffensiveScheme != UpdatedGameplan.OffensiveScheme && !ts.IsNFLOffSeason {
 
 		if ts.NFLWeek != 0 {
 			currentGameplan.ApplySchemePenalty(true)
@@ -211,7 +212,7 @@ func UpdateNFLGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 
 	}
 
-	if currentGameplan.DefensiveScheme != updateGameplanDto.UpdatedGameplan.DefensiveScheme {
+	if currentGameplan.DefensiveScheme != UpdatedGameplan.DefensiveScheme && !ts.IsNFLOffSeason {
 
 		if ts.NFLWeek != 0 {
 			currentGameplan.ApplySchemePenalty(false)
@@ -233,7 +234,7 @@ func UpdateNFLGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 		db.Create(&newsLog)
 	}
 
-	currentGameplan.UpdateGameplan(updateGameplanDto.UpdatedNFLGameplan)
+	currentGameplan.UpdateGameplan(UpdatedGameplan)
 
 	db.Save(&currentGameplan)
 }

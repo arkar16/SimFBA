@@ -139,7 +139,7 @@ func GetAllNewsLogs() []structs.NewsLog {
 	return logs
 }
 
-func GetAllNFLNewsLogs(seasonID string) []structs.NewsLog {
+func GetAllNFLNewsLogs() []structs.NewsLog {
 	db := dbprovider.GetInstance().GetDB()
 
 	var logs []structs.NewsLog

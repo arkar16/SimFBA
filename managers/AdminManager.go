@@ -126,12 +126,12 @@ func GetNewsLogs(weekID string, seasonID string) []structs.NewsLog {
 	return logs
 }
 
-func GetAllNewsLogs(seasonID string) []structs.NewsLog {
+func GetAllNewsLogs() []structs.NewsLog {
 	db := dbprovider.GetInstance().GetDB()
 
 	var logs []structs.NewsLog
 
-	err := db.Where("season_id <= ? AND league = ?", seasonID, "CFB").Find(&logs).Error
+	err := db.Where("league = ?", "CFB").Find(&logs).Error
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -144,7 +144,7 @@ func GetAllNFLNewsLogs(seasonID string) []structs.NewsLog {
 
 	var logs []structs.NewsLog
 
-	err := db.Where("season_id <= ? AND league = ?", seasonID, "NFL").Find(&logs).Error
+	err := db.Where("league = ?", "NFL").Find(&logs).Error
 	if err != nil {
 		fmt.Println(err)
 	}

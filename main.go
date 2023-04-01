@@ -98,8 +98,8 @@ func handleRequests() {
 	// myRouter.HandleFunc("/import/draft/picks", controller.ImportNFLDraftPicks).Methods("GET")
 
 	// News Controls
-	myRouter.HandleFunc("/cfb/news/all/{seasonID}/", controller.GetAllNewsLogsForASeason).Methods("GET")
-	myRouter.HandleFunc("/nfl/news/all/{seasonID}/", controller.GetAllNFLNewsBySeason).Methods("GET")
+	myRouter.HandleFunc("/cfb/news/all/", controller.GetAllNewsLogsForASeason).Methods("GET")
+	myRouter.HandleFunc("/nfl/news/all/", controller.GetAllNFLNewsBySeason).Methods("GET")
 
 	// Player Controls
 	myRouter.HandleFunc("/players/all/", controller.AllPlayers).Methods("GET")

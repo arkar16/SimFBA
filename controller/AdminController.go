@@ -67,19 +67,12 @@ func GetNewsLogs(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllNewsLogsForASeason(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	seasonID := vars["seasonID"]
-
-	newsLogs := managers.GetAllNewsLogs(seasonID)
-
+	newsLogs := managers.GetAllNewsLogs()
 	json.NewEncoder(w).Encode(newsLogs)
 }
 
 func GetAllNFLNewsBySeason(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	seasonID := vars["seasonID"]
-
-	newsLogs := managers.GetAllNFLNewsLogs(seasonID)
+	newsLogs := managers.GetAllNFLNewsLogs()
 
 	json.NewEncoder(w).Encode(newsLogs)
 }

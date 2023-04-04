@@ -99,12 +99,16 @@ func GetFreeAgentOfferByOfferID(OfferID string) structs.FreeAgencyOffer {
 
 func CreateFAOffer(offer structs.FreeAgencyOfferDTO) structs.FreeAgencyOffer {
 	db := dbprovider.GetInstance().GetDB()
-
+	ts := GetTimestamp()
 	freeAgentOffer := GetFreeAgentOfferByOfferID(strconv.Itoa(int(offer.ID)))
 
 	if freeAgentOffer.ID == 0 {
 		id := GetLatestOfferInDB(db)
 		freeAgentOffer.AssignID(id)
+	}
+
+	if ts.IsFreeAgencyLocked {
+		return freeAgentOffer
 	}
 
 	freeAgentOffer.CalculateOffer(offer)
@@ -178,7 +182,8 @@ func SyncFreeAgencyOffers() {
 	db := dbprovider.GetInstance().GetDB()
 
 	ts := GetTimestamp()
-
+	ts.ToggleFALock()
+	db.Save(&ts)
 	FreeAgents := GetAllFreeAgents()
 
 	for _, FA := range FreeAgents {
@@ -230,6 +235,9 @@ func SyncFreeAgencyOffers() {
 			db.Save(&FA)
 		}
 	}
+
+	ts.ToggleFALock()
+	db.Save(&ts)
 }
 
 func GetLatestOfferInDB(db *gorm.DB) uint {

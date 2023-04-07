@@ -115,6 +115,10 @@ func (t *Timestamp) ToggleLockRecruiting() {
 	t.IsRecruitingLocked = !t.IsRecruitingLocked
 }
 
+func (t *Timestamp) ToggleFALock() {
+	t.IsFreeAgencyLocked = !t.IsFreeAgencyLocked
+}
+
 func (t *Timestamp) SyncToNextWeek() {
 	t.MoveUpWeekCollege()
 	t.MoveUpWeekNFL()

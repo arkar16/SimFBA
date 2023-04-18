@@ -29,6 +29,8 @@ type NFLRetiredPlayer struct {
 	DraftedTeam       string
 	DraftedRound      uint
 	DraftedPick       uint
-	Contract          NFLContract       `gorm:"foreignKey:NFLPlayerID"`
-	Offers            []FreeAgencyOffer `gorm:"foreignKey:NFLPlayerID"`
+	Stats             []NFLPlayerStats     `gorm:"foreignKey:NFLPlayerID"`
+	SeasonStats       NFLPlayerSeasonStats `gorm:"foreignKey:NFLPlayerID"`
+	Contract          NFLContract          `gorm:"foreignKey:NFLPlayerID"`
+	Offers            []FreeAgencyOffer    `gorm:"foreignKey:NFLPlayerID"`
 }

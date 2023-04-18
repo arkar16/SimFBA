@@ -113,7 +113,10 @@ func UpdateTimeslot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	managers.UpdateTimeslot(timeslotDTO)
-
-	json.NewEncoder(w).Encode("Updated Timeslot")
+	g1, g2 := managers.UpdateTimeslot(timeslotDTO)
+	if g1.ID > 0 {
+		json.NewEncoder(w).Encode(g1)
+	} else {
+		json.NewEncoder(w).Encode(g2)
+	}
 }

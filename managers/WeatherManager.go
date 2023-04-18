@@ -7,12 +7,14 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
+	"gorm.io/gorm"
 )
 
 func GenerateWeatherForGames() {
@@ -23,7 +25,7 @@ func GenerateWeatherForGames() {
 	rainForecasts := getRainChart()
 	mixForecasts := getMixChart()
 	snowForecasts := getSnowChart()
-	// ts := GetTimestamp()
+	ts := GetTimestamp()
 	stadiums := GetAllStadiums()
 
 	teamRegions := getRegionsForSchools()
@@ -33,226 +35,444 @@ func GenerateWeatherForGames() {
 	for _, stadium := range stadiums {
 		stadiumMap[stadium.ID] = stadium
 	}
-	// seasonID := strconv.Itoa(int(ts.CollegeSeasonID))
-	seasonID := "2"
-
+	seasonID := strconv.Itoa(int(ts.CollegeSeasonID))
 	collegeGames := GetCollegeGamesBySeasonID(seasonID)
 
 	for _, game := range collegeGames {
-		regionName := teamRegions[game.HomeTeam]
-		region := regions[regionName]
-		chances := []structs.WeatherChance{}
+		GenerateWeatherForGame(db, game, teamRegions, regions, rainForecasts, mixForecasts, snowForecasts)
+	}
+}
 
-		precip := ""
-		lowTemp := 0.0
-		highTemp := 0.0
-		gameTemp := 0.0
-		cloud := ""
-		wind := 0.0
-		windCategory := ""
+func GenerateWeatherForGame(db *gorm.DB, game structs.CollegeGame, teamRegions map[string]string, regions map[string]structs.WeatherRegion, rainForecasts map[float64]map[int]string, mixForecasts map[float64]map[int]string, snowForecasts map[float64]map[int]string) {
+	regionName := teamRegions[game.HomeTeam]
+	region := regions[regionName]
+	chances := []structs.WeatherChance{}
 
-		if region.Forecasts[game.Week].DaysOfRain != 0 {
-			chances = append(chances, structs.WeatherChance{Weather: "Rain", DaysOfWeather: region.Forecasts[game.Week].DaysOfRain})
+	precip := ""
+	lowTemp := 0.0
+	highTemp := 0.0
+	gameTemp := 0.0
+	cloud := ""
+	wind := 0.0
+	windCategory := ""
+
+	if region.Forecasts[game.Week].DaysOfRain != 0 {
+		chances = append(chances, structs.WeatherChance{Weather: "Rain", DaysOfWeather: region.Forecasts[game.Week].DaysOfRain})
+	}
+
+	if region.Forecasts[game.Week].DaysOfMix != 0 {
+		chances = append(chances, structs.WeatherChance{Weather: "Mix", DaysOfWeather: region.Forecasts[game.Week].DaysOfMix})
+	}
+
+	if region.Forecasts[game.Week].DaysOfSnow != 0 {
+		chances = append(chances, structs.WeatherChance{Weather: "Snow", DaysOfWeather: region.Forecasts[game.Week].DaysOfSnow})
+	}
+
+	var prev float64 = 0.0
+
+	for _, chance := range chances {
+		chance.ApplyChances(prev)
+		prev = chance.DaysOfWeather
+	}
+
+	chances = append(chances, structs.WeatherChance{Weather: "Clear", DaysOfWeather: 30.0})
+
+	weatherRoll := util.GenerateFloatFromRange(0, 30)
+
+	for _, chance := range chances {
+		if weatherRoll > chance.DaysOfWeather {
+			continue
 		}
+		precip = chance.Weather
+		break
+	}
 
-		if region.Forecasts[game.Week].DaysOfMix != 0 {
-			chances = append(chances, structs.WeatherChance{Weather: "Mix", DaysOfWeather: region.Forecasts[game.Week].DaysOfMix})
-		}
-
-		if region.Forecasts[game.Week].DaysOfSnow != 0 {
-			chances = append(chances, structs.WeatherChance{Weather: "Snow", DaysOfWeather: region.Forecasts[game.Week].DaysOfSnow})
-		}
-
-		var prev float64 = 0.0
-
-		for _, chance := range chances {
-			chance.ApplyChances(prev)
-			prev = chance.DaysOfWeather
-		}
-
-		chances = append(chances, structs.WeatherChance{Weather: "Clear", DaysOfWeather: 30.0})
-
-		weatherRoll := util.GenerateFloatFromRange(0, 30)
-
-		for _, chance := range chances {
-			if weatherRoll > chance.DaysOfWeather {
+	if precip == "Rain" {
+		inchesPerEvent := region.Forecasts[game.Week].InchesPerRain
+		for k := range rainForecasts {
+			if inchesPerEvent > k {
 				continue
 			}
-			precip = chance.Weather
+			roll := util.GenerateIntFromRange(1, 12)
+			precip = rainForecasts[k][roll]
 			break
 		}
-
-		if precip == "Rain" {
-			inchesPerEvent := region.Forecasts[game.Week].InchesPerRain
-			for k := range rainForecasts {
-				if inchesPerEvent > k {
-					continue
-				}
-				roll := util.GenerateIntFromRange(1, 12)
-				precip = rainForecasts[k][roll]
-				break
-			}
-		} else if precip == "Mix" {
-			inchesPerEvent := region.Forecasts[game.Week].InchesPerRain
-			for k := range mixForecasts {
-				if inchesPerEvent > k {
-					continue
-				}
-				roll := util.GenerateIntFromRange(1, 12)
-				precip = rainForecasts[k][roll]
-				break
-			}
-		} else if precip == "Snow" {
-			inchesPerEvent := region.Forecasts[game.Week].InchesPerSnow
-			for k := range snowForecasts {
-				if inchesPerEvent > k {
-					continue
-				}
-				roll := util.GenerateIntFromRange(1, 12)
-				precip = rainForecasts[k][roll]
-				break
-			}
-		}
-
-		cloudChances := []structs.WeatherChance{}
-		if precip == "Clear" {
-			cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Clear", DaysOfWeather: region.Forecasts[game.Week].Clear})
-			cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Mostly Clear", DaysOfWeather: region.Forecasts[game.Week].MostlyClear})
-			cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Partly Cloudy", DaysOfWeather: region.Forecasts[game.Week].PartlyCloudy})
-		}
-		cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Mostly Cloudy", DaysOfWeather: region.Forecasts[game.Week].MostlyCloudy})
-		cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Overcast", DaysOfWeather: region.Forecasts[game.Week].Overcast})
-
-		prev = 0
-		for _, chance := range cloudChances {
-			chance.ApplyChances(prev)
-			prev = chance.DaysOfWeather
-		}
-
-		roll := util.GenerateFloatFromRange(0, cloudChances[0].DaysOfWeather)
-		for _, chance := range cloudChances {
-			if roll > chance.DaysOfWeather {
+	} else if precip == "Mix" {
+		inchesPerEvent := region.Forecasts[game.Week].InchesPerRain
+		for k := range mixForecasts {
+			if inchesPerEvent > k {
 				continue
 			}
-			cloud = chance.Weather
+			roll := util.GenerateIntFromRange(1, 12)
+			precip = rainForecasts[k][roll]
+			break
 		}
-
-		meanWind := region.Forecasts[game.Week].WindSpeedAvg
-		maxWind := region.Forecasts[game.Week].WindSpeedMax
-		stdDev := (maxWind - meanWind) / 1.28
-		speed := rand.NormFloat64()*stdDev + meanWind
-
-		if strings.Contains(precip, "Light") {
-			roll = util.GenerateFloatFromRange(0, 3)
-			speed = speed + roll
-		} else if strings.Contains(precip, "Moderate") {
-			roll = util.GenerateFloatFromRange(1, 4)
-			speed = speed + roll
-		} else if strings.Contains(precip, "Heavy") {
-			roll = util.GenerateFloatFromRange(2, 5)
-			speed = speed + roll
+	} else if precip == "Snow" {
+		inchesPerEvent := region.Forecasts[game.Week].InchesPerSnow
+		for k := range snowForecasts {
+			if inchesPerEvent > k {
+				continue
+			}
+			roll := util.GenerateIntFromRange(1, 12)
+			precip = rainForecasts[k][roll]
+			break
 		}
+	}
 
-		if speed < 0 {
-			speed = 0
+	cloudChances := []structs.WeatherChance{}
+	if precip == "Clear" {
+		cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Clear", DaysOfWeather: region.Forecasts[game.Week].Clear})
+		cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Mostly Clear", DaysOfWeather: region.Forecasts[game.Week].MostlyClear})
+		cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Partly Cloudy", DaysOfWeather: region.Forecasts[game.Week].PartlyCloudy})
+	}
+	cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Mostly Cloudy", DaysOfWeather: region.Forecasts[game.Week].MostlyCloudy})
+	cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Overcast", DaysOfWeather: region.Forecasts[game.Week].Overcast})
+
+	prev = 0
+	for _, chance := range cloudChances {
+		chance.ApplyChances(prev)
+		prev = chance.DaysOfWeather
+	}
+
+	roll := util.GenerateFloatFromRange(0, cloudChances[0].DaysOfWeather)
+	for _, chance := range cloudChances {
+		if roll > chance.DaysOfWeather {
+			continue
 		}
-		wind = speed
+		cloud = chance.Weather
+	}
 
-		if speed < 4 {
-			windCategory = "Calm"
-		} else if speed < 10 {
-			windCategory = "Breezy"
-		} else if speed < 15 {
-			windCategory = "Slightly Windy"
-		} else if speed < 20 {
-			windCategory = "Windy"
-		} else {
-			windCategory = "Very Windy"
-		}
+	meanWind := region.Forecasts[game.Week].WindSpeedAvg
+	maxWind := region.Forecasts[game.Week].WindSpeedMax
+	stdDev := (maxWind - meanWind) / 1.28
+	speed := rand.NormFloat64()*stdDev + meanWind
 
-		lowMean := float64(region.Forecasts[game.Week].AvgLow)
-		lowMin := float64(region.Forecasts[game.Week].MinLow)
-		lowStdDev := (lowMean - lowMin) / 1.28
-		lowTemp = rand.NormFloat64()*lowStdDev + lowMean
+	if strings.Contains(precip, "Light") {
+		roll = util.GenerateFloatFromRange(0, 3)
+		speed = speed + roll
+	} else if strings.Contains(precip, "Moderate") {
+		roll = util.GenerateFloatFromRange(1, 4)
+		speed = speed + roll
+	} else if strings.Contains(precip, "Heavy") {
+		roll = util.GenerateFloatFromRange(2, 5)
+		speed = speed + roll
+	}
 
-		highMean := float64(region.Forecasts[game.Week].AvgHigh)
-		highMin := float64(region.Forecasts[game.Week].MinHigh)
-		highStdDev := (highMean - highMin) / 1.28
-		highTemp = rand.NormFloat64()*highStdDev + highMean
+	if speed < 0 {
+		speed = 0
+	}
+	wind = speed
 
-		if lowTemp > highTemp {
-			tempo := lowTemp
-			lowTemp = highTemp
-			highTemp = tempo
-		}
+	if speed < 4 {
+		windCategory = "Calm"
+	} else if speed < 10 {
+		windCategory = "Breezy"
+	} else if speed < 15 {
+		windCategory = "Slightly Windy"
+	} else if speed < 20 {
+		windCategory = "Windy"
+	} else {
+		windCategory = "Very Windy"
+	}
 
-		if game.IsNightGame {
-			gameTemp = lowTemp
-		} else {
-			gameTemp = highTemp
-		}
+	lowMean := float64(region.Forecasts[game.Week].AvgLow)
+	lowMin := float64(region.Forecasts[game.Week].MinLow)
+	lowStdDev := (lowMean - lowMin) / 1.28
+	lowTemp = rand.NormFloat64()*lowStdDev + lowMean
 
-		if strings.Contains(windCategory, "Slight") {
+	highMean := float64(region.Forecasts[game.Week].AvgHigh)
+	highMin := float64(region.Forecasts[game.Week].MinHigh)
+	highStdDev := (highMean - highMin) / 1.28
+	highTemp = rand.NormFloat64()*highStdDev + highMean
+
+	if lowTemp > highTemp {
+		tempo := lowTemp
+		lowTemp = highTemp
+		highTemp = tempo
+	}
+
+	if game.IsNightGame {
+		gameTemp = lowTemp
+	} else {
+		gameTemp = highTemp
+	}
+
+	if strings.Contains(windCategory, "Slight") {
+		mod := util.GenerateFloatFromRange(0, 3)
+		gameTemp += mod
+	} else if strings.Contains(windCategory, "Very") {
+		mod := util.GenerateFloatFromRange(0, 3)
+		gameTemp -= mod
+	} else if strings.Contains(windCategory, "Windy") {
+		mod := util.GenerateFloatFromRange(2, 5)
+		gameTemp -= mod
+	}
+
+	if game.Week < 11 {
+		// Summer Weather
+		if cloud == "Clear" {
 			mod := util.GenerateFloatFromRange(0, 3)
 			gameTemp += mod
-		} else if strings.Contains(windCategory, "Very") {
+		} else if cloud == "Mostly Cloudy" {
 			mod := util.GenerateFloatFromRange(0, 3)
 			gameTemp -= mod
-		} else if strings.Contains(windCategory, "Windy") {
-			mod := util.GenerateFloatFromRange(2, 5)
+		} else if cloud == "Overcast" {
+			mod := util.GenerateFloatFromRange(0, 3)
 			gameTemp -= mod
 		}
-
-		if game.Week < 11 {
-			// Summer Weather
-			if cloud == "Clear" {
-				mod := util.GenerateFloatFromRange(0, 3)
-				gameTemp += mod
-			} else if cloud == "Mostly Cloudy" {
-				mod := util.GenerateFloatFromRange(0, 3)
-				gameTemp -= mod
-			} else if cloud == "Overcast" {
-				mod := util.GenerateFloatFromRange(0, 3)
-				gameTemp -= mod
-			}
-		} else {
-			// IT'S FALL, BABY!
-			// Summer Weather
-			if cloud == "Clear" {
-				mod := util.GenerateFloatFromRange(0, 3)
-				gameTemp -= mod
-			} else if cloud == "Overcast" {
-				mod := util.GenerateFloatFromRange(0, 3)
-				gameTemp += mod
-			}
+	} else {
+		// IT'S FALL, BABY!
+		// Summer Weather
+		if cloud == "Clear" {
+			mod := util.GenerateFloatFromRange(0, 3)
+			gameTemp -= mod
+		} else if cloud == "Overcast" {
+			mod := util.GenerateFloatFromRange(0, 3)
+			gameTemp += mod
 		}
-
-		if strings.Contains(precip, "Rain") {
-			if gameTemp < 33 {
-				gameTemp = util.GenerateFloatFromRange(33, 35)
-			}
-		} else if strings.Contains(precip, "Mix") {
-			if gameTemp > 34 {
-				gameTemp = util.GenerateFloatFromRange(33, 35)
-			} else if gameTemp < 29 {
-				gameTemp = util.GenerateFloatFromRange(33, 35)
-			}
-		} else if strings.Contains(precip, "Snow") {
-			if gameTemp > 32 {
-				gameTemp = util.GenerateFloatFromRange(29, 32)
-			}
-		}
-
-		if gameTemp < lowTemp {
-			lowTemp = gameTemp
-		} else if gameTemp > highTemp {
-			highTemp = gameTemp
-		}
-
-		game.ApplyWeather(precip, lowTemp, highTemp, gameTemp, cloud, wind, windCategory, regionName)
-
-		db.Save(&game)
 	}
+
+	if strings.Contains(precip, "Rain") {
+		if gameTemp < 33 {
+			gameTemp = util.GenerateFloatFromRange(33, 35)
+		}
+	} else if strings.Contains(precip, "Mix") {
+		if gameTemp > 34 {
+			gameTemp = util.GenerateFloatFromRange(33, 35)
+		} else if gameTemp < 29 {
+			gameTemp = util.GenerateFloatFromRange(33, 35)
+		}
+	} else if strings.Contains(precip, "Snow") {
+		if gameTemp > 32 {
+			gameTemp = util.GenerateFloatFromRange(29, 32)
+		}
+	}
+
+	if gameTemp < lowTemp {
+		lowTemp = gameTemp
+	} else if gameTemp > highTemp {
+		highTemp = gameTemp
+	}
+
+	game.ApplyWeather(precip, lowTemp, highTemp, gameTemp, cloud, wind, windCategory, regionName)
+
+	db.Save(&game)
+}
+
+func GenerateWeatherForNFLGame(db *gorm.DB, game structs.NFLGame, teamRegions map[string]string, regions map[string]structs.WeatherRegion, rainForecasts map[float64]map[int]string, mixForecasts map[float64]map[int]string, snowForecasts map[float64]map[int]string) {
+	regionName := teamRegions[game.HomeTeam]
+	region := regions[regionName]
+	chances := []structs.WeatherChance{}
+
+	precip := ""
+	lowTemp := 0.0
+	highTemp := 0.0
+	gameTemp := 0.0
+	cloud := ""
+	wind := 0.0
+	windCategory := ""
+
+	if region.Forecasts[game.Week].DaysOfRain != 0 {
+		chances = append(chances, structs.WeatherChance{Weather: "Rain", DaysOfWeather: region.Forecasts[game.Week].DaysOfRain})
+	}
+
+	if region.Forecasts[game.Week].DaysOfMix != 0 {
+		chances = append(chances, structs.WeatherChance{Weather: "Mix", DaysOfWeather: region.Forecasts[game.Week].DaysOfMix})
+	}
+
+	if region.Forecasts[game.Week].DaysOfSnow != 0 {
+		chances = append(chances, structs.WeatherChance{Weather: "Snow", DaysOfWeather: region.Forecasts[game.Week].DaysOfSnow})
+	}
+
+	var prev float64 = 0.0
+
+	for _, chance := range chances {
+		chance.ApplyChances(prev)
+		prev = chance.DaysOfWeather
+	}
+
+	chances = append(chances, structs.WeatherChance{Weather: "Clear", DaysOfWeather: 30.0})
+
+	weatherRoll := util.GenerateFloatFromRange(0, 30)
+
+	for _, chance := range chances {
+		if weatherRoll > chance.DaysOfWeather {
+			continue
+		}
+		precip = chance.Weather
+		break
+	}
+
+	if precip == "Rain" {
+		inchesPerEvent := region.Forecasts[game.Week].InchesPerRain
+		for k := range rainForecasts {
+			if inchesPerEvent > k {
+				continue
+			}
+			roll := util.GenerateIntFromRange(1, 12)
+			precip = rainForecasts[k][roll]
+			break
+		}
+	} else if precip == "Mix" {
+		inchesPerEvent := region.Forecasts[game.Week].InchesPerRain
+		for k := range mixForecasts {
+			if inchesPerEvent > k {
+				continue
+			}
+			roll := util.GenerateIntFromRange(1, 12)
+			precip = rainForecasts[k][roll]
+			break
+		}
+	} else if precip == "Snow" {
+		inchesPerEvent := region.Forecasts[game.Week].InchesPerSnow
+		for k := range snowForecasts {
+			if inchesPerEvent > k {
+				continue
+			}
+			roll := util.GenerateIntFromRange(1, 12)
+			precip = rainForecasts[k][roll]
+			break
+		}
+	}
+
+	cloudChances := []structs.WeatherChance{}
+	if precip == "Clear" {
+		cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Clear", DaysOfWeather: region.Forecasts[game.Week].Clear})
+		cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Mostly Clear", DaysOfWeather: region.Forecasts[game.Week].MostlyClear})
+		cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Partly Cloudy", DaysOfWeather: region.Forecasts[game.Week].PartlyCloudy})
+	}
+	cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Mostly Cloudy", DaysOfWeather: region.Forecasts[game.Week].MostlyCloudy})
+	cloudChances = append(cloudChances, structs.WeatherChance{Weather: "Overcast", DaysOfWeather: region.Forecasts[game.Week].Overcast})
+
+	prev = 0
+	for _, chance := range cloudChances {
+		chance.ApplyChances(prev)
+		prev = chance.DaysOfWeather
+	}
+
+	roll := util.GenerateFloatFromRange(0, cloudChances[0].DaysOfWeather)
+	for _, chance := range cloudChances {
+		if roll > chance.DaysOfWeather {
+			continue
+		}
+		cloud = chance.Weather
+	}
+
+	meanWind := region.Forecasts[game.Week].WindSpeedAvg
+	maxWind := region.Forecasts[game.Week].WindSpeedMax
+	stdDev := (maxWind - meanWind) / 1.28
+	speed := rand.NormFloat64()*stdDev + meanWind
+
+	if strings.Contains(precip, "Light") {
+		roll = util.GenerateFloatFromRange(0, 3)
+		speed = speed + roll
+	} else if strings.Contains(precip, "Moderate") {
+		roll = util.GenerateFloatFromRange(1, 4)
+		speed = speed + roll
+	} else if strings.Contains(precip, "Heavy") {
+		roll = util.GenerateFloatFromRange(2, 5)
+		speed = speed + roll
+	}
+
+	if speed < 0 {
+		speed = 0
+	}
+	wind = speed
+
+	if speed < 4 {
+		windCategory = "Calm"
+	} else if speed < 10 {
+		windCategory = "Breezy"
+	} else if speed < 15 {
+		windCategory = "Slightly Windy"
+	} else if speed < 20 {
+		windCategory = "Windy"
+	} else {
+		windCategory = "Very Windy"
+	}
+
+	lowMean := float64(region.Forecasts[game.Week].AvgLow)
+	lowMin := float64(region.Forecasts[game.Week].MinLow)
+	lowStdDev := (lowMean - lowMin) / 1.28
+	lowTemp = rand.NormFloat64()*lowStdDev + lowMean
+
+	highMean := float64(region.Forecasts[game.Week].AvgHigh)
+	highMin := float64(region.Forecasts[game.Week].MinHigh)
+	highStdDev := (highMean - highMin) / 1.28
+	highTemp = rand.NormFloat64()*highStdDev + highMean
+
+	if lowTemp > highTemp {
+		tempo := lowTemp
+		lowTemp = highTemp
+		highTemp = tempo
+	}
+
+	if game.IsNightGame {
+		gameTemp = lowTemp
+	} else {
+		gameTemp = highTemp
+	}
+
+	if strings.Contains(windCategory, "Slight") {
+		mod := util.GenerateFloatFromRange(0, 3)
+		gameTemp += mod
+	} else if strings.Contains(windCategory, "Very") {
+		mod := util.GenerateFloatFromRange(0, 3)
+		gameTemp -= mod
+	} else if strings.Contains(windCategory, "Windy") {
+		mod := util.GenerateFloatFromRange(2, 5)
+		gameTemp -= mod
+	}
+
+	if game.Week < 11 {
+		// Summer Weather
+		if cloud == "Clear" {
+			mod := util.GenerateFloatFromRange(0, 3)
+			gameTemp += mod
+		} else if cloud == "Mostly Cloudy" {
+			mod := util.GenerateFloatFromRange(0, 3)
+			gameTemp -= mod
+		} else if cloud == "Overcast" {
+			mod := util.GenerateFloatFromRange(0, 3)
+			gameTemp -= mod
+		}
+	} else {
+		// IT'S FALL, BABY!
+		// Summer Weather
+		if cloud == "Clear" {
+			mod := util.GenerateFloatFromRange(0, 3)
+			gameTemp -= mod
+		} else if cloud == "Overcast" {
+			mod := util.GenerateFloatFromRange(0, 3)
+			gameTemp += mod
+		}
+	}
+
+	if strings.Contains(precip, "Rain") {
+		if gameTemp < 33 {
+			gameTemp = util.GenerateFloatFromRange(33, 35)
+		}
+	} else if strings.Contains(precip, "Mix") {
+		if gameTemp > 34 {
+			gameTemp = util.GenerateFloatFromRange(33, 35)
+		} else if gameTemp < 29 {
+			gameTemp = util.GenerateFloatFromRange(33, 35)
+		}
+	} else if strings.Contains(precip, "Snow") {
+		if gameTemp > 32 {
+			gameTemp = util.GenerateFloatFromRange(29, 32)
+		}
+	}
+
+	if gameTemp < lowTemp {
+		lowTemp = gameTemp
+	} else if gameTemp > highTemp {
+		highTemp = gameTemp
+	}
+
+	game.ApplyWeather(precip, lowTemp, highTemp, gameTemp, cloud, wind, windCategory, regionName)
+
+	db.Save(&game)
 }
 
 func getRegionalWeather() map[string]structs.WeatherRegion {

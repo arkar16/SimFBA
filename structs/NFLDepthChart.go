@@ -30,3 +30,8 @@ func (dcp *NFLDepthChartPosition) UpdateDepthChartPosition(dto NFLDepthChartPosi
 	dcp.LastName = dto.LastName
 	dcp.OriginalPosition = dto.OriginalPosition
 }
+
+// Update DepthChartPosition -- Updates the Player taking the position
+func (dcp *NFLDepthChartPosition) AssignID(id uint) {
+	dcp.ID = id
+}

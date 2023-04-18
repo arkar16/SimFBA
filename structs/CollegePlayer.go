@@ -23,6 +23,14 @@ type CollegePlayer struct {
 	SeasonStats   CollegePlayerSeasonStats `gorm:"foreignKey:CollegePlayerID"`
 }
 
+type ByOverall []CollegePlayer
+
+func (rp ByOverall) Len() int      { return len(rp) }
+func (rp ByOverall) Swap(i, j int) { rp[i], rp[j] = rp[j], rp[i] }
+func (rp ByOverall) Less(i, j int) bool {
+	return rp[i].Overall > rp[j].Overall
+}
+
 func (p *CollegePlayer) SetRedshirtingStatus() {
 	if !p.IsRedshirt && !p.IsRedshirting {
 		p.IsRedshirting = true

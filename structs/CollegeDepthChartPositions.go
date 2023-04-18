@@ -24,3 +24,8 @@ func (dcp *CollegeDepthChartPosition) UpdateDepthChartPosition(dto CollegeDepthC
 	dcp.LastName = dto.LastName
 	dcp.OriginalPosition = dto.OriginalPosition
 }
+
+// Update DepthChartPosition -- Updates the Player taking the position
+func (dcp *CollegeDepthChartPosition) AssignID(id uint) {
+	dcp.ID = id
+}

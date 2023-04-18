@@ -132,3 +132,15 @@ func UpdateNFLDepthChart(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println("Updated Depth Chart for Team " + strconv.Itoa(updateDepthChartDto.DepthChartID))
 }
+
+// UpdateCollegeAIDepthCharts
+func UpdateCollegeAIDepthCharts(w http.ResponseWriter, r *http.Request) {
+	managers.UpdateCollegeAIDepthCharts()
+	json.NewEncoder(w).Encode("Updated all CFB Depth Charts")
+}
+
+// UpdateCollegeAIDepthCharts
+func UpdateNFLAIDepthCharts(w http.ResponseWriter, r *http.Request) {
+	managers.UpdateNFLAIDepthCharts()
+	json.NewEncoder(w).Encode("Updated all NFL Depth Charts")
+}

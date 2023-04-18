@@ -79,12 +79,14 @@ func handleRequests() {
 	myRouter.HandleFunc("/gameplan/college/team/{teamID}/", controller.GetTeamGameplanByTeamID).Methods("GET")
 	myRouter.HandleFunc("/gameplan/college/updategameplan", controller.UpdateGameplan).Methods("POST")
 	myRouter.HandleFunc("/gameplan/college/depthchart/{teamID}/", controller.GetTeamDepthchartByTeamID).Methods("GET")
+	myRouter.HandleFunc("/gameplan/college/depthchart/ai/update/", controller.UpdateCollegeAIDepthCharts).Methods("GET")
 	myRouter.HandleFunc("/gameplan/college/depthchart/positions/{depthChartID}/", controller.GetDepthChartPositionsByDepthChartID).Methods("GET")
 	myRouter.HandleFunc("/gameplan/college/updatedepthchart", controller.UpdateDepthChart).Methods("PUT")
 	myRouter.HandleFunc("/gameplan/nfl/team/{teamID}/", controller.GetNFLGameplanByTeamID).Methods("GET")
 	myRouter.HandleFunc("/gameplan/nfl/updategameplan", controller.UpdateNFLGameplan).Methods("POST")
 	myRouter.HandleFunc("/gameplan/nfl/depthchart/{teamID}/", controller.GetNFLDepthChart).Methods("GET")
 	myRouter.HandleFunc("/gameplan/nfl/updatedepthchart", controller.UpdateNFLDepthChart).Methods("POST")
+	myRouter.HandleFunc("/gameplan/nfl/depthchart/ai/update/", controller.UpdateNFLAIDepthCharts).Methods("GET")
 
 	// Generation Controls
 	// myRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")

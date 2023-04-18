@@ -29,8 +29,10 @@ type NFLPlayer struct {
 	DraftedTeam       string
 	DraftedRound      uint
 	DraftedPick       uint
-	Contract          NFLContract       `gorm:"foreignKey:NFLPlayerID"`
-	Offers            []FreeAgencyOffer `gorm:"foreignKey:NFLPlayerID"`
+	Stats             []NFLPlayerStats     `gorm:"foreignKey:NFLPlayerID"`
+	SeasonStats       NFLPlayerSeasonStats `gorm:"foreignKey:NFLPlayerID"`
+	Contract          NFLContract          `gorm:"foreignKey:NFLPlayerID"`
+	Offers            []FreeAgencyOffer    `gorm:"foreignKey:NFLPlayerID"`
 }
 
 // Sorting Funcs
@@ -91,9 +93,12 @@ func (np *NFLPlayer) RemoveFromTradeBlock() {
 }
 
 func (np *NFLPlayer) WaivePlayer() {
+	np.PreviousTeamID = uint(np.TeamID)
+	np.PreviousTeam = np.TeamAbbr
 	np.TeamID = 0
 	np.TeamAbbr = ""
 	np.IsWaived = true
+	np.RemoveFromTradeBlock()
 }
 
 func (np *NFLPlayer) ConvertWaivedPlayerToFA() {

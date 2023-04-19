@@ -61,6 +61,16 @@ func GetNFLGamesByTeamIdAndSeasonId(TeamID string, SeasonID string) []structs.NF
 	return games
 }
 
+func GetNFLGamesByWeekAndSeasonID(WeekID string, SeasonID string) []structs.NFLGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	var games []structs.NFLGame
+
+	db.Order("time_slot asc").Where("week_id = ? and season_id = ?", WeekID, SeasonID).Find(&games)
+
+	return games
+}
+
 func GetNFLGamesBySeasonID(SeasonID string) []structs.NFLGame {
 	db := dbprovider.GetInstance().GetDB()
 

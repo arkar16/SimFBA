@@ -120,3 +120,8 @@ func UpdateTimeslot(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(g2)
 	}
 }
+
+func GetWeatherForecast(w http.ResponseWriter, r *http.Request) {
+	res := managers.GetCurrentWeekWeather()
+	json.NewEncoder(w).Encode(res)
+}

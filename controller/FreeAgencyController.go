@@ -51,3 +51,31 @@ func SetWaiverOrderForNFLTeams(w http.ResponseWriter, r *http.Request) {
 	managers.SetWaiverOrder()
 	json.NewEncoder(w).Encode("Waiver Order Set")
 }
+
+// CreateWaiverWireOffer
+func CreateWaiverWireOffer(w http.ResponseWriter, r *http.Request) {
+	var waiverWireOfferDTO structs.NFLWaiverOffDTO
+	err := json.NewDecoder(r.Body).Decode(&waiverWireOfferDTO)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var offer = managers.CreateWaiverOffer(waiverWireOfferDTO)
+
+	json.NewEncoder(w).Encode(offer)
+}
+
+// CancelWaiverWireOffer
+func CancelWaiverWireOffer(w http.ResponseWriter, r *http.Request) {
+	var waiverWireOfferDTO structs.NFLWaiverOffDTO
+	err := json.NewDecoder(r.Body).Decode(&waiverWireOfferDTO)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.CancelWaiverOffer(waiverWireOfferDTO)
+
+	json.NewEncoder(w).Encode(true)
+}

@@ -11,6 +11,7 @@ import (
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
+	"github.com/jinzhu/gorm"
 )
 
 func ImportRecruitAICSV() {
@@ -422,5 +423,64 @@ func ImportTradePreferences() {
 		}
 
 		db.Create(&pref)
+	}
+}
+
+func Import2023DraftedPlayers() {
+	db := dbprovider.GetInstance().GetDB()
+
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023DraftList.csv"
+
+	nflCSV := util.ReadCSV(path)
+
+	nflTeams := GetAllNFLTeams()
+	teamMap := make(map[string]uint)
+
+	for _, team := range nflTeams {
+		teamMap[team.TeamAbbr] = team.ID
+	}
+
+	for idx, draftee := range nflCSV {
+		if idx == 0 {
+			continue
+		}
+
+		team := draftee[0]
+		teamID := teamMap[team]
+		playerID := draftee[4]
+		round := draftee[1]
+		pickNumber := draftee[2]
+
+		draftRecord := GetNFLDrafteeByPlayerID(playerID)
+
+		nflPlayerRecord := structs.NFLPlayer{
+			Model: gorm.Model{
+				ID: draftRecord.ID,
+			},
+			BasePlayer:        draftRecord.BasePlayer,
+			PlayerID:          int(draftRecord.ID),
+			TeamID:            int(teamID),
+			College:           draftRecord.College,
+			TeamAbbr:          team,
+			Experience:        1,
+			HighSchool:        draftRecord.HighSchool,
+			Hometown:          draftRecord.City,
+			State:             draftRecord.State,
+			IsActive:          true,
+			IsPracticeSquad:   false,
+			IsFreeAgent:       false,
+			IsWaived:          false,
+			IsOnTradeBlock:    false,
+			IsAcceptingOffers: false,
+			IsNegotiating:     false,
+			DraftedTeamID:     teamID,
+			DraftedTeam:       team,
+			DraftedRound:      uint(util.ConvertStringToInt(round)),
+			DraftedPick:       uint(util.ConvertStringToInt(pickNumber)),
+			ShowLetterGrade:   true,
+		}
+
+		db.Create(&nflPlayerRecord)
+		db.Delete(&draftRecord)
 	}
 }

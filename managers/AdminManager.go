@@ -3,6 +3,7 @@ package managers
 import (
 	"fmt"
 	"log"
+	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/structs"
@@ -37,6 +38,8 @@ func MoveUpWeek() structs.Timestamp {
 		// Sync to Next Week
 		UpdateStandings(timestamp)
 		UpdateGameplanPenalties()
+		RecoverPlayers()
+		CheckNFLRookiesForLetterGrade(strconv.Itoa(int(timestamp.NFLSeasonID)))
 		timestamp.SyncToNextWeek()
 		db.Save(&timestamp)
 	}

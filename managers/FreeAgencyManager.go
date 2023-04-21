@@ -420,7 +420,7 @@ func CreateWaiverOffer(offer structs.NFLWaiverOffDTO) structs.NFLWaiverOffer {
 	return waiverOffer
 }
 
-func CancelWaiverOffer(offer structs.FreeAgencyOfferDTO) {
+func CancelWaiverOffer(offer structs.NFLWaiverOffDTO) {
 	db := dbprovider.GetInstance().GetDB()
 
 	OfferID := strconv.Itoa(int(offer.ID))

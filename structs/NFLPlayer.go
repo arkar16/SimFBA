@@ -33,6 +33,7 @@ type NFLPlayer struct {
 	SeasonStats       NFLPlayerSeasonStats `gorm:"foreignKey:NFLPlayerID"`
 	Contract          NFLContract          `gorm:"foreignKey:NFLPlayerID"`
 	Offers            []FreeAgencyOffer    `gorm:"foreignKey:NFLPlayerID"`
+	WaiverOffers      []NFLWaiverOffer     `gorm:"foreignKey:NFLPlayerID"`
 }
 
 // Sorting Funcs
@@ -74,6 +75,7 @@ func (np *NFLPlayer) ToggleIsFreeAgent() {
 
 func (np *NFLPlayer) SignPlayer(TeamID int, Abbr string) {
 	np.IsFreeAgent = false
+	np.IsWaived = false
 	np.TeamID = TeamID
 	np.TeamAbbr = Abbr
 	np.IsAcceptingOffers = false

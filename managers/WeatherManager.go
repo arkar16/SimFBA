@@ -491,6 +491,11 @@ func GetCurrentWeekWeather() []structs.GameResponse {
 	nflGames := GetNFLGamesByWeekAndSeasonID(nflWeekID, nflSeasonID)
 
 	for _, cg := range collegeGames {
+		homeTeamStandings := GetStandingsByTeamIDAndSeasonID(strconv.Itoa(int(cg.HomeTeamID)), seasonID)
+		awayTeamStandings := GetStandingsByTeamIDAndSeasonID(strconv.Itoa(int(cg.AwayTeamID)), seasonID)
+		htRecord := strconv.Itoa(homeTeamStandings.TotalWins) + "-" + strconv.Itoa(homeTeamStandings.TotalLosses)
+		atRecord := strconv.Itoa(awayTeamStandings.TotalWins) + "-" + strconv.Itoa(awayTeamStandings.TotalLosses)
+
 		gr := structs.GameResponse{
 			GameID:                   cg.ID,
 			WeekID:                   cg.WeekID,
@@ -499,9 +504,11 @@ func GetCurrentWeekWeather() []structs.GameResponse {
 			HomeTeamID:               cg.HomeTeamID,
 			HomeTeam:                 cg.HomeTeam,
 			HomeTeamCoach:            cg.HomeTeamCoach,
+			HomeTeamRecord:           htRecord,
 			AwayTeamID:               cg.AwayTeamID,
 			AwayTeam:                 cg.AwayTeam,
 			AwayTeamCoach:            cg.AwayTeamCoach,
+			AwayTeamRecord:           atRecord,
 			TimeSlot:                 cg.TimeSlot,
 			StadiumID:                cg.StadiumID,
 			Stadium:                  cg.Stadium,
@@ -533,6 +540,11 @@ func GetCurrentWeekWeather() []structs.GameResponse {
 	}
 
 	for _, nflG := range nflGames {
+		homeTeamStandings := GetNFLStandingsByTeamIDAndSeasonID(strconv.Itoa(int(nflG.HomeTeamID)), seasonID)
+		awayTeamStandings := GetNFLStandingsByTeamIDAndSeasonID(strconv.Itoa(int(nflG.AwayTeamID)), seasonID)
+		htRecord := strconv.Itoa(homeTeamStandings.TotalWins) + "-" + strconv.Itoa(homeTeamStandings.TotalLosses)
+		atRecord := strconv.Itoa(awayTeamStandings.TotalWins) + "-" + strconv.Itoa(awayTeamStandings.TotalLosses)
+
 		gr := structs.GameResponse{
 			GameID:                   nflG.ID,
 			WeekID:                   nflG.WeekID,
@@ -541,9 +553,11 @@ func GetCurrentWeekWeather() []structs.GameResponse {
 			HomeTeamID:               nflG.HomeTeamID,
 			HomeTeam:                 nflG.HomeTeam,
 			HomeTeamCoach:            nflG.HomeTeamCoach,
+			HomeTeamRecord:           htRecord,
 			AwayTeamID:               nflG.AwayTeamID,
 			AwayTeam:                 nflG.AwayTeam,
 			AwayTeamCoach:            nflG.AwayTeamCoach,
+			AwayTeamRecord:           atRecord,
 			TimeSlot:                 nflG.TimeSlot,
 			StadiumID:                nflG.StadiumID,
 			Stadium:                  nflG.Stadium,

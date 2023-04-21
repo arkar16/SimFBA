@@ -46,3 +46,8 @@ func CancelFreeAgencyOffer(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(true)
 }
+
+func SetWaiverOrderForNFLTeams(w http.ResponseWriter, r *http.Request) {
+	managers.SetWaiverOrder()
+	json.NewEncoder(w).Encode("Waiver Order Set")
+}

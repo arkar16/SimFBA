@@ -402,7 +402,9 @@ func GetNFLPlayersWithContractsByTeamID(TeamID string) []structs.NFLPlayer {
 
 	var players []structs.NFLPlayer
 
-	db.Preload("Contract").Where("team_id = ?", TeamID).Find(&players)
+	db.Preload("Contract", func(db *gorm.DB) *gorm.DB {
+		return db.Where("is_active = true")
+	}).Where("team_id = ?", TeamID).Find(&players)
 
 	return players
 }

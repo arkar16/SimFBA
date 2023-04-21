@@ -66,6 +66,8 @@ func handleRequests() {
 	// Free Agency Controls
 	myRouter.HandleFunc("/nfl/freeagency/create/offer", controller.CreateFreeAgencyOffer).Methods("POST")
 	myRouter.HandleFunc("/nfl/freeagency/cancel/offer", controller.CancelFreeAgencyOffer).Methods("POST")
+	myRouter.HandleFunc("/nfl/waiverwire/create/offer", controller.CreateWaiverWireOffer).Methods("POST")
+	myRouter.HandleFunc("/nfl/waiverwire/cancel/offer", controller.CancelWaiverWireOffer).Methods("POST")
 	myRouter.HandleFunc("/nfl/freeagency/waiver/order/set", controller.SetWaiverOrderForNFLTeams).Methods("GET")
 
 	// Game Controls
@@ -95,7 +97,7 @@ func handleRequests() {
 
 	// Import Controls
 	// myRouter.HandleFunc("/admin/import/recruit/ai", controller.ImportRecruitAICSV).Methods("GET")
-	// myRouter.HandleFunc("/admin/import/nfl/players", controller.ImportFAPreferences).Methods("GET")
+	// myRouter.HandleFunc("/admin/import/nfl/draft", controller.Import2023DraftedPlayers).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/missing/recruits", controller.GetMissingRecruitingClasses).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/preferences", controller.ImportTradePreferences).Methods("GET")
 	// myRouter.HandleFunc("/import/custom/croots", controller.ImportCustomCroots).Methods("GET")

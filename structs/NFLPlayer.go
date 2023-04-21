@@ -29,6 +29,7 @@ type NFLPlayer struct {
 	DraftedTeam       string
 	DraftedRound      uint
 	DraftedPick       uint
+	ShowLetterGrade   bool
 	Stats             []NFLPlayerStats     `gorm:"foreignKey:NFLPlayerID"`
 	SeasonStats       NFLPlayerSeasonStats `gorm:"foreignKey:NFLPlayerID"`
 	Contract          NFLContract          `gorm:"foreignKey:NFLPlayerID"`
@@ -60,6 +61,10 @@ func (np *NFLPlayer) AssignMissingValues(pr int, aca string, fa string, per stri
 
 func (np *NFLPlayer) AssignMinimumValue(val float64) {
 	np.MinimumValue = val
+}
+
+func (np *NFLPlayer) ShowRealAttributeValue() {
+	np.ShowLetterGrade = false
 }
 
 func (np *NFLPlayer) ToggleIsFreeAgent() {

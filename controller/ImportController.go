@@ -34,6 +34,10 @@ func ImportTradePreferences(w http.ResponseWriter, r *http.Request) {
 	managers.ImportTradePreferences()
 }
 
+func Import2023DraftedPlayers(w http.ResponseWriter, r *http.Request) {
+	managers.Import2023DraftedPlayers()
+}
+
 func GetMissingRecruitingClasses(w http.ResponseWriter, r *http.Request) {
 	managers.GetMissingRecruitingClasses()
 }

@@ -4,17 +4,22 @@ import "github.com/jinzhu/gorm"
 
 type NFLUser struct {
 	gorm.Model
-	Username         string
-	TeamID           uint
-	TeamAbbreviation string
-	IsOwner          bool
-	IsManager        bool
-	IsHeadCoach      bool
-	IsAssistant      bool
-	TotalWins        uint
-	TotalLosses      uint
-	TotalTies        uint
-	IsActive         bool
+	Username                string
+	TeamID                  uint
+	TeamAbbreviation        string
+	IsOwner                 bool
+	IsManager               bool
+	IsHeadCoach             bool
+	IsAssistant             bool
+	TotalWins               uint
+	TotalLosses             uint
+	TotalTies               uint
+	ConferenceChampionships uint
+	PlayoffWins             uint
+	PlayoffLosses           uint
+	SuperBowls              uint
+	SuperBowlLosses         uint
+	IsActive                bool
 }
 
 func (u *NFLUser) SetTeam(r NFLRequest) {
@@ -67,5 +72,30 @@ func (u *NFLUser) RemoveAssistantPosition() {
 	if !u.IsManager && !u.IsOwner && !u.IsHeadCoach {
 		u.TeamID = 0
 		u.TeamAbbreviation = ""
+	}
+}
+
+func (nu *NFLUser) UpdateCoachRecord(game NFLGame) {
+	isAway := game.AwayTeamCoach == nu.Username
+	winner := (!isAway && game.HomeTeamWin) || (isAway && game.AwayTeamWin)
+	if winner {
+		nu.TotalWins += 1
+		if game.IsConferenceChampionship {
+			nu.ConferenceChampionships += 1
+		}
+		if game.IsPlayoffGame {
+			nu.PlayoffWins += 1
+		}
+		if game.IsSuperBowl {
+			nu.SuperBowls += 1
+		}
+	} else {
+		nu.TotalLosses += 1
+		if game.IsSuperBowl {
+			nu.SuperBowlLosses += 1
+		}
+		if game.IsPlayoffGame {
+			nu.PlayoffLosses += 1
+		}
 	}
 }

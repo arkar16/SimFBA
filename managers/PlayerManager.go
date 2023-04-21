@@ -44,6 +44,18 @@ func GetAllNFLPlayers() []structs.NFLPlayer {
 	return nflPlayers
 }
 
+func GetAllNFLPlayersWithCurrentSeasonStats(seasonID string) []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var nflPlayers []structs.NFLPlayer
+
+	db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ?", seasonID)
+	}).Find(&nflPlayers)
+
+	return nflPlayers
+}
+
 func GetAllUnsignedPlayers() []structs.UnsignedPlayer {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -176,6 +188,16 @@ func GetAllNFLDraftees() []structs.NFLDraftee {
 	db.Order("overall desc").Find(&NFLDraftees)
 
 	return NFLDraftees
+}
+
+func GetNFLDrafteeByPlayerID(PlayerID string) structs.NFLDraftee {
+	db := dbprovider.GetInstance().GetDB()
+
+	var player structs.NFLDraftee
+
+	db.Where("id = ?", PlayerID).Find(&player)
+
+	return player
 }
 
 func GetAllCollegePlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]string, seasonID string) []models.CollegePlayerResponse {
@@ -438,4 +460,48 @@ func GetNFLRosterForSimulation(TeamID string) []structs.NFLPlayer {
 	db.Where("team_id = ? AND is_practice_squad = ?", TeamID, false).Find(&players)
 
 	return players
+}
+
+func RecoverPlayers() {
+	db := dbprovider.GetInstance().GetDB()
+
+	collegePlayers := GetAllCollegePlayers()
+
+	for _, p := range collegePlayers {
+		if !p.IsInjured {
+			continue
+		}
+
+		p.RecoveryCheck()
+		db.Save(&p)
+	}
+
+	nflPlayers := GetAllNFLPlayers()
+
+	for _, p := range nflPlayers {
+		if !p.IsInjured {
+			continue
+		}
+
+		p.RecoveryCheck()
+		db.Save(&p)
+	}
+}
+
+func CheckNFLRookiesForLetterGrade(seasonID string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	nflPlayers := GetAllNFLPlayersWithCurrentSeasonStats(seasonID)
+
+	for _, p := range nflPlayers {
+		if !p.ShowLetterGrade {
+			continue
+		}
+
+		seasonStats := p.SeasonStats
+		if seasonStats.Snaps >= 250 {
+			p.ShowRealAttributeValue()
+			db.Save(&p)
+		}
+	}
 }

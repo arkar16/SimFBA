@@ -196,6 +196,47 @@ func UpdateStandings(ts structs.Timestamp) {
 			}
 		}
 	}
+
+	nflGames := GetNFLGamesByWeekAndSeasonID(strconv.Itoa(ts.NFLWeekID), strconv.Itoa(ts.NFLSeasonID))
+	for _, n := range nflGames {
+		HomeID := n.HomeTeamID
+		AwayID := n.AwayTeamID
+
+		homeStandings := GetNFLStandingsByTeamIDAndSeasonID(strconv.Itoa(HomeID), strconv.Itoa(ts.NFLSeasonID))
+		awayStandings := GetNFLStandingsByTeamIDAndSeasonID(strconv.Itoa(AwayID), strconv.Itoa(ts.NFLSeasonID))
+
+		homeStandings.UpdateNFLStandings(n)
+		awayStandings.UpdateNFLStandings(n)
+
+		err := db.Save(&homeStandings).Error
+		if err != nil {
+			log.Panicln("Could not save standings for team " + strconv.Itoa(HomeID))
+		}
+
+		err = db.Save(&awayStandings).Error
+		if err != nil {
+			log.Panicln("Could not save standings for team " + strconv.Itoa(AwayID))
+		}
+
+		if n.HomeTeamCoach != "AI" {
+			homeCoach := GetNFLUserByUsername(n.HomeTeamCoach)
+			homeCoach.UpdateCoachRecord(n)
+
+			err = db.Save(&homeCoach).Error
+			if err != nil {
+				log.Panicln("Could not save coach record for team " + strconv.Itoa(HomeID))
+			}
+		}
+
+		if n.AwayTeamCoach != "AI" {
+			awayCoach := GetNFLUserByUsername(n.AwayTeamCoach)
+			awayCoach.UpdateCoachRecord(n)
+			err = db.Save(&awayCoach).Error
+			if err != nil {
+				log.Panicln("Could not save coach record for team " + strconv.Itoa(AwayID))
+			}
+		}
+	}
 }
 
 func GetAllConferenceStandingsBySeasonID(seasonID string) []structs.CollegeStandings {

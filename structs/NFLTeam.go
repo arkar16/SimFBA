@@ -17,6 +17,7 @@ type NFLTeam struct {
 	NFLGMName        string
 	NFLAssistantID   uint
 	NFLAssistantName string
+	WaiverOrder      uint
 	Capsheet         NFLCapsheet          `gorm:"foreignKey:NFLTeamID"`
 	Contracts        []NFLContract        `gorm:"foreignKey:TeamID"`
 	DraftPicks       []NFLDraftPick       `gorm:"foreignKey:TeamID"`
@@ -24,6 +25,7 @@ type NFLTeam struct {
 	TeamSeasonStats  []NFLTeamSeasonStats `gorm:"foreignKey:TeamID"`
 	TeamDepthChart   NFLDepthChart        `gorm:"foreignKey:TeamID"`
 	TeamGameplan     NFLGameplan          `gorm:"foreignKey:TeamID"`
+	Standings        []NFLStandings       `gorm:"foreignKey:TeamID"`
 
 	// Offers           []FreeAgencyOffer `gorm:"foreignKey:TeamID"`
 	// NFLCoach     NFLUser        `gorm:"foreignKey:TeamID"`
@@ -67,4 +69,8 @@ func (t *NFLTeam) RemoveNFLUserFromTeam(r NFLRequest, u NFLUser) {
 		t.NFLAssistantID = 0
 		t.NFLAssistantName = ""
 	}
+}
+
+func (t *NFLTeam) AssignWaiverOrder(val uint) {
+	t.WaiverOrder = val
 }

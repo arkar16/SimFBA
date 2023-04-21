@@ -23,9 +23,19 @@ func GetAllFreeAgents() []structs.NFLPlayer {
 	return fas
 }
 
+func GetAllWaiverWirePlayers() []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	fas := []structs.NFLPlayer{}
+
+	db.Where("is_waived = ?", true).Find(&fas)
+
+	return fas
+}
+
 func GetAllAvailableNFLPlayers(TeamID string) models.FreeAgencyResponse {
 	FAs := GetAllFreeAgentsWithOffers()
-	WaiverPlayers := GetAllWaiverWirePlayers()
+	WaiverPlayers := GetAllWaiverWirePlayersFAPage()
 	Offers := GetFreeAgentOffersByTeamID(TeamID)
 
 	return models.FreeAgencyResponse{
@@ -48,12 +58,16 @@ func GetAllFreeAgentsWithOffers() []structs.NFLPlayer {
 	return fas
 }
 
-func GetAllWaiverWirePlayers() []structs.NFLPlayer {
+func GetAllWaiverWirePlayersFAPage() []structs.NFLPlayer {
 	db := dbprovider.GetInstance().GetDB()
 
 	WaivedPlayers := []structs.NFLPlayer{}
 
-	db.Where("is_waived = ?", true).Find(&WaivedPlayers)
+	db.Preload("WaiverOffers", func(db *gorm.DB) *gorm.DB {
+		return db.Order("waiver_order asc").Where("is_active = true")
+	}).Preload("Contract", func(db *gorm.DB) *gorm.DB {
+		return db.Where("is_active = true")
+	}).Where("is_waived = ?", true).Find(&WaivedPlayers)
 
 	return WaivedPlayers
 }
@@ -103,7 +117,7 @@ func CreateFAOffer(offer structs.FreeAgencyOfferDTO) structs.FreeAgencyOffer {
 	freeAgentOffer := GetFreeAgentOfferByOfferID(strconv.Itoa(int(offer.ID)))
 
 	if freeAgentOffer.ID == 0 {
-		id := GetLatestOfferInDB(db)
+		id := GetLatestFreeAgentOfferInDB(db)
 		freeAgentOffer.AssignID(id)
 	}
 
@@ -236,11 +250,56 @@ func SyncFreeAgencyOffers() {
 		}
 	}
 
+	WaiverWirePlayers := GetAllWaiverWirePlayers()
+
+	for _, w := range WaiverWirePlayers {
+		if len(w.WaiverOffers) == 0 {
+			// Deactivate Contract, convert to Free Agent
+			w.ConvertWaivedPlayerToFA()
+			contract := GetContractByPlayerID(strconv.Itoa(int(w.ID)))
+			contract.DeactivateContract()
+			db.Save(&contract)
+		} else {
+			offers := GetWaiverOffersByPlayerID(strconv.Itoa(int(w.ID)))
+			winningOffer := offers[0]
+			w.SignPlayer(int(winningOffer.TeamID), winningOffer.Team)
+
+			message := w.Position + " " + w.FirstName + " " + w.LastName + " was picked up on the Waiver Wire by " + winningOffer.Team
+			newsLog := structs.NewsLog{
+				WeekID:      ts.NFLWeekID,
+				SeasonID:    ts.NFLSeasonID,
+				MessageType: "Free Agency",
+				Message:     message,
+				League:      "NFL",
+			}
+
+			db.Create(&newsLog)
+
+			// Recalibrate winning team's remaining offers
+			teamOffers := GetWaiverOffersByTeamID(strconv.Itoa(int(winningOffer.TeamID)))
+			team := GetNFLTeamByTeamID(strconv.Itoa(int(winningOffer.TeamID)))
+
+			team.AssignWaiverOrder(team.WaiverOrder + 32)
+			db.Save(&team)
+
+			for _, o := range teamOffers {
+				o.AssignNewWaiverOrder(team.WaiverOrder + 32)
+				db.Save(&o)
+			}
+
+			// Delete current waiver offers
+			for _, o := range offers {
+				db.Delete(&o)
+			}
+		}
+		db.Save(&w)
+	}
+
 	ts.ToggleFALock()
 	db.Save(&ts)
 }
 
-func GetLatestOfferInDB(db *gorm.DB) uint {
+func GetLatestFreeAgentOfferInDB(db *gorm.DB) uint {
 	var latestOffer structs.FreeAgencyOffer
 
 	err := db.Last(&latestOffer).Error
@@ -252,4 +311,121 @@ func GetLatestOfferInDB(db *gorm.DB) uint {
 	}
 
 	return latestOffer.ID + 1
+}
+
+func GetLatestWaiverOfferInDB(db *gorm.DB) uint {
+	var latestOffer structs.NFLWaiverOffer
+
+	err := db.Last(&latestOffer).Error
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return 1
+		}
+		log.Fatalln("ERROR! Could not find latest record" + err.Error())
+	}
+
+	return latestOffer.ID + 1
+}
+
+func SetWaiverOrder() {
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
+
+	nflTeams := GetAllNFLTeams()
+
+	teamMap := make(map[uint]*structs.NFLTeam)
+
+	for i := 0; i < len(nflTeams); i++ {
+		teamMap[nflTeams[i].ID] = &nflTeams[i]
+	}
+
+	var nflStandings []structs.NFLStandings
+
+	if ts.IsNFLOffSeason || ts.NFLWeek < 3 {
+		nflStandings = GetNFLStandingsBySeasonID(strconv.Itoa(int(ts.NFLSeasonID - 1)))
+	} else {
+		nflStandings = GetNFLStandingsBySeasonID(strconv.Itoa(int(ts.NFLSeasonID)))
+	}
+
+	for idx, ns := range nflStandings {
+		rank := len(nflStandings) - idx
+		teamMap[ns.TeamID].AssignWaiverOrder(uint(rank))
+	}
+
+	for _, t := range nflTeams {
+		db.Save(&t)
+	}
+}
+
+func GetWaiverOfferByOfferID(OfferID string) structs.NFLWaiverOffer {
+	db := dbprovider.GetInstance().GetDB()
+
+	offer := structs.NFLWaiverOffer{}
+
+	err := db.Where("id = ?", OfferID).Find(&offer).Error
+	if err != nil {
+		return offer
+	}
+
+	return offer
+}
+
+func GetWaiverOffersByPlayerID(playerID string) []structs.NFLWaiverOffer {
+	db := dbprovider.GetInstance().GetDB()
+
+	offers := []structs.NFLWaiverOffer{}
+
+	err := db.Where("nfl_player_id = ?", playerID).Find(&offers).Error
+	if err != nil {
+		return offers
+	}
+
+	return offers
+}
+
+func GetWaiverOffersByTeamID(teamID string) []structs.NFLWaiverOffer {
+	db := dbprovider.GetInstance().GetDB()
+
+	offers := []structs.NFLWaiverOffer{}
+
+	err := db.Where("team_id = ?", teamID).Find(&offers).Error
+	if err != nil {
+		return offers
+	}
+
+	return offers
+}
+
+func CreateWaiverOffer(offer structs.NFLWaiverOffDTO) structs.NFLWaiverOffer {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+	waiverOffer := GetWaiverOfferByOfferID(strconv.Itoa(int(offer.ID)))
+
+	if waiverOffer.ID == 0 {
+		id := GetLatestFreeAgentOfferInDB(db)
+		waiverOffer.AssignID(id)
+	}
+
+	if ts.IsFreeAgencyLocked {
+		return waiverOffer
+	}
+
+	waiverOffer.Map(offer)
+
+	db.Save(&waiverOffer)
+
+	fmt.Println("Creating offer!")
+
+	return waiverOffer
+}
+
+func CancelWaiverOffer(offer structs.FreeAgencyOfferDTO) {
+	db := dbprovider.GetInstance().GetDB()
+
+	OfferID := strconv.Itoa(int(offer.ID))
+
+	waiverOffer := GetWaiverOfferByOfferID(OfferID)
+
+	db.Delete(&waiverOffer)
 }

@@ -227,6 +227,14 @@ func ConvertStringToFloat(num string) float64 {
 	return floatNum
 }
 
+// Reads specific CSV values as Boolean. If the value is "0" or "FALSE" or "False", it will be read as false. Anything else is considered True.
+func ConvertStringToBool(str string) bool {
+	if str == "0" || str == "FALSE" || str == "False" {
+		return false
+	}
+	return true
+}
+
 func IsAITeamContendingForCroot(profiles []structs.RecruitPlayerProfile) float64 {
 	if len(profiles) == 0 {
 		return 0

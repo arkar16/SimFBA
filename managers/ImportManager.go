@@ -447,9 +447,9 @@ func Import2023DraftedPlayers() {
 
 		team := draftee[0]
 		teamID := teamMap[team]
-		playerID := draftee[4]
-		round := draftee[1]
-		pickNumber := draftee[2]
+		playerID := draftee[3]
+		round := util.ConvertStringToInt(draftee[1])
+		pickNumber := util.ConvertStringToInt(draftee[2])
 
 		draftRecord := GetNFLDrafteeByPlayerID(playerID)
 
@@ -475,12 +475,182 @@ func Import2023DraftedPlayers() {
 			IsNegotiating:     false,
 			DraftedTeamID:     teamID,
 			DraftedTeam:       team,
-			DraftedRound:      uint(util.ConvertStringToInt(round)),
-			DraftedPick:       uint(util.ConvertStringToInt(pickNumber)),
+			DraftedRound:      uint(round),
+			DraftedPick:       uint(pickNumber),
 			ShowLetterGrade:   true,
 		}
 
+		baseSalaryByYear := getBaseSalaryByYear(round, pickNumber)
+		bonusByYear := getBonusByYear(round, pickNumber)
+
+		contract := structs.NFLContract{
+			PlayerID:       int(draftRecord.ID),
+			NFLPlayerID:    int(draftRecord.ID),
+			TeamID:         teamID,
+			Team:           team,
+			OriginalTeamID: teamID,
+			OriginalTeam:   team,
+			ContractLength: 4,
+			Y1BaseSalary:   baseSalaryByYear,
+			Y2BaseSalary:   baseSalaryByYear,
+			Y3BaseSalary:   baseSalaryByYear,
+			Y4BaseSalary:   baseSalaryByYear,
+			Y1Bonus:        bonusByYear,
+			Y2Bonus:        bonusByYear,
+			Y3Bonus:        bonusByYear,
+			Y4Bonus:        bonusByYear,
+			ContractType:   "Rookie",
+			IsActive:       true,
+		}
+
+		contract.CalculateContract()
+
+		db.Create(&contract)
 		db.Create(&nflPlayerRecord)
 		db.Delete(&draftRecord)
 	}
+}
+
+func ImportCFBGames() {
+	db := dbprovider.GetInstance().GetDB()
+
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023_CFB_Games.csv"
+
+	gamesCSV := util.ReadCSV(path)
+
+	teamMap := make(map[string]structs.CollegeTeam)
+
+	allCollegeTeams := GetAllCollegeTeams()
+
+	for _, t := range allCollegeTeams {
+		teamMap[t.TeamAbbr] = t
+	}
+
+	for idx, row := range gamesCSV {
+		if idx == 0 {
+			continue
+		}
+
+		gameID := util.ConvertStringToInt(row[0])
+		season := util.ConvertStringToInt(row[1])
+		seasonID := season - 2020
+		week := util.ConvertStringToInt(row[2])
+		weekID := week + 43 // Week 43 is week 0 of the 2023 Season
+		homeTeamAbbr := row[3]
+		awayTeamAbbr := row[4]
+		ht := teamMap[homeTeamAbbr]
+		at := teamMap[awayTeamAbbr]
+		homeTeamID := ht.ID
+		awayTeamID := at.ID
+		homeTeamCoach := ht.Coach
+		awayTeamCoach := at.Coach
+		timeSlot := row[18]
+		// Need to implement Stadium ID
+		stadium := row[19]
+		city := row[20]
+		state := row[21]
+		// Need to check for if a game is in a domed stadium or not
+		isConferenceGame := util.ConvertStringToBool(row[9])
+		isDivisionGame := util.ConvertStringToBool(row[10])
+		isNeutralSite := util.ConvertStringToBool(row[11])
+		isConferenceChampionship := util.ConvertStringToBool(row[12])
+		isBowlGame := util.ConvertStringToBool(row[13])
+		isNationalChampionship := util.ConvertStringToBool(row[14])
+
+		game := structs.CollegeGame{
+			Model:                    gorm.Model{ID: uint(gameID)},
+			SeasonID:                 seasonID,
+			WeekID:                   weekID,
+			Week:                     week,
+			HomeTeamID:               int(homeTeamID),
+			AwayTeamID:               int(awayTeamID),
+			HomeTeam:                 homeTeamAbbr,
+			AwayTeam:                 awayTeamAbbr,
+			HomeTeamCoach:            homeTeamCoach,
+			AwayTeamCoach:            awayTeamCoach,
+			IsConferenceChampionship: isConferenceChampionship,
+			IsBowlGame:               isBowlGame,
+			IsNeutral:                isNeutralSite,
+			IsNationalChampionship:   isNationalChampionship,
+			IsConference:             isConferenceGame,
+			IsDivisional:             isDivisionGame,
+			TimeSlot:                 timeSlot,
+			Stadium:                  stadium,
+			City:                     city,
+			State:                    state,
+		}
+
+		db.Create(&game)
+	}
+}
+
+func getBaseSalaryByYear(round int, pick int) float64 {
+	if round == 1 {
+		if pick == 1 {
+			return 3.25
+		}
+		if pick < 6 {
+			return 2.75
+		}
+		if pick < 11 {
+			return 2.25
+		}
+		if pick < 17 {
+			return 1.875
+		}
+		if pick < 25 {
+			return 1.5
+		}
+		return 1.25
+	}
+	if round == 2 {
+		return 1
+	}
+	if round == 3 {
+		return 0.75
+	}
+	if round == 4 {
+		return 0.9
+	}
+	if round == 5 {
+		return 0.75
+	}
+	if round == 6 {
+		return 0.9
+	}
+	return 0.8
+}
+
+func getBonusByYear(round int, pick int) float64 {
+	if round == 1 {
+		if pick == 1 {
+			return 3.25
+		}
+		if pick < 6 {
+			return 2.75
+		}
+		if pick < 11 {
+			return 2.25
+		}
+		if pick < 17 {
+			return 1.875
+		}
+		if pick < 25 {
+			return 1.5
+		}
+		return 1.25
+	}
+	if round == 2 {
+		return 1
+	}
+	if round == 3 {
+		return 0.75
+	}
+	if round == 4 {
+		return 0.3
+	}
+	if round == 5 {
+		return 0.25
+	}
+	return 0
 }

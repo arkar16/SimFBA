@@ -98,6 +98,7 @@ func handleRequests() {
 	// Import Controls
 	// myRouter.HandleFunc("/admin/import/recruit/ai", controller.ImportRecruitAICSV).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/draft", controller.Import2023DraftedPlayers).Methods("GET")
+	myRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/missing/recruits", controller.GetMissingRecruitingClasses).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/preferences", controller.ImportTradePreferences).Methods("GET")
 	// myRouter.HandleFunc("/import/custom/croots", controller.ImportCustomCroots).Methods("GET")

@@ -38,6 +38,10 @@ func Import2023DraftedPlayers(w http.ResponseWriter, r *http.Request) {
 	managers.Import2023DraftedPlayers()
 }
 
+func ImportCFBGames(w http.ResponseWriter, r *http.Request) {
+	managers.ImportCFBGames()
+}
+
 func GetMissingRecruitingClasses(w http.ResponseWriter, r *http.Request) {
 	managers.GetMissingRecruitingClasses()
 }

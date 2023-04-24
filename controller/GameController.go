@@ -106,6 +106,7 @@ func GetNFLGamesBySeasonID(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateTimeslot(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	var timeslotDTO structs.UpdateTimeslotDTO
 	err := json.NewDecoder(r.Body).Decode(&timeslotDTO)
 	if err != nil {

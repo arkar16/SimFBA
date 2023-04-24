@@ -11,6 +11,7 @@ type Timestamp struct {
 	NFLSeasonID                int
 	NFLWeekID                  int
 	NFLWeek                    int
+	CFBSpringGames             bool
 	ThursdayGames              bool
 	FridayGames                bool
 	SaturdayMorning            bool

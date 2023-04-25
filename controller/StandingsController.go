@@ -54,3 +54,14 @@ func GetAllCollegeStandings(w http.ResponseWriter, r *http.Request) {
 	standings := managers.GetAllConferenceStandingsBySeasonID(seasonID)
 	json.NewEncoder(w).Encode(standings)
 }
+
+// Gets all NFL Standings in a Season
+func GetAllNFLStandings(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	seasonID := vars["seasonID"]
+	if len(seasonID) == 0 {
+		panic("User did not provide enough information")
+	}
+	standings := managers.GetAllNFLStandingsBySeasonID(seasonID)
+	json.NewEncoder(w).Encode(standings)
+}

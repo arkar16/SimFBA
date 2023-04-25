@@ -511,6 +511,47 @@ func Import2023DraftedPlayers() {
 	}
 }
 
+func ImportUDFAs() {
+	db := dbprovider.GetInstance().GetDB()
+
+	UDFAs := GetAllNFLDraftees()
+
+	for idx, draftee := range UDFAs {
+		if idx == 0 {
+			continue
+		}
+
+		team := "FA"
+		teamID := 0
+
+		nflPlayerRecord := structs.NFLPlayer{
+			Model: gorm.Model{
+				ID: draftee.ID,
+			},
+			BasePlayer:        draftee.BasePlayer,
+			PlayerID:          int(draftee.ID),
+			TeamID:            int(teamID),
+			College:           draftee.College,
+			TeamAbbr:          team,
+			Experience:        1,
+			HighSchool:        draftee.HighSchool,
+			Hometown:          draftee.City,
+			State:             draftee.State,
+			IsActive:          true,
+			IsPracticeSquad:   false,
+			IsFreeAgent:       true,
+			IsWaived:          false,
+			IsOnTradeBlock:    false,
+			IsAcceptingOffers: true,
+			IsNegotiating:     false,
+			ShowLetterGrade:   true,
+		}
+
+		db.Create(&nflPlayerRecord)
+		db.Delete(&draftee)
+	}
+}
+
 func ImportCFBGames() {
 	db := dbprovider.GetInstance().GetDB()
 

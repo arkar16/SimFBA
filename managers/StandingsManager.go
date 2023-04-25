@@ -249,3 +249,14 @@ func GetAllConferenceStandingsBySeasonID(seasonID string) []structs.CollegeStand
 
 	return standings
 }
+
+func GetAllNFLStandingsBySeasonID(seasonID string) []structs.NFLStandings {
+	db := dbprovider.GetInstance().GetDB()
+
+	var standings []structs.NFLStandings
+
+	db.Where("season_id = ?", seasonID).Order("conference_id asc").Order("conference_losses asc").Order("conference_wins desc").
+		Order("total_losses asc").Order("total_wins desc").Find(&standings)
+
+	return standings
+}

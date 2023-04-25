@@ -16,6 +16,7 @@ type NFLStandings struct {
 	TotalTies        uint
 	ConferenceTies   uint
 	DivisionID       uint
+	DivisionName     string
 	DivisionWins     uint
 	DivisionLosses   uint
 	DivisionTies     uint

@@ -163,13 +163,6 @@ func ExportNFLRosterToCSV(w http.ResponseWriter, r *http.Request) {
 func ExportAllRostersToCSV(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/csv")
 
-	CollegeTeams := managers.GetAllCollegeTeams()
-
-	for _, team := range CollegeTeams {
-		id := strconv.FormatUint(uint64(team.ID), 10)
-
-		managers.ExportTeamToCSV(id, w)
-	}
-
+	managers.ExportAllRostersToCSV(w)
 	// ?
 }

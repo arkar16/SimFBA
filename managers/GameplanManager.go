@@ -340,6 +340,7 @@ func UpdateCollegeAIDepthCharts() {
 		if len(team.Coach) > 0 && team.Coach != "AI" {
 			continue
 		}
+
 		teamID := strconv.Itoa(int(team.ID))
 		gp := GetGameplanByTeamID(teamID)
 		roster := GetAllCollegePlayersByTeamIdWithoutRedshirts(teamID)
@@ -363,8 +364,8 @@ func UpdateCollegeAIDepthCharts() {
 			pos := cp.Position
 			arch := cp.Archetype
 
+			// Add to QB List
 			if pos == "QB" || pos == "WR" || pos == "TE" || pos == "RB" || pos == "FB" || pos == "K" || pos == "P" {
-				// Add to QB List
 				score := 0
 				if offScheme == "Pro" {
 					if pos == "QB" {
@@ -945,7 +946,7 @@ func UpdateCollegeAIDepthCharts() {
 					Score:         uint(score),
 					CollegePlayer: cp,
 				}
-				positionMap["ILB"] = append(positionMap["ILB"], dcpObj)
+				positionMap["MLB"] = append(positionMap["MLB"], dcpObj)
 			}
 
 			// Add to CB List
@@ -1004,13 +1005,16 @@ func UpdateCollegeAIDepthCharts() {
 				}
 				positionMap["SS"] = append(positionMap["SS"], dcpObj)
 			}
+
 			// Add to P list
 			if pos == "K" || pos == "P" || pos == "QB" {
 				score := 0
 				if pos == "P" {
-					score += 25
+					score += 35
 				} else if pos == "K" {
-					score += 15
+					score += 5
+				} else if pos == "QB" {
+					score -= 25
 				}
 				score += cp.Overall
 
@@ -1022,13 +1026,16 @@ func UpdateCollegeAIDepthCharts() {
 				}
 				positionMap["P"] = append(positionMap["P"], dcpObj)
 			}
+
 			// Add to K list (Field Goal)
 			if pos == "K" || pos == "P" || pos == "QB" {
 				score := 0
 				if pos == "K" {
-					score += 15
+					score += 35
 				} else if pos == "P" {
 					score += 5
+				} else if pos == "QB" {
+					score -= 25
 				}
 				score += cp.Overall
 
@@ -1041,12 +1048,15 @@ func UpdateCollegeAIDepthCharts() {
 				positionMap["K"] = append(positionMap["K"], dcpObj)
 			}
 
+			// FG List
 			if pos == "K" || pos == "P" || pos == "QB" {
 				score := 0
 				if pos == "K" {
-					score += 15
+					score += 35
 				} else if pos == "P" {
 					score += 5
+				} else if pos == "QB" {
+					score -= 25
 				}
 				score += cp.Overall
 
@@ -1092,7 +1102,7 @@ func UpdateCollegeAIDepthCharts() {
 				positionMap["KR"] = append(positionMap["KR"], dcpObj)
 			}
 			// STU
-			if pos == "FB" || pos == "TE" || pos == "ILB" || pos == "OLB" || pos == "RB" || pos == "CB" || pos == "FS" || pos == "SS" {
+			if pos == "FB" || pos == "TE" || pos == "ILB" || pos == "OLB" || pos == "RB" || pos == "CB" || pos == "FS" || pos == "SS" || pos == "WR" {
 				score := 0
 				if cp.Year == 2 || cp.Year == 1 {
 					score += 20
@@ -1125,7 +1135,7 @@ func UpdateCollegeAIDepthCharts() {
 		sort.Sort(structs.ByDCPosition(positionMap["RE"]))
 		sort.Sort(structs.ByDCPosition(positionMap["LOLB"]))
 		sort.Sort(structs.ByDCPosition(positionMap["ROLB"]))
-		sort.Sort(structs.ByDCPosition(positionMap["ILB"]))
+		sort.Sort(structs.ByDCPosition(positionMap["MLB"]))
 		sort.Sort(structs.ByDCPosition(positionMap["CB"]))
 		sort.Sort(structs.ByDCPosition(positionMap["FS"]))
 		sort.Sort(structs.ByDCPosition(positionMap["SS"]))
@@ -1139,7 +1149,10 @@ func UpdateCollegeAIDepthCharts() {
 		for _, dcp := range depthchartPositions {
 			positionList := positionMap[dcp.Position]
 			for _, pos := range positionList {
-				if starterMap[pos.CollegePlayer.ID] {
+				if starterMap[pos.CollegePlayer.ID] &&
+					dcp.Position != "FG" &&
+					dcp.Position != "PR" &&
+					dcp.Position != "KR" {
 					continue
 				}
 				if backupMap[pos.CollegePlayer.ID] && dcp.PositionLevel != "1" {

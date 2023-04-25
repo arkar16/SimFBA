@@ -42,6 +42,10 @@ func ImportCFBGames(w http.ResponseWriter, r *http.Request) {
 	managers.ImportCFBGames()
 }
 
+func ImportUDFAs(w http.ResponseWriter, r *http.Request) {
+	managers.ImportUDFAs()
+}
+
 func GetMissingRecruitingClasses(w http.ResponseWriter, r *http.Request) {
 	managers.GetMissingRecruitingClasses()
 }

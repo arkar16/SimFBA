@@ -51,9 +51,19 @@ func GetAllFreeAgentsWithOffers() []structs.NFLPlayer {
 
 	fas := []structs.NFLPlayer{}
 
+	sort.Slice(fas[:], func(i, j int) bool {
+		if fas[i].ShowLetterGrade {
+			return true
+		}
+		if fas[j].ShowLetterGrade {
+			return false
+		}
+		return fas[i].Overall > fas[j].Overall
+	})
+
 	db.Preload("Offers", func(db *gorm.DB) *gorm.DB {
 		return db.Order("contract_value DESC").Where("is_active = true")
-	}).Order("overall desc").Where("is_free_agent = ?", true).Find(&fas)
+	}).Order("overall desc").Where("is_free_agent = ? AND overall > ?", true, "43").Find(&fas)
 
 	return fas
 }

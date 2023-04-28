@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/CalebRose/SimFBA/managers"
@@ -44,6 +45,18 @@ func SyncWeek(w http.ResponseWriter, r *http.Request) {
 	newTimestamp := managers.MoveUpWeek()
 
 	json.NewEncoder(w).Encode(newTimestamp)
+}
+
+func SyncTimeslot(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	timeslot := vars["timeslot"]
+	if len(timeslot) == 0 {
+		log.Panicln("Missing timeslot!")
+	}
+
+	managers.SyncTimeslot(timeslot)
+
+	json.NewEncoder(w).Encode("Timeslot updated")
 }
 
 func SyncFreeAgencyRound(w http.ResponseWriter, r *http.Request) {

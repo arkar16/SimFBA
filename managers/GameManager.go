@@ -81,6 +81,16 @@ func GetNFLGamesBySeasonID(SeasonID string) []structs.NFLGame {
 	return games
 }
 
+func GetNFLGamesByTimeslotAndWeekId(id string, timeslot string) []structs.NFLGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	var games []structs.NFLGame
+
+	db.Order("time_slot asc").Where("week_id = ? AND time_slot = ?", id, timeslot).Find(&games)
+
+	return games
+}
+
 func GetTeamScheduleForBot(TeamID string, SeasonID string) []models.CollegeGameResponse {
 	db := dbprovider.GetInstance().GetDB()
 

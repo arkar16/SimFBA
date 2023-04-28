@@ -254,7 +254,7 @@ func SyncFreeAgencyOffers() {
 
 		if WinningOffer.ID > 0 {
 			SignFreeAgent(WinningOffer, FA, ts)
-		} else {
+		} else if ts.IsNFLOffSeason {
 			FA.WaitUntilAfterDraft()
 			db.Save(&FA)
 		}

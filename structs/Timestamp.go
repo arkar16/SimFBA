@@ -75,30 +75,6 @@ func (t *Timestamp) MoveUpSeason() {
 	t.NFLSeasonID++
 }
 
-func (t *Timestamp) ToggleThursdayGames() {
-	t.ThursdayGames = !t.ThursdayGames
-}
-
-func (t *Timestamp) ToggleFridayGames() {
-	t.FridayGames = !t.FridayGames
-}
-
-func (t *Timestamp) ToggleSaturdayMorningGames() {
-	t.SaturdayMorning = !t.SaturdayMorning
-}
-
-func (t *Timestamp) ToggleSaturdayNoonGames() {
-	t.SaturdayNoon = !t.SaturdayNoon
-}
-
-func (t *Timestamp) ToggleSaturdayEveningGames() {
-	t.SaturdayEvening = !t.SaturdayEvening
-}
-
-func (t *Timestamp) ToggleSaturdayNightGames() {
-	t.SaturdayNight = !t.SaturdayNight
-}
-
 func (t *Timestamp) ToggleRES() {
 	t.RecruitingEfficiencySynced = !t.RecruitingEfficiencySynced
 }
@@ -127,15 +103,46 @@ func (t *Timestamp) SyncToNextWeek() {
 		t.MoveUpSeason()
 	}
 	// Reset Toggles
-	// t.ToggleThursdayGames()
-	// t.ToggleFridayGames()
-	// t.ToggleSaturdayMorningGames()
-	// t.ToggleSaturdayNoonGames()
-	// t.ToggleSaturdayEveningGames()
-	// t.ToggleSaturdayNightGames()
+	t.ThursdayGames = false
+	t.FridayGames = false
+	t.NFLThursday = false
+	t.SaturdayNoon = false
+	t.SaturdayMorning = false
+	t.SaturdayEvening = false
+	t.SaturdayNight = false
+	t.NFLSundayNoon = false
+	t.NFLSundayAfternoon = false
+	t.NFLSundayEvening = false
+	t.NFLMondayEvening = false
 	// t.ToggleRES()
 	t.ToggleRecruiting()
 	// t.ToggleGMActions()
 
 	// Migrate game results ?
+}
+
+func (t *Timestamp) ToggleTimeSlot(ts string) {
+	if ts == "Thursday Night" {
+		t.ThursdayGames = true
+	} else if ts == "Thursday Night Football" {
+		t.NFLThursday = true
+	} else if ts == "Friday Night" {
+		t.FridayGames = true
+	} else if ts == "Saturday Morning" {
+		t.SaturdayMorning = true
+	} else if ts == "Saturday Afternoon" {
+		t.SaturdayNoon = true
+	} else if ts == "Saturday Evening" {
+		t.SaturdayEvening = true
+	} else if ts == "Saturday Night" {
+		t.SaturdayNight = true
+	} else if ts == "Sunday Noon" {
+		t.NFLSundayNoon = true
+	} else if ts == "Sunday Afternoon" {
+		t.NFLSundayAfternoon = true
+	} else if ts == "Sunday Night Football" {
+		t.NFLSundayEvening = true
+	} else if ts == "Monday Night Football" {
+		t.NFLMondayEvening = true
+	}
 }

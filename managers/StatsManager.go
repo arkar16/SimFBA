@@ -41,10 +41,20 @@ func GetCollegePlayerStatsByPlayerIDAndSeason(PlayerID string, SeasonID string) 
 	return playerStats
 }
 
-func GetAllPlayerStatsByGame(GameID string, TeamID string) []structs.CollegePlayerStats {
+func GetAllCollegePlayerStatsByGame(GameID string, TeamID string) []structs.CollegePlayerStats {
 	db := dbprovider.GetInstance().GetDB()
 
 	var playerStats []structs.CollegePlayerStats
+
+	db.Where("game_id = ? and season_id = ?", GameID, TeamID).Find(&playerStats)
+
+	return playerStats
+}
+
+func GetAllNFLPlayerStatsByGame(GameID string, TeamID string) []structs.NFLPlayerStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats []structs.NFLPlayerStats
 
 	db.Where("game_id = ? and season_id = ?", GameID, TeamID).Find(&playerStats)
 
@@ -110,12 +120,72 @@ func GetSeasonalTeamStats(TeamID string, SeasonID string) models.CollegeTeamResp
 	return ct
 }
 
-func GetCollegeTeamStatsByGame(GameID string) []structs.CollegeTeamStats {
+func GetCollegeTeamSeasonStatsBySeason(TeamID string, SeasonID string) structs.CollegeTeamSeasonStats {
 	db := dbprovider.GetInstance().GetDB()
 
-	var teamStats []structs.CollegeTeamStats
+	var teamStats structs.CollegeTeamSeasonStats
 
-	db.Where("game_id = ?", GameID).Find(&teamStats)
+	db.Where("team_id = ?, season_id = ?", TeamID, SeasonID).Find(&teamStats)
+
+	return teamStats
+}
+
+func GetCollegeSeasonStatsBySeason(SeasonID string) []structs.CollegeTeamSeasonStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var teamStats []structs.CollegeTeamSeasonStats
+
+	db.Where("season_id = ?", SeasonID).Find(&teamStats)
+
+	return teamStats
+}
+
+func GetCollegePlayerSeasonStatsBySeason(SeasonID string) []structs.CollegePlayerSeasonStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats []structs.CollegePlayerSeasonStats
+
+	db.Where("season_id = ?", SeasonID).Find(&playerStats)
+
+	return playerStats
+}
+
+func GetNFLTeamSeasonStatsBySeason(SeasonID string) []structs.NFLTeamSeasonStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var teamStats []structs.NFLTeamSeasonStats
+
+	db.Where("season_id = ?", SeasonID).Find(&teamStats)
+
+	return teamStats
+}
+
+func GetNFLPlayerSeasonStatsBySeason(SeasonID string) []structs.NFLPlayerSeasonStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats []structs.NFLPlayerSeasonStats
+
+	db.Where("season_id = ?", SeasonID).Find(&playerStats)
+
+	return playerStats
+}
+
+func GetCollegeTeamStatsByGame(TeamID string, GameID string) structs.CollegeTeamStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var teamStats structs.CollegeTeamStats
+
+	db.Where("team_id = ?, game_id = ?", TeamID, GameID).Find(&teamStats)
+
+	return teamStats
+}
+
+func GetNFLTeamStatsByGame(TeamID string, GameID string) structs.NFLTeamStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var teamStats structs.NFLTeamStats
+
+	db.Where("team_id = ?, game_id = ?", TeamID, GameID).Find(&teamStats)
 
 	return teamStats
 }
@@ -150,7 +220,7 @@ func GetHistoricalTeamStats(TeamID string, SeasonID string) []structs.CollegeTea
 	return teamStats
 }
 
-func ExportCFBStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
+func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	db := dbprovider.GetInstance().GetDB()
 	fmt.Println("START")
 
@@ -166,7 +236,7 @@ func ExportCFBStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
 
 	var teamStats []structs.CollegeTeamStats
 
-	for _, gameDataDTO := range exportStatsDTO.GameStatDTOs {
+	for _, gameDataDTO := range gameStats {
 
 		record := make(chan structs.CollegeGame)
 
@@ -350,7 +420,7 @@ func MapAllStatsToSeason() {
 	}
 }
 
-func ExportNFLStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
+func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	db := dbprovider.GetInstance().GetDB()
 	fmt.Println("START")
 
@@ -366,7 +436,7 @@ func ExportNFLStatisticsFromSim(exportStatsDTO structs.ExportStatsDTO) {
 
 	var teamStats []structs.NFLTeamStats
 
-	for _, gameDataDTO := range exportStatsDTO.GameStatDTOs {
+	for _, gameDataDTO := range gameStats {
 
 		record := make(chan structs.NFLGame)
 

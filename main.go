@@ -212,7 +212,11 @@ func handleRequests() {
 	myRouter.HandleFunc("/easter/egg/collude/", controller.CollusionButton).Methods("POST")
 
 	// Handle Controls
-	handler := cors.AllowAll().Handler(myRouter)
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:3001", "https://simfba-interface.azurewebsites.net", "https://www.simfba-interface.azurewebsites.net"},
+		AllowCredentials: true,
+	})
+	handler := c.Handler(myRouter)
 
 	log.Fatal(http.ListenAndServe(":8081", handler))
 }

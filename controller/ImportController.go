@@ -42,6 +42,10 @@ func ImportCFBGames(w http.ResponseWriter, r *http.Request) {
 	managers.ImportCFBGames()
 }
 
+func ImportNFLGames(w http.ResponseWriter, r *http.Request) {
+	managers.ImportNFLGames()
+}
+
 func ImportUDFAs(w http.ResponseWriter, r *http.Request) {
 	managers.ImportUDFAs()
 }

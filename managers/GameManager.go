@@ -44,9 +44,11 @@ func GetCollegeGamesByTeamIdAndSeasonId(TeamID string, SeasonID string) []struct
 func GetCollegeGamesBySeasonID(SeasonID string) []structs.CollegeGame {
 	db := dbprovider.GetInstance().GetDB()
 
+	ts := GetTimestamp()
+
 	var games []structs.CollegeGame
 
-	db.Order("week_id asc").Where("season_id = ?", SeasonID).Find(&games)
+	db.Order("week_id asc").Where("season_id = ? and is_spring_game = ?", SeasonID, ts.CFBSpringGames).Find(&games)
 
 	return games
 }
@@ -74,9 +76,11 @@ func GetNFLGamesByWeekAndSeasonID(WeekID string, SeasonID string) []structs.NFLG
 func GetNFLGamesBySeasonID(SeasonID string) []structs.NFLGame {
 	db := dbprovider.GetInstance().GetDB()
 
+	ts := GetTimestamp()
+
 	var games []structs.NFLGame
 
-	db.Order("week_id asc").Where("season_id = ?", SeasonID).Find(&games)
+	db.Order("week_id asc").Where("season_id = ? and is_preseason_game = ?", SeasonID, ts.NFLPreseason).Find(&games)
 
 	return games
 }
@@ -216,8 +220,9 @@ func UpdateTimeslot(dto structs.UpdateTimeslotDTO) (structs.CollegeGame, structs
 		return game, structs.NFLGame{}
 	} else {
 		game := GetNFLGameByGameID(gameID)
+		homeTeam := GetNFLTeamByTeamID(strconv.Itoa(game.HomeTeamID))
 		game.UpdateTimeslot(dto.Timeslot)
-		GenerateWeatherForNFLGame(db, game, teamRegions, regions, rainForecasts, mixForecasts, snowForecasts)
+		GenerateWeatherForNFLGame(db, game, homeTeam.TeamAbbr, teamRegions, regions, rainForecasts, mixForecasts, snowForecasts)
 		return structs.CollegeGame{}, game
 	}
 }

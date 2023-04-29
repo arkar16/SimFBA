@@ -97,7 +97,7 @@ func SyncTimeslot(timeslot string) {
 			awayPlayerStats := GetAllCollegePlayerStatsByGame(gameID, strconv.Itoa(awayTeamID))
 
 			for _, h := range homePlayerStats {
-				if h.Snaps == 0 {
+				if h.Snaps == 0 || timestamp.CFBSpringGames {
 					continue
 				}
 				playerSeasonStat := playerSeasonStatsMap[h.CollegePlayerID]
@@ -107,7 +107,7 @@ func SyncTimeslot(timeslot string) {
 			}
 
 			for _, a := range awayPlayerStats {
-				if a.Snaps == 0 {
+				if a.Snaps == 0 || timestamp.CFBSpringGames {
 					continue
 				}
 				playerSeasonStat := playerSeasonStatsMap[a.CollegePlayerID]
@@ -123,7 +123,7 @@ func SyncTimeslot(timeslot string) {
 			homeTeamStandings.UpdateCollegeStandings(game)
 			awayTeamStandings.UpdateCollegeStandings(game)
 
-			if game.HomeTeamCoach != "AI" {
+			if game.HomeTeamCoach != "AI" && !timestamp.CFBSpringGames {
 				homeCoach := GetCollegeCoachByCoachName(game.HomeTeamCoach)
 				homeCoach.UpdateCoachRecord(game)
 
@@ -133,7 +133,7 @@ func SyncTimeslot(timeslot string) {
 				}
 			}
 
-			if game.AwayTeamCoach != "AI" {
+			if game.AwayTeamCoach != "AI" && !timestamp.CFBSpringGames {
 				awayCoach := GetCollegeCoachByCoachName(game.AwayTeamCoach)
 				awayCoach.UpdateCoachRecord(game)
 				err := db.Save(&awayCoach).Error
@@ -143,10 +143,12 @@ func SyncTimeslot(timeslot string) {
 			}
 
 			// Save
-			db.Save(&homeTeamSeasonStats)
-			db.Save(&awayTeamSeasonStats)
-			db.Save(&homeTeamStandings)
-			db.Save(&awayTeamStandings)
+			if !timestamp.CFBSpringGames {
+				db.Save(&homeTeamSeasonStats)
+				db.Save(&awayTeamSeasonStats)
+				db.Save(&homeTeamStandings)
+				db.Save(&awayTeamStandings)
+			}
 		}
 	} else {
 		// Get Games
@@ -187,7 +189,7 @@ func SyncTimeslot(timeslot string) {
 					continue
 				}
 				playerSeasonStat := playerSeasonStatsMap[h.NFLPlayerID]
-				playerSeasonStat.MapStats([]structs.NFLPlayerStats{h})
+				playerSeasonStat.MapStats([]structs.NFLPlayerStats{h}, timestamp)
 
 				db.Save(&playerSeasonStat)
 			}
@@ -197,7 +199,7 @@ func SyncTimeslot(timeslot string) {
 					continue
 				}
 				playerSeasonStat := playerSeasonStatsMap[a.NFLPlayerID]
-				playerSeasonStat.MapStats([]structs.NFLPlayerStats{a})
+				playerSeasonStat.MapStats([]structs.NFLPlayerStats{a}, timestamp)
 
 				db.Save(&playerSeasonStat)
 			}

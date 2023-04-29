@@ -1,5 +1,6 @@
 package structs
 
 type ExportStatsDTO struct {
-	GameStatDTOs []GameStatDTO
+	CFBGameStatDTOs []GameStatDTO
+	NFLGameStatDTOs []GameStatDTO
 }

@@ -555,9 +555,11 @@ func ImportUDFAs() {
 func ImportCFBGames() {
 	db := dbprovider.GetInstance().GetDB()
 
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023_CFB_Games.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023\\2023_Spring_Games.csv"
 
 	gamesCSV := util.ReadCSV(path)
+
+	ts := GetTimestamp()
 
 	teamMap := make(map[string]structs.CollegeTeam)
 
@@ -596,7 +598,8 @@ func ImportCFBGames() {
 		isNeutralSite := util.ConvertStringToBool(row[11])
 		isConferenceChampionship := util.ConvertStringToBool(row[12])
 		isBowlGame := util.ConvertStringToBool(row[13])
-		isNationalChampionship := util.ConvertStringToBool(row[14])
+		isPlayoffGame := util.ConvertStringToBool(row[14])
+		isNationalChampionship := util.ConvertStringToBool(row[15])
 
 		game := structs.CollegeGame{
 			Model:                    gorm.Model{ID: uint(gameID)},
@@ -610,8 +613,10 @@ func ImportCFBGames() {
 			HomeTeamCoach:            homeTeamCoach,
 			AwayTeamCoach:            awayTeamCoach,
 			IsConferenceChampionship: isConferenceChampionship,
+			IsSpringGame:             ts.CFBSpringGames,
 			IsBowlGame:               isBowlGame,
 			IsNeutral:                isNeutralSite,
+			IsPlayoffGame:            isPlayoffGame,
 			IsNationalChampionship:   isNationalChampionship,
 			IsConference:             isConferenceGame,
 			IsDivisional:             isDivisionGame,
@@ -619,6 +624,94 @@ func ImportCFBGames() {
 			Stadium:                  stadium,
 			City:                     city,
 			State:                    state,
+		}
+
+		db.Create(&game)
+	}
+}
+
+func ImportNFLGames() {
+	db := dbprovider.GetInstance().GetDB()
+
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023\\2023_NFL_Preseason_Games.csv"
+
+	gamesCSV := util.ReadCSV(path)
+
+	ts := GetTimestamp()
+
+	teamMap := make(map[string]structs.NFLTeam)
+
+	allNFLTeams := GetAllNFLTeams()
+
+	for _, t := range allNFLTeams {
+		teamMap[t.TeamAbbr] = t
+	}
+
+	for idx, row := range gamesCSV {
+		if idx == 0 {
+			continue
+		}
+
+		gameID := util.ConvertStringToInt(row[0])
+		season := util.ConvertStringToInt(row[1])
+		seasonID := season - 2021
+		week := util.ConvertStringToInt(row[2])
+		weekID := week // Week 43 is week 0 of the 2023 Season
+		homeTeamAbbr := row[3]
+		awayTeamAbbr := row[4]
+		ht := teamMap[homeTeamAbbr]
+		at := teamMap[awayTeamAbbr]
+		homeTeamName := ht.TeamName + " " + ht.Mascot
+		awayTeamName := at.TeamName + " " + at.Mascot
+		homeTeamID := ht.ID
+		awayTeamID := at.ID
+		homeTeamCoach := ht.NFLCoachName
+		if len(homeTeamCoach) == 0 {
+			homeTeamCoach = ht.NFLOwnerName
+		}
+		if len(homeTeamCoach) == 0 {
+			homeTeamCoach = "AI"
+		}
+		awayTeamCoach := at.NFLCoachName
+		if len(awayTeamCoach) == 0 {
+			awayTeamCoach = at.NFLOwnerName
+		}
+		if len(awayTeamCoach) == 0 {
+			awayTeamCoach = "AI"
+		}
+		timeSlot := row[19]
+		// Need to implement Stadium ID
+		stadium := row[20]
+		city := row[21]
+		state := row[22]
+		// Need to check for if a game is in a domed stadium or not
+		isConferenceGame := util.ConvertStringToBool(row[9])
+		isDivisionGame := util.ConvertStringToBool(row[10])
+		isNeutralSite := util.ConvertStringToBool(row[11])
+		// isPreseasonGame := util.ConvertStringToBool(row[12])
+		// isConferenceChampionship := util.ConvertStringToBool(row[13])
+		// isPlayoffGame := util.ConvertStringToBool(row[14])
+		// isNationalChampionship := util.ConvertStringToBool(row[15])
+
+		game := structs.NFLGame{
+			Model:           gorm.Model{ID: uint(gameID)},
+			SeasonID:        seasonID,
+			WeekID:          weekID,
+			Week:            week,
+			HomeTeamID:      int(homeTeamID),
+			AwayTeamID:      int(awayTeamID),
+			HomeTeam:        homeTeamName,
+			AwayTeam:        awayTeamName,
+			HomeTeamCoach:   homeTeamCoach,
+			AwayTeamCoach:   awayTeamCoach,
+			IsPreseasonGame: ts.NFLPreseason,
+			IsNeutral:       isNeutralSite,
+			IsConference:    isConferenceGame,
+			IsDivisional:    isDivisionGame,
+			TimeSlot:        timeSlot,
+			Stadium:         stadium,
+			City:            city,
+			State:           state,
 		}
 
 		db.Create(&game)

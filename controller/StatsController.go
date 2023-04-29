@@ -22,30 +22,13 @@ func ExportCFBStatisticsFromSim(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	// validate info from DTO
-	if len(exportStatsDTO.GameStatDTOs) == 0 {
+	if len(exportStatsDTO.CFBGameStatDTOs) == 0 || len(exportStatsDTO.NFLGameStatDTOs) == 0 {
 		log.Fatalln("ERROR: Could not acquire all data for export")
 	}
 
 	// Send DTO to Manager Class
-	managers.ExportCFBStatisticsFromSim(exportStatsDTO)
-
-	fmt.Println(w, "Game Data Exported")
-}
-
-func ExportNFLStatisticsFromSim(w http.ResponseWriter, r *http.Request) {
-	var exportStatsDTO structs.ExportStatsDTO
-	err := json.NewDecoder(r.Body).Decode(&exportStatsDTO)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	// validate info from DTO
-	if len(exportStatsDTO.GameStatDTOs) == 0 {
-		log.Fatalln("ERROR: Could not acquire all data for export")
-	}
-
-	// Send DTO to Manager Class
-	managers.ExportNFLStatisticsFromSim(exportStatsDTO)
+	managers.ExportCFBStatisticsFromSim(exportStatsDTO.CFBGameStatDTOs)
+	managers.ExportNFLStatisticsFromSim(exportStatsDTO.NFLGameStatDTOs)
 
 	fmt.Println(w, "Game Data Exported")
 }

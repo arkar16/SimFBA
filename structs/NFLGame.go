@@ -41,6 +41,7 @@ type NFLGame struct {
 	IsConferenceChampionship bool
 	IsSuperBowl              bool
 	GameComplete             bool
+	IsPreseasonGame          bool
 	GameTitle                string // For rivalry match-ups, bowl games, championships, and more
 }
 

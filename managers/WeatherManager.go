@@ -41,6 +41,14 @@ func GenerateWeatherForGames() {
 	for _, game := range collegeGames {
 		GenerateWeatherForGame(db, game, teamRegions, regions, rainForecasts, mixForecasts, snowForecasts)
 	}
+
+	nflGames := GetNFLGamesBySeasonID(strconv.Itoa(int(ts.NFLSeasonID)))
+
+	for _, game := range nflGames {
+		homeTeam := GetNFLTeamByTeamID(strconv.Itoa(game.HomeTeamID))
+		GenerateWeatherForNFLGame(db, game, homeTeam.TeamAbbr, teamRegions, regions, rainForecasts, mixForecasts, snowForecasts)
+	}
+
 }
 
 func GenerateWeatherForGame(db *gorm.DB, game structs.CollegeGame, teamRegions map[string]string, regions map[string]structs.WeatherRegion, rainForecasts map[float64]map[int]string, mixForecasts map[float64]map[int]string, snowForecasts map[float64]map[int]string) {
@@ -259,8 +267,8 @@ func GenerateWeatherForGame(db *gorm.DB, game structs.CollegeGame, teamRegions m
 	db.Save(&game)
 }
 
-func GenerateWeatherForNFLGame(db *gorm.DB, game structs.NFLGame, teamRegions map[string]string, regions map[string]structs.WeatherRegion, rainForecasts map[float64]map[int]string, mixForecasts map[float64]map[int]string, snowForecasts map[float64]map[int]string) {
-	regionName := teamRegions[game.HomeTeam]
+func GenerateWeatherForNFLGame(db *gorm.DB, game structs.NFLGame, abbr string, teamRegions map[string]string, regions map[string]structs.WeatherRegion, rainForecasts map[float64]map[int]string, mixForecasts map[float64]map[int]string, snowForecasts map[float64]map[int]string) {
+	regionName := teamRegions[abbr]
 	region := regions[regionName]
 	chances := []structs.WeatherChance{}
 
@@ -491,8 +499,8 @@ func GetCurrentWeekWeather() []structs.GameResponse {
 	nflGames := GetNFLGamesByWeekAndSeasonID(nflWeekID, nflSeasonID)
 
 	for _, cg := range collegeGames {
-		homeTeamStandings := GetStandingsByTeamIDAndSeasonID(strconv.Itoa(int(cg.HomeTeamID)), seasonID)
-		awayTeamStandings := GetStandingsByTeamIDAndSeasonID(strconv.Itoa(int(cg.AwayTeamID)), seasonID)
+		homeTeamStandings := GetCFBStandingsByTeamIDAndSeasonID(strconv.Itoa(int(cg.HomeTeamID)), seasonID)
+		awayTeamStandings := GetCFBStandingsByTeamIDAndSeasonID(strconv.Itoa(int(cg.AwayTeamID)), seasonID)
 		htRecord := strconv.Itoa(homeTeamStandings.TotalWins) + "-" + strconv.Itoa(homeTeamStandings.TotalLosses)
 		atRecord := strconv.Itoa(awayTeamStandings.TotalWins) + "-" + strconv.Itoa(awayTeamStandings.TotalLosses)
 

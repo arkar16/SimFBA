@@ -42,6 +42,7 @@ type CollegeGame struct {
 	IsNationalChampionship   bool
 	IsRivalryGame            bool
 	GameComplete             bool
+	IsSpringGame             bool
 	GameTitle                string // For rivalry match-ups, bowl games, championships, and more
 }
 

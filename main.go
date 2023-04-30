@@ -8,11 +8,12 @@ import (
 
 	"github.com/CalebRose/SimFBA/controller"
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	"github.com/joho/godotenv"
 	"github.com/nelkinda/health-go"
 	"github.com/nelkinda/health-go/checks/sendgrid"
-	"github.com/rs/cors"
 )
 
 func InitialMigration() {
@@ -212,9 +213,20 @@ func handleRequests() {
 	myRouter.HandleFunc("/easter/egg/collude/", controller.CollusionButton).Methods("POST")
 
 	// Handle Controls
-	handler := cors.AllowAll().Handler(myRouter)
+	// handler := cors.AllowAll().Handler(myRouter)
+	loadEnvs()
+	origins := os.Getenv("ORIGIN_ALLOWED")
+	originsOk := handlers.AllowedOrigins([]string{origins})
+	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "Accept", "Access-Control-Request-Method", "Access-Control-Request-Headers"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(originsOk, methodsOk, headersOk)(myRouter)))
+}
 
-	log.Fatal(http.ListenAndServe(":8081", handler))
+func loadEnvs() {
+	err := godotenv.Load(".env")
+	if err != nil {
+		fmt.Println("CANNOT LOAD ENV VARIABLES")
+	}
 }
 
 func main() {

@@ -72,7 +72,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/nfl/freeagency/waiver/order/set", controller.SetWaiverOrderForNFLTeams).Methods("GET")
 
 	// Game Controls
-	myRouter.HandleFunc("/games/timeslot/update/time/", controller.UpdateTimeslot).Methods("POST", "OPTIONS")
+	myRouter.HandleFunc("/games/update/time/", controller.UpdateTimeslot).Methods("POST", "OPTIONS")
 	myRouter.HandleFunc("/games/college/week/{weekID}/", controller.GetCollegeGamesByTimeslotWeekId).Methods("GET")
 	myRouter.HandleFunc("/games/college/timeslot/{timeSlot}/{weekID}", controller.GetCollegeGamesByTimeslotWeekId).Methods("GET")
 	myRouter.HandleFunc("/games/college/team/{teamID}/{seasonID}", controller.GetCollegeGamesByTeamIDAndSeasonID).Methods("GET")
@@ -99,7 +99,7 @@ func handleRequests() {
 	// Import Controls
 	// myRouter.HandleFunc("/admin/import/recruit/ai", controller.ImportRecruitAICSV).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/draft", controller.Import2023DraftedPlayers).Methods("GET")
-	myRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
+	// myRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/games", controller.ImportNFLGames).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/udfas", controller.ImportUDFAs).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/missing/recruits", controller.GetMissingRecruitingClasses).Methods("GET")
@@ -212,13 +212,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/easter/egg/collude/", controller.CollusionButton).Methods("POST")
 
 	// Handle Controls
-	c := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3001", "https://simfba-interface.azurewebsites.net", "https://www.simfba-interface.azurewebsites.net"},
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Content-Type", "Authorization"},
-		AllowCredentials: true,
-	})
-	handler := c.Handler(myRouter)
+	handler := cors.AllowAll().Handler(myRouter)
 
 	log.Fatal(http.ListenAndServe(":8081", handler))
 }

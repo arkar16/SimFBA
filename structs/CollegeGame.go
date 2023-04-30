@@ -79,3 +79,13 @@ func (cg *CollegeGame) ApplyWeather(precip string, lowTemp float64, highTemp flo
 func (cg *CollegeGame) UpdateTimeslot(ts string) {
 	cg.TimeSlot = ts
 }
+
+type WeatherResponse struct {
+	LowTemp      float64
+	HighTemp     float64
+	GameTemp     float64
+	Cloud        string
+	Precip       string
+	WindSpeed    float64
+	WindCategory string
+}

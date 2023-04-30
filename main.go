@@ -214,8 +214,9 @@ func handleRequests() {
 	// Handle Controls
 	// handler := cors.AllowAll().Handler(myRouter)
 	originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
+	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "Accept", "Access-Control-Request-Method", "Access-Control-Request-Headers"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(originsOk, methodsOk)(myRouter)))
+	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(originsOk, methodsOk, headersOk)(myRouter)))
 }
 
 func main() {

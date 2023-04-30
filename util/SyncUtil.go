@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"path/filepath"
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/structs"
@@ -255,6 +256,15 @@ func ReadJson(path string) []byte {
 		log.Fatal("Error when opening file: ", err)
 	}
 	return content
+}
+
+func ReadLocalPath(subpath string) string {
+	path, err := filepath.Abs(subpath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return path
 }
 
 func ReadCSV(path string) [][]string {

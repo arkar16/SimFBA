@@ -8,11 +8,11 @@ import (
 
 	"github.com/CalebRose/SimFBA/controller"
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"github.com/nelkinda/health-go"
 	"github.com/nelkinda/health-go/checks/sendgrid"
-	"github.com/rs/cors"
 )
 
 func InitialMigration() {
@@ -212,9 +212,10 @@ func handleRequests() {
 	myRouter.HandleFunc("/easter/egg/collude/", controller.CollusionButton).Methods("POST")
 
 	// Handle Controls
-	handler := cors.AllowAll().Handler(myRouter)
-
-	log.Fatal(http.ListenAndServe(":8081", handler))
+	// handler := cors.AllowAll().Handler(myRouter)
+	originsOk := handlers.AllowedOrigins([]string{os.Getenv("ORIGIN_ALLOWED")})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	log.Fatal(http.ListenAndServe(":8081", handlers.CORS(originsOk, methodsOk)(myRouter)))
 }
 
 func main() {

@@ -99,7 +99,7 @@ func handleRequests() {
 	// Import Controls
 	// myRouter.HandleFunc("/admin/import/recruit/ai", controller.ImportRecruitAICSV).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/draft", controller.Import2023DraftedPlayers).Methods("GET")
-	// myRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
+	myRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/games", controller.ImportNFLGames).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/udfas", controller.ImportUDFAs).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/missing/recruits", controller.GetMissingRecruitingClasses).Methods("GET")
@@ -214,6 +214,8 @@ func handleRequests() {
 	// Handle Controls
 	c := cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:3001", "https://simfba-interface.azurewebsites.net", "https://www.simfba-interface.azurewebsites.net"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	})
 	handler := c.Handler(myRouter)

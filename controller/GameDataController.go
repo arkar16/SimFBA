@@ -169,13 +169,13 @@ func GetNFLHomeAndAwayTeamData(w http.ResponseWriter, r *http.Request) {
 
 	go func() {
 		defer waitgroup.Done()
-		ht := managers.GetNFLTeamByTeamAbbr(game.HomeTeam)
+		ht := managers.GetNFLTeamByTeamIDForSim(strconv.Itoa(game.HomeTeamID))
 		homeTeamChan <- ht
 	}()
 
 	go func() {
 		defer waitgroup.Done()
-		at := managers.GetNFLTeamByTeamAbbr(game.AwayTeam)
+		at := managers.GetNFLTeamByTeamIDForSim(strconv.Itoa(game.AwayTeamID))
 		awayTeamChan <- at
 	}()
 

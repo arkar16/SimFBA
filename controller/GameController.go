@@ -115,30 +115,31 @@ func UpdateTimeslot(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	g1, g2 := managers.UpdateTimeslot(timeslotDTO)
-	var response structs.WeatherResponse
-	if g1.ID > 0 {
-		response = structs.WeatherResponse{
-			LowTemp:      g1.LowTemp,
-			HighTemp:     g1.HighTemp,
-			GameTemp:     g1.GameTemp,
-			Cloud:        g1.Cloud,
-			Precip:       g1.Precip,
-			WindSpeed:    g1.WindSpeed,
-			WindCategory: g1.WindCategory,
-		}
-	} else {
-		response = structs.WeatherResponse{
-			LowTemp:      g2.LowTemp,
-			HighTemp:     g2.HighTemp,
-			GameTemp:     g2.GameTemp,
-			Cloud:        g2.Cloud,
-			Precip:       g2.Precip,
-			WindSpeed:    g2.WindSpeed,
-			WindCategory: g2.WindCategory,
-		}
-	}
-	json.NewEncoder(w).Encode(response)
+	// g1, g2 := managers.UpdateTimeslot(timeslotDTO)
+	managers.UpdateTimeslot(timeslotDTO)
+	// var response structs.WeatherResponse
+	// if g1.ID > 0 {
+	// 	response = structs.WeatherResponse{
+	// 		LowTemp:      g1.LowTemp,
+	// 		HighTemp:     g1.HighTemp,
+	// 		GameTemp:     g1.GameTemp,
+	// 		Cloud:        g1.Cloud,
+	// 		Precip:       g1.Precip,
+	// 		WindSpeed:    g1.WindSpeed,
+	// 		WindCategory: g1.WindCategory,
+	// 	}
+	// } else {
+	// 	response = structs.WeatherResponse{
+	// 		LowTemp:      g2.LowTemp,
+	// 		HighTemp:     g2.HighTemp,
+	// 		GameTemp:     g2.GameTemp,
+	// 		Cloud:        g2.Cloud,
+	// 		Precip:       g2.Precip,
+	// 		WindSpeed:    g2.WindSpeed,
+	// 		WindCategory: g2.WindCategory,
+	// 	}
+	// }
+	// json.NewEncoder(w).Encode(response)
 }
 
 func GetWeatherForecast(w http.ResponseWriter, r *http.Request) {

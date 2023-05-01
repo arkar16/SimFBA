@@ -170,6 +170,19 @@ func GetTeamByTeamAbbr(abbr string) structs.CollegeTeam {
 	return team
 }
 
+func GetNFLTeamByTeamIDForSim(id string) structs.NFLTeam {
+	db := dbprovider.GetInstance().GetDB()
+
+	var team structs.NFLTeam
+
+	err := db.Preload("TeamGameplan").Preload("TeamDepthChart.DepthChartPlayers").Where("id = ?", id).Find(&team).Error
+	if err != nil {
+		log.Panicln("Could not find team by given id:"+id+"\n", err)
+	}
+
+	return team
+}
+
 func GetNFLTeamByTeamAbbr(abbr string) structs.NFLTeam {
 	db := dbprovider.GetInstance().GetDB()
 

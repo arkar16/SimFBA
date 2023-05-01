@@ -352,6 +352,9 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	if err != nil {
 		log.Panicln("Could not save team stats!")
 	}
+
+	timestamp.ToggleRunGames()
+	db.Save(&timestamp)
 }
 
 func GetAllCollegeTeamsWithStatsBySeasonID(seasonID string) []models.CollegeTeamResponse {

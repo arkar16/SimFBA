@@ -33,6 +33,7 @@ type Timestamp struct {
 	IsRecruitingLocked         bool
 	IsFreeAgencyLocked         bool
 	IsDraftTime                bool
+	RunGames                   bool
 	Y1Capspace                 float64
 	Y2Capspace                 float64
 	Y3Capspace                 float64
@@ -145,4 +146,8 @@ func (t *Timestamp) ToggleTimeSlot(ts string) {
 	} else if ts == "Monday Night Football" {
 		t.NFLMondayEvening = true
 	}
+}
+
+func (t *Timestamp) ToggleRunGames() {
+	t.RunGames = !t.RunGames
 }

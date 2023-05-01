@@ -226,3 +226,13 @@ func UpdateTimeslot(dto structs.UpdateTimeslotDTO) {
 		// return structs.CollegeGame{}, game
 	}
 }
+
+func RunTheGames() {
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
+
+	ts.ToggleRunGames()
+
+	db.Save(&ts)
+}

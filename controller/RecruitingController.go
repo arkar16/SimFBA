@@ -206,5 +206,6 @@ func SaveRecruitingBoard(w http.ResponseWriter, r *http.Request) {
 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Vary", "Origin")
 	(*w).Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }

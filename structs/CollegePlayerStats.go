@@ -10,5 +10,10 @@ type CollegePlayerStats struct {
 	WeekID          int
 	SeasonID        int
 	OpposingTeam    string
+	Year            int
 	BasePlayerStats
+}
+
+func (c *CollegePlayerStats) ApplyYear(year int) {
+	c.Year = year
 }

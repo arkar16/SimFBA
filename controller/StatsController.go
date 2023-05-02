@@ -57,7 +57,7 @@ func ExportPlayerStatsToCSV(w http.ResponseWriter, r *http.Request) {
 
 	playersChan := make(chan []models.CollegePlayerResponse)
 	go func() {
-		cp := managers.GetAllCollegePlayersWithStatsBySeasonID(conferenceMap, conferenceNameMap, strconv.Itoa(ts.CollegeSeasonID))
+		cp := managers.GetAllCollegePlayersWithStatsBySeasonID(conferenceMap, conferenceNameMap, strconv.Itoa(ts.CollegeSeasonID), "", "SEASON")
 		playersChan <- cp
 	}()
 
@@ -70,6 +70,12 @@ func ExportPlayerStatsToCSV(w http.ResponseWriter, r *http.Request) {
 func GetStatsPageContentForSeason(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	seasonID := vars["seasonID"]
+	viewType := vars["viewType"]
+	weekID := vars["weekID"]
+
+	if len(viewType) == 0 {
+		panic("User did not provide view type")
+	}
 
 	if len(seasonID) == 0 {
 		panic("User did not provide TeamID")
@@ -78,7 +84,7 @@ func GetStatsPageContentForSeason(w http.ResponseWriter, r *http.Request) {
 	teamsChan := make(chan []models.CollegeTeamResponse)
 
 	go func() {
-		ct := managers.GetAllCollegeTeamsWithStatsBySeasonID(seasonID)
+		ct := managers.GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType)
 		teamsChan <- ct
 	}()
 
@@ -95,7 +101,7 @@ func GetStatsPageContentForSeason(w http.ResponseWriter, r *http.Request) {
 
 	playersChan := make(chan []models.CollegePlayerResponse)
 	go func() {
-		cp := managers.GetAllCollegePlayersWithStatsBySeasonID(conferenceMap, conferenceNameMap, seasonID)
+		cp := managers.GetAllCollegePlayersWithStatsBySeasonID(conferenceMap, conferenceNameMap, seasonID, weekID, viewType)
 		playersChan <- cp
 	}()
 
@@ -181,5 +187,4 @@ func GetSeasonTeamStatsByTeamAbbrAndSeason(w http.ResponseWriter, r *http.Reques
 
 func MapAllStatsToSeason(w http.ResponseWriter, r *http.Request) {
 	managers.MapAllStatsToSeason()
-
 }

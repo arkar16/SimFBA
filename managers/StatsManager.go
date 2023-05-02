@@ -98,7 +98,7 @@ func GetSeasonalTeamStats(TeamID string, SeasonID string) models.CollegeTeamResp
 
 	var collegeTeam structs.CollegeTeam
 
-	err := db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
+	err := db.Preload("TeamSeasonStats", func(db *gorm.DB) *gorm.DB {
 		return db.Where("season_id = ?", SeasonID)
 	}).Where("id = ?", TeamID).Find(&collegeTeam).Error
 	if err != nil {
@@ -112,10 +112,8 @@ func GetSeasonalTeamStats(TeamID string, SeasonID string) models.CollegeTeamResp
 		Conference:   collegeTeam.Conference,
 		DivisionID:   collegeTeam.DivisionID,
 		Division:     collegeTeam.Division,
-		TeamStats:    collegeTeam.TeamStats,
+		SeasonStats:  collegeTeam.TeamSeasonStats,
 	}
-
-	ct.MapSeasonalStats()
 
 	return ct
 }
@@ -354,18 +352,31 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	}
 }
 
-func GetAllCollegeTeamsWithStatsBySeasonID(seasonID string) []models.CollegeTeamResponse {
+func GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []models.CollegeTeamResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	var teams []structs.CollegeTeam
 
-	db.Preload("TeamSeasonStats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ?", seasonID)
-	}).Find(&teams)
+	if viewType == "SEASON" {
+		db.Preload("TeamSeasonStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ?", seasonID)
+		}).Find(&teams)
+	} else {
+		db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ? AND week_id = ?", seasonID, weekID)
+		}).Find(&teams)
+	}
 
 	var ctResponse []models.CollegeTeamResponse
 
 	for _, team := range teams {
+		if len(team.TeamStats) == 0 && viewType == "WEEK" {
+			continue
+		}
+		var teamstat structs.CollegeTeamStats
+		if viewType == "WEEK" {
+			teamstat = team.TeamStats[0]
+		}
 		ct := models.CollegeTeamResponse{
 			ID:           int(team.ID),
 			BaseTeam:     team.BaseTeam,
@@ -374,6 +385,7 @@ func GetAllCollegeTeamsWithStatsBySeasonID(seasonID string) []models.CollegeTeam
 			DivisionID:   team.DivisionID,
 			Division:     team.Division,
 			SeasonStats:  team.TeamSeasonStats,
+			Stats:        teamstat,
 		}
 
 		ctResponse = append(ctResponse, ct)

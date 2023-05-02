@@ -20,6 +20,8 @@ type TeamStatDTO struct {
 	RushYardsAllowed int
 	PassYardsAllowed int
 	PointsAllowed    int
+	SoloTackles      int
+	AssistedTackles  int
 	TacklesForLoss   float64
 	Sacks            float64
 	ForcedFumbles    int
@@ -72,6 +74,8 @@ func (t *TeamStatDTO) MapToBaseTeamStatsObject() BaseTeamStats {
 		PassingYardsAllowed:    t.PassYardsAllowed,
 		RushingYardsAllowed:    t.RushYardsAllowed,
 		TacklesForLoss:         float64(t.TacklesForLoss),
+		SoloTackles:            t.SoloTackles,
+		AssistedTackles:        t.AssistedTackles,
 		DefensiveSacks:         t.Sacks,
 		ForcedFumbles:          t.ForcedFumbles,
 		FumblesRecovered:       t.RecoveredFumbles,

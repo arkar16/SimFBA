@@ -308,6 +308,102 @@ func GetAllCollegePlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]str
 	return cpResponse
 }
 
+func GetAllNFLPlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]string, seasonID, weekID, viewType string) []models.NFLPlayerResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
+
+	seasonIDVal := util.ConvertStringToInt(seasonID)
+
+	var nflPlayers []structs.NFLPlayer
+
+	// var distinctNFLStats []structs.CollegePlayerStats
+	var distinctNFLStats []structs.NFLPlayerSeasonStats
+
+	db.Distinct("nfl_player_id").Where("snaps > 0 AND season_id = ?", seasonID).Find(&distinctNFLStats)
+
+	distinctCollegePlayerIDs := util.GetNFLPlayerIDsBySeasonStats(distinctNFLStats)
+
+	if viewType == "SEASON" {
+		db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ?", seasonID)
+		}).Where("id in ?", distinctCollegePlayerIDs).Find(&nflPlayers)
+	} else {
+		db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ? AND week_id = ? and snaps > 0", seasonID, weekID)
+		}).Where("id in ?", distinctCollegePlayerIDs).Find(&nflPlayers)
+	}
+
+	var cpResponse []models.NFLPlayerResponse
+
+	for _, player := range nflPlayers {
+		if len(player.Stats) == 0 && viewType == "WEEK" {
+			continue
+		}
+		var stat structs.NFLPlayerStats
+		if viewType == "WEEK" {
+			stat = player.Stats[0]
+		}
+		cp := models.NFLPlayerResponse{
+			ID:           int(player.ID),
+			BasePlayer:   player.BasePlayer,
+			ConferenceID: cMap[player.TeamID],
+			Conference:   cNMap[player.TeamID],
+			TeamID:       player.TeamID,
+			TeamAbbr:     player.TeamAbbr,
+			State:        player.State,
+			Year:         int(player.Experience),
+			SeasonStats:  player.SeasonStats,
+			Stats:        stat,
+		}
+
+		// cp.MapSeasonalStats()
+
+		cpResponse = append(cpResponse, cp)
+	}
+
+	// If viewing a past season, get all past season players too
+	if seasonIDVal < ts.NFLSeasonID {
+		var historicNFLPlayers []structs.NFLRetiredPlayer
+
+		if viewType == "SEASON" {
+			db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+				return db.Where("season_id = ?", seasonID)
+			}).Where("id in ?", distinctCollegePlayerIDs).Find(&historicNFLPlayers)
+		} else {
+			db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+				return db.Where("season_id = ? AND week_id = ?", seasonID, weekID)
+			}).Where("id in ?", distinctCollegePlayerIDs).Find(&historicNFLPlayers)
+		}
+
+		for _, player := range historicNFLPlayers {
+			if len(player.Stats) == 0 && viewType == "WEEK" {
+				continue
+			}
+			var stat structs.NFLPlayerStats
+			if viewType == "WEEK" {
+				stat = player.Stats[0]
+			}
+			cp := models.NFLPlayerResponse{
+				ID:           int(player.ID),
+				BasePlayer:   player.BasePlayer,
+				ConferenceID: cMap[player.TeamID],
+				Conference:   cNMap[player.TeamID],
+				TeamID:       player.TeamID,
+				TeamAbbr:     player.TeamAbbr,
+				State:        player.State,
+				Year:         int(player.Experience),
+				SeasonStats:  player.SeasonStats,
+				Stats:        stat,
+			}
+
+			cpResponse = append(cpResponse, cp)
+		}
+	}
+
+	return cpResponse
+}
+
 func GetAllCollegePlayersWithStatsByTeamID(TeamID string, SeasonID string) []structs.CollegePlayer {
 	db := dbprovider.GetInstance().GetDB()
 

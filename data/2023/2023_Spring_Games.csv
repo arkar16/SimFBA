@@ -1,7 +1,4 @@
 GameID,Season,Week,Home Team,Away Team,Listed Win,Other Win,Listed Score,Other Score,Conference Game,Division Game,Neutral Site,Conference Champ,Bowl Game,Playoff,National Champ,Listed Coach,Other Coach,TimeSlot,Stadium,City,State,GameTitle,Info
-1712,2023,1,NEB,IAST,0,0,0,0,0,0,0,0,0,0,0,huskersax,Qupax,,"Memorial Stadium, Tom Osborne Field",Lincoln,NE,,
-1713,2023,2,NEB,CSU,0,0,0,0,0,0,0,0,0,0,0,huskersax,Bellwood,,"Memorial Stadium, Tom Osborne Field",Lincoln,NE,,
-1714,2023,3,NEB,SDST,0,0,0,0,0,0,0,0,0,0,0,huskersax,AI,,"Memorial Stadium, Tom Osborne Field",Lincoln,NE,,
-1715,2023,1,TEX,KENT,0,0,0,0,0,0,0,0,0,0,0,joopear,AI,,Darrell K Royal-Texas Memorial Stadium,Austin,TX,,
-1716,2023,2,MIST,TEX,0,0,0,0,0,0,0,0,0,0,0,AI,joopear,,Spartan Stadium,East Lansing,MI,,
-1717,2023,3,TEX,FAU,0,0,0,0,0,0,0,0,0,0,0,joopear,AI,,Darrell K Royal-Texas Memorial Stadium,Austin,TX,,
+1718,2023,1,UHOU,TENN,0,0,0,0,0,0,0,0,0,0,0,mahrowkeen,tsweezy,,John O'Quinn Field at TDECU Stadium,Houston,TX,,
+1719,2023,2,UHOU,UTSA,0,0,0,0,0,0,0,0,0,0,0,mahrowkeen,Dakotagreer,,John O'Quinn Field at TDECU Stadium,Houston,TX,,
+1720,2023,3,UHOU,TXSO,0,0,0,0,0,0,0,0,0,0,0,mahrowkeen,AI,,John O'Quinn Field at TDECU Stadium,Houston,TX,,

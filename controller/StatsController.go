@@ -152,15 +152,18 @@ func GetNFLStatsPageContent(w http.ResponseWriter, r *http.Request) {
 
 	var conferenceMap = make(map[int]int)
 	var conferenceNameMap = make(map[int]string)
-
+	var divisionMap = make(map[int]int)
+	var divisionNameMap = make(map[int]string)
 	for _, team := range nflTeams {
 		conferenceMap[int(team.ID)] = team.ConferenceID
 		conferenceNameMap[int(team.ID)] = team.Conference
+		divisionMap[int(team.ID)] = team.DivisionID
+		divisionNameMap[int(team.ID)] = team.Division
 	}
 
 	playersChan := make(chan []models.NFLPlayerResponse)
 	go func() {
-		cp := managers.GetAllNFLPlayersWithStatsBySeasonID(conferenceMap, conferenceNameMap, seasonID, weekID, viewType)
+		cp := managers.GetAllNFLPlayersWithStatsBySeasonID(conferenceMap, divisionMap, conferenceNameMap, divisionNameMap, seasonID, weekID, viewType)
 		playersChan <- cp
 	}()
 

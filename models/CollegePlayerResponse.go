@@ -27,6 +27,8 @@ type NFLPlayerResponse struct {
 	Year         int
 	ConferenceID int
 	Conference   string
+	DivisionID   int
+	Division     string
 	Stats        structs.NFLPlayerStats
 	SeasonStats  structs.NFLPlayerSeasonStats
 }

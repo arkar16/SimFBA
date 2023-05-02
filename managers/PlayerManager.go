@@ -308,7 +308,7 @@ func GetAllCollegePlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]str
 	return cpResponse
 }
 
-func GetAllNFLPlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]string, seasonID, weekID, viewType string) []models.NFLPlayerResponse {
+func GetAllNFLPlayersWithStatsBySeasonID(cMap, dMap map[int]int, cNMap, dNMap map[int]string, seasonID, weekID, viewType string) []models.NFLPlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	ts := GetTimestamp()
@@ -349,6 +349,8 @@ func GetAllNFLPlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]string,
 			BasePlayer:   player.BasePlayer,
 			ConferenceID: cMap[player.TeamID],
 			Conference:   cNMap[player.TeamID],
+			DivisionID:   dMap[player.TeamID],
+			Division:     dNMap[player.TeamID],
 			TeamID:       player.TeamID,
 			TeamAbbr:     player.TeamAbbr,
 			State:        player.State,

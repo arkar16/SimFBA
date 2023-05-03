@@ -238,11 +238,11 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	var teamStats []structs.CollegeTeamStats
 
 	for _, gameDataDTO := range gameStats {
-
+		gameID := strconv.Itoa(int(gameDataDTO.GameID))
 		record := make(chan structs.CollegeGame)
 
 		go func() {
-			asynchronousGame := GetCollegeGameByAbbreviationsWeekAndSeasonID(gameDataDTO.HomeTeam.Abbreviation, strconv.Itoa(timestamp.CollegeWeekID), strconv.Itoa(timestamp.CollegeSeasonID))
+			asynchronousGame := GetCollegeGameByGameID(gameID)
 			record <- asynchronousGame
 		}()
 
@@ -250,11 +250,14 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		close(record)
 		var playerStats []structs.CollegePlayerStats
 
+		homeTeamID := strconv.Itoa(int(gameRecord.HomeTeamID))
+		awayTeamID := strconv.Itoa(int(gameRecord.AwayTeamID))
+
 		// Team Stats Export
 		homeTeamChn := make(chan structs.CollegeTeam)
 
 		go func() {
-			homeTeam := GetTeamByTeamAbbr(gameDataDTO.HomeTeam.Abbreviation)
+			homeTeam := GetTeamByTeamID(homeTeamID)
 			homeTeamChn <- homeTeam
 		}()
 
@@ -276,7 +279,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		awayTeamChn := make(chan structs.CollegeTeam)
 
 		go func() {
-			awayTeam := GetTeamByTeamAbbr(gameDataDTO.AwayTeam.Abbreviation)
+			awayTeam := GetTeamByTeamID(awayTeamID)
 			awayTeamChn <- awayTeam
 		}()
 
@@ -308,7 +311,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				GameID:          homeTeam.GameID,
 				WeekID:          gameRecord.WeekID,
 				SeasonID:        gameRecord.SeasonID,
-				OpposingTeam:    gameDataDTO.AwayTeam.Abbreviation,
+				OpposingTeam:    at.TeamAbbr,
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
 			}
 			playerStats = append(playerStats, collegePlayerStats)
@@ -327,7 +330,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				GameID:          awayTeam.GameID,
 				WeekID:          gameRecord.WeekID,
 				SeasonID:        gameRecord.SeasonID,
-				OpposingTeam:    gameDataDTO.HomeTeam.Abbreviation,
+				OpposingTeam:    ht.TeamAbbr,
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
 			}
 			playerStats = append(playerStats, collegePlayerStats)
@@ -497,57 +500,60 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	var teamStats []structs.NFLTeamStats
 
 	for _, gameDataDTO := range gameStats {
-
+		gameID := strconv.Itoa(int(gameDataDTO.GameID))
 		record := make(chan structs.NFLGame)
 
 		go func() {
-			asynchronousGame := GetNFLGameByAbbreviationsWeekAndSeasonID(gameDataDTO.HomeTeam.Abbreviation, strconv.Itoa(timestamp.NFLWeekID), strconv.Itoa(timestamp.NFLSeasonID))
+			asynchronousGame := GetNFLGameByGameID(gameID)
 			record <- asynchronousGame
 		}()
 
 		gameRecord := <-record
 		close(record)
+
+		homeTeamID := strconv.Itoa(int(gameRecord.HomeTeamID))
+		awayTeamID := strconv.Itoa(int(gameRecord.AwayTeamID))
+
 		var playerStats []structs.NFLPlayerStats
 
 		// Team Stats Export
 		homeTeamChn := make(chan structs.NFLTeam)
 
 		go func() {
-			homeTeam := GetNFLTeamByTeamAbbr(gameDataDTO.HomeTeam.Abbreviation)
+			homeTeam := GetNFLTeamByTeamID(homeTeamID)
 			homeTeamChn <- homeTeam
 		}()
 
 		ht := <-homeTeamChn
 		close(homeTeamChn)
 
-		homeTeam := structs.NFLTeamStats{
-			TeamID:        ht.ID,
-			GameID:        gameRecord.ID,
-			WeekID:        uint(gameRecord.WeekID),
-			SeasonID:      uint(gameRecord.SeasonID),
-			OpposingTeam:  gameDataDTO.AwayTeam.Abbreviation,
-			BaseTeamStats: gameDataDTO.HomeTeam.MapToBaseTeamStatsObject(),
-		}
-
-		teamStats = append(teamStats, homeTeam)
-
 		// Away Team
 		awayTeamChn := make(chan structs.NFLTeam)
 
 		go func() {
-			awayTeam := GetNFLTeamByTeamAbbr(gameDataDTO.AwayTeam.Abbreviation)
+			awayTeam := GetNFLTeamByTeamID(awayTeamID)
 			awayTeamChn <- awayTeam
 		}()
 
 		at := <-awayTeamChn
 		close(awayTeamChn)
 
+		homeTeam := structs.NFLTeamStats{
+			TeamID:        ht.ID,
+			GameID:        gameRecord.ID,
+			WeekID:        uint(gameRecord.WeekID),
+			SeasonID:      uint(gameRecord.SeasonID),
+			OpposingTeam:  at.TeamAbbr,
+			BaseTeamStats: gameDataDTO.HomeTeam.MapToBaseTeamStatsObject(),
+		}
+
+		teamStats = append(teamStats, homeTeam)
 		awayTeam := structs.NFLTeamStats{
 			TeamID:        at.ID,
 			GameID:        gameRecord.ID,
 			WeekID:        uint(gameRecord.WeekID),
 			SeasonID:      uint(gameRecord.SeasonID),
-			OpposingTeam:  gameDataDTO.HomeTeam.Abbreviation,
+			OpposingTeam:  ht.TeamAbbr,
 			BaseTeamStats: gameDataDTO.AwayTeam.MapToBaseTeamStatsObject(),
 		}
 

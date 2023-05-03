@@ -1,6 +1,7 @@
 package structs
 
 type GameStatDTO struct {
+	GameID      uint
 	HomeTeam    TeamStatDTO
 	AwayTeam    TeamStatDTO
 	HomePlayers []PlayerStatDTO

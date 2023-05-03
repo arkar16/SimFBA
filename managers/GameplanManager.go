@@ -158,7 +158,7 @@ func UpdateGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 
 	schemePenalty := false
 
-	if currentGameplan.OffensiveScheme != updateGameplanDto.UpdatedGameplan.OffensiveScheme {
+	if currentGameplan.OffensiveScheme != updateGameplanDto.UpdatedGameplan.OffensiveScheme && !ts.CFBSpringGames {
 
 		if ts.CollegeWeek != 0 {
 			currentGameplan.ApplySchemePenalty(true)
@@ -166,7 +166,7 @@ func UpdateGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 		schemePenalty = true
 	}
 
-	if currentGameplan.DefensiveScheme != updateGameplanDto.UpdatedGameplan.DefensiveScheme {
+	if currentGameplan.DefensiveScheme != updateGameplanDto.UpdatedGameplan.DefensiveScheme && !ts.CFBSpringGames {
 
 		if ts.CollegeWeek != 0 {
 			currentGameplan.ApplySchemePenalty(false)
@@ -203,7 +203,7 @@ func UpdateNFLGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 
 	schemeChange := false
 	ts := GetTimestamp()
-	if currentGameplan.OffensiveScheme != UpdatedGameplan.OffensiveScheme && !ts.IsNFLOffSeason {
+	if currentGameplan.OffensiveScheme != UpdatedGameplan.OffensiveScheme && !ts.IsNFLOffSeason && !ts.NFLPreseason {
 
 		if ts.NFLWeek != 0 {
 			currentGameplan.ApplySchemePenalty(true)
@@ -213,7 +213,7 @@ func UpdateNFLGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 
 	}
 
-	if currentGameplan.DefensiveScheme != UpdatedGameplan.DefensiveScheme && !ts.IsNFLOffSeason {
+	if currentGameplan.DefensiveScheme != UpdatedGameplan.DefensiveScheme && !ts.IsNFLOffSeason && !ts.NFLPreseason {
 
 		if ts.NFLWeek != 0 {
 			currentGameplan.ApplySchemePenalty(false)

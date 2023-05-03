@@ -232,6 +232,9 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	timestamp := <-tsChn
 	close(tsChn)
 
+	timestamp.ToggleRunGames()
+	db.Save(&timestamp)
+
 	var teamStats []structs.CollegeTeamStats
 
 	for _, gameDataDTO := range gameStats {
@@ -350,9 +353,6 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	if err != nil {
 		log.Panicln("Could not save team stats!")
 	}
-
-	timestamp.ToggleRunGames()
-	db.Save(&timestamp)
 }
 
 func GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []models.CollegeTeamResponse {

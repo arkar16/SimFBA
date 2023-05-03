@@ -16,14 +16,17 @@ import (
 func ExportCFBStatisticsFromSim(w http.ResponseWriter, r *http.Request) {
 	// Create DTO for College Recruit
 	var exportStatsDTO structs.ExportStatsDTO
+	fmt.Println("PING!")
 	err := json.NewDecoder(r.Body).Decode(&exportStatsDTO)
 	if err != nil {
+		fmt.Println("CANNOT DECODE BODY!")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 	// validate info from DTO
 	if len(exportStatsDTO.CFBGameStatDTOs) == 0 || len(exportStatsDTO.NFLGameStatDTOs) == 0 {
-		log.Fatalln("ERROR: Could not acquire all data for export")
+		fmt.Println("AINT NOTHING WORKING")
+		log.Panicln("ERROR: Could not acquire all data for export")
 	}
 
 	// Send DTO to Manager Class

@@ -7,3 +7,8 @@ type SimCFBStatsResponse struct {
 	CollegePlayers     []CollegePlayerResponse
 	CollegeTeams       []CollegeTeamResponse
 }
+
+type SimNFLStatsResponse struct {
+	NFLPlayers []NFLPlayerResponse
+	NFLTeams   []NFLTeamResponse
+}

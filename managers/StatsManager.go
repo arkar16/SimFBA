@@ -397,6 +397,51 @@ func GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []
 	return ctResponse
 }
 
+func GetAllNFLTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []models.NFLTeamResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	var teams []structs.NFLTeam
+
+	if viewType == "SEASON" {
+		db.Preload("TeamSeasonStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ?", seasonID)
+		}).Find(&teams)
+	} else {
+		db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ? AND week_id = ?", seasonID, weekID)
+		}).Find(&teams)
+	}
+
+	var ctResponse []models.NFLTeamResponse
+
+	for _, team := range teams {
+		if len(team.TeamStats) == 0 && viewType == "WEEK" {
+			continue
+		}
+		var teamstat structs.NFLTeamStats
+		var seasonstat structs.NFLTeamSeasonStats
+		if viewType == "WEEK" {
+			teamstat = team.TeamStats[0]
+		} else {
+			seasonstat = team.TeamSeasonStats[0]
+		}
+		ct := models.NFLTeamResponse{
+			ID:           int(team.ID),
+			BaseTeam:     team.BaseTeam,
+			ConferenceID: int(team.ConferenceID),
+			Conference:   team.Conference,
+			DivisionID:   int(team.DivisionID),
+			Division:     team.Division,
+			SeasonStats:  seasonstat,
+			Stats:        teamstat,
+		}
+
+		ctResponse = append(ctResponse, ct)
+	}
+
+	return ctResponse
+}
+
 func MapAllStatsToSeason() {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()

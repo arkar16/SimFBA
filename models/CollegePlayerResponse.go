@@ -16,3 +16,19 @@ type CollegePlayerResponse struct {
 	Stats        structs.CollegePlayerStats
 	SeasonStats  structs.CollegePlayerSeasonStats
 }
+
+type NFLPlayerResponse struct {
+	ID int
+	structs.BasePlayer
+	TeamID       int
+	TeamAbbr     string
+	City         string
+	State        string
+	Year         int
+	ConferenceID int
+	Conference   string
+	DivisionID   int
+	Division     string
+	Stats        structs.NFLPlayerStats
+	SeasonStats  structs.NFLPlayerSeasonStats
+}

@@ -114,6 +114,16 @@ func GetCollegePlayerIDsBySeasonStats(cps []structs.CollegePlayerSeasonStats) []
 	return list
 }
 
+func GetNFLPlayerIDsBySeasonStats(cps []structs.NFLPlayerSeasonStats) []string {
+	var list []string
+
+	for _, cp := range cps {
+		list = append(list, strconv.Itoa(int(cp.NFLPlayerID)))
+	}
+
+	return list
+}
+
 func GetCollegePlayerIDs(cps []structs.CollegePlayerStats) []string {
 	var list []string
 

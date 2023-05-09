@@ -28,7 +28,11 @@ func GetAllWaiverWirePlayers() []structs.NFLPlayer {
 
 	fas := []structs.NFLPlayer{}
 
-	db.Where("is_waived = ?", true).Find(&fas)
+	db.Preload("Contract", func(db *gorm.DB) *gorm.DB {
+		return db.Where("is_active = true")
+	}).Preload("WaiverOffers", func(db *gorm.DB) *gorm.DB {
+		return db.Where("is_active = true")
+	}).Where("is_waived = ?", true).Find(&fas)
 
 	return fas
 }

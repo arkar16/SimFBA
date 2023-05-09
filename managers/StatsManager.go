@@ -46,7 +46,7 @@ func GetAllCollegePlayerStatsByGame(GameID string, TeamID string) []structs.Coll
 
 	var playerStats []structs.CollegePlayerStats
 
-	db.Where("game_id = ? and season_id = ?", GameID, TeamID).Find(&playerStats)
+	db.Where("game_id = ? and team_id = ?", GameID, TeamID).Find(&playerStats)
 
 	return playerStats
 }
@@ -56,7 +56,7 @@ func GetAllNFLPlayerStatsByGame(GameID string, TeamID string) []structs.NFLPlaye
 
 	var playerStats []structs.NFLPlayerStats
 
-	db.Where("game_id = ? and season_id = ?", GameID, TeamID).Find(&playerStats)
+	db.Where("game_id = ? and team_id = ?", GameID, TeamID).Find(&playerStats)
 
 	return playerStats
 }
@@ -173,7 +173,7 @@ func GetCollegeTeamStatsByGame(TeamID string, GameID string) structs.CollegeTeam
 
 	var teamStats structs.CollegeTeamStats
 
-	db.Where("team_id = ?, game_id = ?", TeamID, GameID).Find(&teamStats)
+	db.Where("team_id = ? AND game_id = ?", TeamID, GameID).Find(&teamStats)
 
 	return teamStats
 }
@@ -183,7 +183,7 @@ func GetNFLTeamStatsByGame(TeamID string, GameID string) structs.NFLTeamStats {
 
 	var teamStats structs.NFLTeamStats
 
-	db.Where("team_id = ?, game_id = ?", TeamID, GameID).Find(&teamStats)
+	db.Where("team_id = ? AND game_id = ?", TeamID, GameID).Find(&teamStats)
 
 	return teamStats
 }
@@ -300,11 +300,6 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		// Player Stat Export
 		// HomePlayers
 		for _, player := range gameDataDTO.HomePlayers {
-			if player.IsInjured && player.WeeksOfRecovery > 0 {
-				playerRecord := GetCollegePlayerByCollegePlayerId(strconv.Itoa(player.PlayerID))
-				playerRecord.SetIsInjured(player.IsInjured, player.InjuryType, player.WeeksOfRecovery)
-				db.Save(&playerRecord)
-			}
 			collegePlayerStats := structs.CollegePlayerStats{
 				CollegePlayerID: player.GetPlayerID(),
 				TeamID:          homeTeam.TeamID,
@@ -319,11 +314,6 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 
 		// AwayPlayers
 		for _, player := range gameDataDTO.AwayPlayers {
-			if player.IsInjured && player.WeeksOfRecovery > 0 {
-				playerRecord := GetCollegePlayerByCollegePlayerId(strconv.Itoa(player.PlayerID))
-				playerRecord.SetIsInjured(player.IsInjured, player.InjuryType, player.WeeksOfRecovery)
-				db.Save(&playerRecord)
-			}
 			collegePlayerStats := structs.CollegePlayerStats{
 				CollegePlayerID: player.GetPlayerID(),
 				TeamID:          awayTeam.TeamID,
@@ -562,11 +552,6 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		// Player Stat Export
 		// HomePlayers
 		for _, player := range gameDataDTO.HomePlayers {
-			if player.IsInjured && player.WeeksOfRecovery > 0 {
-				playerRecord := GetNFLPlayerRecord(strconv.Itoa(player.PlayerID))
-				playerRecord.SetIsInjured(player.IsInjured, player.InjuryType, player.WeeksOfRecovery)
-				db.Save(&playerRecord)
-			}
 			nflPlayerStats := structs.NFLPlayerStats{
 				NFLPlayerID:     player.GetPlayerID(),
 				TeamID:          int(homeTeam.TeamID),
@@ -581,12 +566,6 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 
 		// AwayPlayers
 		for _, player := range gameDataDTO.AwayPlayers {
-			if player.IsInjured && player.WeeksOfRecovery > 0 {
-				playerRecord := GetNFLPlayerRecord(strconv.Itoa(player.PlayerID))
-				playerRecord.SetIsInjured(player.IsInjured, player.InjuryType, player.WeeksOfRecovery)
-				db.Save(&playerRecord)
-			}
-
 			nflPlayerStats := structs.NFLPlayerStats{
 				NFLPlayerID:     player.GetPlayerID(),
 				TeamID:          int(awayTeam.TeamID),

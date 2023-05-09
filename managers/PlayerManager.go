@@ -602,7 +602,6 @@ func RecoverPlayers() {
 		if !p.IsInjured {
 			continue
 		}
-
 		p.RecoveryCheck()
 		db.Save(&p)
 	}

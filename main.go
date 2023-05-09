@@ -41,7 +41,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/simfba/get/timestamp/", controller.GetCurrentTimestamp).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/timestamp/", controller.SyncTimestamp).Methods("POST")
 	myRouter.HandleFunc("/simfba/sync/week/", controller.SyncWeek).Methods("GET")
-	myRouter.HandleFunc("/simfba/sync/timeslot/{timeslot}", controller.SyncWeek).Methods("GET")
+	myRouter.HandleFunc("/simfba/sync/timeslot/{timeslot}", controller.SyncTimeslot).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/freeagency/round", controller.SyncFreeAgencyRound).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/recruiting/", controller.SyncRecruiting).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/missing/", controller.SyncMissingRES).Methods("GET")

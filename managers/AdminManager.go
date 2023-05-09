@@ -34,14 +34,13 @@ func GetCollegeWeek(weekID string, ts structs.Timestamp) structs.CollegeWeek {
 func MoveUpWeek() structs.Timestamp {
 	db := dbprovider.GetInstance().GetDB()
 	timestamp := GetTimestamp()
-	if timestamp.RecruitingSynced {
-		// Sync to Next Week
-		UpdateGameplanPenalties()
-		RecoverPlayers()
-		CheckNFLRookiesForLetterGrade(strconv.Itoa(int(timestamp.NFLSeasonID)))
-		timestamp.SyncToNextWeek()
-		db.Save(&timestamp)
-	}
+
+	// Sync to Next Week
+	UpdateGameplanPenalties()
+	RecoverPlayers()
+	CheckNFLRookiesForLetterGrade(strconv.Itoa(int(timestamp.NFLSeasonID)))
+	timestamp.SyncToNextWeek()
+	db.Save(&timestamp)
 
 	return timestamp
 }
@@ -84,8 +83,18 @@ func SyncTimeslot(timeslot string) {
 			homeTeamID := game.HomeTeamID
 			awayTeamID := game.AwayTeamID
 
-			homeTeamSeasonStats := seasonStatsMap[homeTeamID]
-			awayTeamSeasonStats := seasonStatsMap[awayTeamID]
+			// homeTeamSeasonStats := seasonStatsMap[homeTeamID]
+			// awayTeamSeasonStats := seasonStatsMap[awayTeamID]
+			homeTeamSeasonStats := structs.CollegeTeamSeasonStats{
+				TeamID:   uint(homeTeamID),
+				SeasonID: uint(game.SeasonID),
+				Year:     timestamp.Season,
+			}
+			awayTeamSeasonStats := structs.CollegeTeamSeasonStats{
+				TeamID:   uint(awayTeamID),
+				SeasonID: uint(game.SeasonID),
+				Year:     timestamp.Season,
+			}
 
 			homeTeamStats := GetCollegeTeamStatsByGame(strconv.Itoa(homeTeamID), gameID)
 			awayTeamStats := GetCollegeTeamStatsByGame(strconv.Itoa(awayTeamID), gameID)
@@ -97,23 +106,49 @@ func SyncTimeslot(timeslot string) {
 			awayPlayerStats := GetAllCollegePlayerStatsByGame(gameID, strconv.Itoa(awayTeamID))
 
 			for _, h := range homePlayerStats {
-				if h.Snaps == 0 || timestamp.CFBSpringGames {
+				if h.Snaps == 0 {
 					continue
 				}
-				playerSeasonStat := playerSeasonStatsMap[h.CollegePlayerID]
+				if h.WasInjured {
+					playerRecord := GetCollegePlayerByCollegePlayerId(strconv.Itoa(h.CollegePlayerID))
+					playerRecord.SetIsInjured(h.WasInjured, h.InjuryType, h.WeeksOfRecovery)
+					db.Save(&playerRecord)
+				}
+				// playerSeasonStat := playerSeasonStatsMap[h.CollegePlayerID]
+				playerSeasonStat := structs.CollegePlayerSeasonStats{
+					CollegePlayerID: uint(h.CollegePlayerID),
+					SeasonID:        uint(timestamp.CollegeSeasonID),
+					TeamID:          uint(h.TeamID),
+					Year:            uint(timestamp.Season),
+				}
 				playerSeasonStat.MapStats([]structs.CollegePlayerStats{h})
 
-				db.Save(&playerSeasonStat)
+				if !timestamp.CFBSpringGames {
+					db.Save(&playerSeasonStat)
+				}
 			}
 
 			for _, a := range awayPlayerStats {
-				if a.Snaps == 0 || timestamp.CFBSpringGames {
+				if a.Snaps == 0 {
 					continue
 				}
-				playerSeasonStat := playerSeasonStatsMap[a.CollegePlayerID]
+				if a.WasInjured {
+					playerRecord := GetCollegePlayerByCollegePlayerId(strconv.Itoa(a.CollegePlayerID))
+					playerRecord.SetIsInjured(a.WasInjured, a.InjuryType, a.WeeksOfRecovery)
+					db.Save(&playerRecord)
+				}
+				// playerSeasonStat := playerSeasonStatsMap[a.CollegePlayerID]
+				playerSeasonStat := structs.CollegePlayerSeasonStats{
+					CollegePlayerID: uint(a.CollegePlayerID),
+					SeasonID:        uint(timestamp.CollegeSeasonID),
+					TeamID:          uint(a.TeamID),
+					Year:            uint(timestamp.Season),
+				}
 				playerSeasonStat.MapStats([]structs.CollegePlayerStats{a})
 
-				db.Save(&playerSeasonStat)
+				if !timestamp.CFBSpringGames {
+					db.Save(&playerSeasonStat)
+				}
 			}
 
 			// Update Standings
@@ -172,8 +207,21 @@ func SyncTimeslot(timeslot string) {
 			homeTeamID := game.HomeTeamID
 			awayTeamID := game.AwayTeamID
 
-			homeTeamSeasonStats := seasonStatsMap[homeTeamID]
-			awayTeamSeasonStats := seasonStatsMap[awayTeamID]
+			homeTeamSeasonStats := structs.NFLTeamSeasonStats{
+				TeamID:   uint(homeTeamID),
+				SeasonID: uint(game.SeasonID),
+				Year:     timestamp.Season,
+			}
+			awayTeamSeasonStats := structs.NFLTeamSeasonStats{
+				TeamID:   uint(awayTeamID),
+				SeasonID: uint(game.SeasonID),
+				Year:     timestamp.Season,
+			}
+
+			// if len(seasonStats) > 0 {
+			// 	homeTeamSeasonStats := &seasonStatsMap[homeTeamID]
+			// 	awayTeamSeasonStats := &seasonStatsMap[awayTeamID]
+			// }
 
 			homeTeamStats := GetNFLTeamStatsByGame(strconv.Itoa(homeTeamID), gameID)
 			awayTeamStats := GetNFLTeamStatsByGame(strconv.Itoa(awayTeamID), gameID)
@@ -188,7 +236,19 @@ func SyncTimeslot(timeslot string) {
 				if h.Snaps == 0 {
 					continue
 				}
-				playerSeasonStat := playerSeasonStatsMap[h.NFLPlayerID]
+				if h.WasInjured {
+					playerRecord := GetNFLPlayerRecord(strconv.Itoa(h.NFLPlayerID))
+					playerRecord.SetIsInjured(h.WasInjured, h.InjuryType, h.WeeksOfRecovery)
+					db.Save(&playerRecord)
+				}
+				// playerSeasonStat := playerSeasonStatsMap[h.NFLPlayerID]
+				playerSeasonStat := structs.NFLPlayerSeasonStats{
+					NFLPlayerID: uint(h.NFLPlayerID),
+					SeasonID:    uint(timestamp.NFLSeasonID),
+					TeamID:      uint(h.TeamID),
+					Team:        h.Team,
+					Year:        uint(timestamp.Season),
+				}
 				playerSeasonStat.MapStats([]structs.NFLPlayerStats{h}, timestamp)
 
 				db.Save(&playerSeasonStat)
@@ -198,7 +258,19 @@ func SyncTimeslot(timeslot string) {
 				if a.Snaps == 0 {
 					continue
 				}
-				playerSeasonStat := playerSeasonStatsMap[a.NFLPlayerID]
+				if a.WasInjured {
+					playerRecord := GetNFLPlayerRecord(strconv.Itoa(a.NFLPlayerID))
+					playerRecord.SetIsInjured(a.WasInjured, a.InjuryType, a.WeeksOfRecovery)
+					db.Save(&playerRecord)
+				}
+				// playerSeasonStat := playerSeasonStatsMap[a.NFLPlayerID]
+				playerSeasonStat := structs.NFLPlayerSeasonStats{
+					NFLPlayerID: uint(a.NFLPlayerID),
+					SeasonID:    uint(timestamp.NFLSeasonID),
+					TeamID:      uint(a.TeamID),
+					Team:        a.Team,
+					Year:        uint(timestamp.Season),
+				}
 				playerSeasonStat.MapStats([]structs.NFLPlayerStats{a}, timestamp)
 
 				db.Save(&playerSeasonStat)
@@ -211,7 +283,7 @@ func SyncTimeslot(timeslot string) {
 			homeTeamStandings.UpdateNFLStandings(game)
 			awayTeamStandings.UpdateNFLStandings(game)
 
-			if game.HomeTeamCoach != "AI" {
+			if game.HomeTeamCoach != "AI" && !timestamp.NFLPreseason {
 				homeCoach := GetNFLUserByUsername(game.HomeTeamCoach)
 				homeCoach.UpdateCoachRecord(game)
 
@@ -221,7 +293,7 @@ func SyncTimeslot(timeslot string) {
 				}
 			}
 
-			if game.AwayTeamCoach != "AI" {
+			if game.AwayTeamCoach != "AI" && !timestamp.NFLPreseason {
 				awayCoach := GetNFLUserByUsername(game.AwayTeamCoach)
 				awayCoach.UpdateCoachRecord(game)
 				err := db.Save(&awayCoach).Error
@@ -231,10 +303,13 @@ func SyncTimeslot(timeslot string) {
 			}
 
 			// Save
-			db.Save(&homeTeamSeasonStats)
-			db.Save(&awayTeamSeasonStats)
-			db.Save(&homeTeamStandings)
-			db.Save(&awayTeamStandings)
+			if !timestamp.NFLPreseason {
+				db.Save(&homeTeamSeasonStats)
+				db.Save(&awayTeamSeasonStats)
+				db.Save(&homeTeamStandings)
+				db.Save(&awayTeamStandings)
+			}
+
 		}
 	}
 }

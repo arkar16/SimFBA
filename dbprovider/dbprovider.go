@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	config "github.com/CalebRose/SimFBA/secrets"
-	"github.com/CalebRose/SimFBA/structs"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -84,9 +83,13 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.FreeAgencyOffer{})
 	// db.AutoMigrate(&structs.NFLContract{})
 	// db.AutoMigrate(&structs.NFLPlayer{})
+	// db.AutoMigrate(&structs.NFLPlayerSeasonStats{})
+	// db.AutoMigrate(&structs.NFLPlayerStats{})
 	// db.AutoMigrate(&structs.NFLRetiredPlayer{})
 	// db.AutoMigrate(&structs.NFLUser{})
 	// db.AutoMigrate(&structs.NFLTeam{})
+	// db.AutoMigrate(&structs.NFLTeamStats{})
+	// db.AutoMigrate(&structs.NFLTeamSeasonStats{})
 	// db.AutoMigrate(&structs.NFLGame{})
 	// db.AutoMigrate(&structs.NFLGameplan{})
 	// db.AutoMigrate(&structs.NFLStandings{})
@@ -95,7 +98,7 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.AdminRecruitModifier{})
 	// db.AutoMigrate(&structs.Affinity{})
 	// db.AutoMigrate(&structs.TeamRequest{})
-	db.AutoMigrate(&structs.Timestamp{})
+	// db.AutoMigrate(&structs.Timestamp{})
 	// db.AutoMigrate(&structs.NFLDraftee{})
 	// db.AutoMigrate(&structs.NewsLog{})
 	return true

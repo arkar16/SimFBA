@@ -158,11 +158,18 @@ func (cp *BasePlayer) SetIsInjured(isInjured bool, injuryType string, weeksOfRec
 	cp.WeeksOfRecovery = weeksOfRecovery
 }
 
+func (cp *BasePlayer) ResetInjuryStatus() {
+	cp.InjuryName = ""
+	cp.InjuryType = ""
+	cp.IsInjured = false
+}
+
 func (cp *BasePlayer) RecoveryCheck() {
+	// Resolves Data Type issues
+	var roof uint = 100000000
 	cp.WeeksOfRecovery--
-	if cp.WeeksOfRecovery == 0 {
-		cp.InjuryName = ""
-		cp.InjuryType = ""
-		cp.IsInjured = false
+	if cp.WeeksOfRecovery == 0 || cp.WeeksOfRecovery > roof {
+		cp.ResetInjuryStatus()
 	}
+
 }

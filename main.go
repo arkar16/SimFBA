@@ -44,7 +44,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/simfba/sync/timeslot/{timeslot}", controller.SyncTimeslot).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/freeagency/round", controller.SyncFreeAgencyRound).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/recruiting/", controller.SyncRecruiting).Methods("GET")
-	myRouter.HandleFunc("/simfba/sync/missing/", controller.SyncMissingRES).Methods("GET")
+	// myRouter.HandleFunc("/simfba/sync/missing/", controller.SyncMissingRES).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/weather/", controller.WeatherGenerator).Methods("GET")
 	myRouter.HandleFunc("/simfba/current/weather/forecast/", controller.GetWeatherForecast).Methods("GET")
 	myRouter.HandleFunc("/news/{weekID}/{seasonID}/", controller.GetNewsLogs).Methods("GET")
@@ -100,7 +100,7 @@ func handleRequests() {
 	// Import Controls
 	// myRouter.HandleFunc("/admin/import/recruit/ai", controller.ImportRecruitAICSV).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/draft", controller.Import2023DraftedPlayers).Methods("GET")
-	// myRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
+	myRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/games", controller.ImportNFLGames).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/udfas", controller.ImportUDFAs).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/missing/recruits", controller.GetMissingRecruitingClasses).Methods("GET")

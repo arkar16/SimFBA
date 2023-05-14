@@ -47,6 +47,7 @@ func handleRequests() {
 	// myRouter.HandleFunc("/simfba/sync/missing/", controller.SyncMissingRES).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/weather/", controller.WeatherGenerator).Methods("GET")
 	myRouter.HandleFunc("/simfba/current/weather/forecast/", controller.GetWeatherForecast).Methods("GET")
+	myRouter.HandleFunc("/simfba/future/weather/forecast/", controller.GetFutureWeatherForecast).Methods("GET")
 	myRouter.HandleFunc("/news/{weekID}/{seasonID}/", controller.GetNewsLogs).Methods("GET")
 	myRouter.HandleFunc("/season/{seasonID}/weeks/{weekID}", controller.GetWeeksInSeason).Methods("GET")
 	myRouter.HandleFunc("/admin/teams/croot/sync", controller.SyncTeamRecruitingRanks).Methods("GET")

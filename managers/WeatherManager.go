@@ -604,6 +604,119 @@ func GetCurrentWeekWeather() []structs.GameResponse {
 	return resList
 }
 
+func GetFutureWeather() []structs.GameResponse {
+	ts := GetTimestamp()
+
+	futureWeekID := strconv.Itoa(int(ts.CollegeWeekID + 1))
+	seasonID := strconv.Itoa(int(ts.CollegeSeasonID))
+	futureNFLWeekID := strconv.Itoa(int(ts.NFLWeekID + 1))
+	nflSeasonID := strconv.Itoa(int(ts.NFLSeasonID))
+
+	resList := []structs.GameResponse{}
+
+	nextWeekGames := GetCollegeGamesByWeekIdAndSeasonID(futureWeekID, seasonID)
+	nextWeekNFLGames := GetNFLGamesByWeekAndSeasonID(futureNFLWeekID, nflSeasonID)
+
+	for _, cg := range nextWeekGames {
+		homeTeamStandings := GetCFBStandingsByTeamIDAndSeasonID(strconv.Itoa(int(cg.HomeTeamID)), seasonID)
+		awayTeamStandings := GetCFBStandingsByTeamIDAndSeasonID(strconv.Itoa(int(cg.AwayTeamID)), seasonID)
+		htRecord := strconv.Itoa(homeTeamStandings.TotalWins) + "-" + strconv.Itoa(homeTeamStandings.TotalLosses)
+		atRecord := strconv.Itoa(awayTeamStandings.TotalWins) + "-" + strconv.Itoa(awayTeamStandings.TotalLosses)
+
+		gr := structs.GameResponse{
+			GameID:                   cg.ID,
+			WeekID:                   cg.WeekID,
+			Week:                     cg.Week,
+			SeasonID:                 cg.SeasonID,
+			HomeTeamID:               cg.HomeTeamID,
+			HomeTeam:                 cg.HomeTeam,
+			HomeTeamCoach:            cg.HomeTeamCoach,
+			HomeTeamRecord:           htRecord,
+			AwayTeamID:               cg.AwayTeamID,
+			AwayTeam:                 cg.AwayTeam,
+			AwayTeamCoach:            cg.AwayTeamCoach,
+			AwayTeamRecord:           atRecord,
+			TimeSlot:                 cg.TimeSlot,
+			StadiumID:                cg.StadiumID,
+			Stadium:                  cg.Stadium,
+			City:                     cg.City,
+			State:                    cg.State,
+			Region:                   cg.Region,
+			LowTemp:                  cg.LowTemp,
+			HighTemp:                 cg.HighTemp,
+			GameTemp:                 cg.GameTemp,
+			Cloud:                    cg.Cloud,
+			Precip:                   cg.Precip,
+			WindSpeed:                cg.WindSpeed,
+			WindCategory:             cg.WindCategory,
+			IsNeutral:                cg.IsNeutral,
+			IsDomed:                  cg.IsDomed,
+			IsNightGame:              cg.IsNightGame,
+			IsConference:             cg.IsConference,
+			IsDivisional:             cg.IsDivisional,
+			IsConferenceChampionship: cg.IsConferenceChampionship,
+			IsBowlGame:               cg.IsBowlGame,
+			IsPlayoffGame:            cg.IsPlayoffGame,
+			IsNationalChampionship:   cg.IsNationalChampionship,
+			IsRivalryGame:            cg.IsRivalryGame,
+			GameTitle:                cg.GameTitle,
+			League:                   "CFB",
+		}
+
+		resList = append(resList, gr)
+	}
+
+	for _, nflG := range nextWeekNFLGames {
+		homeTeamStandings := GetNFLStandingsByTeamIDAndSeasonID(strconv.Itoa(int(nflG.HomeTeamID)), seasonID)
+		awayTeamStandings := GetNFLStandingsByTeamIDAndSeasonID(strconv.Itoa(int(nflG.AwayTeamID)), seasonID)
+		htRecord := strconv.Itoa(homeTeamStandings.TotalWins) + "-" + strconv.Itoa(homeTeamStandings.TotalLosses)
+		atRecord := strconv.Itoa(awayTeamStandings.TotalWins) + "-" + strconv.Itoa(awayTeamStandings.TotalLosses)
+
+		gr := structs.GameResponse{
+			GameID:                   nflG.ID,
+			WeekID:                   nflG.WeekID,
+			Week:                     nflG.Week,
+			SeasonID:                 nflG.SeasonID,
+			HomeTeamID:               nflG.HomeTeamID,
+			HomeTeam:                 nflG.HomeTeam,
+			HomeTeamCoach:            nflG.HomeTeamCoach,
+			HomeTeamRecord:           htRecord,
+			AwayTeamID:               nflG.AwayTeamID,
+			AwayTeam:                 nflG.AwayTeam,
+			AwayTeamCoach:            nflG.AwayTeamCoach,
+			AwayTeamRecord:           atRecord,
+			TimeSlot:                 nflG.TimeSlot,
+			StadiumID:                nflG.StadiumID,
+			Stadium:                  nflG.Stadium,
+			City:                     nflG.City,
+			State:                    nflG.State,
+			Region:                   nflG.Region,
+			LowTemp:                  nflG.LowTemp,
+			HighTemp:                 nflG.HighTemp,
+			GameTemp:                 nflG.GameTemp,
+			Cloud:                    nflG.Cloud,
+			Precip:                   nflG.Precip,
+			WindSpeed:                nflG.WindSpeed,
+			WindCategory:             nflG.WindCategory,
+			IsNeutral:                nflG.IsNeutral,
+			IsDomed:                  nflG.IsDomed,
+			IsNightGame:              nflG.IsNightGame,
+			IsConference:             nflG.IsConference,
+			IsDivisional:             nflG.IsDivisional,
+			IsConferenceChampionship: nflG.IsConferenceChampionship,
+			IsPlayoffGame:            nflG.IsPlayoffGame,
+			IsSuperBowl:              nflG.IsSuperBowl,
+			IsRivalryGame:            nflG.IsRivalryGame,
+			GameTitle:                nflG.GameTitle,
+			League:                   "NFL",
+		}
+
+		resList = append(resList, gr)
+	}
+
+	return resList
+}
+
 func getRegionalWeather() map[string]structs.WeatherRegion {
 	path := util.ReadLocalPath("data\\WeatherData")
 

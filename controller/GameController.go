@@ -147,6 +147,11 @@ func GetWeatherForecast(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(res)
 }
 
+func GetFutureWeatherForecast(w http.ResponseWriter, r *http.Request) {
+	res := managers.GetFutureWeather()
+	json.NewEncoder(w).Encode(res)
+}
+
 func RunTheGames(w http.ResponseWriter, r *http.Request) {
 
 }

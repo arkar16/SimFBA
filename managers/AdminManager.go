@@ -67,14 +67,8 @@ func SyncTimeslot(timeslot string) {
 		games := GetCollegeGamesByTimeslotAndWeekId(strconv.Itoa(timestamp.CollegeWeekID), timeslot)
 		seasonStats := GetCollegeSeasonStatsBySeason(strconv.Itoa(timestamp.CollegeSeasonID))
 		seasonStatsMap := make(map[int]*structs.CollegeTeamSeasonStats)
-		playerSeasonStats := GetCollegePlayerSeasonStatsBySeason(strconv.Itoa(timestamp.CollegeSeasonID))
-		playerSeasonStatsMap := make(map[int]*structs.CollegePlayerSeasonStats)
 		for _, s := range seasonStats {
 			seasonStatsMap[int(s.TeamID)] = &s
-		}
-
-		for _, p := range playerSeasonStats {
-			playerSeasonStatsMap[int(p.CollegePlayerID)] = &p
 		}
 
 		for _, game := range games {
@@ -190,15 +184,9 @@ func SyncTimeslot(timeslot string) {
 		games := GetNFLGamesByTimeslotAndWeekId(strconv.Itoa(timestamp.NFLWeekID), timeslot)
 
 		seasonStats := GetNFLTeamSeasonStatsBySeason(strconv.Itoa(timestamp.NFLSeasonID))
-		seasonStatsMap := make(map[int]*structs.NFLTeamSeasonStats)
-		playerSeasonStats := GetNFLPlayerSeasonStatsBySeason(strconv.Itoa(timestamp.NFLSeasonID))
-		playerSeasonStatsMap := make(map[int]*structs.NFLPlayerSeasonStats)
+		seasonStatsMap := make(map[int]structs.NFLTeamSeasonStats)
 		for _, s := range seasonStats {
-			seasonStatsMap[int(s.TeamID)] = &s
-		}
-
-		for _, p := range playerSeasonStats {
-			playerSeasonStatsMap[int(p.NFLPlayerID)] = &p
+			seasonStatsMap[int(s.TeamID)] = s
 		}
 
 		for _, game := range games {
@@ -207,21 +195,8 @@ func SyncTimeslot(timeslot string) {
 			homeTeamID := game.HomeTeamID
 			awayTeamID := game.AwayTeamID
 
-			homeTeamSeasonStats := structs.NFLTeamSeasonStats{
-				TeamID:   uint(homeTeamID),
-				SeasonID: uint(game.SeasonID),
-				Year:     timestamp.Season,
-			}
-			awayTeamSeasonStats := structs.NFLTeamSeasonStats{
-				TeamID:   uint(awayTeamID),
-				SeasonID: uint(game.SeasonID),
-				Year:     timestamp.Season,
-			}
-
-			// if len(seasonStats) > 0 {
-			// 	homeTeamSeasonStats := &seasonStatsMap[homeTeamID]
-			// 	awayTeamSeasonStats := &seasonStatsMap[awayTeamID]
-			// }
+			homeTeamSeasonStats := seasonStatsMap[homeTeamID]
+			awayTeamSeasonStats := seasonStatsMap[awayTeamID]
 
 			homeTeamStats := GetNFLTeamStatsByGame(strconv.Itoa(homeTeamID), gameID)
 			awayTeamStats := GetNFLTeamStatsByGame(strconv.Itoa(awayTeamID), gameID)
@@ -242,16 +217,20 @@ func SyncTimeslot(timeslot string) {
 					db.Save(&playerRecord)
 				}
 				// playerSeasonStat := playerSeasonStatsMap[h.NFLPlayerID]
-				playerSeasonStat := structs.NFLPlayerSeasonStats{
-					NFLPlayerID: uint(h.NFLPlayerID),
-					SeasonID:    uint(timestamp.NFLSeasonID),
-					TeamID:      uint(h.TeamID),
-					Team:        h.Team,
-					Year:        uint(timestamp.Season),
+				seasonStats := GetNFLSeasonStatsByPlayerAndSeason(strconv.Itoa(h.NFLPlayerID), strconv.Itoa(int(timestamp.NFLSeasonID)))
+				if seasonStats.ID == 0 {
+					seasonStats = structs.NFLPlayerSeasonStats{
+						NFLPlayerID: uint(h.NFLPlayerID),
+						SeasonID:    uint(timestamp.NFLSeasonID),
+						TeamID:      uint(h.TeamID),
+						Team:        h.Team,
+						Year:        uint(timestamp.Season),
+					}
 				}
-				playerSeasonStat.MapStats([]structs.NFLPlayerStats{h}, timestamp)
 
-				db.Save(&playerSeasonStat)
+				seasonStats.MapStats([]structs.NFLPlayerStats{h}, timestamp)
+
+				db.Save(&seasonStats)
 			}
 
 			for _, a := range awayPlayerStats {
@@ -264,16 +243,20 @@ func SyncTimeslot(timeslot string) {
 					db.Save(&playerRecord)
 				}
 				// playerSeasonStat := playerSeasonStatsMap[a.NFLPlayerID]
-				playerSeasonStat := structs.NFLPlayerSeasonStats{
-					NFLPlayerID: uint(a.NFLPlayerID),
-					SeasonID:    uint(timestamp.NFLSeasonID),
-					TeamID:      uint(a.TeamID),
-					Team:        a.Team,
-					Year:        uint(timestamp.Season),
+				seasonStats := GetNFLSeasonStatsByPlayerAndSeason(strconv.Itoa(a.NFLPlayerID), strconv.Itoa(int(timestamp.NFLSeasonID)))
+				if seasonStats.ID == 0 {
+					seasonStats = structs.NFLPlayerSeasonStats{
+						NFLPlayerID: uint(a.NFLPlayerID),
+						SeasonID:    uint(timestamp.NFLSeasonID),
+						TeamID:      uint(a.TeamID),
+						Team:        a.Team,
+						Year:        uint(timestamp.Season),
+					}
 				}
-				playerSeasonStat.MapStats([]structs.NFLPlayerStats{a}, timestamp)
 
-				db.Save(&playerSeasonStat)
+				seasonStats.MapStats([]structs.NFLPlayerStats{a}, timestamp)
+
+				db.Save(&seasonStats)
 			}
 
 			// Update Standings

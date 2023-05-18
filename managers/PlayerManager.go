@@ -583,6 +583,14 @@ func CutNFLPlayer(playerId string) {
 	db.Save(&capsheet)
 }
 
+func PlaceNFLPlayerOnPracticeSquad(playerId string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	player := GetOnlyNFLPlayerRecord(playerId)
+	player.ToggleIsPracticeSquad()
+	db.Save(&player)
+}
+
 func GetNFLRosterForSimulation(TeamID string) []structs.NFLPlayer {
 	db := dbprovider.GetInstance().GetDB()
 

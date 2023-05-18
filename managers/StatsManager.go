@@ -128,6 +128,32 @@ func GetCollegeTeamSeasonStatsBySeason(TeamID string, SeasonID string) structs.C
 	return teamStats
 }
 
+func GetCollegeSeasonStatsByPlayerAndSeason(PlayerID, SeasonID string) structs.CollegePlayerSeasonStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats structs.CollegePlayerSeasonStats
+
+	err := db.Where("college_player_id = ? AND season_id = ?", PlayerID, SeasonID).Find(&playerStats).Error
+	if err != nil {
+		return structs.CollegePlayerSeasonStats{}
+	}
+
+	return playerStats
+}
+
+func GetNFLSeasonStatsByPlayerAndSeason(PlayerID, SeasonID string) structs.NFLPlayerSeasonStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats structs.NFLPlayerSeasonStats
+
+	err := db.Where("nfl_player_id = ? AND season_id = ?", PlayerID, SeasonID).Find(&playerStats).Error
+	if err != nil {
+		return structs.NFLPlayerSeasonStats{}
+	}
+
+	return playerStats
+}
+
 func GetCollegeSeasonStatsBySeason(SeasonID string) []structs.CollegeTeamSeasonStats {
 	db := dbprovider.GetInstance().GetDB()
 

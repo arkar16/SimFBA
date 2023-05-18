@@ -166,3 +166,16 @@ func ExportAllRostersToCSV(w http.ResponseWriter, r *http.Request) {
 	managers.ExportAllRostersToCSV(w)
 	// ?
 }
+
+// Place player on NFL Trade block
+func PlaceNFLPlayerOnPracticeSquad(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	playerID := vars["PlayerID"]
+	if len(playerID) == 0 {
+		panic("User did not provide playerID")
+	}
+
+	managers.PlaceNFLPlayerOnPracticeSquad(playerID)
+
+	json.NewEncoder(w).Encode("Player " + playerID + " placed on trade block.")
+}

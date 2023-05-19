@@ -37,11 +37,21 @@ func GetAllAvailableNFLPlayers(TeamID string) models.FreeAgencyResponse {
 	FAs := GetAllFreeAgentsWithOffers()
 	WaiverPlayers := GetAllWaiverWirePlayersFAPage()
 	Offers := GetFreeAgentOffersByTeamID(TeamID)
+	roster := GetNFLPlayersWithContractsByTeamID(TeamID)
+	count := 0
+
+	for _, p := range roster {
+		if p.IsPracticeSquad {
+			continue
+		}
+		count += 1
+	}
 
 	return models.FreeAgencyResponse{
 		FreeAgents:    FAs,
 		WaiverPlayers: WaiverPlayers,
 		TeamOffers:    Offers,
+		RosterCount:   uint(count),
 	}
 }
 

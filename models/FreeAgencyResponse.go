@@ -6,4 +6,5 @@ type FreeAgencyResponse struct {
 	FreeAgents    []structs.NFLPlayer
 	WaiverPlayers []structs.NFLPlayer
 	TeamOffers    []structs.FreeAgencyOffer
+	RosterCount   uint
 }

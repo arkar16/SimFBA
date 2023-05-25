@@ -317,6 +317,52 @@ func SyncFreeAgencyOffers() {
 		db.Save(&w)
 	}
 
+	practiceSquad := GetAllPracticeSquadPlayers()
+
+	for _, p := range practiceSquad {
+		Offers := GetFreeAgentOffersByPlayerID(strconv.Itoa(int(p.ID)))
+
+		if len(Offers) == 0 {
+			continue
+		}
+		ownerTeam := p.TeamID
+		ownerOffer := structs.FreeAgencyOffer{}
+
+		for _, o := range Offers {
+			if int(o.TeamID) == ownerTeam && o.IsActive {
+				ownerOffer = o
+				break
+			}
+		}
+		if ownerOffer.ID > 0 {
+			SignFreeAgent(ownerOffer, p, ts)
+			db.Save(&p)
+		} else {
+			sort.Sort(structs.ByContractValue(Offers))
+
+			WinningOffer := structs.FreeAgencyOffer{}
+
+			for _, Offer := range Offers {
+				// Get the Contract with the best value for the FA
+				if Offer.IsActive && WinningOffer.ID == 0 {
+					WinningOffer = Offer
+				}
+				if Offer.IsActive {
+					Offer.CancelOffer()
+				}
+
+				db.Save(&Offer)
+			}
+
+			if WinningOffer.ID > 0 {
+				SignFreeAgent(WinningOffer, p, ts)
+			} else if ts.IsNFLOffSeason {
+				p.WaitUntilAfterDraft()
+				db.Save(&p)
+			}
+		}
+	}
+
 	ts.ToggleFALock()
 	db.Save(&ts)
 }

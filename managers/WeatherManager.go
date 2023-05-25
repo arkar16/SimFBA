@@ -39,7 +39,7 @@ func GenerateWeatherForGames() {
 	collegeGames := GetCollegeGamesBySeasonID(seasonID)
 
 	for _, game := range collegeGames {
-		if game.WeekID != ts.CollegeWeekID {
+		if game.WeekID <= ts.CollegeWeekID {
 			continue
 		}
 		GenerateWeatherForGame(db, game, teamRegions, regions, rainForecasts, mixForecasts, snowForecasts)
@@ -48,9 +48,9 @@ func GenerateWeatherForGames() {
 	nflGames := GetNFLGamesBySeasonID(strconv.Itoa(int(ts.NFLSeasonID)))
 
 	for _, game := range nflGames {
-		if game.WeekID != ts.NFLWeekID {
-			continue
-		}
+		// if game.WeekID != ts.NFLWeekID {
+		// 	continue
+		// }
 		homeTeam := GetNFLTeamByTeamID(strconv.Itoa(game.HomeTeamID))
 		GenerateWeatherForNFLGame(db, game, homeTeam.TeamAbbr, teamRegions, regions, rainForecasts, mixForecasts, snowForecasts)
 	}

@@ -555,7 +555,7 @@ func ImportUDFAs() {
 func ImportCFBGames() {
 	db := dbprovider.GetInstance().GetDB()
 
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023\\2023_Spring_Games.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023\\2023_CFB_Games.csv"
 
 	gamesCSV := util.ReadCSV(path)
 
@@ -592,6 +592,7 @@ func ImportCFBGames() {
 		stadium := row[19]
 		city := row[20]
 		state := row[21]
+		isDomed := util.ConvertStringToBool(row[22])
 		// Need to check for if a game is in a domed stadium or not
 		isConferenceGame := util.ConvertStringToBool(row[9])
 		isDivisionGame := util.ConvertStringToBool(row[10])
@@ -624,6 +625,7 @@ func ImportCFBGames() {
 			Stadium:                  stadium,
 			City:                     city,
 			State:                    state,
+			IsDomed:                  isDomed,
 		}
 
 		db.Create(&game)
@@ -633,7 +635,7 @@ func ImportCFBGames() {
 func ImportNFLGames() {
 	db := dbprovider.GetInstance().GetDB()
 
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023\\2023_NFL_Preseason_Games.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023\\2023_NFL_Games.csv"
 
 	gamesCSV := util.ReadCSV(path)
 
@@ -679,11 +681,11 @@ func ImportNFLGames() {
 		if len(awayTeamCoach) == 0 {
 			awayTeamCoach = "AI"
 		}
-		timeSlot := row[19]
+		timeSlot := row[18]
 		// Need to implement Stadium ID
-		stadium := row[20]
-		city := row[21]
-		state := row[22]
+		stadium := row[19]
+		city := row[20]
+		state := row[21]
 		// Need to check for if a game is in a domed stadium or not
 		isConferenceGame := util.ConvertStringToBool(row[9])
 		isDivisionGame := util.ConvertStringToBool(row[10])

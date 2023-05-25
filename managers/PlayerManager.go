@@ -588,6 +588,16 @@ func PlaceNFLPlayerOnPracticeSquad(playerId string) {
 
 	player := GetOnlyNFLPlayerRecord(playerId)
 	player.ToggleIsPracticeSquad()
+	teamID := strconv.Itoa(player.TeamID)
+
+	contract := GetContractByPlayerID(playerId)
+	contract.DeactivateContract()
+	db.Save(&contract)
+
+	teamCapsheet := GetCapsheetByTeamID(teamID)
+	teamCapsheet.SubtractFromCapsheet(contract)
+	db.Save(&teamCapsheet)
+
 	db.Save(&player)
 }
 
@@ -642,4 +652,14 @@ func CheckNFLRookiesForLetterGrade(seasonID string) {
 			db.Save(&p)
 		}
 	}
+}
+
+func GetAllPracticeSquadPlayers() []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Where("is_practice_squad = ?", true).Find(&players)
+
+	return players
 }

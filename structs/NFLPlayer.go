@@ -88,7 +88,7 @@ func (np *NFLPlayer) SignPlayer(TeamID int, Abbr string) {
 }
 
 func (np *NFLPlayer) ToggleIsPracticeSquad() {
-	np.IsPracticeSquad = !np.IsPracticeSquad
+	np.IsPracticeSquad = true
 }
 
 func (np *NFLPlayer) ToggleTradeBlock() {

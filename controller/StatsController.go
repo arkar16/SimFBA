@@ -30,8 +30,12 @@ func ExportCFBStatisticsFromSim(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Send DTO to Manager Class
-	managers.ExportCFBStatisticsFromSim(exportStatsDTO.CFBGameStatDTOs)
-	managers.ExportNFLStatisticsFromSim(exportStatsDTO.NFLGameStatDTOs)
+	if len(exportStatsDTO.CFBGameStatDTOs) > 0 {
+		managers.ExportCFBStatisticsFromSim(exportStatsDTO.CFBGameStatDTOs)
+	}
+	if len(exportStatsDTO.NFLGameStatDTOs) > 0 {
+		managers.ExportNFLStatisticsFromSim(exportStatsDTO.NFLGameStatDTOs)
+	}
 
 	fmt.Println(w, "Game Data Exported")
 }

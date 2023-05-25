@@ -365,17 +365,17 @@ func UpdateCollegeAIDepthCharts() {
 			arch := cp.Archetype
 
 			// Add to QB List
-			if pos == "QB" || pos == "WR" || pos == "TE" || pos == "RB" || pos == "FB" || pos == "K" || pos == "P" {
+			if pos == "QB" || pos == "WR" || pos == "TE" || pos == "RB" || pos == "FB" {
 				score := 0
 				if offScheme == "Pro" {
 					if pos == "QB" {
-						score += 25
+						score += 35
 						if arch == "Field General" {
-							score += 20
-						} else if arch == "Pocket" {
 							score += 15
+						} else if arch == "Pocket" {
+							score += 12
 						} else if arch == "Balanced" {
-							score += 10
+							score += 8
 						} else if arch == "Scrambler" {
 							score += 5
 						}
@@ -383,13 +383,13 @@ func UpdateCollegeAIDepthCharts() {
 					score += cp.ThrowAccuracy
 				} else if offScheme == "Air Raid" {
 					if pos == "QB" {
-						score += 25
+						score += 35
 						if arch == "Field General" {
-							score += 15
-						} else if arch == "Pocket" {
-							score += 20
-						} else if arch == "Balanced" {
 							score += 10
+						} else if arch == "Pocket" {
+							score += 15
+						} else if arch == "Balanced" {
+							score += 8
 						} else if arch == "Scrambler" {
 							score += 5
 						}
@@ -397,32 +397,32 @@ func UpdateCollegeAIDepthCharts() {
 					score += cp.ThrowPower
 				} else if offScheme == "Spread Option" {
 					if pos == "QB" {
-						score += 25
+						score += 35
 						if arch == "Field General" {
-							score += 10
+							score += 8
 						} else if arch == "Pocket" {
 							score += 5
 						} else if arch == "Balanced" {
-							score += 20
+							score += 12
 						} else if arch == "Scrambler" {
-							score += 15
+							score += 10
 						}
 					}
 					score += cp.ThrowAccuracy
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "QB" {
-						score += 20
+						score += 35
 						if arch == "Field General" {
-							score += 10
-						} else if arch == "Pocket" {
 							score += 5
+						} else if arch == "Pocket" {
+							score += 2
 						} else if arch == "Balanced" {
-							score += 15
+							score += 10
 						} else if arch == "Scrambler" {
 							score += 20
 						}
 					}
-					score += cp.Speed
+					score += cp.ThrowAccuracy + (cp.Speed / 2)
 				}
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
@@ -439,9 +439,9 @@ func UpdateCollegeAIDepthCharts() {
 					if pos == "RB" {
 						score += 45
 					} else if pos == "WR" {
-						score += 25
-					} else if pos == "FB" {
 						score += 15
+					} else if pos == "FB" {
+						score += 12
 					}
 					score += cp.Overall
 				} else if offScheme == "Air Raid" {
@@ -451,31 +451,22 @@ func UpdateCollegeAIDepthCharts() {
 							score += 20
 						} else {
 							score += 10
-
 						}
-					} else {
-						score += 20
 					}
 					score += cp.Catching
 				} else if offScheme == "Spread Option" {
 					if pos == "RB" {
-						score += 45
-					} else if pos == "WR" {
-						score += 25
-					} else if pos == "FB" {
-						score += 15
+						score += 35
 					}
 					score += cp.Overall
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "RB" {
-						score += 25
+						score += 35
 						if arch == "Balanced" {
 							score += 20
 						} else {
 							score += 10
 						}
-					} else {
-						score += 20
 					}
 					score += cp.Overall
 				}
@@ -494,7 +485,7 @@ func UpdateCollegeAIDepthCharts() {
 				score := 0
 				if offScheme == "Pro" {
 					if pos == "FB" {
-						score += 25
+						score += 35
 						if arch == "Blocking" {
 							score += 20
 						} else if arch == "Receiving" {
@@ -502,25 +493,21 @@ func UpdateCollegeAIDepthCharts() {
 						} else {
 							score += 10
 						}
-					} else {
-						score += 15
 					}
 					score += cp.RunBlock
 				} else if offScheme == "Air Raid" {
 					if pos == "FB" {
-						score += 25
+						score += 35
 						if arch == "Receiving" {
 							score += 20
 						} else {
 							score += 10
 						}
-					} else {
-						score += 15
 					}
 					score += cp.Catching
 				} else if offScheme == "Spread Option" {
 					if pos == "FB" {
-						score += 25
+						score += 35
 						if arch == "Receiving" {
 							score += 20
 						} else if arch == "Rushing" {
@@ -528,20 +515,16 @@ func UpdateCollegeAIDepthCharts() {
 						} else {
 							score += 10
 						}
-					} else {
-						score += 15
 					}
 					score += cp.Catching
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "FB" {
-						score += 25
+						score += 35
 						if arch == "Rushing" {
 							score += 20
 						} else {
 							score += 15
 						}
-					} else {
-						score += 10
 					}
 					score += cp.Strength
 				}
@@ -560,19 +543,17 @@ func UpdateCollegeAIDepthCharts() {
 				score := 0
 				if offScheme == "Pro" {
 					if pos == "TE" {
-						score += 25
+						score += 35
 						if arch == "Receiving" {
 							score += 20
 						} else {
 							score += 15
 						}
-					} else {
-						score += 10
 					}
 					score += cp.Overall
 				} else if offScheme == "Air Raid" {
 					if pos == "TE" {
-						score += 25
+						score += 35
 						if arch == "Vertical Threat" {
 							score += 20
 						} else if arch == "Receiving" {
@@ -580,32 +561,26 @@ func UpdateCollegeAIDepthCharts() {
 						} else {
 							score += 5
 						}
-					} else {
-						score += 10
 					}
 					score += cp.Catching
 				} else if offScheme == "Spread Option" {
 					if pos == "TE" {
-						score += 25
+						score += 35
 						if arch == "Receiving" {
 							score += 15
 						} else {
 							score += 5
 						}
-					} else {
-						score += 15
 					}
 					score += cp.Overall
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "TE" {
-						score += 25
+						score += 35
 						if arch == "Blocking" {
 							score += 15
 						} else {
 							score += 5
 						}
-					} else {
-						score += 15
 					}
 					score += cp.RunBlock
 				}
@@ -622,7 +597,7 @@ func UpdateCollegeAIDepthCharts() {
 				score := 0
 				if offScheme == "Pro" {
 					if pos == "WR" {
-						score += 10
+						score += 25
 						if arch == "Possession" {
 							score += 5
 						}
@@ -630,7 +605,7 @@ func UpdateCollegeAIDepthCharts() {
 					score += cp.Catching
 				} else if offScheme == "Air Raid" {
 					if pos == "WR" {
-						score += 10
+						score += 35
 						if arch == "Speed" {
 							score += 5
 						}
@@ -640,15 +615,15 @@ func UpdateCollegeAIDepthCharts() {
 					score += cp.Speed
 				} else if offScheme == "Spread Option" {
 					if pos == "WR" {
-						score += 10
+						score += 35
 						if arch == "Route Running" {
 							score += 5
 						}
 					}
 					score += cp.RouteRunning
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "WR" {
-						score += 10
+						score += 35
 						if arch == "Red Zone Threat" {
 							score += 5
 						}
@@ -668,14 +643,14 @@ func UpdateCollegeAIDepthCharts() {
 				score := 0
 				if offScheme == "Pro" {
 					if pos == "OT" {
-						score += 20
+						score += 35
 					} else if pos == "OG" {
 						score += 5
 					}
 					score += cp.Overall
 				} else if offScheme == "Air Raid" {
 					if (pos == "OT" || pos == "OG") && arch == "Pass Blocking" {
-						score += 20
+						score += 35
 					} else if pos == "C" && arch == "Pass Blocking" {
 						score += 5
 					} else if (pos == "OT" || pos == "OG") && arch != "Pass Blocking" {
@@ -684,14 +659,14 @@ func UpdateCollegeAIDepthCharts() {
 					score += cp.PassBlock
 				} else if offScheme == "Spread Option" {
 					if pos == "OT" {
-						score += 20
+						score += 35
 					} else if pos == "OG" {
 						score += 5
 					}
 					score += cp.Overall
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if (pos == "OT" || pos == "OG") && arch == "Run Blocking" {
-						score += 20
+						score += 35
 					} else if pos == "C" && arch == "Run Blocking" {
 						score += 5
 					} else if (pos == "OT" || pos == "OG") && arch != "Run Blocking" {
@@ -717,28 +692,28 @@ func UpdateCollegeAIDepthCharts() {
 				score := 0
 				if offScheme == "Pro" {
 					if pos == "OG" {
-						score += 15
+						score += 30
 					}
 					score += cp.Overall
 				} else if offScheme == "Air Raid" {
 					if pos == "OG" {
-						score += 10
+						score += 30
 					}
 					if arch == "Pass Blocking" {
-						score += 10
+						score += 15
 					}
 					score += cp.PassBlock
 				} else if offScheme == "Spread Option" {
 					if pos == "OG" {
-						score += 15
+						score += 30
 					}
 					score += cp.Overall
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "OG" {
-						score += 10
+						score += 30
 					}
 					if arch == "Run Blocking" {
-						score += 10
+						score += 15
 					}
 					score += cp.RunBlock
 				}
@@ -760,32 +735,30 @@ func UpdateCollegeAIDepthCharts() {
 				score := 0
 				if offScheme == "Pro" {
 					if pos == "C" {
-						score += 15
+						score += 30
 					}
 					score += cp.Overall
 				} else if offScheme == "Air Raid" {
 					if pos == "C" {
-						score += 15
+						score += 25
 						if arch == "Pass Blocking" {
 							score += 10
 						} else {
 							score += 5
 						}
-
 					}
 					score += cp.PassBlock
 				} else if offScheme == "Spread Option" {
 					if pos == "C" {
-						score += 15
+						score += 30
 					}
 					score += cp.Overall
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "C" {
-						score += 15
+						score += 25
 						if arch == "Run Blocking" {
 							score += 10
 						}
-
 					}
 					score += cp.RunBlock
 				}
@@ -802,7 +775,7 @@ func UpdateCollegeAIDepthCharts() {
 				score := 0
 				if defScheme == "4-3" {
 					if pos == "DE" {
-						score += 15
+						score += 30
 						if arch == "Speed Rusher" || arch == "Balanced" {
 							score += 10
 						} else {
@@ -814,7 +787,7 @@ func UpdateCollegeAIDepthCharts() {
 					score += cp.Overall
 				} else if defScheme == "3-4" {
 					if pos == "DE" {
-						score += 15
+						score += 30
 						if arch == "Run Stopper" || arch == "Balanced" {
 							score += 10
 						} else {
@@ -822,8 +795,6 @@ func UpdateCollegeAIDepthCharts() {
 						}
 					} else if pos == "DT" && (arch == "Pass Rusher" || arch == "Balanced") {
 						score += 10
-					} else {
-						score += 5
 					}
 					score += cp.Overall
 				}
@@ -846,24 +817,24 @@ func UpdateCollegeAIDepthCharts() {
 				score := 0
 				if defScheme == "4-3" {
 					if pos == "DT" {
-						score += 20
+						score += 30
 						if arch == "Pass Rusher" || arch == "Balanced" {
 							score += 10
 						} else {
 							score += 5
 						}
 					} else if pos == "DE" && (arch == "Balanced" || arch == "Run Stopper") {
-						score += 15
+						score += 5
 					}
 					score += cp.Overall
 				} else if defScheme == "3-4" {
 					if pos == "DT" {
-						score += 20
+						score += 30
 						if arch == "Nose Tackle" {
 							score += 10
 						}
 					} else if pos == "DE" && arch == "Run Stopper" {
-						score += 15
+						score += 5
 					}
 					score += cp.RunDefense
 				}
@@ -881,11 +852,11 @@ func UpdateCollegeAIDepthCharts() {
 				score := 0
 				if defScheme == "4-3" {
 					if pos == "OLB" && (arch == "Coverage" || arch == "Speed") {
-						score += 20
+						score += 25
 					} else if pos == "ILB" && (arch == "Coverage" || arch == "Speed") {
-						score += 15
-					} else if pos == "OLB" && arch == "Run Stopper" {
 						score += 12
+					} else if pos == "OLB" && arch == "Run Stopper" {
+						score += 15
 					} else if pos == "ILB" && arch == "Field General" {
 						score += 10
 					} else if (pos == "SS" || pos == "FS") && arch == "Run Stopper" {
@@ -896,7 +867,7 @@ func UpdateCollegeAIDepthCharts() {
 					score += cp.Speed
 				} else if defScheme == "3-4" {
 					if pos == "OLB" && (arch == "Pass Rush" || arch == "Run Stopper") {
-						score += 10
+						score += 15
 					} else if pos == "DE" && arch == "Speed Rush" {
 						score += 8
 					} else if pos == "ILB" && arch == "Run Stopper" {
@@ -923,20 +894,20 @@ func UpdateCollegeAIDepthCharts() {
 				score := 0
 				if defScheme == "4-3" {
 					if pos == "ILB" {
-						score += 15
+						score += 30
 					} else if pos == "OLB" && (arch == "Speed" || arch == "Coverage" || arch == "Run Stopper") {
-						score += 12
+						score += 10
 					} else if (pos == "SS" || pos == "FS") && arch == "Run Stopper" {
-						score += 8
+						score += 5
 					}
 					score += cp.RunDefense
 				} else if defScheme == "3-4" {
 					if pos == "ILB" {
-						score += 15
+						score += 30
 					} else if pos == "OLB" && (arch == "Speed" || arch == "Coverage") {
-						score += 12
+						score += 10
 					} else if (pos == "SS" || pos == "FS") && arch == "Run Stopper" {
-						score += 8
+						score += 5
 					}
 					score += cp.PassRush
 				}
@@ -953,9 +924,7 @@ func UpdateCollegeAIDepthCharts() {
 			if pos == "CB" || pos == "FS" || pos == "SS" {
 				score := 0
 				if pos == "CB" {
-					score += 10
-				} else if pos == "SS" || pos == "FS" {
-					score += 5
+					score += 20
 				}
 				score += cp.Overall
 
@@ -972,9 +941,7 @@ func UpdateCollegeAIDepthCharts() {
 			if pos == "CB" || pos == "FS" || pos == "SS" {
 				score := 0
 				if pos == "FS" {
-					score += 10
-				} else if pos == "SS" || pos == "CB" {
-					score += 5
+					score += 15
 				}
 				score += cp.Overall
 
@@ -991,9 +958,7 @@ func UpdateCollegeAIDepthCharts() {
 			if pos == "CB" || pos == "FS" || pos == "SS" {
 				score := 0
 				if pos == "SS" {
-					score += 10
-				} else if pos == "FS" || pos == "CB" {
-					score += 5
+					score += 15
 				}
 				score += cp.Overall
 
@@ -1014,7 +979,7 @@ func UpdateCollegeAIDepthCharts() {
 				} else if pos == "K" {
 					score += 5
 				} else if pos == "QB" {
-					score -= 25
+					score -= 35
 				}
 				score += cp.Overall
 
@@ -1035,7 +1000,7 @@ func UpdateCollegeAIDepthCharts() {
 				} else if pos == "P" {
 					score += 5
 				} else if pos == "QB" {
-					score -= 25
+					score -= 35
 				}
 				score += cp.Overall
 
@@ -1056,7 +1021,7 @@ func UpdateCollegeAIDepthCharts() {
 				} else if pos == "P" {
 					score += 5
 				} else if pos == "QB" {
-					score -= 25
+					score -= 35
 				}
 				score += cp.Overall
 
@@ -1105,7 +1070,7 @@ func UpdateCollegeAIDepthCharts() {
 			if pos == "FB" || pos == "TE" || pos == "ILB" || pos == "OLB" || pos == "RB" || pos == "CB" || pos == "FS" || pos == "SS" || pos == "WR" {
 				score := 0
 				if cp.Year == 2 || cp.Year == 1 {
-					score += 20
+					score += 40
 				}
 
 				score += cp.Tackle
@@ -1117,6 +1082,10 @@ func UpdateCollegeAIDepthCharts() {
 				}
 				positionMap["STU"] = append(positionMap["STU"], dcpObj)
 			}
+		}
+
+		if teamID == "8" {
+			fmt.Println("PING!")
 		}
 
 		// Sort Each DC Position
@@ -1255,7 +1224,7 @@ func UpdateNFLAIDepthCharts() {
 						}
 					}
 					score += cp.ThrowAccuracy
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "QB" {
 						score += 20
 						if arch == "Field General" {
@@ -1312,7 +1281,7 @@ func UpdateNFLAIDepthCharts() {
 						score += 15
 					}
 					score += cp.Overall
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "RB" {
 						score += 25
 						if arch == "Balanced" {
@@ -1378,7 +1347,7 @@ func UpdateNFLAIDepthCharts() {
 						score += 15
 					}
 					score += cp.Catching
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "FB" {
 						score += 25
 						if arch == "Rushing" {
@@ -1442,7 +1411,7 @@ func UpdateNFLAIDepthCharts() {
 						score += 15
 					}
 					score += cp.Overall
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "TE" {
 						score += 25
 						if arch == "Blocking" {
@@ -1492,7 +1461,7 @@ func UpdateNFLAIDepthCharts() {
 						}
 					}
 					score += cp.RouteRunning
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "WR" {
 						score += 10
 						if arch == "Red Zone Threat" {
@@ -1535,7 +1504,7 @@ func UpdateNFLAIDepthCharts() {
 						score += 5
 					}
 					score += cp.Overall
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if (pos == "OT" || pos == "OG") && arch == "Run Blocking" {
 						score += 20
 					} else if pos == "C" && arch == "Run Blocking" {
@@ -1579,7 +1548,7 @@ func UpdateNFLAIDepthCharts() {
 						score += 15
 					}
 					score += cp.Overall
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "OG" {
 						score += 10
 					}
@@ -1625,7 +1594,7 @@ func UpdateNFLAIDepthCharts() {
 						score += 15
 					}
 					score += cp.Overall
-				} else if offScheme == "Double Wing" {
+				} else if offScheme == "Double Wing Option" {
 					if pos == "C" {
 						score += 15
 						if arch == "Run Blocking" {

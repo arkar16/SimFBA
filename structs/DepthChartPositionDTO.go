@@ -3,7 +3,7 @@ package structs
 type DepthChartPositionDTO struct {
 	Position      string
 	Archetype     string
-	Score         uint
+	Score         int
 	CollegePlayer CollegePlayer
 	NFLPlayer     NFLPlayer
 }

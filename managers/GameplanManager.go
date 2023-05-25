@@ -427,7 +427,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["QB"] = append(positionMap["QB"], dcpObj)
@@ -474,7 +474,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["RB"] = append(positionMap["RB"], dcpObj)
@@ -532,7 +532,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["FB"] = append(positionMap["FB"], dcpObj)
@@ -587,7 +587,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["TE"] = append(positionMap["TE"], dcpObj)
@@ -633,7 +633,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["WR"] = append(positionMap["WR"], dcpObj)
@@ -677,7 +677,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				if isLT {
@@ -720,7 +720,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				if isLG {
@@ -765,7 +765,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["C"] = append(positionMap["C"], dcpObj)
@@ -801,7 +801,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				if isLE {
@@ -841,7 +841,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["DT"] = append(positionMap["DT"], dcpObj)
@@ -878,7 +878,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				if isLOLB {
@@ -914,7 +914,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["MLB"] = append(positionMap["MLB"], dcpObj)
@@ -931,7 +931,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["CB"] = append(positionMap["CB"], dcpObj)
@@ -948,7 +948,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["FS"] = append(positionMap["FS"], dcpObj)
@@ -965,7 +965,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["SS"] = append(positionMap["SS"], dcpObj)
@@ -981,12 +981,12 @@ func UpdateCollegeAIDepthCharts() {
 				} else if pos == "QB" {
 					score -= 35
 				}
-				score += cp.Overall
+				score += cp.PuntPower + cp.PuntAccuracy
 
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["P"] = append(positionMap["P"], dcpObj)
@@ -1002,12 +1002,12 @@ func UpdateCollegeAIDepthCharts() {
 				} else if pos == "QB" {
 					score -= 35
 				}
-				score += cp.Overall
+				score += cp.KickPower
 
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["K"] = append(positionMap["K"], dcpObj)
@@ -1023,12 +1023,12 @@ func UpdateCollegeAIDepthCharts() {
 				} else if pos == "QB" {
 					score -= 35
 				}
-				score += cp.Overall
+				score += cp.KickAccuracy + cp.KickPower
 
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["FG"] = append(positionMap["FG"], dcpObj)
@@ -1045,7 +1045,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["PR"] = append(positionMap["PR"], dcpObj)
@@ -1061,7 +1061,7 @@ func UpdateCollegeAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["KR"] = append(positionMap["KR"], dcpObj)
@@ -1071,21 +1071,19 @@ func UpdateCollegeAIDepthCharts() {
 				score := 0
 				if cp.Year == 2 || cp.Year == 1 {
 					score += 40
+				} else if cp.Year == 3 && cp.IsRedshirt {
+					score += 25
 				}
 
 				score += cp.Tackle
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:      pos,
 					Archetype:     arch,
-					Score:         uint(score),
+					Score:         score,
 					CollegePlayer: cp,
 				}
 				positionMap["STU"] = append(positionMap["STU"], dcpObj)
 			}
-		}
-
-		if teamID == "8" {
-			fmt.Println("PING!")
 		}
 
 		// Sort Each DC Position
@@ -1242,7 +1240,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["QB"] = append(positionMap["QB"], dcpObj)
@@ -1298,7 +1296,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["RB"] = append(positionMap["RB"], dcpObj)
@@ -1364,7 +1362,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["FB"] = append(positionMap["FB"], dcpObj)
@@ -1427,7 +1425,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["TE"] = append(positionMap["TE"], dcpObj)
@@ -1473,7 +1471,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["WR"] = append(positionMap["WR"], dcpObj)
@@ -1517,7 +1515,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				if isLT {
@@ -1560,7 +1558,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				if isLG {
@@ -1607,7 +1605,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["C"] = append(positionMap["C"], dcpObj)
@@ -1645,7 +1643,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				if isLE {
@@ -1685,7 +1683,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["DT"] = append(positionMap["DT"], dcpObj)
@@ -1722,7 +1720,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				if isLOLB {
@@ -1758,7 +1756,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["ILB"] = append(positionMap["ILB"], dcpObj)
@@ -1777,7 +1775,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["CB"] = append(positionMap["CB"], dcpObj)
@@ -1796,7 +1794,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["FS"] = append(positionMap["FS"], dcpObj)
@@ -1815,7 +1813,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["SS"] = append(positionMap["SS"], dcpObj)
@@ -1833,7 +1831,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["P"] = append(positionMap["P"], dcpObj)
@@ -1851,7 +1849,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["K"] = append(positionMap["K"], dcpObj)
@@ -1869,7 +1867,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["FG"] = append(positionMap["FG"], dcpObj)
@@ -1886,7 +1884,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["PR"] = append(positionMap["PR"], dcpObj)
@@ -1902,7 +1900,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["KR"] = append(positionMap["KR"], dcpObj)
@@ -1922,7 +1920,7 @@ func UpdateNFLAIDepthCharts() {
 				dcpObj := structs.DepthChartPositionDTO{
 					Position:  pos,
 					Archetype: arch,
-					Score:     uint(score),
+					Score:     score,
 					NFLPlayer: cp,
 				}
 				positionMap["STU"] = append(positionMap["STU"], dcpObj)

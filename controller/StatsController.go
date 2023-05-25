@@ -3,7 +3,6 @@ package controller
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"strconv"
 
@@ -22,11 +21,6 @@ func ExportCFBStatisticsFromSim(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("CANNOT DECODE BODY!")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
-	}
-	// validate info from DTO
-	if len(exportStatsDTO.CFBGameStatDTOs) == 0 || len(exportStatsDTO.NFLGameStatDTOs) == 0 {
-		fmt.Println("AINT NOTHING WORKING")
-		log.Panicln("ERROR: Could not acquire all data for export")
 	}
 
 	// Send DTO to Manager Class

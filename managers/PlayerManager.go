@@ -663,3 +663,15 @@ func GetAllPracticeSquadPlayers() []structs.NFLPlayer {
 
 	return players
 }
+
+func GetAllPracticeSquadPlayersForFAPage() []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Preload("Offers", func(db *gorm.DB) *gorm.DB {
+		return db.Order("contract_value DESC").Where("is_active = true")
+	}).Where("is_practice_squad = ?", true).Find(&players)
+
+	return players
+}

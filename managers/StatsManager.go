@@ -244,6 +244,131 @@ func GetHistoricalTeamStats(TeamID string, SeasonID string) []structs.CollegeTea
 	return teamStats
 }
 
+func GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []models.CollegeTeamResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	var teams []structs.CollegeTeam
+
+	if viewType == "SEASON" {
+		db.Preload("TeamSeasonStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ?", seasonID)
+		}).Find(&teams)
+	} else {
+		db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ? AND week_id = ?", seasonID, weekID)
+		}).Find(&teams)
+	}
+
+	var ctResponse []models.CollegeTeamResponse
+
+	for _, team := range teams {
+		if len(team.TeamStats) == 0 && viewType == "WEEK" {
+			continue
+		}
+		var teamstat structs.CollegeTeamStats
+		if viewType == "WEEK" {
+			teamstat = team.TeamStats[0]
+		}
+		ct := models.CollegeTeamResponse{
+			ID:           int(team.ID),
+			BaseTeam:     team.BaseTeam,
+			ConferenceID: team.ConferenceID,
+			Conference:   team.Conference,
+			DivisionID:   team.DivisionID,
+			Division:     team.Division,
+			SeasonStats:  team.TeamSeasonStats,
+			Stats:        teamstat,
+		}
+
+		ctResponse = append(ctResponse, ct)
+	}
+
+	return ctResponse
+}
+
+func GetAllNFLTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []models.NFLTeamResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	var teams []structs.NFLTeam
+
+	if viewType == "SEASON" {
+		db.Preload("TeamSeasonStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ?", seasonID)
+		}).Find(&teams)
+	} else {
+		db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ? AND week_id = ?", seasonID, weekID)
+		}).Find(&teams)
+	}
+
+	var ctResponse []models.NFLTeamResponse
+
+	for _, team := range teams {
+		if len(team.TeamStats) == 0 && viewType == "WEEK" {
+			continue
+		}
+		var teamstat structs.NFLTeamStats
+		var seasonstat structs.NFLTeamSeasonStats
+		if viewType == "WEEK" {
+			teamstat = team.TeamStats[0]
+		} else {
+			seasonstat = team.TeamSeasonStats[0]
+		}
+		ct := models.NFLTeamResponse{
+			ID:           int(team.ID),
+			BaseTeam:     team.BaseTeam,
+			ConferenceID: int(team.ConferenceID),
+			Conference:   team.Conference,
+			DivisionID:   int(team.DivisionID),
+			Division:     team.Division,
+			SeasonStats:  seasonstat,
+			Stats:        teamstat,
+		}
+
+		ctResponse = append(ctResponse, ct)
+	}
+
+	return ctResponse
+}
+
+func MapAllStatsToSeason() {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+
+	teams := GetAllCollegeTeams()
+
+	for _, team := range teams {
+		teamStats := GetHistoricalTeamStats(strconv.Itoa(int(team.ID)), strconv.Itoa(ts.CollegeSeasonID))
+
+		seasonStats := structs.CollegeTeamSeasonStats{
+			TeamID:   team.ID,
+			SeasonID: uint(ts.CollegeSeasonID),
+		}
+
+		seasonStats.MapStats(teamStats)
+
+		db.Save(&seasonStats)
+		fmt.Println("Saved Season Stats for " + team.TeamName)
+	}
+
+	players := GetAllCollegePlayers()
+
+	for _, player := range players {
+		playerStats := GetCollegePlayerStatsByPlayerIDAndSeason(strconv.Itoa(int(player.ID)), strconv.Itoa(ts.CollegeSeasonID))
+
+		seasonStats := structs.CollegePlayerSeasonStats{
+			CollegePlayerID: player.ID,
+			TeamID:          uint(player.TeamID),
+			SeasonID:        uint(ts.CollegeSeasonID),
+		}
+
+		seasonStats.MapStats(playerStats)
+
+		db.Save(&seasonStats)
+		fmt.Println("Saved Season Stats for " + player.FirstName + " " + player.LastName + " " + player.Position)
+	}
+}
+
 func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	db := dbprovider.GetInstance().GetDB()
 	fmt.Println("START")
@@ -371,131 +496,6 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	err := db.CreateInBatches(&teamStats, len(teamStats)).Error
 	if err != nil {
 		log.Panicln("Could not save team stats!")
-	}
-}
-
-func GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []models.CollegeTeamResponse {
-	db := dbprovider.GetInstance().GetDB()
-
-	var teams []structs.CollegeTeam
-
-	if viewType == "SEASON" {
-		db.Preload("TeamSeasonStats", func(db *gorm.DB) *gorm.DB {
-			return db.Where("season_id = ?", seasonID)
-		}).Find(&teams)
-	} else {
-		db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
-			return db.Where("season_id = ? AND week_id = ?", seasonID, weekID)
-		}).Find(&teams)
-	}
-
-	var ctResponse []models.CollegeTeamResponse
-
-	for _, team := range teams {
-		if len(team.TeamStats) == 0 && viewType == "WEEK" {
-			continue
-		}
-		var teamstat structs.CollegeTeamStats
-		if viewType == "WEEK" {
-			teamstat = team.TeamStats[0]
-		}
-		ct := models.CollegeTeamResponse{
-			ID:           int(team.ID),
-			BaseTeam:     team.BaseTeam,
-			ConferenceID: team.ConferenceID,
-			Conference:   team.Conference,
-			DivisionID:   team.DivisionID,
-			Division:     team.Division,
-			SeasonStats:  team.TeamSeasonStats,
-			Stats:        teamstat,
-		}
-
-		ctResponse = append(ctResponse, ct)
-	}
-
-	return ctResponse
-}
-
-func GetAllNFLTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []models.NFLTeamResponse {
-	db := dbprovider.GetInstance().GetDB()
-
-	var teams []structs.NFLTeam
-
-	if viewType == "SEASON" {
-		db.Preload("TeamSeasonStats", func(db *gorm.DB) *gorm.DB {
-			return db.Where("season_id = ?", seasonID)
-		}).Find(&teams)
-	} else {
-		db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
-			return db.Where("season_id = ? AND week_id = ?", seasonID, weekID)
-		}).Find(&teams)
-	}
-
-	var ctResponse []models.NFLTeamResponse
-
-	for _, team := range teams {
-		if len(team.TeamStats) == 0 && viewType == "WEEK" {
-			continue
-		}
-		var teamstat structs.NFLTeamStats
-		var seasonstat structs.NFLTeamSeasonStats
-		if viewType == "WEEK" {
-			teamstat = team.TeamStats[0]
-		} else {
-			seasonstat = team.TeamSeasonStats[0]
-		}
-		ct := models.NFLTeamResponse{
-			ID:           int(team.ID),
-			BaseTeam:     team.BaseTeam,
-			ConferenceID: int(team.ConferenceID),
-			Conference:   team.Conference,
-			DivisionID:   int(team.DivisionID),
-			Division:     team.Division,
-			SeasonStats:  seasonstat,
-			Stats:        teamstat,
-		}
-
-		ctResponse = append(ctResponse, ct)
-	}
-
-	return ctResponse
-}
-
-func MapAllStatsToSeason() {
-	db := dbprovider.GetInstance().GetDB()
-	ts := GetTimestamp()
-
-	teams := GetAllCollegeTeams()
-
-	for _, team := range teams {
-		teamStats := GetHistoricalTeamStats(strconv.Itoa(int(team.ID)), strconv.Itoa(ts.CollegeSeasonID))
-
-		seasonStats := structs.CollegeTeamSeasonStats{
-			TeamID:   team.ID,
-			SeasonID: uint(ts.CollegeSeasonID),
-		}
-
-		seasonStats.MapStats(teamStats)
-
-		db.Save(&seasonStats)
-		fmt.Println("Saved Season Stats for " + team.TeamName)
-	}
-
-	players := GetAllCollegePlayers()
-
-	for _, player := range players {
-		playerStats := GetCollegePlayerStatsByPlayerIDAndSeason(strconv.Itoa(int(player.ID)), strconv.Itoa(ts.CollegeSeasonID))
-
-		seasonStats := structs.CollegePlayerSeasonStats{
-			CollegePlayerID: player.ID,
-			TeamID:          uint(player.TeamID),
-			SeasonID:        uint(ts.CollegeSeasonID),
-		}
-
-		seasonStats.MapStats(playerStats)
-
-		db.Save(&seasonStats)
-		fmt.Println("Saved Season Stats for " + player.FirstName + " " + player.LastName + " " + player.Position)
 	}
 }
 

@@ -90,6 +90,7 @@ func (np *NFLPlayer) SignPlayer(TeamID int, Abbr string) {
 
 func (np *NFLPlayer) ToggleIsPracticeSquad() {
 	np.IsPracticeSquad = true
+	np.IsAcceptingOffers = true
 }
 
 func (np *NFLPlayer) ToggleTradeBlock() {

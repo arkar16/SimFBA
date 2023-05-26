@@ -471,7 +471,7 @@ func CreateWaiverOffer(offer structs.NFLWaiverOffDTO) structs.NFLWaiverOffer {
 	waiverOffer := GetWaiverOfferByOfferID(strconv.Itoa(int(offer.ID)))
 
 	if waiverOffer.ID == 0 {
-		id := GetLatestFreeAgentOfferInDB(db)
+		id := GetLatestWaiverOfferInDB(db)
 		waiverOffer.AssignID(id)
 	}
 

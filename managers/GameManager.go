@@ -147,7 +147,7 @@ func GetCFBCurrentWeekSchedule() []structs.CollegeGame {
 
 	var games []structs.CollegeGame
 
-	db.Order("timeslot asc").
+	db.Order("time_slot asc").
 		Where("season_id = ? AND week_id = ?", strconv.Itoa(int(ts.CollegeSeasonID)), strconv.Itoa(int(ts.CollegeWeekID))).
 		Find(&games)
 
@@ -161,7 +161,7 @@ func GetNFLCurrentWeekSchedule() []structs.NFLGame {
 
 	var games []structs.NFLGame
 
-	db.Order("timeslot asc").
+	db.Order("time_slot asc").
 		Where("season_id = ? AND week_id = ?", strconv.Itoa(int(ts.NFLSeasonID)), strconv.Itoa(int(ts.NFLWeekID))).
 		Find(&games)
 

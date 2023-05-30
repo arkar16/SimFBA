@@ -211,7 +211,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/players/{firstName}/{lastName}/{teamID}", controller.GetCollegePlayerByNameAndTeam).Methods("GET")
 	myRouter.HandleFunc("/croots/ds/class/{teamID}/", controller.GetRecruitingClassByTeamID).Methods("GET")
 	myRouter.HandleFunc("/croots/ds/croot/{firstName}/{lastName}", controller.GetRecruitByFirstNameAndLastName).Methods("GET")
-
+	myRouter.HandleFunc("/schedule/ds/current/week/{league}/", controller.GetCurrentWeekGamesByLeague).Methods("GET")
 	// Easter Controls
 	myRouter.HandleFunc("/easter/egg/collude/", controller.CollusionButton).Methods("POST")
 

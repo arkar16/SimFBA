@@ -140,6 +140,34 @@ func GetTeamScheduleForBot(TeamID string, SeasonID string) []models.CollegeGameR
 	return gameResponses
 }
 
+func GetCFBCurrentWeekSchedule() []structs.CollegeGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
+
+	var games []structs.CollegeGame
+
+	db.Order("timeslot asc").
+		Where("season_id = ? AND week_id = ?", strconv.Itoa(int(ts.CollegeSeasonID)), strconv.Itoa(int(ts.CollegeWeekID))).
+		Find(&games)
+
+	return games
+}
+
+func GetNFLCurrentWeekSchedule() []structs.NFLGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
+
+	var games []structs.NFLGame
+
+	db.Order("timeslot asc").
+		Where("season_id = ? AND week_id = ?", strconv.Itoa(int(ts.NFLSeasonID)), strconv.Itoa(int(ts.NFLWeekID))).
+		Find(&games)
+
+	return games
+}
+
 func GetCollegeGamesByTeamId(TeamID string) []structs.CollegeGame {
 	db := dbprovider.GetInstance().GetDB()
 

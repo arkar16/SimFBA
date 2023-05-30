@@ -164,7 +164,7 @@ func GetCurrentWeekGamesByLeague(w http.ResponseWriter, r *http.Request) {
 		collegeGames := managers.GetCFBCurrentWeekSchedule()
 		json.NewEncoder(w).Encode(collegeGames)
 	} else {
-		nflgames := managers.GetCFBCurrentWeekSchedule()
+		nflgames := managers.GetNFLCurrentWeekSchedule()
 		json.NewEncoder(w).Encode(nflgames)
 	}
 }

@@ -123,7 +123,10 @@ func GetCollegeTeamSeasonStatsBySeason(TeamID string, SeasonID string) structs.C
 
 	var teamStats structs.CollegeTeamSeasonStats
 
-	db.Where("team_id = ?, season_id = ?", TeamID, SeasonID).Find(&teamStats)
+	err := db.Where("team_id = ?, season_id = ?", TeamID, SeasonID).Find(&teamStats).Error
+	if err != nil {
+		return structs.CollegeTeamSeasonStats{}
+	}
 
 	return teamStats
 }

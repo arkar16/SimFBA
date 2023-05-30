@@ -570,7 +570,7 @@ func CutNFLPlayer(playerId string) {
 	capsheet := GetCapsheetByTeamID(strconv.Itoa(int(player.TeamID)))
 	ts := GetTimestamp()
 
-	if player.Experience < 4 && !ts.IsNFLOffSeason {
+	if player.Experience < 4 && !ts.IsNFLOffSeason && !player.IsPracticeSquad {
 		player.WaivePlayer()
 	} else {
 		player.ToggleIsFreeAgent()

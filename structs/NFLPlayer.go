@@ -76,6 +76,7 @@ func (np *NFLPlayer) ToggleIsFreeAgent() {
 	np.IsAcceptingOffers = true
 	np.IsNegotiating = false
 	np.IsOnTradeBlock = false
+	np.IsPracticeSquad = false
 }
 
 func (np *NFLPlayer) SignPlayer(TeamID int, Abbr string) {
@@ -106,8 +107,8 @@ func (np *NFLPlayer) WaivePlayer() {
 	np.PreviousTeam = np.TeamAbbr
 	np.TeamID = 0
 	np.TeamAbbr = ""
-	np.IsWaived = true
 	np.RemoveFromTradeBlock()
+	np.IsWaived = true
 }
 
 func (np *NFLPlayer) ConvertWaivedPlayerToFA() {

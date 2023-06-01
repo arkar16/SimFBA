@@ -137,6 +137,7 @@ func CreateFAOffer(offer structs.FreeAgencyOfferDTO) structs.FreeAgencyOffer {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
 	freeAgentOffer := GetFreeAgentOfferByOfferID(strconv.Itoa(int(offer.ID)))
+	player := GetNFLPlayerRecord(strconv.Itoa(int(offer.NFLPlayerID)))
 
 	if freeAgentOffer.ID == 0 {
 		id := GetLatestFreeAgentOfferInDB(db)
@@ -149,9 +150,25 @@ func CreateFAOffer(offer structs.FreeAgencyOfferDTO) structs.FreeAgencyOffer {
 
 	freeAgentOffer.CalculateOffer(offer)
 
-	db.Save(&freeAgentOffer)
+	// If the owning team is sending an offer to a player
+	if player.IsPracticeSquad && player.TeamID == int(offer.TeamID) {
+		SignFreeAgent(freeAgentOffer, player, ts)
+	} else {
+		db.Save(&freeAgentOffer)
 
-	fmt.Println("Creating offer!")
+		fmt.Println("Creating offer!")
+	}
+
+	if player.IsPracticeSquad && player.TeamID != int(offer.TeamID) {
+		newsLog := structs.NewsLog{
+			TeamID:      player.TeamID,
+			SeasonID:    ts.NFLSeasonID,
+			MessageType: "FreeAgency",
+			WeekID:      ts.NFLWeekID,
+			Message:     offer.Team + " have placed an offer on " + player.TeamAbbr + " " + player.Position + " " + player.FirstName + " " + player.LastName + " to pick up from the practice squad.",
+		}
+		db.Create(&newsLog)
+	}
 
 	return freeAgentOffer
 }
@@ -204,6 +221,7 @@ func SignFreeAgent(offer structs.FreeAgencyOffer, FreeAgent structs.NFLPlayer, t
 	// News Log
 	message := "FA " + FreeAgent.Position + " " + FreeAgent.FirstName + " " + FreeAgent.LastName + " has signed with the " + NFLTeam.TeamName + " with a contract worth approximately $" + strconv.Itoa(int(Contract.ContractValue)) + " Million Dollars."
 	newsLog := structs.NewsLog{
+		TeamID:      int(offer.TeamID),
 		WeekID:      ts.NFLWeekID,
 		SeasonID:    ts.NFLSeasonID,
 		MessageType: "Free Agency",
@@ -288,6 +306,7 @@ func SyncFreeAgencyOffers() {
 
 			message := w.Position + " " + w.FirstName + " " + w.LastName + " was picked up on the Waiver Wire by " + winningOffer.Team
 			newsLog := structs.NewsLog{
+				TeamID:      int(winningOffer.TeamID),
 				WeekID:      ts.NFLWeekID,
 				SeasonID:    ts.NFLSeasonID,
 				MessageType: "Free Agency",

@@ -245,6 +245,7 @@ func SendScholarshipToRecruit(updateRecruitPointsDto structs.UpdateRecruitPoints
 		if stars >= 4 {
 			message := recruit.FirstName + " " + recruit.LastName + ", " + strconv.Itoa(stars) + " star " + recruit.Position + " from " + recruit.HighSchool + ", " + recruit.City + ", " + recruit.State + " has received an offer from " + updateRecruitPointsDto.Team
 			newLog := structs.NewsLog{
+				TeamID:      0,
 				WeekID:      ts.CollegeWeekID,
 				Week:        ts.CollegeWeek,
 				SeasonID:    ts.CollegeSeasonID,

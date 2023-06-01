@@ -121,6 +121,7 @@ func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 	db.Save(&coach)
 
 	newsLog := structs.NewsLog{
+		TeamID:      0,
 		WeekID:      timestamp.CollegeWeekID,
 		SeasonID:    timestamp.CollegeSeasonID,
 		Week:        timestamp.CollegeWeek,
@@ -182,6 +183,7 @@ func ApproveNFLTeamRequest(request structs.NFLRequest) structs.NFLRequest {
 	db.Save(&coach)
 
 	newsLog := structs.NewsLog{
+		TeamID:      0,
 		WeekID:      timestamp.NFLWeekID,
 		SeasonID:    timestamp.NFLSeasonID,
 		Week:        timestamp.NFLWeek,
@@ -230,6 +232,7 @@ func RemoveUserFromTeam(teamId string) {
 	db.Save(&recruitingProfile)
 
 	newsLog := structs.NewsLog{
+		TeamID:      0,
 		WeekID:      timestamp.CollegeWeekID,
 		SeasonID:    timestamp.CollegeSeasonID,
 		Week:        timestamp.CollegeWeek,
@@ -281,6 +284,7 @@ func RemoveUserFromNFLTeam(request structs.NFLRequest) {
 	timestamp := GetTimestamp()
 
 	newsLog := structs.NewsLog{
+		TeamID:      0,
 		WeekID:      timestamp.NFLWeekID,
 		SeasonID:    timestamp.NFLSeasonID,
 		Week:        timestamp.NFLWeek,

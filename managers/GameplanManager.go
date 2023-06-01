@@ -177,6 +177,7 @@ func UpdateGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 	if schemePenalty {
 
 		newsLog := structs.NewsLog{
+			TeamID:      updateGameplanDto.UpdatedGameplan.TeamID,
 			WeekID:      ts.CollegeWeekID,
 			Week:        ts.CollegeWeek,
 			SeasonID:    ts.CollegeSeasonID,
@@ -224,6 +225,7 @@ func UpdateNFLGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 	if schemeChange {
 
 		newsLog := structs.NewsLog{
+			TeamID:      updateGameplanDto.UpdatedGameplan.TeamID,
 			WeekID:      ts.NFLWeekID,
 			Week:        ts.NFLWeek,
 			SeasonID:    ts.NFLSeasonID,

@@ -339,6 +339,7 @@ func AcceptTradeProposal(proposalID string) {
 	newsLogMessage += "\n"
 
 	newsLog := structs.NewsLog{
+		TeamID:      0,
 		WeekID:      ts.NFLWeekID,
 		Week:        ts.NFLWeek,
 		SeasonID:    ts.NFLSeasonID,
@@ -359,6 +360,7 @@ func RejectTradeProposal(proposalID string) {
 
 	proposal.RejectTrade()
 	newsLog := structs.NewsLog{
+		TeamID:      0,
 		WeekID:      ts.NFLWeekID,
 		Week:        ts.NFLWeek,
 		SeasonID:    ts.NFLSeasonID,

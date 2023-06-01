@@ -7,6 +7,7 @@ type NewsLog struct {
 	WeekID      int
 	Week        int
 	SeasonID    int
+	TeamID      int
 	MessageType string
 	Message     string
 	League      string

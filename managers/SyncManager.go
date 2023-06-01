@@ -190,6 +190,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 						recruit.AssignCollege(teamAbbreviation)
 
 						newsLog := structs.NewsLog{
+							TeamID:      winningTeamID,
 							WeekID:      timestamp.CollegeWeekID + 1,
 							Week:        timestamp.CollegeWeek,
 							SeasonID:    timestamp.CollegeSeasonID,
@@ -238,7 +239,6 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 			}
 			recruit.UpdateTeamID(int(winningTeamID))
 
-			db.Save(&recruit)
 		}
 
 		// Save Player Files towards Recruit
@@ -252,6 +252,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 			fmt.Println("Save recruit profile from " + rp.TeamAbbreviation + " towards " + recruit.FirstName + " " + recruit.LastName)
 		}
+		db.Save(&recruit)
 	}
 
 	// Update rank system for all teams

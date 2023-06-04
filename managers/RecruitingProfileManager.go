@@ -288,3 +288,13 @@ func GetRecruitingClassSizeForTeams() {
 		db.Save(&team)
 	}
 }
+
+// ToggleTeamAIBehavior -- Toggle whether a Team will use AI recruiting or not
+func ToggleTeamAIBehavior(TeamID string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	recruitingProfile := GetOnlyRecruitingProfileByTeamID(TeamID)
+	recruitingProfile.ToggleAIBehavior()
+
+	db.Save(&recruitingProfile)
+}

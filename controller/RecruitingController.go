@@ -71,6 +71,19 @@ func GetRecruitingClassByTeamID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(recruitingProfile)
 }
 
+func ToggleAIBehavior(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+
+	if len(teamID) == 0 {
+		panic("User did not provide teamID")
+	}
+
+	managers.ToggleTeamAIBehavior(teamID)
+
+	json.NewEncoder(w).Encode("AI Behavior Switched For Team " + teamID)
+}
+
 // GetOnlyRecruitingProfileByTeamID
 func GetOnlyRecruitingProfileByTeamID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

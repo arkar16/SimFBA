@@ -31,6 +31,7 @@ type RecruitingTeamProfile struct {
 	AIBehavior                string
 	Recruits                  []RecruitPlayerProfile `gorm:"foreignKey:ProfileID"`
 	Affinities                []ProfileAffinity      `gorm:"foreignKey:ProfileID"`
+	WeeksMissed               int
 }
 
 type SaveProfile interface{}
@@ -40,6 +41,11 @@ func (r *RecruitingTeamProfile) AssignRES(res float64) {
 }
 
 func (r *RecruitingTeamProfile) ResetSpentPoints() {
+	if r.SpentPoints == 0 {
+		r.WeeksMissed += 1
+	} else {
+		r.WeeksMissed = 0
+	}
 	r.SpentPoints = 0
 }
 

@@ -135,6 +135,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/recruiting/profile/team/{teamID}/", controller.GetRecruitingProfileForTeamBoardByTeamID).Methods("GET")
 	myRouter.HandleFunc("/recruiting/profile/all/", controller.GetAllRecruitingProfiles).Methods("GET")
 	myRouter.HandleFunc("/recruiting/profile/only/{teamID}/", controller.GetOnlyRecruitingProfileByTeamID).Methods("GET")
+	myRouter.HandleFunc("/recruiting/toggle/ai/{teamID}/", controller.ToggleAIBehavior).Methods("GET")
 	myRouter.HandleFunc("/recruiting/addrecruit/", controller.CreateRecruitPlayerProfile).Methods("POST")
 	// myRouter.HandleFunc("/recruiting/allocaterecruitpoints/", controller.AllocateRecruitingPointsForRecruit).Methods("PUT")
 	myRouter.HandleFunc("/recruiting/toggleScholarship/", controller.SendScholarshipToRecruit).Methods("POST")

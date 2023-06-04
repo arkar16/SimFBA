@@ -28,6 +28,7 @@ type NFLPlayerStats struct {
 	WeekID       int
 	SeasonID     int
 	OpposingTeam string
+	Year         int
 	BasePlayerStats
 }
 

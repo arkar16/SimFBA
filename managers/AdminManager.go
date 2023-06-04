@@ -197,11 +197,10 @@ func SyncTimeslot(timeslot string) {
 		// Get Games
 		games := GetNFLGamesByTimeslotAndWeekId(strconv.Itoa(timestamp.NFLWeekID), timeslot)
 
-		seasonStats := GetNFLTeamSeasonStatsBySeason(strconv.Itoa(timestamp.NFLSeasonID))
-		seasonStatsMap := make(map[int]structs.NFLTeamSeasonStats)
-		for _, s := range seasonStats {
-			seasonStatsMap[int(s.TeamID)] = s
-		}
+		// seasonStatsMap := make(map[int]structs.NFLTeamSeasonStats)
+		// for _, s := range seasonStats {
+		// 	seasonStatsMap[int(s.TeamID)] = s
+		// }
 
 		for _, game := range games {
 			// Get team stats
@@ -209,8 +208,10 @@ func SyncTimeslot(timeslot string) {
 			homeTeamID := game.HomeTeamID
 			awayTeamID := game.AwayTeamID
 
-			homeTeamSeasonStats := seasonStatsMap[homeTeamID]
-			awayTeamSeasonStats := seasonStatsMap[awayTeamID]
+			// homeTeamSeasonStats := seasonStatsMap[homeTeamID]
+			// awayTeamSeasonStats := seasonStatsMap[awayTeamID]
+			homeTeamSeasonStats := GetNFLTeamSeasonStatsByTeamANDSeason(strconv.Itoa(homeTeamID), strconv.Itoa(int(timestamp.CollegeSeasonID)))
+			awayTeamSeasonStats := GetNFLTeamSeasonStatsByTeamANDSeason(strconv.Itoa(awayTeamID), strconv.Itoa(int(timestamp.CollegeSeasonID)))
 
 			homeTeamStats := GetNFLTeamStatsByGame(strconv.Itoa(homeTeamID), gameID)
 			awayTeamStats := GetNFLTeamStatsByGame(strconv.Itoa(awayTeamID), gameID)
@@ -309,6 +310,8 @@ func SyncTimeslot(timeslot string) {
 
 		}
 	}
+
+	db.Save(&timestamp)
 }
 
 // UpdateTimestamp - Update the timestamp

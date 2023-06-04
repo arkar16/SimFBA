@@ -339,7 +339,7 @@ func UpdateCollegeAIDepthCharts() {
 	db := dbprovider.GetInstance().GetDB()
 	teams := GetAllCollegeTeams()
 	for _, team := range teams {
-		if len(team.Coach) > 0 && team.Coach != "AI" {
+		if (len(team.Coach) > 0 && team.Coach != "AI") || team.IsFBS {
 			continue
 		}
 
@@ -351,6 +351,7 @@ func UpdateCollegeAIDepthCharts() {
 		positionMap := make(map[string][]structs.DepthChartPositionDTO)
 		starterMap := make(map[uint]bool)
 		backupMap := make(map[uint]bool)
+		stuMap := make(map[uint]bool)
 		offScheme := gp.OffensiveScheme
 		defScheme := gp.DefensiveScheme
 		isLT := true
@@ -1124,10 +1125,15 @@ func UpdateCollegeAIDepthCharts() {
 					dcp.Position != "KR" {
 					continue
 				}
-				if backupMap[pos.CollegePlayer.ID] && dcp.PositionLevel != "1" {
+				if backupMap[pos.CollegePlayer.ID] && dcp.PositionLevel != "1" && dcp.Position != "STU" {
 					continue
 				}
-				if dcp.PositionLevel == "1" && !starterMap[pos.CollegePlayer.ID] {
+				if dcp.Position == "STU" && stuMap[pos.CollegePlayer.ID] {
+					continue
+				}
+				if dcp.Position == "STU" {
+					stuMap[pos.CollegePlayer.ID] = true
+				} else if dcp.PositionLevel == "1" && !starterMap[pos.CollegePlayer.ID] {
 					starterMap[pos.CollegePlayer.ID] = true
 				} else {
 					backupMap[pos.CollegePlayer.ID] = true

@@ -3,6 +3,7 @@ package models
 type CollegeGameResponse struct {
 	Week                     int
 	SeasonID                 int
+	TimeSlot                 string
 	HomeTeamID               int
 	HomeTeam                 string
 	HomeTeamCoach            string

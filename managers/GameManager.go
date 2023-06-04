@@ -132,6 +132,7 @@ func GetTeamScheduleForBot(TeamID string, SeasonID string) []models.CollegeGameR
 			GameComplete:             game.GameComplete,
 			ShowGame:                 showGame,
 			GameTitle:                game.GameTitle,
+			TimeSlot:                 game.TimeSlot,
 		}
 
 		gameResponses = append(gameResponses, gameResponse)
@@ -190,6 +191,14 @@ func GetCollegeGameByAbbreviationsWeekAndSeasonID(HomeTeamAbbr string, WeekID st
 
 	return game
 }
+
+// func GetCollegeBoxScoreResultsByGameID(gameID string) {
+// 	db := dbprovider.GetInstance().GetDB()
+
+// 	game := GetCollegeGameByGameID()
+// 	homeTeamID := strconv.Itoa(int(game.HomeTeamID))
+// 	awayTeamID := strconv.Itoa(int(game.AwayTeamID))
+// }
 
 func GetCollegeGameByGameID(gameID string) structs.CollegeGame {
 	db := dbprovider.GetInstance().GetDB()

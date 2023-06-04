@@ -5,6 +5,7 @@ type PlayerStatDTO struct {
 	LName             string
 	Position          string
 	PlayerID          int
+	Year              int
 	Pancakes          int
 	SacksAllowed      int
 	PassAttempts      int

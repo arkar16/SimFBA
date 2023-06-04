@@ -123,9 +123,22 @@ func GetCollegeTeamSeasonStatsBySeason(TeamID string, SeasonID string) structs.C
 
 	var teamStats structs.CollegeTeamSeasonStats
 
-	err := db.Where("team_id = ?, season_id = ?", TeamID, SeasonID).Find(&teamStats).Error
+	err := db.Where("team_id = ? AND season_id = ?", TeamID, SeasonID).Find(&teamStats).Error
 	if err != nil {
 		return structs.CollegeTeamSeasonStats{}
+	}
+
+	return teamStats
+}
+
+func GetNFLTeamSeasonStatsByTeamANDSeason(TeamID string, SeasonID string) structs.NFLTeamSeasonStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var teamStats structs.NFLTeamSeasonStats
+
+	err := db.Where("team_id = ? AND season_id = ?", TeamID, SeasonID).Find(&teamStats).Error
+	if err != nil {
+		return structs.NFLTeamSeasonStats{}
 	}
 
 	return teamStats
@@ -462,6 +475,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				SeasonID:        gameRecord.SeasonID,
 				OpposingTeam:    at.TeamAbbr,
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
+				Year:            player.Year,
 			}
 			playerStats = append(playerStats, collegePlayerStats)
 		}
@@ -476,6 +490,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				SeasonID:        gameRecord.SeasonID,
 				OpposingTeam:    ht.TeamAbbr,
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
+				Year:            player.Year,
 			}
 			playerStats = append(playerStats, collegePlayerStats)
 		}
@@ -589,6 +604,7 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				SeasonID:        gameRecord.SeasonID,
 				OpposingTeam:    gameDataDTO.AwayTeam.Abbreviation,
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
+				Year:            player.Year,
 			}
 			playerStats = append(playerStats, nflPlayerStats)
 		}
@@ -603,6 +619,7 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				SeasonID:        gameRecord.SeasonID,
 				OpposingTeam:    gameDataDTO.HomeTeam.Abbreviation,
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
+				Year:            player.Year,
 			}
 
 			playerStats = append(playerStats, nflPlayerStats)

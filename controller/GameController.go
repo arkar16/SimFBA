@@ -169,6 +169,14 @@ func GetCurrentWeekGamesByLeague(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func RunTheGames(w http.ResponseWriter, r *http.Request) {
+func GetBoxScoreResults(w http.ResponseWriter, r *http.Request) {
+	// gameID := vars["gameID"]
+	// if len(gameID) == 0 {
+	// 	panic("User did not provide teamID")
+	// }
 
+	// json.NewEncoder(w).Encode(nflgames)
+}
+
+func RunTheGames(w http.ResponseWriter, r *http.Request) {
 }

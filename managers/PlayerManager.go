@@ -141,7 +141,6 @@ func GetCollegePlayerByNameTeamAndWeek(firstName string, lastName string, teamID
 
 		return collegePlayerResponse
 	}
-
 }
 
 func GetSeasonalCollegePlayerByNameTeam(firstName string, lastName string, teamID string) models.CollegePlayerResponse {

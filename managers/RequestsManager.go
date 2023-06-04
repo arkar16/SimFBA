@@ -109,7 +109,7 @@ func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 
 	recruitingProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(request.TeamID))
 
-	recruitingProfile.ToggleAIBehavior()
+	recruitingProfile.ActivateAI()
 
 	db.Save(&recruitingProfile)
 
@@ -227,7 +227,7 @@ func RemoveUserFromTeam(teamId string) {
 
 	recruitingProfile := GetOnlyRecruitingProfileByTeamID(teamId)
 
-	recruitingProfile.ToggleAIBehavior()
+	recruitingProfile.DeactivateAI()
 
 	db.Save(&recruitingProfile)
 

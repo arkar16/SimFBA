@@ -109,6 +109,14 @@ func (r *RecruitingTeamProfile) ApplyCaughtCheating() {
 	r.CaughtCheating = true
 }
 
+func (r *RecruitingTeamProfile) ActivateAI() {
+	r.IsAI = true
+}
+
+func (r *RecruitingTeamProfile) DeactivateAI() {
+	r.IsAI = false
+}
+
 func (r *RecruitingTeamProfile) ToggleAIBehavior() {
 	r.IsAI = !r.IsAI
 }

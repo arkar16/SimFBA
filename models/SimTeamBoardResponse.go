@@ -23,6 +23,7 @@ type SimTeamBoardResponse struct {
 	RivalsScore               float64
 	Rank247Score              float64
 	CompositeScore            float64
+	IsAI                      bool
 	RecruitingClassRank       int
 	Recruits                  []CrootProfile
 	Affinities                []structs.ProfileAffinity `gorm:"foreignKey:ProfileID"`
@@ -32,6 +33,7 @@ func (stbr *SimTeamBoardResponse) Map(rtp structs.RecruitingTeamProfile, c []Cro
 	stbr.ID = rtp.ID
 	stbr.TeamID = rtp.TeamID
 	stbr.Team = rtp.Team
+	stbr.IsAI = rtp.IsAI
 	stbr.TeamAbbreviation = rtp.TeamAbbreviation
 	stbr.State = rtp.State
 	stbr.ScholarshipsAvailable = rtp.ScholarshipsAvailable

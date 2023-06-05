@@ -128,6 +128,7 @@ func GetStatsPageContentForSeason(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetNFLStatsPageContent(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	vars := mux.Vars(r)
 	seasonID := vars["seasonID"]
 	viewType := vars["viewType"]

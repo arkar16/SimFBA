@@ -325,9 +325,9 @@ func GetAllNFLTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []mode
 		}
 		var teamstat structs.NFLTeamStats
 		var seasonstat structs.NFLTeamSeasonStats
-		if viewType == "WEEK" {
+		if viewType == "WEEK" && len(team.TeamStats) > 0 {
 			teamstat = team.TeamStats[0]
-		} else {
+		} else if len(team.TeamSeasonStats) > 0 {
 			seasonstat = team.TeamSeasonStats[0]
 		}
 		ct := models.NFLTeamResponse{

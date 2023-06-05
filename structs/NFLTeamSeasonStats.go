@@ -28,6 +28,11 @@ type NFLTeamStats struct {
 }
 
 func (ss *NFLTeamSeasonStats) MapStats(stats []NFLTeamStats) {
+	if ss.TeamID == 0 {
+		ss.TeamID = stats[0].TeamID
+		ss.SeasonID = 2
+		ss.Year = 2023
+	}
 	for _, stat := range stats {
 		ss.GamesPlayed++
 		ss.PassingYards = ss.PassingYards + stat.PassingYards

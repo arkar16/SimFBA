@@ -163,9 +163,10 @@ func CreateFAOffer(offer structs.FreeAgencyOfferDTO) structs.FreeAgencyOffer {
 		newsLog := structs.NewsLog{
 			TeamID:      player.TeamID,
 			SeasonID:    ts.NFLSeasonID,
-			MessageType: "FreeAgency",
+			MessageType: "Free Agency",
 			WeekID:      ts.NFLWeekID,
 			Message:     offer.Team + " have placed an offer on " + player.TeamAbbr + " " + player.Position + " " + player.FirstName + " " + player.LastName + " to pick up from the practice squad.",
+			League:      "NFL",
 		}
 		db.Create(&newsLog)
 	}

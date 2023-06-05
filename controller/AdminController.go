@@ -69,27 +69,6 @@ func SyncMissingRES(w http.ResponseWriter, r *http.Request) {
 	managers.SyncAllMissingEfficiencies()
 }
 
-func GetNewsLogs(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	weekID := vars["weekID"]
-	seasonID := vars["seasonID"]
-
-	newsLogs := managers.GetNewsLogs(weekID, seasonID)
-
-	json.NewEncoder(w).Encode(newsLogs)
-}
-
-func GetAllNewsLogsForASeason(w http.ResponseWriter, r *http.Request) {
-	newsLogs := managers.GetAllNewsLogs()
-	json.NewEncoder(w).Encode(newsLogs)
-}
-
-func GetAllNFLNewsBySeason(w http.ResponseWriter, r *http.Request) {
-	newsLogs := managers.GetAllNFLNewsLogs()
-
-	json.NewEncoder(w).Encode(newsLogs)
-}
-
 func GetWeeksInSeason(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	seasonID := vars["seasonID"]

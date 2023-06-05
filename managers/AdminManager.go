@@ -210,8 +210,8 @@ func SyncTimeslot(timeslot string) {
 
 			// homeTeamSeasonStats := seasonStatsMap[homeTeamID]
 			// awayTeamSeasonStats := seasonStatsMap[awayTeamID]
-			homeTeamSeasonStats := GetNFLTeamSeasonStatsByTeamANDSeason(strconv.Itoa(homeTeamID), strconv.Itoa(int(timestamp.CollegeSeasonID)))
-			awayTeamSeasonStats := GetNFLTeamSeasonStatsByTeamANDSeason(strconv.Itoa(awayTeamID), strconv.Itoa(int(timestamp.CollegeSeasonID)))
+			homeTeamSeasonStats := GetNFLTeamSeasonStatsByTeamANDSeason(strconv.Itoa(homeTeamID), strconv.Itoa(int(timestamp.NFLSeasonID)))
+			awayTeamSeasonStats := GetNFLTeamSeasonStatsByTeamANDSeason(strconv.Itoa(awayTeamID), strconv.Itoa(int(timestamp.NFLSeasonID)))
 
 			homeTeamStats := GetNFLTeamStatsByGame(strconv.Itoa(homeTeamID), gameID)
 			awayTeamStats := GetNFLTeamStatsByGame(strconv.Itoa(awayTeamID), gameID)

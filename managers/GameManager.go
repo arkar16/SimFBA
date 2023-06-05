@@ -78,7 +78,7 @@ func GetNFLGamesBySeasonID(SeasonID string) []structs.NFLGame {
 
 	var games []structs.NFLGame
 
-	db.Order("week_id asc").Where("season_id = ? and is_preseason_game = ?", SeasonID, ts.NFLPreseason).Find(&games)
+	db.Order("week_id asc").Order("time_slot asc").Where("season_id = ? and is_preseason_game = ?", SeasonID, ts.NFLPreseason).Find(&games)
 
 	return games
 }

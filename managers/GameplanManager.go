@@ -231,7 +231,7 @@ func UpdateNFLGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 			SeasonID:    ts.NFLSeasonID,
 			League:      "NFL",
 			MessageType: "Gameplan",
-			Message:     "Coach " + updateGameplanDto.Username + " has updated " + updateGameplanDto.TeamName + "'s offensive scheme from " + currentGameplan.OffensiveScheme + " to " + updateGameplanDto.UpdatedGameplan.OffensiveScheme,
+			Message:     "Coach " + updateGameplanDto.Username + " has updated " + updateGameplanDto.TeamName + "'s offensive scheme from " + currentGameplan.OffensiveScheme + " to " + updateGameplanDto.UpdatedNFLGameplan.OffensiveScheme,
 		}
 
 		db.Create(&newsLog)

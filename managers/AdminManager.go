@@ -275,8 +275,8 @@ func SyncTimeslot(timeslot string) {
 			}
 
 			// Update Standings
-			homeTeamStandings := GetNFLStandingsByTeamIDAndSeasonID(strconv.Itoa(homeTeamID), strconv.Itoa(timestamp.CollegeSeasonID))
-			awayTeamStandings := GetNFLStandingsByTeamIDAndSeasonID(strconv.Itoa(awayTeamID), strconv.Itoa(timestamp.CollegeSeasonID))
+			homeTeamStandings := GetNFLStandingsByTeamIDAndSeasonID(strconv.Itoa(homeTeamID), strconv.Itoa(timestamp.NFLSeasonID))
+			awayTeamStandings := GetNFLStandingsByTeamIDAndSeasonID(strconv.Itoa(awayTeamID), strconv.Itoa(timestamp.NFLSeasonID))
 
 			homeTeamStandings.UpdateNFLStandings(game)
 			awayTeamStandings.UpdateNFLStandings(game)

@@ -25,8 +25,8 @@ type PlayerStatDTO struct {
 	ReceivingYards    int
 	ReceivingTDs      int
 	LongestCatch      int
-	SoloTackles       int
-	AssistedTackles   int
+	SoloTackles       float64
+	AssistedTackles   float64
 	TacklesForLoss    float64
 	Sacks             float64
 	ForcedFumbles     int
@@ -53,8 +53,8 @@ type PlayerStatDTO struct {
 	PuntReturns       int
 	PuntReturnYards   int
 	PuntReturnTDs     int
-	STSoloTackles     int
-	STAssistedTackles int
+	STSoloTackles     float64
+	STAssistedTackles float64
 	PuntsBlocked      int
 	FGBlocked         int
 	Snaps             int

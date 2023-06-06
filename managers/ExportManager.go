@@ -329,13 +329,13 @@ func ExportPlayerStatsToCSV(cp []models.CollegePlayerResponse, w http.ResponseWr
 			strconv.Itoa(int(seasonStats.QBRating)), strconv.Itoa(seasonStats.RushAttempts), strconv.Itoa(seasonStats.RushingYards), strconv.Itoa(int(seasonStats.RushingAvg)),
 			strconv.Itoa(seasonStats.RushingTDs), strconv.Itoa(seasonStats.Fumbles), strconv.Itoa(seasonStats.LongestRush), strconv.Itoa(seasonStats.Targets),
 			strconv.Itoa(seasonStats.Catches), strconv.Itoa(seasonStats.ReceivingYards), strconv.Itoa(int(seasonStats.ReceivingAvg)), strconv.Itoa(seasonStats.ReceivingTDs),
-			strconv.Itoa(seasonStats.LongestReception), strconv.Itoa(seasonStats.SoloTackles), strconv.Itoa(seasonStats.AssistedTackles), strconv.Itoa(int(seasonStats.TacklesForLoss)),
+			strconv.Itoa(seasonStats.LongestReception), strconv.Itoa(int(seasonStats.SoloTackles)), strconv.Itoa(int(seasonStats.AssistedTackles)), strconv.Itoa(int(seasonStats.TacklesForLoss)),
 			strconv.Itoa(int(seasonStats.SacksMade)), strconv.Itoa(seasonStats.ForcedFumbles), strconv.Itoa(seasonStats.PassDeflections), strconv.Itoa(seasonStats.InterceptionsCaught),
 			strconv.Itoa(seasonStats.Safeties), strconv.Itoa(seasonStats.DefensiveTDs), strconv.Itoa(seasonStats.FGMade), strconv.Itoa(seasonStats.FGAttempts),
 			strconv.Itoa(seasonStats.LongestFG), strconv.Itoa(seasonStats.ExtraPointsMade), strconv.Itoa(seasonStats.ExtraPointsAttempted), strconv.Itoa(seasonStats.KickoffTouchbacks),
 			strconv.Itoa(seasonStats.Punts), strconv.Itoa(seasonStats.PuntTouchbacks), strconv.Itoa(seasonStats.PuntsInside20), strconv.Itoa(seasonStats.KickReturns),
 			strconv.Itoa(seasonStats.KickReturnTDs), strconv.Itoa(seasonStats.KickReturnYards), strconv.Itoa(seasonStats.PuntReturns), strconv.Itoa(seasonStats.PuntReturnTDs),
-			strconv.Itoa(seasonStats.PuntReturnYards), strconv.Itoa(seasonStats.STSoloTackles), strconv.Itoa(seasonStats.STAssistedTackles), strconv.Itoa(seasonStats.PuntsBlocked),
+			strconv.Itoa(seasonStats.PuntReturnYards), strconv.Itoa(int(seasonStats.STSoloTackles)), strconv.Itoa(int(seasonStats.STAssistedTackles)), strconv.Itoa(seasonStats.PuntsBlocked),
 			strconv.Itoa(seasonStats.FGBlocked), strconv.Itoa(seasonStats.Snaps), strconv.Itoa(seasonStats.Pancakes), "No.",
 		}
 		err = writer.Write(pr)

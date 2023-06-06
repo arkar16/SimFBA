@@ -6,6 +6,7 @@ import (
 	"sync"
 
 	config "github.com/CalebRose/SimFBA/secrets"
+	"github.com/CalebRose/SimFBA/structs"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -41,8 +42,8 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.Stadium{})
 
 	// College
-	// db.AutoMigrate(&structs.CollegePlayer{})
-	// db.AutoMigrate(&structs.CollegePlayerSeasonStats{})
+	db.AutoMigrate(&structs.CollegePlayer{})
+	db.AutoMigrate(&structs.CollegePlayerSeasonStats{})
 	// db.AutoMigrate(&structs.HistoricCollegePlayer{})
 	// db.AutoMigrate(&structs.Player{})
 	// db.AutoMigrate(&structs.CollegePlayerStats{})
@@ -82,8 +83,8 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.NFLTradeOption{})
 	// db.AutoMigrate(&structs.FreeAgencyOffer{})
 	// db.AutoMigrate(&structs.NFLContract{})
-	// db.AutoMigrate(&structs.NFLPlayer{})
-	// db.AutoMigrate(&structs.NFLPlayerSeasonStats{})
+	db.AutoMigrate(&structs.NFLPlayer{})
+	db.AutoMigrate(&structs.NFLPlayerSeasonStats{})
 	// db.AutoMigrate(&structs.NFLPlayerStats{})
 	// db.AutoMigrate(&structs.NFLRetiredPlayer{})
 	// db.AutoMigrate(&structs.NFLUser{})

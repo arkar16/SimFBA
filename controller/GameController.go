@@ -177,6 +177,3 @@ func GetBoxScoreResults(w http.ResponseWriter, r *http.Request) {
 
 	// json.NewEncoder(w).Encode(nflgames)
 }
-
-func RunTheGames(w http.ResponseWriter, r *http.Request) {
-}

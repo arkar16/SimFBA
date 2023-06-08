@@ -646,3 +646,27 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		log.Panicln("Could not save team stats!")
 	}
 }
+
+func GetCFBGameResultsByGameID(gameID string) structs.GameResultsResponse {
+	game := GetCollegeGameByGameID(gameID)
+
+	homePlayers := GetAllCollegePlayersWithGameStatsByTeamID(strconv.Itoa(game.HomeTeamID), gameID)
+	awayPlayers := GetAllCollegePlayersWithGameStatsByTeamID(strconv.Itoa(game.AwayTeamID), gameID)
+
+	return structs.GameResultsResponse{
+		HomePlayers: homePlayers,
+		AwayPlayers: awayPlayers,
+	}
+}
+
+func GetNFLGameResultsByGameID(gameID string) structs.GameResultsResponse {
+	game := GetNFLGameByGameID(gameID)
+
+	homePlayers := GetAllNFLPlayersWithGameStatsByTeamID(strconv.Itoa(game.HomeTeamID), gameID)
+	awayPlayers := GetAllNFLPlayersWithGameStatsByTeamID(strconv.Itoa(game.AwayTeamID), gameID)
+
+	return structs.GameResultsResponse{
+		HomePlayers: homePlayers,
+		AwayPlayers: awayPlayers,
+	}
+}

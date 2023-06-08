@@ -1,0 +1,69 @@
+package structs
+
+type GameResultsResponse struct {
+	HomePlayers []GameResultsPlayer
+	AwayPlayers []GameResultsPlayer
+}
+
+type GameResultsPlayer struct {
+	FirstName            string
+	LastName             string
+	Position             string
+	Archetype            string
+	League               string
+	Year                 uint
+	PassingYards         int
+	PassAttempts         int
+	PassCompletions      int
+	PassingTDs           int
+	Interceptions        int
+	LongestPass          int
+	Sacks                int
+	RushAttempts         int
+	RushingYards         int
+	RushingTDs           int
+	Fumbles              int
+	LongestRush          int
+	Targets              int
+	Catches              int
+	ReceivingYards       int
+	ReceivingTDs         int
+	LongestReception     int
+	SoloTackles          float64
+	AssistedTackles      float64
+	TacklesForLoss       float64
+	SacksMade            float64
+	ForcedFumbles        int
+	RecoveredFumbles     int
+	PassDeflections      int
+	InterceptionsCaught  int
+	Safeties             int
+	DefensiveTDs         int
+	FGMade               int
+	FGAttempts           int
+	LongestFG            int
+	ExtraPointsMade      int
+	ExtraPointsAttempted int
+	KickoffTouchbacks    int
+	Punts                int
+	PuntTouchbacks       int
+	PuntsInside20        int
+	KickReturns          int
+	KickReturnTDs        int
+	KickReturnYards      int
+	PuntReturns          int
+	PuntReturnTDs        int
+	PuntReturnYards      int
+	STSoloTackles        float64
+	STAssistedTackles    float64
+	PuntsBlocked         int
+	FGBlocked            int
+	Snaps                int
+	Pancakes             int
+	SacksAllowed         int
+	PlayedGame           int
+	StartedGame          int
+	WasInjured           bool
+	WeeksOfRecovery      uint
+	InjuryType           string
+}

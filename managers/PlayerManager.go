@@ -417,6 +417,346 @@ func GetAllCollegePlayersWithStatsByTeamID(TeamID string, SeasonID string) []str
 	return collegePlayers
 }
 
+func GetAllCollegePlayersWithGameStatsByTeamID(TeamID string, GameID string) []structs.GameResultsPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var collegePlayers []structs.CollegePlayer
+	var matchRows []structs.GameResultsPlayer
+
+	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("game_id = ? and team_id = ? and snaps > 0", GameID, TeamID)
+	}).Where("team_id = ?", TeamID).Find(&collegePlayers)
+
+	for _, p := range collegePlayers {
+		if len(p.Stats) == 0 {
+			continue
+		}
+
+		s := p.Stats[0]
+		if s.Snaps == 0 {
+			continue
+		}
+
+		row := structs.GameResultsPlayer{
+			FirstName:            p.FirstName,
+			LastName:             p.LastName,
+			Position:             p.Position,
+			Archetype:            p.Archetype,
+			Year:                 uint(p.Year),
+			League:               "CFB",
+			Snaps:                s.Snaps,
+			PassingYards:         s.PassingYards,
+			PassAttempts:         s.PassAttempts,
+			PassCompletions:      s.PassCompletions,
+			PassingTDs:           s.PassingTDs,
+			Interceptions:        s.Interceptions,
+			LongestPass:          s.LongestPass,
+			Sacks:                s.Sacks,
+			RushAttempts:         s.RushAttempts,
+			RushingYards:         s.RushingYards,
+			RushingTDs:           s.RushingTDs,
+			Fumbles:              s.Fumbles,
+			LongestRush:          s.LongestRush,
+			Targets:              s.Targets,
+			Catches:              s.Catches,
+			ReceivingYards:       s.ReceivingYards,
+			ReceivingTDs:         s.ReceivingTDs,
+			LongestReception:     s.LongestReception,
+			SoloTackles:          s.SoloTackles,
+			AssistedTackles:      s.AssistedTackles,
+			TacklesForLoss:       s.TacklesForLoss,
+			SacksMade:            s.SacksMade,
+			ForcedFumbles:        s.ForcedFumbles,
+			RecoveredFumbles:     s.RecoveredFumbles,
+			PassDeflections:      s.PassDeflections,
+			InterceptionsCaught:  s.InterceptionsCaught,
+			Safeties:             s.Safeties,
+			DefensiveTDs:         s.DefensiveTDs,
+			FGMade:               s.FGMade,
+			FGAttempts:           s.FGAttempts,
+			LongestFG:            s.LongestFG,
+			ExtraPointsMade:      s.ExtraPointsMade,
+			ExtraPointsAttempted: s.ExtraPointsAttempted,
+			KickoffTouchbacks:    s.KickoffTouchbacks,
+			Punts:                s.Punts,
+			PuntTouchbacks:       s.PuntTouchbacks,
+			PuntsInside20:        s.PuntsInside20,
+			KickReturns:          s.KickReturns,
+			KickReturnTDs:        s.KickReturnTDs,
+			KickReturnYards:      s.KickReturnYards,
+			PuntReturns:          s.PuntReturns,
+			PuntReturnTDs:        s.PuntReturnTDs,
+			PuntReturnYards:      s.PuntReturnYards,
+			STSoloTackles:        s.STSoloTackles,
+			STAssistedTackles:    s.STAssistedTackles,
+			PuntsBlocked:         s.PuntsBlocked,
+			FGBlocked:            s.FGBlocked,
+			Pancakes:             s.Pancakes,
+			SacksAllowed:         s.SacksAllowed,
+			PlayedGame:           s.PlayedGame,
+			StartedGame:          s.StartedGame,
+			WasInjured:           s.WasInjured,
+			WeeksOfRecovery:      s.WeeksOfRecovery,
+			InjuryType:           s.InjuryType,
+		}
+
+		matchRows = append(matchRows, row)
+	}
+
+	historicPlayers := []structs.HistoricCollegePlayer{}
+	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("game_id = ? and team_id = ? and snaps > 0", GameID, TeamID)
+	}).Where("team_id = ?", TeamID).Find(&historicPlayers)
+
+	for _, p := range historicPlayers {
+		if len(p.Stats) == 0 {
+			continue
+		}
+
+		s := p.Stats[0]
+		if s.Snaps == 0 {
+			continue
+		}
+
+		row := structs.GameResultsPlayer{
+			FirstName:            p.FirstName,
+			LastName:             p.LastName,
+			Position:             p.Position,
+			Archetype:            p.Archetype,
+			Year:                 uint(p.Year),
+			League:               "CFB",
+			Snaps:                s.Snaps,
+			PassingYards:         s.PassingYards,
+			PassAttempts:         s.PassAttempts,
+			PassCompletions:      s.PassCompletions,
+			PassingTDs:           s.PassingTDs,
+			Interceptions:        s.Interceptions,
+			LongestPass:          s.LongestPass,
+			Sacks:                s.Sacks,
+			RushAttempts:         s.RushAttempts,
+			RushingYards:         s.RushingYards,
+			RushingTDs:           s.RushingTDs,
+			Fumbles:              s.Fumbles,
+			LongestRush:          s.LongestRush,
+			Targets:              s.Targets,
+			Catches:              s.Catches,
+			ReceivingYards:       s.ReceivingYards,
+			ReceivingTDs:         s.ReceivingTDs,
+			LongestReception:     s.LongestReception,
+			SoloTackles:          s.SoloTackles,
+			AssistedTackles:      s.AssistedTackles,
+			TacklesForLoss:       s.TacklesForLoss,
+			SacksMade:            s.SacksMade,
+			ForcedFumbles:        s.ForcedFumbles,
+			RecoveredFumbles:     s.RecoveredFumbles,
+			PassDeflections:      s.PassDeflections,
+			InterceptionsCaught:  s.InterceptionsCaught,
+			Safeties:             s.Safeties,
+			DefensiveTDs:         s.DefensiveTDs,
+			FGMade:               s.FGMade,
+			FGAttempts:           s.FGAttempts,
+			LongestFG:            s.LongestFG,
+			ExtraPointsMade:      s.ExtraPointsMade,
+			ExtraPointsAttempted: s.ExtraPointsAttempted,
+			KickoffTouchbacks:    s.KickoffTouchbacks,
+			Punts:                s.Punts,
+			PuntTouchbacks:       s.PuntTouchbacks,
+			PuntsInside20:        s.PuntsInside20,
+			KickReturns:          s.KickReturns,
+			KickReturnTDs:        s.KickReturnTDs,
+			KickReturnYards:      s.KickReturnYards,
+			PuntReturns:          s.PuntReturns,
+			PuntReturnTDs:        s.PuntReturnTDs,
+			PuntReturnYards:      s.PuntReturnYards,
+			STSoloTackles:        s.STSoloTackles,
+			STAssistedTackles:    s.STAssistedTackles,
+			PuntsBlocked:         s.PuntsBlocked,
+			FGBlocked:            s.FGBlocked,
+			Pancakes:             s.Pancakes,
+			SacksAllowed:         s.SacksAllowed,
+			PlayedGame:           s.PlayedGame,
+			StartedGame:          s.StartedGame,
+			WasInjured:           s.WasInjured,
+			WeeksOfRecovery:      s.WeeksOfRecovery,
+			InjuryType:           s.InjuryType,
+		}
+
+		matchRows = append(matchRows, row)
+	}
+
+	return matchRows
+}
+
+func GetAllNFLPlayersWithGameStatsByTeamID(TeamID string, GameID string) []structs.GameResultsPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var nflPlayers []structs.NFLPlayer
+	var matchRows []structs.GameResultsPlayer
+
+	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("game_id = ? and team_id = ? and snaps > 0", GameID, TeamID)
+	}).Where("team_id = ?", TeamID).Find(&nflPlayers)
+
+	for _, p := range nflPlayers {
+		if len(p.Stats) == 0 {
+			continue
+		}
+
+		s := p.Stats[0]
+		if s.Snaps == 0 {
+			continue
+		}
+
+		row := structs.GameResultsPlayer{
+			FirstName:            p.FirstName,
+			LastName:             p.LastName,
+			Position:             p.Position,
+			Archetype:            p.Archetype,
+			Year:                 uint(s.Year),
+			League:               "NFL",
+			Snaps:                s.Snaps,
+			PassingYards:         s.PassingYards,
+			PassAttempts:         s.PassAttempts,
+			PassCompletions:      s.PassCompletions,
+			PassingTDs:           s.PassingTDs,
+			Interceptions:        s.Interceptions,
+			LongestPass:          s.LongestPass,
+			Sacks:                s.Sacks,
+			RushAttempts:         s.RushAttempts,
+			RushingYards:         s.RushingYards,
+			RushingTDs:           s.RushingTDs,
+			Fumbles:              s.Fumbles,
+			LongestRush:          s.LongestRush,
+			Targets:              s.Targets,
+			Catches:              s.Catches,
+			ReceivingYards:       s.ReceivingYards,
+			ReceivingTDs:         s.ReceivingTDs,
+			LongestReception:     s.LongestReception,
+			SoloTackles:          s.SoloTackles,
+			AssistedTackles:      s.AssistedTackles,
+			TacklesForLoss:       s.TacklesForLoss,
+			SacksMade:            s.SacksMade,
+			ForcedFumbles:        s.ForcedFumbles,
+			RecoveredFumbles:     s.RecoveredFumbles,
+			PassDeflections:      s.PassDeflections,
+			InterceptionsCaught:  s.InterceptionsCaught,
+			Safeties:             s.Safeties,
+			DefensiveTDs:         s.DefensiveTDs,
+			FGMade:               s.FGMade,
+			FGAttempts:           s.FGAttempts,
+			LongestFG:            s.LongestFG,
+			ExtraPointsMade:      s.ExtraPointsMade,
+			ExtraPointsAttempted: s.ExtraPointsAttempted,
+			KickoffTouchbacks:    s.KickoffTouchbacks,
+			Punts:                s.Punts,
+			PuntTouchbacks:       s.PuntTouchbacks,
+			PuntsInside20:        s.PuntsInside20,
+			KickReturns:          s.KickReturns,
+			KickReturnTDs:        s.KickReturnTDs,
+			KickReturnYards:      s.KickReturnYards,
+			PuntReturns:          s.PuntReturns,
+			PuntReturnTDs:        s.PuntReturnTDs,
+			PuntReturnYards:      s.PuntReturnYards,
+			STSoloTackles:        s.STSoloTackles,
+			STAssistedTackles:    s.STAssistedTackles,
+			PuntsBlocked:         s.PuntsBlocked,
+			FGBlocked:            s.FGBlocked,
+			Pancakes:             s.Pancakes,
+			SacksAllowed:         s.SacksAllowed,
+			PlayedGame:           s.PlayedGame,
+			StartedGame:          s.StartedGame,
+			WasInjured:           s.WasInjured,
+			WeeksOfRecovery:      s.WeeksOfRecovery,
+			InjuryType:           s.InjuryType,
+		}
+
+		matchRows = append(matchRows, row)
+	}
+
+	historicPlayers := []structs.NFLRetiredPlayer{}
+	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("game_id = ? and team_id = ? and snaps > 0", GameID, TeamID)
+	}).Where("team_id = ?", TeamID).Find(&historicPlayers)
+
+	for _, p := range historicPlayers {
+		if len(p.Stats) == 0 {
+			continue
+		}
+
+		s := p.Stats[0]
+		if s.Snaps == 0 {
+			continue
+		}
+
+		row := structs.GameResultsPlayer{
+			FirstName:            p.FirstName,
+			LastName:             p.LastName,
+			Position:             p.Position,
+			Archetype:            p.Archetype,
+			Year:                 uint(s.Year),
+			League:               "NFL",
+			Snaps:                s.Snaps,
+			PassingYards:         s.PassingYards,
+			PassAttempts:         s.PassAttempts,
+			PassCompletions:      s.PassCompletions,
+			PassingTDs:           s.PassingTDs,
+			Interceptions:        s.Interceptions,
+			LongestPass:          s.LongestPass,
+			Sacks:                s.Sacks,
+			RushAttempts:         s.RushAttempts,
+			RushingYards:         s.RushingYards,
+			RushingTDs:           s.RushingTDs,
+			Fumbles:              s.Fumbles,
+			LongestRush:          s.LongestRush,
+			Targets:              s.Targets,
+			Catches:              s.Catches,
+			ReceivingYards:       s.ReceivingYards,
+			ReceivingTDs:         s.ReceivingTDs,
+			LongestReception:     s.LongestReception,
+			SoloTackles:          s.SoloTackles,
+			AssistedTackles:      s.AssistedTackles,
+			TacklesForLoss:       s.TacklesForLoss,
+			SacksMade:            s.SacksMade,
+			ForcedFumbles:        s.ForcedFumbles,
+			RecoveredFumbles:     s.RecoveredFumbles,
+			PassDeflections:      s.PassDeflections,
+			InterceptionsCaught:  s.InterceptionsCaught,
+			Safeties:             s.Safeties,
+			DefensiveTDs:         s.DefensiveTDs,
+			FGMade:               s.FGMade,
+			FGAttempts:           s.FGAttempts,
+			LongestFG:            s.LongestFG,
+			ExtraPointsMade:      s.ExtraPointsMade,
+			ExtraPointsAttempted: s.ExtraPointsAttempted,
+			KickoffTouchbacks:    s.KickoffTouchbacks,
+			Punts:                s.Punts,
+			PuntTouchbacks:       s.PuntTouchbacks,
+			PuntsInside20:        s.PuntsInside20,
+			KickReturns:          s.KickReturns,
+			KickReturnTDs:        s.KickReturnTDs,
+			KickReturnYards:      s.KickReturnYards,
+			PuntReturns:          s.PuntReturns,
+			PuntReturnTDs:        s.PuntReturnTDs,
+			PuntReturnYards:      s.PuntReturnYards,
+			STSoloTackles:        s.STSoloTackles,
+			STAssistedTackles:    s.STAssistedTackles,
+			PuntsBlocked:         s.PuntsBlocked,
+			FGBlocked:            s.FGBlocked,
+			Pancakes:             s.Pancakes,
+			SacksAllowed:         s.SacksAllowed,
+			PlayedGame:           s.PlayedGame,
+			StartedGame:          s.StartedGame,
+			WasInjured:           s.WasInjured,
+			WeeksOfRecovery:      s.WeeksOfRecovery,
+			InjuryType:           s.InjuryType,
+		}
+
+		matchRows = append(matchRows, row)
+	}
+
+	return matchRows
+}
+
 func GetHeismanList() []models.HeismanWatchModel {
 	db := dbprovider.GetInstance().GetDB()
 

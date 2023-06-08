@@ -117,7 +117,7 @@ func (t *Timestamp) SyncToNextWeek() {
 	t.NFLMondayEvening = false
 	// t.ToggleRES()
 	t.ToggleRecruiting()
-	// t.ToggleGMActions()
+	t.ToggleGMActions()
 
 	// Migrate game results ?
 }

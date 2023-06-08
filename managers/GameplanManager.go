@@ -339,7 +339,7 @@ func UpdateCollegeAIDepthCharts() {
 	db := dbprovider.GetInstance().GetDB()
 	teams := GetAllCollegeTeams()
 	for _, team := range teams {
-		if (len(team.Coach) > 0 && team.Coach != "AI") || team.IsFBS {
+		if len(team.Coach) > 0 && team.Coach != "AI" {
 			continue
 		}
 

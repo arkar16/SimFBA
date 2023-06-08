@@ -384,6 +384,7 @@ func SyncFreeAgencyOffers() {
 	}
 
 	ts.ToggleFALock()
+	ts.ToggleGMActions()
 	db.Save(&ts)
 }
 

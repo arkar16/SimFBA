@@ -127,6 +127,11 @@ func SyncAIBoards(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(w, "Team Ranks successfully generated.")
 }
 
+func RunTheGames(w http.ResponseWriter, r *http.Request) {
+	managers.RunTheGames()
+	fmt.Println(w, "Games for current week are set to run.")
+}
+
 func WeatherGenerator(w http.ResponseWriter, r *http.Request) {
 	managers.GenerateWeatherForGames()
 	fmt.Println(w, "Congrats, you generated the GODDAM WEATHER!")

@@ -27,7 +27,7 @@ type NFLStandings struct {
 func (ns *NFLStandings) UpdateNFLStandings(game NFLGame) {
 	isAway := ns.TeamID == uint(game.AwayTeamID)
 	winner := (!isAway && game.HomeTeamWin) || (isAway && game.AwayTeamWin)
-	tie := (game.HomeTeamWin && game.AwayTeamWin) || (!game.HomeTeamWin && !game.AwayTeamWin)
+	tie := game.HomeTeamScore == game.AwayTeamScore
 	if tie {
 		ns.TotalTies += 1
 		if game.IsConference {

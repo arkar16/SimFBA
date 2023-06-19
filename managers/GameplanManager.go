@@ -383,7 +383,7 @@ func UpdateCollegeAIDepthCharts() {
 							score += 5
 						}
 					}
-					score += cp.ThrowAccuracy
+					score += cp.ThrowAccuracy + (cp.ThrowPower / 2)
 				} else if offScheme == "Air Raid" {
 					if pos == "QB" {
 						score += 35
@@ -397,7 +397,7 @@ func UpdateCollegeAIDepthCharts() {
 							score += 5
 						}
 					}
-					score += cp.ThrowPower
+					score += cp.ThrowPower + (cp.ThrowAccuracy / 2)
 				} else if offScheme == "Spread Option" {
 					if pos == "QB" {
 						score += 35
@@ -411,7 +411,7 @@ func UpdateCollegeAIDepthCharts() {
 							score += 10
 						}
 					}
-					score += cp.ThrowAccuracy
+					score += cp.ThrowAccuracy + (cp.ThrowPower / 2)
 				} else if offScheme == "Double Wing Option" {
 					if pos == "QB" {
 						score += 35
@@ -652,8 +652,10 @@ func UpdateCollegeAIDepthCharts() {
 					}
 					score += cp.Overall
 				} else if offScheme == "Air Raid" {
-					if (pos == "OT" || pos == "OG") && arch == "Pass Blocking" {
-						score += 35
+					if (pos == "OT") && arch == "Pass Blocking" {
+						score += 30
+					} else if pos == "OG" && arch == "Pass Blocking" {
+						score += 12
 					} else if pos == "C" && arch == "Pass Blocking" {
 						score += 5
 					} else if (pos == "OT" || pos == "OG") && arch != "Pass Blocking" {
@@ -668,8 +670,10 @@ func UpdateCollegeAIDepthCharts() {
 					}
 					score += cp.Overall
 				} else if offScheme == "Double Wing Option" {
-					if (pos == "OT" || pos == "OG") && arch == "Run Blocking" {
+					if (pos == "OT") && arch == "Run Blocking" {
 						score += 35
+					} else if pos == "OG" && arch == "Run Blocking" {
+						score += 12
 					} else if pos == "C" && arch == "Run Blocking" {
 						score += 5
 					} else if (pos == "OT" || pos == "OG") && arch != "Run Blocking" {
@@ -743,7 +747,7 @@ func UpdateCollegeAIDepthCharts() {
 					score += cp.Overall
 				} else if offScheme == "Air Raid" {
 					if pos == "C" {
-						score += 25
+						score += 35
 						if arch == "Pass Blocking" {
 							score += 10
 						} else {
@@ -758,7 +762,7 @@ func UpdateCollegeAIDepthCharts() {
 					score += cp.Overall
 				} else if offScheme == "Double Wing Option" {
 					if pos == "C" {
-						score += 25
+						score += 35
 						if arch == "Run Blocking" {
 							score += 10
 						}

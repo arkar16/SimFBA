@@ -75,7 +75,7 @@ func GetHeismanScore(cp structs.CollegePlayer, weightMap map[string]float64, hom
 		opposingTeamWeight := weightMap[opposingTeam]
 
 		if (game.HomeTeamWin && cp.TeamID != game.HomeTeamID) || (game.AwayTeamWin && cp.TeamID != game.AwayTeamID) {
-			opposingTeamWeight *= -.425
+			opposingTeamWeight *= -.4125
 		}
 
 		totalMod += opposingTeamWeight

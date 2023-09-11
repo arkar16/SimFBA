@@ -599,15 +599,26 @@ func validateFreeAgencyPref(playerRecord structs.NFLPlayer, roster []structs.NFL
 	}
 
 	if preference == "I'm the starter" {
-		teamRoster := roster
-		sort.Slice(teamRoster, func(i, j int) bool {
-			return teamRoster[i].Overall > teamRoster[j].Overall
+		depthChart := GetNFLDepthchartByTeamID(strconv.Itoa(int(team.ID)))
+		dc := depthChart.DepthChartPlayers
+		depthChartByPosition := []structs.NFLDepthChartPosition{}
+
+		for _, dcp := range dc {
+			if dcp.Position == playerRecord.Position {
+				depthChartByPosition = append(depthChartByPosition, dcp)
+			}
+		}
+
+		sort.Slice(depthChartByPosition, func(i, j int) bool {
+			iNum := util.ConvertStringToInt(depthChartByPosition[i].PositionLevel)
+			jNum := util.ConvertStringToInt(depthChartByPosition[j].PositionLevel)
+			return iNum > jNum
 		})
-		for idx, p := range teamRoster {
-			if idx > 4 {
+		for idx, p := range depthChartByPosition {
+			if idx > 3 {
 				return false
 			}
-			if playerRecord.Overall >= p.Overall {
+			if playerRecord.Overall >= p.NFLPlayer.Overall {
 				return true
 			}
 		}

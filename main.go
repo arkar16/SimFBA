@@ -70,6 +70,13 @@ func handleRequests() {
 
 	// Draft Controls
 	myRouter.HandleFunc("/nfl/draft/draftees/export/{season}", controller.ExportDrafteesToCSV).Methods("GET")
+	myRouter.HandleFunc("/nfl/draft/export/picks", controller.ExportDraftedPicks).Methods("POST")
+	myRouter.HandleFunc("/nfl/draft/page/{teamID}", controller.GetDraftPageData).Methods("GET")
+	myRouter.HandleFunc("/nfl/draft/time/change", controller.ToggleDraftTime).Methods("GET")
+	myRouter.HandleFunc("/nfl/draft/create/scoutprofile", controller.AddPlayerToScoutBoard).Methods("POST")
+	myRouter.HandleFunc("/nfl/draft/reveal/attribute", controller.RevealScoutingAttribute).Methods("POST")
+	myRouter.HandleFunc("/nfl/draft/remove/{id}", controller.RemovePlayerFromScoutBoard).Methods("GET")
+	myRouter.HandleFunc("/nfl/draft/scout/{id}", controller.GetScoutingDataByDraftee).Methods("GET")
 
 	// Free Agency Controls
 	myRouter.HandleFunc("/nfl/extension/create/offer", controller.CreateExtensionOffer).Methods("POST")
@@ -113,6 +120,7 @@ func handleRequests() {
 	// myRouter.HandleFunc("/admin/import/nfl/draft", controller.Import2023DraftedPlayers).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/games", controller.ImportNFLGames).Methods("GET")
+	// myRouter.HandleFunc("/admin/import/nfl/warroom", controller.GenerateDraftWarRooms).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/udfas", controller.ImportUDFAs).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/missing/recruits", controller.GetMissingRecruitingClasses).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/preferences", controller.ImportTradePreferences).Methods("GET")

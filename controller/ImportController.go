@@ -69,3 +69,7 @@ func FixBrokenExtensions(w http.ResponseWriter, r *http.Request) {
 func ImplementShotgunVals(w http.ResponseWriter, r *http.Request) {
 	managers.ImplementNewAttributes()
 }
+
+func GenerateDraftWarRooms(w http.ResponseWriter, r *http.Request) {
+	managers.GenerateDraftWarRooms()
+}

@@ -6,9 +6,11 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 	"github.com/jinzhu/gorm"
@@ -840,6 +842,26 @@ func ImplementNewAttributes() {
 		player.AssignNewAttributes(shotgunVal, clutchVal)
 
 		db.Save(&player)
+	}
+}
+
+func GenerateDraftWarRooms() {
+	db := dbprovider.GetInstance().GetDB()
+
+	allProfessionalTeams := GetAllNFLTeams()
+
+	for _, n := range allProfessionalTeams {
+		room := GetOnlyNFLWarRoomByTeamID(strconv.Itoa(int(n.ID)))
+		if room.ID > 0 {
+			continue
+		}
+		warRoom := models.NFLWarRoom{
+			TeamID:         n.ID,
+			Team:           n.TeamName + " " + n.Mascot,
+			ScoutingPoints: 400,
+			SpentPoints:    0,
+		}
+		db.Create(&warRoom)
 	}
 }
 

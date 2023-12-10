@@ -77,6 +77,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/nfl/draft/reveal/attribute", controller.RevealScoutingAttribute).Methods("POST")
 	myRouter.HandleFunc("/nfl/draft/remove/{id}", controller.RemovePlayerFromScoutBoard).Methods("GET")
 	myRouter.HandleFunc("/nfl/draft/scout/{id}", controller.GetScoutingDataByDraftee).Methods("GET")
+	// myRouter.HandleFunc("/nfl/draft/boom/bust", controller.BoomOrBust).Methods("GET")
 
 	// Free Agency Controls
 	myRouter.HandleFunc("/nfl/extension/create/offer", controller.CreateExtensionOffer).Methods("POST")

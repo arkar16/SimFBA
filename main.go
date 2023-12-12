@@ -119,6 +119,7 @@ func handleRequests() {
 	// Import Controls
 	// myRouter.HandleFunc("/admin/import/recruit/ai", controller.ImportRecruitAICSV).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/draft", controller.Import2023DraftedPlayers).Methods("GET")
+	// myRouter.HandleFunc("/admin/import/cfb/standings", controller.ImportCFBStandings).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/games", controller.ImportNFLGames).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/warroom", controller.GenerateDraftWarRooms).Methods("GET")
@@ -271,6 +272,7 @@ func handleCron() {
 		// Allocate AI Boards
 		// Sync Recruiting
 		// Sync Free Agency
+		c.AddFunc("0 12 * * 2", controller.SyncFreeAgencyOffersViaCron)
 		// Sync Extension Offers
 		// Run the Games
 		// Reveal Timeslot Results

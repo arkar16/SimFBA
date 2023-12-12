@@ -865,6 +865,47 @@ func GenerateDraftWarRooms() {
 	}
 }
 
+func ImportSeasonStandings() {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+	seasonID := strconv.Itoa(ts.CollegeSeasonID)
+	collegeTeams := GetAllCollegeTeams()
+	for _, team := range collegeTeams {
+		teamID := strconv.Itoa(int(team.ID))
+		standings := GetCollegeStandingsRecordByTeamID(teamID, seasonID)
+		if standings.ID > 0 {
+			continue
+		}
+		league := ""
+		leagueID := 0
+		if team.IsFBS {
+			league = "FBS"
+			leagueID = 1
+		} else {
+			league = "FCS"
+			leagueID = 2
+		}
+
+		newStandings := structs.CollegeStandings{
+			TeamID:         int(team.ID),
+			TeamName:       team.TeamName,
+			IsFBS:          team.IsFBS,
+			LeagueID:       uint(leagueID),
+			LeagueName:     league,
+			SeasonID:       ts.CollegeSeasonID,
+			Season:         ts.Season,
+			ConferenceID:   team.ConferenceID,
+			ConferenceName: team.Conference,
+			DivisionID:     team.DivisionID,
+			BaseStandings: structs.BaseStandings{
+				TeamAbbr: team.TeamAbbr,
+				Coach:    team.Coach,
+			},
+		}
+		db.Create(&newStandings)
+	}
+}
+
 func getBaseSalaryByYear(round int, pick int) float64 {
 	if round == 1 {
 		if pick == 1 {

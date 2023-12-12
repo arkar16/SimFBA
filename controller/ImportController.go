@@ -42,6 +42,10 @@ func Import2023DraftedPlayers(w http.ResponseWriter, r *http.Request) {
 	managers.Import2023DraftedPlayers()
 }
 
+func ImportCFBStandings(w http.ResponseWriter, r *http.Request) {
+	managers.ImportSeasonStandings()
+}
+
 func ImportCFBGames(w http.ResponseWriter, r *http.Request) {
 	managers.ImportCFBGames()
 }

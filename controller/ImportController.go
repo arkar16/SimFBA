@@ -77,3 +77,7 @@ func ImplementShotgunVals(w http.ResponseWriter, r *http.Request) {
 func GenerateDraftWarRooms(w http.ResponseWriter, r *http.Request) {
 	managers.GenerateDraftWarRooms()
 }
+
+func GenerateCoachesForAITeams(w http.ResponseWriter, r *http.Request) {
+	managers.GenerateCoachesForAITeams()
+}

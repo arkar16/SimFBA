@@ -49,6 +49,9 @@ func AssignAllRecruitRanks() {
 		recruitingModifier := getRecruitingModifier(croot.Stars)
 
 		croot.AssignRecruitingModifier(recruitingModifier)
+		shotgunVal := getShotgunVal()
+		clutchVal := getClutchValue()
+		croot.AssignNewAttributes(shotgunVal, clutchVal)
 
 		db.Save(&croot)
 

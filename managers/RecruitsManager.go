@@ -19,7 +19,7 @@ func GetAllRecruits() []models.Croot {
 	var recruits []structs.Recruit
 
 	db.Preload("RecruitPlayerProfiles", func(db *gorm.DB) *gorm.DB {
-		return db.Order("total_points DESC").Where("total_points > 0")
+		return db.Order("total_points DESC")
 	}).Find(&recruits)
 
 	var croots []models.Croot

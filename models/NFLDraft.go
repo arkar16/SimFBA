@@ -50,23 +50,23 @@ type ScoutingProfile struct {
 }
 
 func (sp *ScoutingProfile) RevealAttribute(attr string) {
-	if attr == "1" {
+	if attr == "ShowAttribute1" {
 		sp.ShowAttribute1 = true
-	} else if attr == "2" {
+	} else if attr == "ShowAttribute2" {
 		sp.ShowAttribute2 = true
-	} else if attr == "3" {
+	} else if attr == "ShowAttribute3" {
 		sp.ShowAttribute3 = true
-	} else if attr == "4" {
+	} else if attr == "ShowAttribute4" {
 		sp.ShowAttribute4 = true
-	} else if attr == "5" {
+	} else if attr == "ShowAttribute5" {
 		sp.ShowAttribute5 = true
-	} else if attr == "6" {
+	} else if attr == "ShowAttribute6" {
 		sp.ShowAttribute6 = true
-	} else if attr == "7" {
+	} else if attr == "ShowAttribute7" {
 		sp.ShowAttribute7 = true
-	} else if attr == "8" {
+	} else if attr == "ShowAttribute8" {
 		sp.ShowAttribute8 = true
-	} else if attr == "Potential" {
+	} else if attr == "ShowPotential" {
 		sp.ShowPotential = true
 	}
 	sp.ShowCount++

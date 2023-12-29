@@ -6,6 +6,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"sort"
 	"strconv"
 	"time"
 
@@ -849,6 +850,10 @@ func GenerateDraftWarRooms() {
 	db := dbprovider.GetInstance().GetDB()
 
 	allProfessionalTeams := GetAllNFLTeams()
+
+	sort.Slice(allProfessionalTeams, func(i, j int) bool {
+		return allProfessionalTeams[i].ID < allProfessionalTeams[j].ID
+	})
 
 	for _, n := range allProfessionalTeams {
 		room := GetOnlyNFLWarRoomByTeamID(strconv.Itoa(int(n.ID)))

@@ -99,10 +99,9 @@ func GetNFLWarRoomByTeamID(TeamID string) models.NFLWarRoom {
 
 	warRoom := models.NFLWarRoom{}
 	ts := GetTimestamp()
-
 	err := db.Preload("DraftPicks", "season_id = ?", strconv.Itoa(int(ts.NFLSeasonID))).
 		Preload("ScoutProfiles.Draftee").
-		Preload("ScoutProfiles", "removed_from_board = ?", false).
+		Preload("ScoutProfiles", "removed_from_board = ? AND team_id = ?", false, TeamID).
 		Where("team_id = ?", TeamID).Find(&warRoom).Error
 	if err != nil {
 		return warRoom
@@ -217,7 +216,7 @@ func RevealScoutingAttribute(dto models.RevealAttributeDTO) bool {
 
 	warRoom := GetOnlyNFLWarRoomByTeamID(strconv.Itoa(int(dto.TeamID)))
 
-	if warRoom.ID == 0 || warRoom.SpentPoints >= 100 || warRoom.SpentPoints+dto.Points > 100 {
+	if warRoom.ID == 0 || warRoom.SpentPoints >= 400 || warRoom.SpentPoints+dto.Points > 400 {
 		return false
 	}
 

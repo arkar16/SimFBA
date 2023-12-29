@@ -4,9 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sync"
 
 	"github.com/CalebRose/SimFBA/managers"
 	"github.com/CalebRose/SimFBA/models"
+	"github.com/CalebRose/SimFBA/structs"
 	"github.com/gorilla/mux"
 )
 
@@ -20,17 +22,52 @@ func GetDraftPageData(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamID := vars["teamID"]
 	if len(teamID) == 0 {
-		panic("User did not provide TeamID")
+		http.Error(w, "User did not provide TeamID", http.StatusBadRequest)
+		return
 	}
-	// Get War Room
-	// Get Scouting Profiles?
-	// Get full list of draftable players
 
-	warRoom := managers.GetNFLWarRoomByTeamID(teamID)
-	draftees := managers.GetNFLDrafteesForDraftPage()
-	allNFLTeams := managers.GetAllNFLTeams()
-	draftPicks := managers.GetAllCurrentSeasonDraftPicksForDraftRoom()
-	allCollegeTeams := managers.GetAllCollegeTeams()
+	var wg sync.WaitGroup
+	wg.Add(5)
+	var (
+		warRoom         models.NFLWarRoom
+		draftees        []models.NFLDraftee
+		allNFLTeams     []structs.NFLTeam
+		draftPicks      [7][]structs.NFLDraftPick
+		allCollegeTeams []structs.CollegeTeam
+	)
+
+	// GetNFLWarRoomByTeamID
+	go func() {
+		defer wg.Done()
+		warRoom = managers.GetNFLWarRoomByTeamID(teamID)
+	}()
+
+	// GetNFLDrafteesForDraftPage
+	go func() {
+		defer wg.Done()
+		draftees = managers.GetNFLDrafteesForDraftPage()
+	}()
+
+	// GetAllNFLTeams
+	go func() {
+		defer wg.Done()
+		allNFLTeams = managers.GetAllNFLTeams()
+	}()
+
+	// GetAllCurrentSeasonDraftPicksForDraftRoom
+	go func() {
+		defer wg.Done()
+		draftPicks = managers.GetAllCurrentSeasonDraftPicksForDraftRoom()
+	}()
+
+	// GetAllCollegeTeams
+	go func() {
+		defer wg.Done()
+		allCollegeTeams = managers.GetAllCollegeTeams()
+	}()
+
+	// Wait for all goroutines to complete
+	wg.Wait()
 
 	res := models.NFLDraftPageResponse{
 		WarRoom:          warRoom,

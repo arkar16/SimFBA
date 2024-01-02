@@ -2,39 +2,44 @@ name: CI/CD Pipeline to Azure Web App
 
 on:
   push:
-    branches: [ master ]
+    branches: [master]
   pull_request:
-    branches: [ master ]
+    branches: [master]
 
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
+    env:
+      DB: ${{secrets.DB}}
+      CS: ${{secrets.CS}}
+      SFAKEY: ${{secrets.SFAKEY}}
+      SFAUSER: ${{secrets.SFA}}
 
     steps:
-    - uses: actions/checkout@v2
+      - uses: actions/checkout@v2
 
-    - name: Set up Go
-      uses: actions/setup-go@v2
-      with:
-        go-version: '^1.15'
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: "^1.15"
 
-    - name: Build and test
-      run: |
-        go build -v ./...
+      - name: Build
+        run: |
+          go build -v ./...
 
-    - name: Log in to Docker Registry
-      run: echo ${{ secrets.REGISTRY_PASSWORD }} | docker login myregistry.azurecr.io --username ${{ secrets.REGISTRY_USERNAME }} --password-stdin
+      - name: Log in to Docker Registry
+        run: echo ${{ secrets.REGISTRY_PASSWORD }} | docker login simfba.azurecr.io --username ${{ secrets.REGISTRY_USERNAME }} --password-stdin
 
-    - name: Build Docker Image
-      run: docker build -t myregistry.azurecr.io/myapp:${{ github.sha }} .
+      - name: Build Docker Image
+        run: docker build -t simfba.azurecr.io/myapp:${{ github.sha }} .
 
-    - name: Push Docker Image
-      run: docker push myregistry.azurecr.io/myapp:${{ github.sha }}
+      - name: Push Docker Image
+        run: docker push simfba.azurecr.io/myapp:${{ github.sha }}
 
-    - name: Deploy to Azure Web App
-      uses: azure/webapps-deploy@v2
-      with:
-        app-name: 'MyWebApp'
-        slot-name: 'production'
-        publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-        images: 'myregistry.azurecr.io/myapp:${{ github.sha }}'
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: "MyWebApp"
+          slot-name: "production"
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          images: "simfba.azurecr.io/myapp:${{ github.sha }}"

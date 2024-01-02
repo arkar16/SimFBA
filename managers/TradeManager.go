@@ -427,6 +427,12 @@ func SyncAcceptedTrade(proposalID string) {
 	db.Save(&proposal)
 }
 
+func SyncTradeFromDraftPage(proposal structs.NFLTradeProposal) bool {
+	db := dbprovider.GetInstance().GetDB()
+	syncAcceptedOptions(db, proposal.NFLTeamTradeOptions, proposal.NFLTeamID, proposal.NFLTeam, proposal.RecepientTeamID, proposal.RecepientTeam)
+	return false
+}
+
 func syncAcceptedOptions(db *gorm.DB, options []structs.NFLTradeOption, senderID uint, senderTeam string, recepientID uint, recepientTeam string) {
 	sendingTeam := GetNFLTeamByTeamID(strconv.Itoa(int(senderID)))
 	receivingTeam := GetNFLTeamByTeamID(strconv.Itoa(int(recepientID)))

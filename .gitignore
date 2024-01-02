@@ -1,6 +1,5 @@
+
 data_old/
-config/
-secrets/
 .vscode/
 .env/
 .env

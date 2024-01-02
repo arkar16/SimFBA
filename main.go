@@ -284,6 +284,7 @@ func handleCron() {
 }
 
 func main() {
+	loadEnvs()
 	InitialMigration()
 	fmt.Println("Football Server Initialized.")
 

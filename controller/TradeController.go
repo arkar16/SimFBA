@@ -133,6 +133,19 @@ func SyncAcceptedTrade(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Proposal " + proposalID + " has been accepted.")
 }
 
+// SyncTradeFromDraftPage -- Admin approve a trade
+func SyncTradeFromDraftPage(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	proposalID := vars["proposalID"]
+	if len(proposalID) == 0 {
+		panic("User did not provide a proposalID")
+	}
+
+	managers.SyncAcceptedTrade(proposalID)
+
+	json.NewEncoder(w).Encode("Proposal " + proposalID + " has been accepted.")
+}
+
 // SyncAcceptedTrade -- Admin approve a trade
 func VetoAcceptedTrade(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

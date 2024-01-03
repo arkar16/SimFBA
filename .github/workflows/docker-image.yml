@@ -31,10 +31,10 @@ jobs:
         run: echo ${{ secrets.DOCKER_P }} | docker login simfba.azurecr.io --username ${{ secrets.DOCKER_U }} --password-stdin
 
       - name: Build Docker Image
-        run: docker build -t simfba.azurecr.io/myapp:${{ github.sha }} .
+        run: docker build -t simfba.azurecr.io/simfba:${{ github.sha }} .
 
       - name: Push Docker Image
-        run: docker push simfba.azurecr.io/myapp:${{ github.sha }}
+        run: docker push simfba.azurecr.io/simfba:${{ github.sha }}
 
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
@@ -42,4 +42,4 @@ jobs:
           app-name: "MyWebApp"
           slot-name: "production"
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
-          images: "simfba.azurecr.io/myapp:${{ github.sha }}"
+          images: "simfba.azurecr.io/simfba:${{ github.sha }}"

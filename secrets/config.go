@@ -12,9 +12,11 @@ func Config() map[string]string {
 			"cs": connString,
 		}
 	}
+	dbName = os.Getenv("DB")
+	connString = os.Getenv("CS")
 	return map[string]string{
-		"db": "",
-		"cs": "",
+		"db": dbName,
+		"cs": connString,
 	}
 }
 
@@ -27,9 +29,11 @@ func SFAConfig() map[string]string {
 			"sfaUser": sfaUser,
 		}
 	}
+	sfaKey = os.Getenv("SFAKEY")
+	sfaUser = os.Getenv("SFAUSER")
 	return map[string]string{
-		"sfaKey":  "",
-		"sfaUser": "",
+		"sfaKey":  sfaKey,
+		"sfaUser": sfaUser,
 	}
 }
 

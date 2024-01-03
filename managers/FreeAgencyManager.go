@@ -7,6 +7,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
@@ -244,6 +245,8 @@ func SyncFreeAgencyOffers() {
 	db.Save(&ts)
 	FreeAgents := GetAllFreeAgents()
 
+	capsheetMap := getCapsheetMap()
+
 	for _, FA := range FreeAgents {
 		// If the Free Agent is not available in off-season free agency anymore
 		if ts.IsNFLOffSeason && !FA.IsNegotiating && !FA.IsAcceptingOffers {
@@ -275,6 +278,17 @@ func SyncFreeAgencyOffers() {
 		WinningOffer := structs.FreeAgencyOffer{}
 
 		for _, Offer := range Offers {
+			// Calculate to see if team can afford to pay for contract in Y1
+			capsheet := capsheetMap[Offer.TeamID]
+			if capsheet.ID == 0 {
+				// Invalid!!
+				continue
+			}
+			y1CapSpace := ts.Y1Capspace - capsheet.Y1Bonus - capsheet.Y1Salary - capsheet.Y1CapHit
+			y1Remaining := y1CapSpace - Offer.Y1BaseSalary - Offer.Y1Bonus
+			if y1CapSpace < 0 || y1Remaining < 0 {
+				continue
+			}
 			// Get the Contract with the best value for the FA
 			if Offer.IsActive && WinningOffer.ID == 0 {
 				WinningOffer = Offer
@@ -304,11 +318,28 @@ func SyncFreeAgencyOffers() {
 			contract.DeactivateContract()
 			db.Delete(&contract)
 		} else {
+			var winningOffer structs.NFLWaiverOffer
 			offers := GetWaiverOffersByPlayerID(strconv.Itoa(int(w.ID)))
-			winningOffer := offers[0]
-			w.SignPlayer(int(winningOffer.TeamID), winningOffer.Team)
-
 			contract := GetContractByPlayerID(strconv.Itoa(int(w.ID)))
+			for _, Offer := range offers {
+				// Calculate to see if team can afford to pay for contract in Y1
+				capsheet := capsheetMap[Offer.TeamID]
+				if capsheet.ID == 0 {
+					// Invalid!!
+					continue
+				}
+				y1CapSpace := ts.Y1Capspace - capsheet.Y1Bonus - capsheet.Y1Salary - capsheet.Y1CapHit
+				y1Remaining := y1CapSpace - contract.Y1BaseSalary - contract.Y1Bonus
+				if y1CapSpace < 0 || y1Remaining < 0 {
+					continue
+				}
+				winningOffer = Offer
+				break
+			}
+			if winningOffer.ID == 0 {
+				continue
+			}
+			w.SignPlayer(int(winningOffer.TeamID), winningOffer.Team)
 			contract.ReassignTeam(winningOffer.TeamID, winningOffer.Team)
 			db.Save(&contract)
 
@@ -339,7 +370,7 @@ func SyncFreeAgencyOffers() {
 
 	for _, p := range practiceSquad {
 		Offers := GetFreeAgentOffersByPlayerID(strconv.Itoa(int(p.ID)))
-
+		contract := GetContractByPlayerID(strconv.Itoa(int(p.ID)))
 		if len(Offers) == 0 {
 			continue
 		}
@@ -361,6 +392,17 @@ func SyncFreeAgencyOffers() {
 			WinningOffer := structs.FreeAgencyOffer{}
 
 			for _, Offer := range Offers {
+				// Calculate to see if team can afford to pay for contract in Y1
+				capsheet := capsheetMap[Offer.TeamID]
+				if capsheet.ID == 0 {
+					// Invalid!!
+					continue
+				}
+				y1CapSpace := ts.Y1Capspace - capsheet.Y1Bonus - capsheet.Y1Salary - capsheet.Y1CapHit
+				y1Remaining := y1CapSpace - contract.Y1BaseSalary - contract.Y1Bonus
+				if y1CapSpace < 0 || y1Remaining < 0 {
+					continue
+				}
 				// Get the Contract with the best value for the FA
 				if Offer.IsActive && WinningOffer.ID == 0 {
 					WinningOffer = Offer
@@ -692,4 +734,30 @@ func GetRetiredContracts() []structs.NFLContract {
 	db.Where("player_retired = ?", true).Find(&contracts)
 
 	return contracts
+}
+
+func getCapsheetMap() map[uint]structs.NFLCapsheet {
+	capsheetMap := make(map[uint]structs.NFLCapsheet)
+	var mu sync.Mutex     // to safely update the map
+	var wg sync.WaitGroup // to wait for all goroutines to finish
+	semaphore := make(chan struct{}, 10)
+	nflTeams := GetAllNFLTeams()
+
+	for _, team := range nflTeams {
+		semaphore <- struct{}{}
+		wg.Add(1)
+		go func(t structs.NFLTeam) {
+			defer wg.Done()
+			capsheet := GetCapsheetByTeamID(strconv.Itoa(int(t.ID)))
+			mu.Lock()
+			capsheetMap[t.ID] = capsheet
+			mu.Unlock()
+
+			<-semaphore
+		}(team)
+	}
+
+	wg.Wait()
+	close(semaphore)
+	return capsheetMap
 }

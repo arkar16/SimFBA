@@ -143,7 +143,7 @@ func GetOnlyScoutProfileByPlayerIDandTeamID(playerID, teamID string) models.Scou
 
 	var scoutProfile models.ScoutingProfile
 
-	err := db.Where("player_id = ? AND team_id = ?", playerID, teamID).Error
+	err := db.Where("player_id = ? AND team_id = ?", playerID, teamID).Find(&scoutProfile).Error
 	if err != nil {
 		return models.ScoutingProfile{}
 	}

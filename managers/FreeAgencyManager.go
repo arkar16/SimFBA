@@ -37,11 +37,39 @@ func GetAllWaiverWirePlayers() []structs.NFLPlayer {
 }
 
 func GetAllAvailableNFLPlayers(TeamID string) models.FreeAgencyResponse {
-	FAs := GetAllFreeAgentsWithOffers()
-	WaiverPlayers := GetAllWaiverWirePlayersFAPage()
-	Offers := GetFreeAgentOffersByTeamID(TeamID)
-	PracticeSquad := GetAllPracticeSquadPlayersForFAPage()
-	roster := GetNFLPlayersWithContractsByTeamID(TeamID)
+	var wg sync.WaitGroup
+	wg.Add(5)
+	var (
+		FAs           []structs.NFLPlayer
+		WaiverPlayers []structs.NFLPlayer
+		Offers        []structs.FreeAgencyOffer
+		PracticeSquad []structs.NFLPlayer
+		roster        []structs.NFLPlayer
+	)
+	go func() {
+		defer wg.Done()
+		FAs = GetAllFreeAgentsWithOffers()
+	}()
+	go func() {
+		defer wg.Done()
+		WaiverPlayers = GetAllWaiverWirePlayersFAPage()
+	}()
+	go func() {
+		defer wg.Done()
+		Offers = GetFreeAgentOffersByTeamID(TeamID)
+	}()
+	go func() {
+		defer wg.Done()
+		PracticeSquad = GetAllPracticeSquadPlayersForFAPage()
+
+	}()
+	go func() {
+		defer wg.Done()
+		roster = GetNFLPlayersWithContractsByTeamID(TeamID)
+
+	}()
+	wg.Wait()
+
 	count := 0
 
 	for _, p := range roster {

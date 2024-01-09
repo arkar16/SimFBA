@@ -14,7 +14,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/nelkinda/health-go"
 	"github.com/nelkinda/health-go/checks/sendgrid"
-	"github.com/robfig/cron"
+	"github.com/robfig/cron/v3"
 )
 
 func InitialMigration() {
@@ -274,7 +274,7 @@ func handleCron() {
 		// Allocate AI Boards
 		// Sync Recruiting
 		// Sync Free Agency
-		c.AddFunc("0 12 * * 2", controller.SyncFreeAgencyOffersViaCron)
+		c.AddFunc("0 12 * * 2", controller.SyncFreeAgencyViaCron)
 		// Sync Extension Offers
 		// Run the Games
 		// Reveal Timeslot Results
@@ -290,7 +290,6 @@ func main() {
 
 	fmt.Println("Loading cron...")
 	handleCron()
-	fmt.Println("Cron loaded.")
+	fmt.Println("Loading Handler Requests.")
 	handleRequests()
-	fmt.Println("Hello There!")
 }

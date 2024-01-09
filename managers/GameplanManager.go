@@ -5,6 +5,7 @@ import (
 	"log"
 	"sort"
 	"strconv"
+	"sync"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/structs"
@@ -2082,4 +2083,32 @@ func UpdateNFLAIDepthCharts() {
 			}
 		}
 	}
+}
+
+func GetDepthChartMap() map[uint]structs.CollegeTeamDepthChart {
+	m := &sync.Mutex{}
+	var wg sync.WaitGroup
+	semaphore := make(chan struct{}, 10)
+	collegeTeams := GetAllCollegeTeams()
+	dcMap := make(map[uint]structs.CollegeTeamDepthChart)
+
+	for _, team := range collegeTeams {
+		semaphore <- struct{}{}
+		wg.Add(1)
+		go func(t structs.CollegeTeam) {
+			defer wg.Done()
+			id := strconv.Itoa(int(t.ID))
+			depthChart := GetDepthchartByTeamID(id)
+
+			m.Lock()
+			dcMap[t.ID] = depthChart
+			m.Unlock()
+
+			<-semaphore
+		}(team)
+	}
+
+	wg.Wait()
+	close(semaphore)
+	return dcMap
 }

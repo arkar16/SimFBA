@@ -1,6 +1,14 @@
 package controller
 
-import "github.com/CalebRose/SimFBA/managers"
+import (
+	"fmt"
+
+	"github.com/CalebRose/SimFBA/managers"
+)
+
+func CronTest() {
+	fmt.Println("PING!")
+}
 
 func FillAIBoardsViaCron() {
 	ts := managers.GetTimestamp()
@@ -27,7 +35,8 @@ func SyncRecruitingViaCron() {
 	managers.SyncFreeAgencyOffers()
 }
 
-func SyncFreeAgencyOffersViaCron() {
+func SyncFreeAgencyViaCron() {
+	fmt.Println("PONG!")
 	ts := managers.GetTimestamp()
 	if ts.RunCron {
 		managers.SyncFreeAgencyOffers()

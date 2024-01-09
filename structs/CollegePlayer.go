@@ -9,19 +9,21 @@ import (
 type CollegePlayer struct {
 	gorm.Model
 	BasePlayer
-	PlayerID      int
-	TeamID        int
-	TeamAbbr      string
-	HighSchool    string
-	City          string
-	State         string
-	Year          int
-	IsRedshirt    bool
-	IsRedshirting bool
-	HasGraduated  bool
-	Stats         []CollegePlayerStats     `gorm:"foreignKey:CollegePlayerID"`
-	SeasonStats   CollegePlayerSeasonStats `gorm:"foreignKey:CollegePlayerID"`
-	HasProgressed bool
+	PlayerID           int
+	TeamID             int
+	TeamAbbr           string
+	HighSchool         string
+	City               string
+	State              string
+	Year               int
+	IsRedshirt         bool
+	IsRedshirting      bool
+	HasGraduated       bool
+	TransferStatus     int                      // 1 == Intends, 2 == Is Transferring
+	TransferLikeliness string                   // Low, Medium, High
+	Stats              []CollegePlayerStats     `gorm:"foreignKey:CollegePlayerID"`
+	SeasonStats        CollegePlayerSeasonStats `gorm:"foreignKey:CollegePlayerID"`
+	HasProgressed      bool
 }
 
 type ByOverall []CollegePlayer
@@ -281,4 +283,23 @@ func (cp *CollegePlayer) MapFromRecruit(r Recruit, t CollegeTeam) {
 func (cp *CollegePlayer) AssignTeamValues(t CollegeTeam) {
 	cp.TeamID = int(t.ID)
 	cp.TeamAbbr = t.TeamAbbr
+}
+
+func (cp *CollegePlayer) DeclareTransferIntention(weight int) {
+	cp.TransferStatus = 1
+	if weight < 30 {
+		cp.TransferLikeliness = "High"
+	} else if weight < 70 {
+		cp.TransferLikeliness = "Medium"
+	} else {
+		cp.TransferLikeliness = "Low"
+	}
+}
+
+func (cp *CollegePlayer) WillNotTransfer() {
+	cp.TransferStatus = 0
+}
+
+func (cp *CollegePlayer) WillTransfer() {
+	cp.TransferStatus = 2
 }

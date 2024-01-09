@@ -544,8 +544,8 @@ func FillAIRecruitingBoards() {
 		collegeCoach := coachMap[team.ID]
 		existingBoard := GetOnlyRecruitProfilesByTeamProfileID(strconv.Itoa(int(team.ID)))
 		teamNeeds := GetRecruitingNeeds(strconv.Itoa(int(team.ID)))
-		offBadFits := getFitsByScheme(team.OffensiveScheme, true)
-		defBadFits := getFitsByScheme(team.DefensiveScheme, true)
+		offBadFits := GetFitsByScheme(team.OffensiveScheme, true)
+		defBadFits := GetFitsByScheme(team.DefensiveScheme, true)
 		totalFitList := append(offBadFits, defBadFits...)
 		// Get Current Count of the existing board
 		for _, r := range existingBoard {
@@ -577,7 +577,7 @@ func FillAIRecruitingBoards() {
 			}
 
 			archetype := croot.Archetype + " " + croot.Position
-			if checkPlayerFits(archetype, totalFitList) {
+			if CheckPlayerFits(archetype, totalFitList) {
 				continue
 			}
 
@@ -1025,12 +1025,12 @@ func getRecruitingOdds(ts structs.Timestamp, croot structs.Recruit, team structs
 		}
 	}
 
-	offensiveSchemeFitList := getFitsByScheme(team.OffensiveScheme, false)
-	defSchemeFitList := getFitsByScheme(team.DefensiveScheme, false)
+	offensiveSchemeFitList := GetFitsByScheme(team.OffensiveScheme, false)
+	defSchemeFitList := GetFitsByScheme(team.DefensiveScheme, false)
 	totalFitList := append(offensiveSchemeFitList, defSchemeFitList...)
 	archtype := croot.Archetype + " " + croot.Position
 
-	if checkPlayerFits(archtype, totalFitList) {
+	if CheckPlayerFits(archtype, totalFitList) {
 		odds += 5
 	}
 
@@ -1224,7 +1224,7 @@ func getCoachMap() map[uint]structs.CollegeCoach {
 	return coachMap
 }
 
-func getFitsByScheme(scheme string, isBadFit bool) []string {
+func GetFitsByScheme(scheme string, isBadFit bool) []string {
 	fullMap := map[string]structs.SchemeFits{
 		"Power Run":                       {GoodFits: []string{"Power RB", "Blocking FB", "Blocking TE", "Red Zone Threat WR", "Run Blocking OG", "Run Blocking OT", "Run Blocking C"}, BadFits: []string{"Speed RB", "Receiving RB", "Receiving FB", "Receiving TE", "Vertical Threat TE", "Pass Blocking OG", "Pass Blocking OT", "Pass Blocking C"}},
 		"Vertical":                        {GoodFits: []string{"Pocket QB", "Receiving RB", "Receiving TE", "Vertical Threat TE", "Route Runner WR", "Speed WR", "Pass Blocking OG", "Pass Blocking OT", "Pass Blocking C"}, BadFits: []string{"Balanced QB", "Scrambler QB", "Field General QB", "Power RB", "Blocking FB", "Rushing FB", "Blocking TE", "Red Zone Threat WR", "Run Blocking OG", "Run Blocking OT", "Run Blocking C"}},
@@ -1254,7 +1254,7 @@ func getFitsByScheme(scheme string, isBadFit bool) []string {
 	return []string{}
 }
 
-func checkPlayerFits(player string, fits []string) bool {
+func CheckPlayerFits(player string, fits []string) bool {
 	for _, fit := range fits {
 		if player == fit {
 			return true

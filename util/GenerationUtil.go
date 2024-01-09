@@ -48,6 +48,22 @@ func GeneratePotential() int {
 	}
 }
 
+func GenerateNFLPotential(pot int) int {
+	floor := pot - 20
+	ceil := pot + 20
+	if floor < 0 {
+		diff := 0 - floor
+		floor = 0
+		ceil += diff
+	}
+	if ceil > 100 {
+		diff := ceil - 100
+		ceil = 100
+		floor += diff
+	}
+	return GenerateIntFromRange(floor, ceil)
+}
+
 func GetWeightedPotentialGrade(rating int) string {
 	weightedRating := GenerateIntFromRange(rating-15, rating+15)
 	if weightedRating > 100 {

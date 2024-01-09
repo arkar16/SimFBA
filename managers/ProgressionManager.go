@@ -53,7 +53,7 @@ func ProgressionMain() {
 					draftee := models.NFLDraftee{}
 					draftee.Map(player)
 					// Map New Progression value for NFL
-					newProgression := util.GeneratePotential()
+					newProgression := util.GenerateNFLPotential(player.Progression)
 					newPotentialGrade := util.GetWeightedPotentialGrade(newProgression)
 					draftee.MapProgression(newProgression, newPotentialGrade)
 

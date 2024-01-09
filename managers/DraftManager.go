@@ -216,7 +216,7 @@ func RevealScoutingAttribute(dto models.RevealAttributeDTO) bool {
 
 	warRoom := GetOnlyNFLWarRoomByTeamID(strconv.Itoa(int(dto.TeamID)))
 
-	if warRoom.ID == 0 || warRoom.SpentPoints >= 400 || warRoom.SpentPoints+dto.Points > 400 {
+	if warRoom.ID == 0 || warRoom.SpentPoints >= warRoom.ScoutingPoints || warRoom.SpentPoints+dto.Points > warRoom.ScoutingPoints {
 		return false
 	}
 

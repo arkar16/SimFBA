@@ -2,7 +2,6 @@ package managers
 
 import (
 	"encoding/csv"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"math/rand"
@@ -10,7 +9,6 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/structs"
@@ -20,8 +18,6 @@ import (
 
 func GenerateWeatherForGames() {
 	db := dbprovider.GetInstance().GetDB()
-	fmt.Println(time.Now().UnixNano())
-	rand.Seed(time.Now().UnixNano())
 	regions := getRegionalWeather()
 	rainForecasts := getRainChart()
 	mixForecasts := getMixChart()

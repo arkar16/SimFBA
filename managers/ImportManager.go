@@ -4,7 +4,6 @@ import (
 	"encoding/csv"
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"sort"
 	"strconv"
@@ -334,7 +333,6 @@ func ImportMinimumFAValues() {
 
 func ImportWorkEthic() {
 	fmt.Println(time.Now().UnixNano())
-	rand.Seed(time.Now().UnixNano())
 	db := dbprovider.GetInstance().GetDB()
 
 	nflPlayers := GetAllNFLPlayers()
@@ -356,7 +354,6 @@ func ImportWorkEthic() {
 
 func ImportFAPreferences() {
 	fmt.Println(time.Now().UnixNano())
-	rand.Seed(time.Now().UnixNano())
 	db := dbprovider.GetInstance().GetDB()
 
 	nflPlayers := GetAllNFLPlayers()

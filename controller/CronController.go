@@ -38,7 +38,7 @@ func SyncRecruitingViaCron() {
 func SyncFreeAgencyViaCron() {
 	fmt.Println("PONG!")
 	ts := managers.GetTimestamp()
-	if ts.RunCron {
+	if ts.RunCron && !ts.IsDraftTime {
 		managers.SyncFreeAgencyOffers()
 		managers.MoveUpInOffseasonFreeAgency()
 	}

@@ -1038,7 +1038,7 @@ func GetAllPracticeSquadPlayers() []structs.NFLPlayer {
 	return players
 }
 
-func GetAllPracticeSquadPlayersForFAPage() []structs.NFLPlayer {
+func GetAllPracticeSquadPlayersForFAPage() []models.FreeAgentResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	var players []structs.NFLPlayer
@@ -1047,7 +1047,34 @@ func GetAllPracticeSquadPlayersForFAPage() []structs.NFLPlayer {
 		return db.Order("contract_value DESC").Where("is_active = true")
 	}).Where("is_practice_squad = ?", true).Find(&players)
 
-	return players
+	faResponseList := make([]models.FreeAgentResponse, len(players))
+
+	for i, fa := range players {
+		faResponseList[i] = models.FreeAgentResponse{
+			ID:              fa.ID,
+			PlayerID:        fa.PlayerID,
+			TeamID:          fa.TeamID,
+			College:         fa.College,
+			TeamAbbr:        fa.TeamAbbr,
+			BasePlayer:      fa.BasePlayer,
+			Experience:      fa.Experience,
+			Hometown:        fa.Hometown,
+			State:           fa.State,
+			IsActive:        fa.IsActive,
+			IsWaived:        fa.IsWaived,
+			IsPracticeSquad: fa.IsPracticeSquad,
+			IsFreeAgent:     fa.IsFreeAgent,
+			MinimumValue:    fa.MinimumValue,
+			PreviousTeam:    fa.PreviousTeam,
+			DraftedTeam:     fa.DraftedTeam,
+			ShowLetterGrade: fa.ShowLetterGrade,
+			Stats:           fa.Stats,
+			SeasonStats:     fa.SeasonStats,
+			Offers:          fa.Offers,
+		}
+	}
+
+	return faResponseList
 }
 
 func GetInjuredCollegePlayers() []structs.CollegePlayer {

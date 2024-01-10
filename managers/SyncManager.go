@@ -30,7 +30,6 @@ func GetRecruitingModifiers() structs.AdminRecruitModifier {
 func SyncRecruiting(timestamp structs.Timestamp) {
 	db := dbprovider.GetInstance().GetDB()
 	fmt.Println(time.Now().UnixNano())
-	rand.Seed(time.Now().UnixNano())
 	//GetCurrentWeek
 
 	if timestamp.RecruitingSynced {
@@ -503,7 +502,6 @@ func FixSmallTownBigCityAIBoards() {
 func FillAIRecruitingBoards() {
 	db := dbprovider.GetInstance().GetDB()
 	fmt.Println(time.Now().UnixNano())
-	rand.Seed(time.Now().UnixNano())
 	ts := GetTimestamp()
 
 	AITeams := GetOnlyAITeamRecruitingProfiles()
@@ -651,7 +649,6 @@ func FillAIRecruitingBoards() {
 func AllocatePointsToAIBoards() {
 	db := dbprovider.GetInstance().GetDB()
 	fmt.Println(time.Now().UnixNano())
-	rand.Seed(time.Now().UnixNano())
 	ts := GetTimestamp()
 
 	AITeams := GetOnlyAITeamRecruitingProfiles()

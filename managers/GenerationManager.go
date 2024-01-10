@@ -22,7 +22,6 @@ import (
 
 func GenerateWalkOns() {
 	fmt.Println(time.Now().UnixNano())
-	rand.Seed(time.Now().UnixNano())
 	db := dbprovider.GetInstance().GetDB()
 	AllTeams := GetRecruitingProfileForRecruitSync()
 	ts := GetTimestamp()

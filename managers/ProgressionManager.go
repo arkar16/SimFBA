@@ -18,8 +18,6 @@ func ProgressionMain() {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
 	SeasonID := strconv.Itoa(ts.CollegeSeasonID)
-	fmt.Println(time.Now().UnixNano())
-	rand.Seed(time.Now().UnixNano())
 	// Get All Teams
 
 	collegeTeams := GetAllCollegeTeams()
@@ -198,7 +196,6 @@ func ProgressNFLPlayers() {
 	// SeasonID := strconv.Itoa(ts.NFLSeasonID - 1)
 	SeasonID := "2"
 	fmt.Println(time.Now().UnixNano())
-	rand.Seed(time.Now().UnixNano())
 
 	teams := GetAllNFLTeams()
 	// nflPlayers := GetAllNFLPlayers()

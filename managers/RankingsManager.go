@@ -3,7 +3,6 @@ package managers
 import (
 	"math"
 	"math/rand"
-	"time"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	config "github.com/CalebRose/SimFBA/secrets"
@@ -13,8 +12,6 @@ import (
 
 func AssignAllRecruitRanks() {
 	db := dbprovider.GetInstance().GetDB()
-
-	rand.Seed(time.Now().UnixNano())
 
 	var recruits []structs.Recruit
 
@@ -204,7 +201,6 @@ func GetPredictiveOverall(r structs.Recruit) int {
 }
 
 func GetRivalsStarModifier(stars int) float64 {
-	rand.Seed(time.Now().UnixNano())
 	if stars == 5 {
 		return 6.1
 	} else if stars == 4 {

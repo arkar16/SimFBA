@@ -69,6 +69,7 @@ func (t *Timestamp) DraftIsOver() {
 	t.IsNFLOffSeason = false
 	t.NFLPreseason = true
 	t.IsOffSeason = false
+	t.IsFreeAgencyLocked = false
 }
 
 func (t *Timestamp) MoveUpSeason() {

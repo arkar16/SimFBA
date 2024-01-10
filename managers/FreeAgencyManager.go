@@ -40,10 +40,10 @@ func GetAllAvailableNFLPlayers(TeamID string) models.FreeAgencyResponse {
 	var wg sync.WaitGroup
 	wg.Add(5)
 	var (
-		FAs           []structs.NFLPlayer
-		WaiverPlayers []structs.NFLPlayer
+		FAs           []models.FreeAgentResponse
+		WaiverPlayers []models.WaiverWirePlayerResponse
 		Offers        []structs.FreeAgencyOffer
-		PracticeSquad []structs.NFLPlayer
+		PracticeSquad []models.FreeAgentResponse
 		roster        []structs.NFLPlayer
 	)
 	go func() {
@@ -89,7 +89,7 @@ func GetAllAvailableNFLPlayers(TeamID string) models.FreeAgencyResponse {
 }
 
 // GetAllFreeAgentsWithOffers -- For Free Agency UI Page.
-func GetAllFreeAgentsWithOffers() []structs.NFLPlayer {
+func GetAllFreeAgentsWithOffers() []models.FreeAgentResponse {
 	ts := GetTimestamp()
 	db := dbprovider.GetInstance().GetDB()
 
@@ -106,7 +106,7 @@ func GetAllFreeAgentsWithOffers() []structs.NFLPlayer {
 		return db.Order("contract_value DESC").Where("is_active = true")
 	}).Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
 		return db.Where("season_id = ?", seasonStr)
-	}).Order("overall desc").Where("is_free_agent = ? AND overall > ?", true, "43").Find(&fas)
+	}).Order("overall desc").Where("is_free_agent = ? AND overall > ?", true, "48").Find(&fas)
 
 	sort.Slice(fas[:], func(i, j int) bool {
 		if fas[i].ShowLetterGrade {
@@ -117,10 +117,38 @@ func GetAllFreeAgentsWithOffers() []structs.NFLPlayer {
 		}
 		return fas[i].Overall > fas[j].Overall
 	})
-	return fas
+
+	faResponseList := make([]models.FreeAgentResponse, len(fas))
+
+	for i, fa := range fas {
+		faResponseList[i] = models.FreeAgentResponse{
+			ID:              fa.ID,
+			PlayerID:        fa.PlayerID,
+			TeamID:          fa.TeamID,
+			College:         fa.College,
+			TeamAbbr:        fa.TeamAbbr,
+			BasePlayer:      fa.BasePlayer,
+			Experience:      fa.Experience,
+			Hometown:        fa.Hometown,
+			State:           fa.State,
+			IsActive:        fa.IsActive,
+			IsWaived:        fa.IsWaived,
+			IsPracticeSquad: fa.IsPracticeSquad,
+			IsFreeAgent:     fa.IsFreeAgent,
+			MinimumValue:    fa.MinimumValue,
+			PreviousTeam:    fa.PreviousTeam,
+			DraftedTeam:     fa.DraftedTeam,
+			ShowLetterGrade: fa.ShowLetterGrade,
+			Stats:           fa.Stats,
+			SeasonStats:     fa.SeasonStats,
+			Offers:          fa.Offers,
+		}
+	}
+
+	return faResponseList
 }
 
-func GetAllWaiverWirePlayersFAPage() []structs.NFLPlayer {
+func GetAllWaiverWirePlayersFAPage() []models.WaiverWirePlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	WaivedPlayers := []structs.NFLPlayer{}
@@ -131,7 +159,43 @@ func GetAllWaiverWirePlayersFAPage() []structs.NFLPlayer {
 		return db.Where("is_active = true")
 	}).Where("is_waived = ?", true).Find(&WaivedPlayers)
 
-	return WaivedPlayers
+	sort.Slice(WaivedPlayers[:], func(i, j int) bool {
+		if WaivedPlayers[i].ShowLetterGrade {
+			return true
+		}
+		if WaivedPlayers[j].ShowLetterGrade {
+			return false
+		}
+		return WaivedPlayers[i].Overall > WaivedPlayers[j].Overall
+	})
+
+	faResponseList := make([]models.WaiverWirePlayerResponse, len(WaivedPlayers))
+
+	for i, fa := range WaivedPlayers {
+		faResponseList[i] = models.WaiverWirePlayerResponse{
+			ID:              fa.ID,
+			PlayerID:        fa.PlayerID,
+			TeamID:          fa.TeamID,
+			College:         fa.College,
+			TeamAbbr:        fa.TeamAbbr,
+			BasePlayer:      fa.BasePlayer,
+			Experience:      fa.Experience,
+			Hometown:        fa.Hometown,
+			State:           fa.State,
+			IsActive:        fa.IsActive,
+			IsWaived:        fa.IsWaived,
+			IsPracticeSquad: fa.IsPracticeSquad,
+			IsFreeAgent:     fa.IsFreeAgent,
+			MinimumValue:    fa.MinimumValue,
+			PreviousTeam:    fa.PreviousTeam,
+			DraftedTeam:     fa.DraftedTeam,
+			ShowLetterGrade: fa.ShowLetterGrade,
+			WaiverOffers:    fa.WaiverOffers,
+			Contract:        fa.Contract,
+		}
+	}
+
+	return faResponseList
 }
 
 func GetFreeAgentOffersByTeamID(TeamID string) []structs.FreeAgencyOffer {

@@ -448,18 +448,21 @@ func SyncTimeslot(timeslot string) {
 					winningTeamID := 0
 					winningTeam := ""
 					winningCoach := ""
+					winningRank := 0
 					if game.HomeTeamWin {
 						winningTeamID = game.HomeTeamID
 						winningTeam = game.HomeTeam
 						winningCoach = game.HomeTeamCoach
+						winningRank = int(game.HomeTeamRank)
 					} else {
 						winningTeamID = game.AwayTeamID
 						winningTeam = game.AwayTeam
 						winningCoach = game.AwayTeamCoach
+						winningRank = int(game.AwayTeamRank)
 					}
 
 					nextGame := GetCollegeGameByGameID(nextGameID)
-					nextGame.AddTeam(game.NextGameHOA == "H", winningTeamID, winningTeam, winningCoach)
+					nextGame.AddTeam(game.NextGameHOA == "H", winningTeamID, winningRank, winningTeam, winningCoach)
 					if !nextGame.IsNeutral && !game.IsNationalChampionship {
 						stadiumID := 0
 						stadium := ""

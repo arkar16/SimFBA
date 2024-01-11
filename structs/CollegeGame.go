@@ -7,10 +7,12 @@ type CollegeGame struct {
 	WeekID                   int
 	Week                     int
 	SeasonID                 int
+	HomeTeamRank             uint
 	HomeTeamID               int
 	HomeTeam                 string
 	HomeTeamCoach            string
 	HomeTeamWin              bool
+	AwayTeamRank             uint
 	AwayTeamID               int
 	AwayTeam                 string
 	AwayTeamCoach            string
@@ -82,14 +84,16 @@ func (cg *CollegeGame) UpdateTimeslot(ts string) {
 	cg.TimeSlot = ts
 }
 
-func (cg *CollegeGame) AddTeam(isHome bool, id int, team, coach string) {
+func (cg *CollegeGame) AddTeam(isHome bool, id, rank int, team, coach string) {
 	if isHome {
 		cg.HomeTeam = team
 		cg.HomeTeamID = id
+		cg.HomeTeamRank = uint(rank)
 		cg.HomeTeamCoach = coach
 	} else {
 		cg.AwayTeam = team
 		cg.AwayTeamID = id
+		cg.AwayTeamRank = uint(rank)
 		cg.AwayTeamCoach = coach
 	}
 }
@@ -100,6 +104,14 @@ func (cg *CollegeGame) AddLocation(stadiumID int, stadium, city, state string, i
 	cg.City = city
 	cg.State = state
 	cg.IsDomed = isDomed
+}
+func (cg *CollegeGame) AssignRank(id, rank uint) {
+	isHome := id == uint(cg.HomeTeamID)
+	if isHome {
+		cg.HomeTeamRank = rank
+	} else {
+		cg.AwayTeamRank = rank
+	}
 }
 
 type WeatherResponse struct {

@@ -15,6 +15,7 @@ type CollegeStandings struct {
 	DivisionID       int
 	PostSeasonStatus string
 	IsFBS            bool
+	Rank             uint
 	BaseStandings
 }
 
@@ -95,4 +96,8 @@ func (cs *CollegeStandings) ResetCFBStandings() {
 
 func (cs *CollegeStandings) SetCoach(coach string) {
 	cs.Coach = coach
+}
+
+func (cs *CollegeStandings) AssignRank(rank int) {
+	cs.Rank = uint(rank)
 }

@@ -18,6 +18,7 @@ type Timestamp struct {
 	SaturdayNoon               bool
 	SaturdayEvening            bool
 	SaturdayNight              bool
+	CollegePollRan             bool
 	NFLThursday                bool
 	NFLSundayNoon              bool
 	NFLSundayAfternoon         bool
@@ -171,4 +172,8 @@ func (t *Timestamp) ToggleAIDepthCharts() {
 func (t *Timestamp) ToggleDraftTime() {
 	t.IsDraftTime = !t.IsDraftTime
 	// t.IsNBAOffseason = false
+}
+
+func (t *Timestamp) TogglePollRan() {
+	t.CollegePollRan = !t.CollegePollRan
 }

@@ -288,11 +288,11 @@ func (cp *CollegePlayer) AssignTeamValues(t CollegeTeam) {
 func (cp *CollegePlayer) DeclareTransferIntention(weight int) {
 	cp.TransferStatus = 1
 	if weight < 30 {
-		cp.TransferLikeliness = "High"
+		cp.TransferLikeliness = "Low"
 	} else if weight < 70 {
 		cp.TransferLikeliness = "Medium"
 	} else {
-		cp.TransferLikeliness = "Low"
+		cp.TransferLikeliness = "High"
 	}
 }
 

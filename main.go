@@ -46,6 +46,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/simfba/regress/timeslot/{timeslot}", controller.RegressTimeslot).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/freeagency/round", controller.SyncFreeAgencyRound).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/recruiting/", controller.SyncRecruiting).Methods("GET")
+	myRouter.HandleFunc("/simfba/sync/transfer/intention", controller.ProcessTransferIntention).Methods("GET")
 	// myRouter.HandleFunc("/simfba/sync/missing/", controller.SyncMissingRES).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/weather/", controller.WeatherGenerator).Methods("GET")
 	myRouter.HandleFunc("/simfba/current/weather/forecast/", controller.GetWeatherForecast).Methods("GET")
@@ -154,8 +155,14 @@ func handleRequests() {
 	myRouter.HandleFunc("/nflplayers/injury/reserve/player/{PlayerID}/", controller.PlaceNFLPlayerOnInjuryReserve).Methods("GET")
 	// myRouter.HandleFunc("/collegeplayers/teams/export/", controller.ExportAllRostersToCSV).Methods("GET") // DO NOT USE
 
+	// Poll Controls
+	myRouter.HandleFunc("/college/poll/create/", controller.CreatePollSubmission).Methods("POST")
+	myRouter.HandleFunc("/college/poll/sync", controller.SyncCollegePoll).Methods("GET")
+	myRouter.HandleFunc("/college/poll/official/season/{seasonID}", controller.GetOfficialPollsBySeasonID).Methods("GET")
+	myRouter.HandleFunc("/college/poll/submission/{username}", controller.GetPollSubmission).Methods("GET")
+
 	// Rankings Controls
-	myRouter.HandleFunc("/rankings/assign/all/croots/", controller.AssignAllRecruitRanks).Methods("GET")
+	// myRouter.HandleFunc("/rankings/assign/all/croots/", controller.AssignAllRecruitRanks).Methods("GET")
 
 	// Recruiting Controls
 	myRouter.HandleFunc("/recruiting/overview/dashboard/{teamID}", controller.GetRecruitingProfileForDashboardByTeamID).Methods("GET")

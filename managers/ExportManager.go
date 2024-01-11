@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/CalebRose/SimFBA/models"
+	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 )
 
@@ -338,6 +339,44 @@ func ExportPlayerStatsToCSV(cp []models.CollegePlayerResponse, w http.ResponseWr
 			strconv.Itoa(seasonStats.FGBlocked), strconv.Itoa(seasonStats.Snaps), strconv.Itoa(seasonStats.Pancakes), "No.",
 		}
 		err = writer.Write(pr)
+		if err != nil {
+			log.Fatal("Cannot write player row to CSV", err)
+		}
+
+		writer.Flush()
+		err = writer.Error()
+		if err != nil {
+			log.Fatal("Error while writing to file ::", err)
+		}
+	}
+}
+
+func ExportTransferPlayersToCSV(transfers []structs.CollegePlayer, w http.ResponseWriter) {
+	w.Header().Set("Content-Disposition", "attachment;filename=transferStats.csv")
+	w.Header().Set("Transfer-Encoding", "chunked")
+	// Initialize writer
+	writer := csv.NewWriter(w)
+	HeaderRow := []string{
+		"Team", "First Name", "Last Name", "Stars",
+		"Archetype", "Position", "Year", "Age", "Redshirt Status",
+		"Overall", "Transfer Weight", "Dice Roll",
+	}
+
+	err := writer.Write(HeaderRow)
+	if err != nil {
+		log.Fatal("Cannot write header row", err)
+	}
+
+	for _, player := range transfers {
+		csvModel := models.MapPlayerToCSVModel(player)
+		playerRow := []string{
+			player.TeamAbbr, csvModel.FirstName, csvModel.LastName, strconv.Itoa(player.Stars),
+			csvModel.Archetype, csvModel.Position,
+			csvModel.Year, strconv.Itoa(player.Age), csvModel.RedshirtStatus,
+			csvModel.OverallGrade,
+		}
+
+		err = writer.Write(playerRow)
 		if err != nil {
 			log.Fatal("Cannot write player row to CSV", err)
 		}

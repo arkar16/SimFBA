@@ -48,6 +48,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/simfba/sync/recruiting/", controller.SyncRecruiting).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/transfer/intention", controller.ProcessTransferIntention).Methods("GET")
 	// myRouter.HandleFunc("/simfba/sync/missing/", controller.SyncMissingRES).Methods("GET")
+	myRouter.HandleFunc("/simfba/mass/{off}/{def}", controller.MassUpdateGameplans).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/weather/", controller.WeatherGenerator).Methods("GET")
 	myRouter.HandleFunc("/simfba/current/weather/forecast/", controller.GetWeatherForecast).Methods("GET")
 	myRouter.HandleFunc("/simfba/future/weather/forecast/", controller.GetFutureWeatherForecast).Methods("GET")

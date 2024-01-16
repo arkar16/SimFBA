@@ -20,6 +20,8 @@ WORKDIR /root/
 
 COPY --from=base-builder /app/data/stateMatcher.json /root/
 COPY --from=base-builder /app/data/regionMatcher.json /root/
+COPY --from=base-builder /app/data/defaultOffensiveSchemes.json /root/
+COPY --from=base-builder /app/data/defaultDefensiveSchemes.json /root/
 COPY --from=base-builder /app/SimFBA .
 
 ENV PORT 8081

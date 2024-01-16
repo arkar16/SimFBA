@@ -10,132 +10,25 @@ type GamePlanResponse struct {
 }
 
 type BaseGameplan struct {
-	OffensiveScheme              string
-	OffRunToPassRatio            int
-	OffFormation1Name            string
-	OffForm1Weight               int
-	OffForm1TraditionalRun       int
-	OffForm1OptionRun            int
-	OffForm1Pass                 int
-	OffForm1RPO                  int
-	OffFormation2Name            string
-	OffForm2Weight               int
-	OffForm2TraditionalRun       int
-	OffForm2OptionRun            int
-	OffForm2Pass                 int
-	OffForm2RPO                  int
-	OffFormation3Name            string
-	OffForm3Weight               int
-	OffForm3TraditionalRun       int
-	OffForm3OptionRun            int
-	OffForm3Pass                 int
-	OffForm3RPO                  int
-	OffFormation4Name            string
-	OffForm4Weight               int
-	OffForm4TraditionalRun       int
-	OffForm4OptionRun            int
-	OffForm4Pass                 int
-	OffForm4RPO                  int
-	OffFormation5Name            string
-	OffForm5Weight               int
-	OffForm5TraditionalRun       int
-	OffForm5OptionRun            int
-	OffForm5Pass                 int
-	OffForm5RPO                  int
-	RunnerDistributionQB         int
-	RunnerDistributionRB1        int
-	RunnerDistributionRB2        int
-	RunnerDistributionRB3        int
-	RunnerDistributionFB1        int
-	RunnerDistributionFB2        int
-	RunnerDistributionWR         int    // Jet Sweep stuff
-	RunnerDistributionWRPosition string // WR1, WR2, WR3, WR4, WR5
-	RunOutsideLeft               int
-	RunOutsideRight              int
-	RunInsideLeft                int
-	RunInsideRight               int
-	RunPowerLeft                 int
-	RunPowerRight                int
-	RunDrawLeft                  int
-	RunDrawRight                 int
-	ReadOptionLeft               int
-	ReadOptionRight              int
-	SpeedOptionLeft              int
-	SpeedOptionRight             int
-	InvertedOptionLeft           int
-	InvertedOptionRight          int
-	TripleOptionLeft             int
-	TripleOptionRight            int
-	PassQuick                    int
-	PassShort                    int
-	PassLong                     int
-	PassScreen                   int
-	PassPAShort                  int
-	PassPALong                   int
-	LeftVsRight                  int
-	ChoiceOutside                int
-	ChoiceInside                 int
-	ChoicePower                  int
-	PeekOutside                  int
-	PeekInside                   int
-	PeekPower                    int
-	TargetingWR1                 int
-	TargetDepthWR1               string // Quick, Short, Long, None
-	TargetingWR2                 int
-	TargetDepthWR2               string
-	TargetingWR3                 int
-	TargetDepthWR3               string
-	TargetingWR4                 int
-	TargetDepthWR4               string
-	TargetingWR5                 int
-	TargetDepthWR5               string
-	TargetingTE1                 int
-	TargetDepthTE1               string
-	TargetingTE2                 int
-	TargetDepthTE2               string
-	TargetingTE3                 int
-	TargetDepthTE3               string
-	TargetingRB1                 int
-	TargetDepthRB1               string
-	TargetingRB2                 int
-	TargetDepthRB2               string
-	TargetingFB1                 int
-	TargetDepthFB1               string
-	DefensiveScheme              string
-	DefFormation1                string
-	DefFormation1RunToPass       int
-	DefFormation1BlitzWeight     int
-	DefFormation1BlitzAggression string
-	DefFormation2                string
-	DefFormation2RunToPass       int
-	DefFormation2BlitzWeight     int
-	DefFormation2BlitzAggression string
-	DefFormation3                string
-	DefFormation3RunToPass       int
-	DefFormation3BlitzWeight     int
-	DefFormation3BlitzAggression string
-	DefFormation4                string
-	DefFormation4RunToPass       int
-	DefFormation4BlitzWeight     int
-	DefFormation4BlitzAggression string
-	DefFormation5                string
-	DefFormation5RunToPass       int
-	DefFormation5BlitzWeight     int
-	DefFormation5BlitzAggression string
-	BlitzSafeties                bool
-	BlitzCorners                 bool
-	LinebackerCoverage           string
-	CornersCoverage              string
-	SafetiesCoverage             string
-	PrimaryHB                    int
-	MaximumFGDistance            int
-	GoFor4AndShort               int
-	GoFor4AndLong                int
-	HasSchemePenalty             bool
-	OffenseSchemePenalty         uint
-	DefenseSchemePenalty         uint
-	DefaultOffense               bool
-	DefaultDefense               bool
+	OffensiveScheme   string
+	OffRunToPassRatio int
+	OffensiveFormation
+	DefensiveScheme string
+	DefensiveFormation
+	BlitzSafeties        bool
+	BlitzCorners         bool
+	LinebackerCoverage   string
+	CornersCoverage      string
+	SafetiesCoverage     string
+	PrimaryHB            int
+	MaximumFGDistance    int
+	GoFor4AndShort       int
+	GoFor4AndLong        int
+	HasSchemePenalty     bool
+	OffenseSchemePenalty uint
+	DefenseSchemePenalty uint
+	DefaultOffense       bool
+	DefaultDefense       bool
 }
 
 func (cg *BaseGameplan) ApplySchemePenalty(IsOffense bool) {
@@ -408,4 +301,131 @@ func (bg *BaseGameplan) UpdateNFLGameplan(dto NFLGameplan) {
 	bg.GoFor4AndShort = dto.GoFor4AndShort
 	bg.DefaultOffense = dto.DefaultOffense
 	bg.DefaultDefense = dto.DefaultDefense
+}
+
+func (bg *BaseGameplan) UpdateSchemes(off, def string) {
+	bg.OffensiveScheme = off
+	bg.DefensiveScheme = def
+	bg.DefaultOffense = true
+	bg.DefaultDefense = true
+}
+
+func (bg *BaseGameplan) AssignRunnerWRID(id uint) {
+	bg.RunnerDistributionWRID = id
+}
+
+type OffensiveFormation struct {
+	OffFormation1Name            string
+	OffForm1Weight               int
+	OffForm1TraditionalRun       int
+	OffForm1OptionRun            int
+	OffForm1Pass                 int
+	OffForm1RPO                  int
+	OffFormation2Name            string
+	OffForm2Weight               int
+	OffForm2TraditionalRun       int
+	OffForm2OptionRun            int
+	OffForm2Pass                 int
+	OffForm2RPO                  int
+	OffFormation3Name            string
+	OffForm3Weight               int
+	OffForm3TraditionalRun       int
+	OffForm3OptionRun            int
+	OffForm3Pass                 int
+	OffForm3RPO                  int
+	OffFormation4Name            string
+	OffForm4Weight               int
+	OffForm4TraditionalRun       int
+	OffForm4OptionRun            int
+	OffForm4Pass                 int
+	OffForm4RPO                  int
+	OffFormation5Name            string
+	OffForm5Weight               int
+	OffForm5TraditionalRun       int
+	OffForm5OptionRun            int
+	OffForm5Pass                 int
+	OffForm5RPO                  int
+	RunnerDistributionQB         int
+	RunnerDistributionRB1        int
+	RunnerDistributionRB2        int
+	RunnerDistributionRB3        int
+	RunnerDistributionFB1        int
+	RunnerDistributionFB2        int
+	RunnerDistributionWR         int    // Jet Sweep stuff
+	RunnerDistributionWRPosition string // WR1, WR2, WR3, WR4, WR5
+	RunnerDistributionWRID       uint
+	RunOutsideLeft               int
+	RunOutsideRight              int
+	RunInsideLeft                int
+	RunInsideRight               int
+	RunPowerLeft                 int
+	RunPowerRight                int
+	RunDrawLeft                  int
+	RunDrawRight                 int
+	ReadOptionLeft               int
+	ReadOptionRight              int
+	SpeedOptionLeft              int
+	SpeedOptionRight             int
+	InvertedOptionLeft           int
+	InvertedOptionRight          int
+	TripleOptionLeft             int
+	TripleOptionRight            int
+	PassQuick                    int
+	PassShort                    int
+	PassLong                     int
+	PassScreen                   int
+	PassPAShort                  int
+	PassPALong                   int
+	LeftVsRight                  int
+	ChoiceOutside                int
+	ChoiceInside                 int
+	ChoicePower                  int
+	PeekOutside                  int
+	PeekInside                   int
+	PeekPower                    int
+	TargetingWR1                 int
+	TargetDepthWR1               string // Quick, Short, Long, None
+	TargetingWR2                 int
+	TargetDepthWR2               string
+	TargetingWR3                 int
+	TargetDepthWR3               string
+	TargetingWR4                 int
+	TargetDepthWR4               string
+	TargetingWR5                 int
+	TargetDepthWR5               string
+	TargetingTE1                 int
+	TargetDepthTE1               string
+	TargetingTE2                 int
+	TargetDepthTE2               string
+	TargetingTE3                 int
+	TargetDepthTE3               string
+	TargetingRB1                 int
+	TargetDepthRB1               string
+	TargetingRB2                 int
+	TargetDepthRB2               string
+	TargetingFB1                 int
+	TargetDepthFB1               string
+}
+
+type DefensiveFormation struct {
+	DefFormation1                string
+	DefFormation1RunToPass       int
+	DefFormation1BlitzWeight     int
+	DefFormation1BlitzAggression string
+	DefFormation2                string
+	DefFormation2RunToPass       int
+	DefFormation2BlitzWeight     int
+	DefFormation2BlitzAggression string
+	DefFormation3                string
+	DefFormation3RunToPass       int
+	DefFormation3BlitzWeight     int
+	DefFormation3BlitzAggression string
+	DefFormation4                string
+	DefFormation4RunToPass       int
+	DefFormation4BlitzWeight     int
+	DefFormation4BlitzAggression string
+	DefFormation5                string
+	DefFormation5RunToPass       int
+	DefFormation5BlitzWeight     int
+	DefFormation5BlitzAggression string
 }

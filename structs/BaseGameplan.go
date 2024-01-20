@@ -20,6 +20,8 @@ type BaseGameplan struct {
 	LinebackerCoverage   string
 	CornersCoverage      string
 	SafetiesCoverage     string
+	DiveFocus            int
+	PitchFocus           int
 	PrimaryHB            int
 	MaximumFGDistance    int
 	GoFor4AndShort       int
@@ -29,6 +31,8 @@ type BaseGameplan struct {
 	DefenseSchemePenalty uint
 	DefaultOffense       bool
 	DefaultDefense       bool
+	PreviousWeekBye      bool
+	FocusPlays           string
 }
 
 func (cg *BaseGameplan) ApplySchemePenalty(IsOffense bool) {
@@ -165,15 +169,25 @@ func (bg *BaseGameplan) UpdateCollegeGameplan(dto CollegeGameplan) {
 	bg.DefFormation5BlitzAggression = dto.DefFormation5BlitzAggression
 	bg.BlitzSafeties = dto.BlitzSafeties
 	bg.BlitzCorners = dto.BlitzCorners
-	bg.LinebackerCoverage = dto.LinebackerCoverage
-	bg.CornersCoverage = dto.CornersCoverage
-	bg.SafetiesCoverage = dto.SafetiesCoverage
+	if len(dto.LinebackerCoverage) > 0 {
+		bg.LinebackerCoverage = dto.LinebackerCoverage
+	}
+	if len(dto.CornersCoverage) > 0 {
+		bg.CornersCoverage = dto.CornersCoverage
+	}
+	if len(dto.SafetiesCoverage) > 0 {
+		bg.SafetiesCoverage = dto.SafetiesCoverage
+	}
 	bg.PrimaryHB = dto.PrimaryHB
+	bg.DiveFocus = dto.DiveFocus
+	bg.PitchFocus = dto.PitchFocus
 	bg.MaximumFGDistance = dto.MaximumFGDistance
 	bg.GoFor4AndLong = dto.GoFor4AndLong
 	bg.GoFor4AndShort = dto.GoFor4AndShort
 	bg.DefaultOffense = dto.DefaultOffense
 	bg.DefaultDefense = dto.DefaultDefense
+	bg.PreviousWeekBye = dto.PreviousWeekBye
+	bg.FocusPlays = dto.FocusPlays
 }
 
 func (bg *BaseGameplan) UpdateNFLGameplan(dto NFLGameplan) {
@@ -296,6 +310,8 @@ func (bg *BaseGameplan) UpdateNFLGameplan(dto NFLGameplan) {
 	bg.CornersCoverage = dto.CornersCoverage
 	bg.SafetiesCoverage = dto.SafetiesCoverage
 	bg.PrimaryHB = dto.PrimaryHB
+	bg.DiveFocus = dto.DiveFocus
+	bg.PitchFocus = dto.PitchFocus
 	bg.MaximumFGDistance = dto.MaximumFGDistance
 	bg.GoFor4AndLong = dto.GoFor4AndLong
 	bg.GoFor4AndShort = dto.GoFor4AndShort

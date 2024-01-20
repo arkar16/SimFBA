@@ -424,10 +424,10 @@ func CheckAllUserDepthChartsForInjuredPlayers() {
 func MassUpdateGameplanSchemes(off, def string) {
 	db := dbprovider.GetInstance().GetDB()
 	teams := GetAllCollegeTeams()
-	dcMap := GetDepthChartMap()
 	offensiveSchemes := util.GetOffensiveDefaultSchemes()
 	defensiveSchemes := util.GetDefensiveDefaultSchemes()
 	for _, team := range teams {
+
 		teamID := strconv.Itoa(int(team.ID))
 		gp := GetGameplanByTeamID(teamID)
 		gp.UpdateSchemes(off, def)
@@ -456,11 +456,8 @@ func MassUpdateGameplanSchemes(off, def string) {
 
 		gp.UpdateCollegeGameplan(dto)
 
-		// Get Depth Chart
-		depthChart := dcMap[team.ID]
-
 		// Autosort Depth Chart
-		ReAlignCollegeDepthChart(db, teamID, gp, depthChart.DepthChartPlayers)
+		ReAlignCollegeDepthChart(db, teamID, gp)
 
 		db.Save(&gp)
 	}
@@ -477,8 +474,7 @@ func UpdateCollegeAIDepthCharts() {
 
 		teamID := strconv.Itoa(int(team.ID))
 		gp := GetGameplanByTeamID(teamID)
-		depthchartPositions := GetDepthChartPositionPlayersByDepthchartID(teamID)
-		ReAlignCollegeDepthChart(db, teamID, gp, depthchartPositions)
+		ReAlignCollegeDepthChart(db, teamID, gp)
 	}
 
 	ts := GetTimestamp()
@@ -486,8 +482,9 @@ func UpdateCollegeAIDepthCharts() {
 	db.Save(&ts)
 }
 
-func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGameplan, dcPositions []structs.CollegeDepthChartPosition) {
+func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGameplan) {
 	roster := GetAllCollegePlayersByTeamIdWithoutRedshirts(teamID)
+	dcPositions := GetDepthChartPositionPlayersByDepthchartID(teamID)
 	sort.Sort(structs.ByOverall(roster))
 	positionMap := make(map[string][]structs.DepthChartPositionDTO)
 	starterMap := make(map[uint]bool)
@@ -515,7 +512,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		isBadFit := CheckPlayerFits(player, badFits)
 
 		// Add to QB List
-		if pos == "QB" || pos == "WR" || pos == "TE" || pos == "RB" || pos == "FB" || pos == "ATH" {
+		if pos == "QB" || pos == "RB" || pos == "FB" || pos == "ATH" {
 			score := 0
 			if isGoodFit {
 				score += 25
@@ -525,9 +522,9 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 				score += 10
 			}
 			if pos == "QB" {
-				score += 10
+				score += 20
 			} else if pos == "ATH" && (arch == "Triple-Threat" || arch == "Field General") {
-				score += 8
+				score += 15
 			}
 			score += ((cp.ThrowAccuracy + cp.ThrowPower) / 2)
 
@@ -543,16 +540,16 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "RB" || pos == "FB" || pos == "WR" || pos == "TE" || pos == "ATH" {
 			score := 0
 			if pos == "RB" {
-				score += 25
-			} else if pos == "WR" || pos == "FB" {
+				score += 35
+			} else if pos == "FB" {
 				score += 12
 			} else if pos == "ATH" && (arch == "Wingback" || arch == "Soccer Player" || arch == "Triple-Threat") {
-				score += 8
+				score += 15
 			}
 			if isGoodFit {
-				score += 20
+				score += 30
 			} else if isBadFit {
-				score -= 20
+				score -= 30
 			}
 
 			score += ((cp.Speed + cp.Agility + cp.Strength + cp.Carrying) / 4)
@@ -567,22 +564,18 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		}
 
 		// Add to FB List
-		if pos == "FB" || pos == "TE" || pos == "RB" || pos == "ILB" || pos == "OLB" || pos == "ATH" {
+		if pos == "FB" || pos == "TE" || pos == "RB" || pos == "ATH" {
 			score := 0
 			if pos == "FB" {
-				score += 10
-			} else if pos == "TE" {
-				score += 5
-			} else if pos == "RB" {
-				score += 3
+				score += 30
 			} else if pos == "ATH" && (arch == "Wingback") {
-				score += 8
+				score += 12
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
+				score -= 30
 			} else {
 				score += 5
 			}
@@ -599,22 +592,18 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		}
 
 		// Add to TE List
-		if pos == "FB" || pos == "TE" || pos == "WR" || pos == "ATH" {
+		if pos == "FB" || pos == "TE" || pos == "ATH" {
 			score := 0
 			if pos == "TE" {
-				score += 10
-			} else if pos == "FB" {
-				score += 5
-			} else if pos == "WR" {
-				score += 3
+				score += 30
 			} else if pos == "ATH" && (arch == "Slotback") {
-				score += 8
+				score += 15
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
+				score -= 30
 			} else {
 				score += 5
 			}
@@ -630,24 +619,18 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			positionMap["TE"] = append(positionMap["TE"], dcpObj)
 		}
 		// Add to WR List
-		if pos == "WR" || pos == "TE" || pos == "RB" || pos == "CB" || pos == "ATH" {
+		if pos == "WR" || pos == "TE" || pos == "RB" || pos == "ATH" {
 			score := 0
 			if pos == "WR" {
-				score += 10
-			} else if pos == "TE" {
-				score += 5
-			} else if pos == "RB" {
-				score += 3
+				score += 30
 			} else if pos == "ATH" && (arch == "Wingback" || arch == "Slotback") {
-				score += 8
+				score += 20
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
-			} else {
-				score += 5
+				score -= 30
 			}
 
 			score += int(float64(cp.Overall)*0.4) +
@@ -669,19 +652,17 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "OT" || pos == "OG" || pos == "C" || pos == "ATH" {
 			score := 0
 			if pos == "OT" {
-				score += 10
+				score += 25
 			} else if pos == "OG" {
-				score += 5
-			} else if pos == "C" {
-				score += 3
+				score += 10
 			} else if pos == "ATH" && (arch == "Lineman") {
-				score += 8
+				score += 15
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
+				score -= 30
 			} else {
 				score += 5
 			}
@@ -709,19 +690,17 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "OT" || pos == "OG" || pos == "C" || pos == "ATH" {
 			score := 0
 			if pos == "OG" {
-				score += 10
-			} else if pos == "OT" {
-				score += 5
+				score += 30
 			} else if pos == "C" {
 				score += 3
 			} else if pos == "ATH" && (arch == "Lineman") {
-				score += 8
+				score += 15
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
+				score -= 30
 			} else {
 				score += 5
 			}
@@ -748,19 +727,17 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "OT" || pos == "OG" || pos == "C" || pos == "ATH" {
 			score := 0
 			if pos == "C" {
-				score += 10
+				score += 25
 			} else if pos == "OG" {
-				score += 5
-			} else if pos == "OT" {
-				score += 3
+				score += 10
 			} else if pos == "ATH" && (arch == "Lineman") {
-				score += 8
+				score += 15
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
+				score -= 30
 			} else {
 				score += 5
 			}
@@ -783,19 +760,19 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "DE" || pos == "DT" || pos == "OLB" || pos == "ATH" {
 			score := 0
 			if pos == "DE" {
-				score += 10
+				score += 25
 			} else if pos == "OLB" {
-				score += 5
+				score += 10
 			} else if pos == "DT" {
 				score += 3
 			} else if pos == "ATH" && (arch == "Lineman" || arch == "Strongside") {
-				score += 8
+				score += 15
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
+				score -= 30
 			} else {
 				score += 5
 			}
@@ -825,21 +802,19 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "DE" || pos == "DT" || pos == "OLB" || pos == "ATH" {
 			score := 0
 			if pos == "DT" {
-				score += 10
+				score += 25
 			} else if pos == "DE" {
-				score += 5
+				score += 8
 			} else if pos == "OLB" {
 				score += 3
 			} else if pos == "ATH" && (arch == "Lineman" || arch == "Strongside") {
-				score += 8
+				score += 15
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
-			} else {
-				score += 5
+				score -= 30
 			}
 
 			score += int(float64(cp.Overall)*0.7) +
@@ -862,21 +837,21 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "OLB" || pos == "DE" || pos == "ILB" || pos == "SS" || pos == "FS" || pos == "ATH" {
 			score := 0
 			if pos == "OLB" {
-				score += 15
+				score += 25
 			} else if pos == "DE" {
 				score += 10
 			} else if pos == "ILB" {
-				score += 8
+				score += 12
 			} else if pos == "SS" {
 				score += 3
 			} else if pos == "ATH" && (arch == "Weakside" || arch == "Strongside" || arch == "Bandit") {
-				score += 10
+				score += 15
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
+				score -= 30
 			} else {
 				score += 5
 			}
@@ -908,21 +883,21 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "OLB" || pos == "DE" || pos == "ILB" || pos == "SS" || pos == "FS" || pos == "ATH" {
 			score := 0
 			if pos == "ILB" {
-				score += 15
+				score += 25
 			} else if pos == "OLB" {
-				score += 10
+				score += 12
 			} else if pos == "SS" {
 				score += 8
 			} else if pos == "DE" {
 				score += 3
 			} else if pos == "ATH" && (arch == "Weakside" || arch == "Bandit" || arch == "Field General") {
-				score += 12
+				score += 15
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
+				score -= 30
 			} else {
 				score += 5
 			}
@@ -949,7 +924,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "CB" || pos == "FS" || pos == "SS" || pos == "ATH" {
 			score := 0
 			if pos == "CB" {
-				score += 15
+				score += 25
 			} else if pos == "FS" {
 				score += 10
 			} else if pos == "SS" {
@@ -959,11 +934,9 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
-			} else {
-				score += 5
+				score -= 30
 			}
 
 			score += int(float64(cp.Overall)*0.5) +
@@ -987,19 +960,19 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "CB" || pos == "FS" || pos == "SS" || pos == "ATH" {
 			score := 0
 			if pos == "FS" {
-				score += 15
+				score += 25
 			} else if pos == "CB" {
 				score += 10
 			} else if pos == "SS" {
 				score += 8
-			} else if pos == "ATH" && (arch == "Triple-Threat" || arch == "Bandit" || arch == "Weakside") {
-				score += 12
+			} else if pos == "ATH" && (arch == "Bandit" || arch == "Weakside") {
+				score += 15
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
+				score -= 30
 			} else {
 				score += 5
 			}
@@ -1025,19 +998,19 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "CB" || pos == "FS" || pos == "SS" || pos == "ATH" {
 			score := 0
 			if pos == "SS" {
-				score += 15
+				score += 25
 			} else if pos == "FS" {
 				score += 10
 			} else if pos == "CB" {
 				score += 8
-			} else if pos == "ATH" && (arch == "Triple-Threat" || arch == "Bandit" || arch == "Weakside") {
+			} else if pos == "ATH" && (arch == "Bandit" || arch == "Weakside") {
 				score += 12
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 20
+				score += 30
 			} else if isBadFit && !isGoodFit {
-				score -= 20
+				score -= 30
 			} else {
 				score += 5
 			}
@@ -1063,7 +1036,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "K" || pos == "P" || pos == "QB" || pos == "ATH" {
 			score := 0
 			if pos == "P" {
-				score += 10
+				score += 25
 			} else if pos == "K" {
 				score += 5
 			} else if pos == "ATH" && (arch == "Soccer Player") {
@@ -1078,7 +1051,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 				score += 5
 			}
 
-			score += cp.Overall
+			score += cp.PuntAccuracy + cp.PuntPower
 
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:      pos,
@@ -1093,7 +1066,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "K" || pos == "P" || pos == "QB" || pos == "ATH" {
 			score := 0
 			if pos == "K" {
-				score += 10
+				score += 25
 			} else if pos == "P" {
 				score += 5
 			} else if pos == "ATH" && (arch == "Soccer Player") {
@@ -1107,7 +1080,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			} else {
 				score += 5
 			}
-			score += cp.Overall
+			score += cp.KickAccuracy + cp.KickPower
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:      pos,
 				Archetype:     arch,
@@ -1120,9 +1093,9 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		// FG List
 		if pos == "K" || pos == "P" || pos == "QB" || pos == "ATH" {
 			score := 0
-			if pos == "P" {
-				score += 10
-			} else if pos == "K" {
+			if pos == "K" {
+				score += 25
+			} else if pos == "P" {
 				score += 5
 			} else if pos == "ATH" && (arch == "Soccer Player") {
 				score += 8
@@ -1136,7 +1109,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 				score += 5
 			}
 
-			score += cp.Overall
+			score += cp.KickAccuracy + cp.KickPower
 
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:      pos,
@@ -1150,8 +1123,10 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		// PR
 		if pos == "WR" || pos == "RB" || pos == "FS" || pos == "SS" || pos == "CB" || pos == "ATH" {
 			score := 0
-			if pos == "WR" || pos == "RB" || (pos == "ATH" && arch == "Return Specialist") {
-				score += 7
+			if pos == "ATH" && arch == "Return Specialist" {
+				score += 25
+			} else if pos == "WR" || pos == "RB" {
+				score += 10
 			}
 			score += cp.Agility
 
@@ -1167,8 +1142,10 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		// KR
 		if pos == "WR" || pos == "RB" || pos == "FS" || pos == "SS" || pos == "CB" || pos == "ATH" {
 			score := 0
-			if pos == "WR" || pos == "RB" || (pos == "ATH" && arch == "Return Specialist") {
-				score += 7
+			if pos == "ATH" && arch == "Return Specialist" {
+				score += 25
+			} else if pos == "WR" || pos == "RB" {
+				score += 10
 			}
 			score += cp.Speed
 
@@ -1243,6 +1220,15 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			if dcp.Position == "STU" && stuMap[pos.CollegePlayer.ID] {
 				continue
 			}
+
+			if dcp.Position == "WR" {
+				runnerDistPostition := gp.RunnerDistributionWRPosition
+				positionLabel := dcp.Position + "" + dcp.PositionLevel
+				if runnerDistPostition == positionLabel {
+					gp.AssignRunnerWRID(dcp.CollegePlayer.ID)
+				}
+			}
+
 			if dcp.Position == "STU" {
 				stuMap[pos.CollegePlayer.ID] = true
 			} else if dcp.PositionLevel == "1" && !starterMap[pos.CollegePlayer.ID] {

@@ -5,6 +5,8 @@ type BasePlayer struct {
 	LastName        string
 	Position        string
 	Archetype       string
+	PreviousTeamID  uint
+	PreviousTeam    string
 	Height          int
 	Weight          int
 	Age             int

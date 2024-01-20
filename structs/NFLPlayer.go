@@ -24,8 +24,6 @@ type NFLPlayer struct {
 	NegotiationRound  uint
 	SigningRound      uint
 	MinimumValue      float64
-	PreviousTeamID    uint
-	PreviousTeam      string
 	DraftedTeamID     uint
 	DraftedTeam       string
 	DraftedRound      uint

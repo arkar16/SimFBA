@@ -282,7 +282,7 @@ func handleCron() {
 		// Allocate AI Boards
 		// Sync Recruiting
 		// Sync Free Agency
-		c.AddFunc("0 12 * * 2", controller.SyncFreeAgencyViaCron)
+		c.AddFunc("0 16 * * 2", controller.SyncFreeAgencyViaCron)
 		// Sync Extension Offers
 		// Run the Games
 		// Reveal Timeslot Results

@@ -42,6 +42,7 @@ type Timestamp struct {
 	Y3Capspace                 float64
 	Y4Capspace                 float64
 	Y5Capspace                 float64
+	DeadCapLimit               float64
 	FreeAgencyRound            uint
 	RunCron                    bool
 }

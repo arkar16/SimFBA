@@ -37,6 +37,7 @@ type GameResponse struct {
 	IsNationalChampionship   bool
 	IsSuperBowl              bool
 	IsRivalryGame            bool
+	IsPostSeason             bool
 	GameTitle                string // For rivalry match-ups, bowl games, championships, and more
 	League                   string
 }

@@ -551,6 +551,7 @@ func GetCurrentWeekWeather() []structs.GameResponse {
 			IsPlayoffGame:            cg.IsPlayoffGame,
 			IsNationalChampionship:   cg.IsNationalChampionship,
 			IsRivalryGame:            cg.IsRivalryGame,
+			IsPostSeason:             cg.IsConferenceChampionship || cg.IsNationalChampionship || cg.IsBowlGame || cg.IsPlayoffGame,
 			GameTitle:                cg.GameTitle,
 			League:                   "CFB",
 		}
@@ -599,6 +600,7 @@ func GetCurrentWeekWeather() []structs.GameResponse {
 			IsPlayoffGame:            nflG.IsPlayoffGame,
 			IsSuperBowl:              nflG.IsSuperBowl,
 			IsRivalryGame:            nflG.IsRivalryGame,
+			IsPostSeason:             nflG.IsConferenceChampionship || nflG.IsSuperBowl || nflG.IsPlayoffGame,
 			GameTitle:                nflG.GameTitle,
 			League:                   "NFL",
 		}

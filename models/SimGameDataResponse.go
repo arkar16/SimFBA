@@ -16,6 +16,7 @@ type SimGameDataResponse struct {
 	Precip         string
 	WindSpeed      float64
 	WindCategory   string
+	IsPostSeason   bool
 }
 
 func (sgdr *SimGameDataResponse) AssignHomeTeam(team SimTeamDataResponse, roster []structs.CollegePlayer) {
@@ -40,6 +41,10 @@ func (sgdr *SimGameDataResponse) AssignStadium(s structs.Stadium) {
 	sgdr.Stadium = s
 }
 
+func (sgdr *SimGameDataResponse) AssignPostSeasonStatus(isPostSeason bool) {
+	sgdr.IsPostSeason = isPostSeason
+}
+
 type NFLSimGameDataResponse struct {
 	HomeTeam       NFLSimTeamDataResponse
 	HomeTeamRoster []structs.NFLPlayer
@@ -54,6 +59,7 @@ type NFLSimGameDataResponse struct {
 	Precip         string
 	WindSpeed      float64
 	WindCategory   string
+	IsPostSeason   bool
 }
 
 func (sgdr *NFLSimGameDataResponse) AssignHomeTeam(team NFLSimTeamDataResponse, roster []structs.NFLPlayer) {
@@ -76,4 +82,8 @@ func (sgdr *NFLSimGameDataResponse) AssignWeather(temp float64, cloud string, pr
 
 func (sgdr *NFLSimGameDataResponse) AssignStadium(s structs.Stadium) {
 	sgdr.Stadium = s
+}
+
+func (sgdr *NFLSimGameDataResponse) AssignPostSeasonStatus(isPostSeason bool) {
+	sgdr.IsPostSeason = isPostSeason
 }

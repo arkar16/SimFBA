@@ -125,6 +125,7 @@ func GetHomeAndAwayTeamData(w http.ResponseWriter, r *http.Request) {
 
 	responseModel.AssignWeather(game.GameTemp, game.Cloud, game.Precip, game.WindCategory, game.WindSpeed)
 	responseModel.AssignStadium(stadium)
+	responseModel.AssignPostSeasonStatus(game.IsBowlGame || game.IsConferenceChampionship || game.IsNationalChampionship || game.IsPlayoffGame)
 
 	json.NewEncoder(w).Encode(responseModel)
 }
@@ -235,5 +236,6 @@ func GetNFLHomeAndAwayTeamData(w http.ResponseWriter, r *http.Request) {
 	responseModel.AssignAwayTeam(awayTeamResponse, awayTeamRoster)
 	responseModel.AssignWeather(game.GameTemp, game.Cloud, game.Precip, game.WindCategory, game.WindSpeed)
 	responseModel.AssignStadium(stadium)
+	responseModel.AssignPostSeasonStatus(game.IsConferenceChampionship || game.IsSuperBowl || game.IsPlayoffGame)
 	json.NewEncoder(w).Encode(responseModel)
 }

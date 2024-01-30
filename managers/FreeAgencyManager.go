@@ -278,6 +278,11 @@ func CreateFAOffer(offer structs.FreeAgencyOfferDTO) structs.FreeAgencyOffer {
 func CancelOffer(offer structs.FreeAgencyOfferDTO) {
 	db := dbprovider.GetInstance().GetDB()
 
+	ts := GetTimestamp()
+	if ts.IsFreeAgencyLocked {
+		return
+	}
+
 	OfferID := strconv.Itoa(int(offer.ID))
 
 	freeAgentOffer := GetFreeAgentOfferByOfferID(OfferID)

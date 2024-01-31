@@ -438,6 +438,7 @@ func syncAcceptedOptions(db *gorm.DB, options []structs.NFLTradeOption, senderID
 	receivingTeam := GetNFLTeamByTeamID(strconv.Itoa(int(recepientID)))
 	SendersCapsheet := GetCapsheetByTeamID(strconv.Itoa(int(senderID)))
 	recepientCapsheet := GetCapsheetByTeamID(strconv.Itoa(int(recepientID)))
+	salaryMinimum := 0.5
 	for _, option := range options {
 		// Contract
 		percentage := option.SalaryPercentage
@@ -447,17 +448,36 @@ func syncAcceptedOptions(db *gorm.DB, options []structs.NFLTradeOption, senderID
 			if playerRecord.TeamID == int(senderID) {
 				sendersPercentage := percentage * 0.01
 				receiversPercentage := (100 - percentage) * 0.01
+				sendingTeamPay := float64(contract.Y1BaseSalary * sendersPercentage)
+				receivingTeamPay := float64(contract.Y1BaseSalary * receiversPercentage)
+				// If a team is eating the Y1 Salary for a player
+				if sendersPercentage == 1 && contract.Y1Bonus == 0 {
+					sendingTeamPay -= salaryMinimum
+					receivingTeamPay += salaryMinimum
+				} else if contract.Y1BaseSalary == 0 && contract.Y1Bonus > 0 {
+					sendingTeamPay -= salaryMinimum
+					receivingTeamPay += salaryMinimum
+				}
 				SendersCapsheet.SubtractFromCapsheetViaTrade(contract)
-				SendersCapsheet.NegotiateSalaryDifference(contract.Y1BaseSalary, float64(contract.Y1BaseSalary*sendersPercentage))
-				recepientCapsheet.AddContractViaTrade(contract, float64(contract.Y1BaseSalary*receiversPercentage))
+				SendersCapsheet.NegotiateSalaryDifference(contract.Y1BaseSalary, sendingTeamPay)
+				recepientCapsheet.AddContractViaTrade(contract, receivingTeamPay)
 				playerRecord.TradePlayer(recepientID, receivingTeam.TeamAbbr)
 				contract.TradePlayer(recepientID, receivingTeam.TeamAbbr, receiversPercentage)
 			} else {
 				receiversPercentage := percentage * 0.01
 				sendersPercentage := (100 - percentage) * 0.01
+				sendingTeamPay := float64(contract.Y1BaseSalary * sendersPercentage)
+				receivingTeamPay := float64(contract.Y1BaseSalary * receiversPercentage)
+				if sendersPercentage == 1 && contract.Y1Bonus == 0 {
+					receivingTeamPay -= salaryMinimum
+					sendingTeamPay += salaryMinimum
+				} else if contract.Y1BaseSalary == 0 && contract.Y1Bonus > 0 {
+					receivingTeamPay -= salaryMinimum
+					sendingTeamPay += salaryMinimum
+				}
 				recepientCapsheet.SubtractFromCapsheetViaTrade(contract)
-				recepientCapsheet.NegotiateSalaryDifference(contract.Y1BaseSalary, float64(contract.Y1BaseSalary*receiversPercentage))
-				SendersCapsheet.AddContractViaTrade(contract, float64(contract.Y1BaseSalary*sendersPercentage))
+				recepientCapsheet.NegotiateSalaryDifference(contract.Y1BaseSalary, receivingTeamPay)
+				SendersCapsheet.AddContractViaTrade(contract, sendingTeamPay)
 				playerRecord.TradePlayer(senderID, sendingTeam.TeamAbbr)
 				contract.TradePlayer(senderID, sendingTeam.TeamAbbr, sendersPercentage)
 			}

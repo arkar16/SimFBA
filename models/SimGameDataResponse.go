@@ -60,6 +60,7 @@ type NFLSimGameDataResponse struct {
 	WindSpeed      float64
 	WindCategory   string
 	IsPostSeason   bool
+	IsNeutral      bool
 }
 
 func (sgdr *NFLSimGameDataResponse) AssignHomeTeam(team NFLSimTeamDataResponse, roster []structs.NFLPlayer) {
@@ -84,6 +85,7 @@ func (sgdr *NFLSimGameDataResponse) AssignStadium(s structs.Stadium) {
 	sgdr.Stadium = s
 }
 
-func (sgdr *NFLSimGameDataResponse) AssignPostSeasonStatus(isPostSeason bool) {
+func (sgdr *NFLSimGameDataResponse) AssignPostSeasonStatus(isPostSeason, isNeutral bool) {
 	sgdr.IsPostSeason = isPostSeason
+	sgdr.IsNeutral = isNeutral
 }

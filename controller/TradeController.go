@@ -135,15 +135,14 @@ func SyncAcceptedTrade(w http.ResponseWriter, r *http.Request) {
 
 // SyncTradeFromDraftPage -- Admin approve a trade
 func SyncTradeFromDraftPage(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	proposalID := vars["proposalID"]
-	if len(proposalID) == 0 {
-		panic("User did not provide a proposalID")
+	var tradeProposalDTO structs.NFLTradeProposal
+	err := json.NewDecoder(r.Body).Decode(&tradeProposalDTO)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
-
-	managers.SyncAcceptedTrade(proposalID)
-
-	json.NewEncoder(w).Encode("Proposal " + proposalID + " has been accepted.")
+	managers.SyncTradeFromDraftPage(tradeProposalDTO)
+	fmt.Println("Trade Processed!")
 }
 
 // SyncAcceptedTrade -- Admin approve a trade

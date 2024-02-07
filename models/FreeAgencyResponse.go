@@ -11,9 +11,22 @@ type FreeAgencyResponse struct {
 }
 
 type FreeAgentResponse struct {
-	ID       uint
-	PlayerID int
-	structs.BasePlayer
+	ID                uint
+	PlayerID          int
+	FirstName         string
+	LastName          string
+	Position          string
+	Archetype         string
+	Age               int
+	Overall           int
+	PotentialGrade    string
+	FreeAgency        string
+	Personality       string
+	RecruitingBias    string
+	WorkEthic         string
+	AcademicBias      string
+	PreviousTeamID    uint
+	PreviousTeam      string
 	TeamID            int
 	College           string
 	TeamAbbr          string
@@ -24,13 +37,12 @@ type FreeAgentResponse struct {
 	IsFreeAgent       bool
 	IsWaived          bool
 	MinimumValue      float64
-	PreviousTeam      string
 	DraftedTeam       string
 	ShowLetterGrade   bool
 	IsPracticeSquad   bool
 	IsAcceptingOffers bool
 	IsNegotiating     bool
-	Stats             []structs.NFLPlayerStats
+	Shotgun           int // -1 is Under Center, 0 Balanced, 1 Shotgun
 	SeasonStats       structs.NFLPlayerSeasonStats
 	Offers            []structs.FreeAgencyOffer
 }

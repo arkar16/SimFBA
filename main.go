@@ -8,6 +8,7 @@ import (
 
 	"github.com/CalebRose/SimFBA/controller"
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/middleware"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -27,6 +28,7 @@ func InitialMigration() {
 
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
+	myRouter.Use(middleware.GzipMiddleware)
 
 	// Health Controls
 	HealthCheck := health.New(

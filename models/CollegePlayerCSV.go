@@ -21,6 +21,7 @@ type CollegePlayerCSV struct {
 	State              string
 	Height             int
 	Weight             int
+	Shotgun            int
 	OverallGrade       string
 	StaminaGrade       string
 	InjuryGrade        string
@@ -184,6 +185,7 @@ func MapPlayerToCSVModel(player structs.CollegePlayer) CollegePlayerCSV {
 		PuntPowerGrade:     PuntPowerGrade,
 		PotentialGrade:     player.PotentialGrade,
 		RedshirtStatus:     RedShirtStatus,
+		Shotgun:            player.Shotgun,
 	}
 }
 

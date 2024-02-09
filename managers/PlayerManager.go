@@ -121,7 +121,7 @@ func GetCollegePlayerByNameAndTeam(firstName string, lastName string, teamID str
 	return collegePlayerResponse
 }
 
-func GetCollegePlayerByNameTeamAndWeek(firstName string, lastName string, teamID string, week string) models.CollegePlayerCSV {
+func GetCollegePlayerByIdAndWeek(id, week string) models.CollegePlayerCSV {
 	db := dbprovider.GetInstance().GetDB()
 
 	ts := GetTimestamp()
@@ -135,7 +135,7 @@ func GetCollegePlayerByNameTeamAndWeek(firstName string, lastName string, teamID
 
 		db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
 			return db.Where("season_id = ? AND week_id = ?", collegeWeek.SeasonID, collegeWeek.ID)
-		}).Where("first_name = ? and last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&CollegePlayer)
+		}).Where("id = ?", id).Find(&CollegePlayer)
 
 		collegePlayerResponse := models.MapPlayerForStats(CollegePlayer)
 
@@ -143,7 +143,7 @@ func GetCollegePlayerByNameTeamAndWeek(firstName string, lastName string, teamID
 	}
 }
 
-func GetSeasonalCollegePlayerByNameTeam(firstName string, lastName string, teamID string) models.CollegePlayerResponse {
+func GetSeasonalCollegePlayerByNameTeam(id string) models.CollegePlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	ts := GetTimestamp()
@@ -151,8 +151,8 @@ func GetSeasonalCollegePlayerByNameTeam(firstName string, lastName string, teamI
 	var CollegePlayer structs.CollegePlayer
 
 	db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ? AND week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
-	}).Where("first_name = ? and last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&CollegePlayer)
+		return db.Where("season_id = ?", strconv.Itoa(ts.CollegeSeasonID))
+	}).Where("id = ?", id).Find(&CollegePlayer)
 
 	collegePlayerResponse := models.CollegePlayerResponse{
 		ID:          int(CollegePlayer.ID),

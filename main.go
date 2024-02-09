@@ -249,13 +249,13 @@ func handleRequests() {
 
 	// Discord Controls
 	myRouter.HandleFunc("/teams/ds/college/team/{teamID}/", controller.GetTeamByTeamIDForDiscord).Methods("GET")
-	myRouter.HandleFunc("/players/ds/college/player/{firstName}/{lastName}/{team}/{week}/", controller.GetCollegePlayerStatsByNameTeamAndWeek).Methods("GET")
-	myRouter.HandleFunc("/players/ds/college/season/player/{firstName}/{lastName}/{team}/", controller.GetCurrentSeasonCollegePlayerStatsByNameTeam).Methods("GET")
+	myRouter.HandleFunc("/players/ds/college/player/{id}/{week}/", controller.GetCollegePlayerStatsByNameTeamAndWeek).Methods("GET")
+	myRouter.HandleFunc("/players/ds/college/season/player/{id}/", controller.GetCurrentSeasonCollegePlayerStatsByNameTeam).Methods("GET")
 	myRouter.HandleFunc("/teams/ds/college/week/team/{week}/{team}/", controller.GetWeeklyTeamStatsByTeamAbbrAndWeek).Methods("GET")
 	myRouter.HandleFunc("/teams/ds/college/season/team/{season}/{team}/", controller.GetSeasonTeamStatsByTeamAbbrAndSeason).Methods("GET")
-	myRouter.HandleFunc("/players/{firstName}/{lastName}/{teamID}", controller.GetCollegePlayerByNameAndTeam).Methods("GET")
+	myRouter.HandleFunc("/players/{id}", controller.GetCollegePlayer).Methods("GET")
 	myRouter.HandleFunc("/croots/ds/class/{teamID}/", controller.GetRecruitingClassByTeamID).Methods("GET")
-	myRouter.HandleFunc("/croots/ds/croot/{firstName}/{lastName}", controller.GetRecruitByFirstNameAndLastName).Methods("GET")
+	myRouter.HandleFunc("/croots/ds/croot/{id}", controller.GetRecruitViaDiscord).Methods("GET")
 	myRouter.HandleFunc("/schedule/ds/current/week/{league}/", controller.GetCurrentWeekGamesByLeague).Methods("GET")
 	myRouter.HandleFunc("/ds/cfb/flex/{teamOneID}/{teamTwoID}/", controller.CompareTeams).Methods("GET")
 	myRouter.HandleFunc("/ds/cfb/conference/{conference}/", controller.CompareTeams).Methods("GET")

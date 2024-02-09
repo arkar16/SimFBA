@@ -3,10 +3,27 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
 	"github.com/CalebRose/SimFBA/managers"
 	"github.com/gorilla/mux"
 )
+
+// Flex: Compare Two Program's history against one another
+func GetCollegeConferenceStandings(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	confID := vars["conference"]
+	if len(confID) == 0 {
+		panic("User did not provide teamID")
+	}
+
+	ts := managers.GetTimestamp()
+	seasonID := strconv.Itoa(ts.CollegeSeasonID)
+
+	res := managers.GetStandingsByConferenceIDAndSeasonID(confID, seasonID)
+
+	json.NewEncoder(w).Encode(res)
+}
 
 // Flex: Compare Two Program's history against one another
 func CompareTeams(w http.ResponseWriter, r *http.Request) {
@@ -38,31 +55,27 @@ func GetTeamByTeamIDForDiscord(w http.ResponseWriter, r *http.Request) {
 
 func GetCollegePlayerStatsByNameTeamAndWeek(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	firstName := vars["firstName"]
-	lastName := vars["lastName"]
-	teamID := vars["team"]
+	id := vars["id"]
 	week := vars["week"]
 
-	if len(firstName) == 0 {
+	if len(id) == 0 {
 		panic("User did not provide a first name")
 	}
 
-	player := managers.GetCollegePlayerByNameTeamAndWeek(firstName, lastName, teamID, week)
+	player := managers.GetCollegePlayerByIdAndWeek(id, week)
 
 	json.NewEncoder(w).Encode(player)
 }
 
 func GetCurrentSeasonCollegePlayerStatsByNameTeam(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	firstName := vars["firstName"]
-	lastName := vars["lastName"]
-	teamID := vars["team"]
+	id := vars["id"]
 
-	if len(firstName) == 0 {
+	if len(id) == 0 {
 		panic("User did not provide a first name")
 	}
 
-	player := managers.GetSeasonalCollegePlayerByNameTeam(firstName, lastName, teamID)
+	player := managers.GetSeasonalCollegePlayerByNameTeam(id)
 
 	json.NewEncoder(w).Encode(player)
 }
@@ -95,18 +108,16 @@ func GetSeasonTeamStatsByTeamAbbrAndSeason(w http.ResponseWriter, r *http.Reques
 	json.NewEncoder(w).Encode(team)
 }
 
-// GetCollegePlayerByNameAndTeam
-func GetCollegePlayerByNameAndTeam(w http.ResponseWriter, r *http.Request) {
+// GetCollegePlayer
+func GetCollegePlayer(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	firstName := vars["firstName"]
-	lastName := vars["lastName"]
-	teamID := vars["teamID"]
+	id := vars["id"]
 
-	if len(firstName) == 0 {
+	if len(id) == 0 {
 		panic("User did not provide a first name")
 	}
 
-	player := managers.GetCollegePlayerByNameAndTeam(firstName, lastName, teamID)
+	player := managers.GetCollegePlayerByCollegePlayerId(id)
 
 	json.NewEncoder(w).Encode(player)
 }
@@ -124,16 +135,15 @@ func GetRecruitingClassByTeamID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(recruitingProfile)
 }
 
-func GetRecruitByFirstNameAndLastName(w http.ResponseWriter, r *http.Request) {
+func GetRecruitViaDiscord(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	firstName := vars["firstName"]
-	lastName := vars["lastName"]
+	id := vars["id"]
 
-	if len(firstName) == 0 {
+	if len(id) == 0 {
 		panic("User did not provide a first name")
 	}
 
-	recruit := managers.GetCollegeRecruitByName(firstName, lastName)
+	recruit := managers.GetCollegeRecruitViaDiscord(id)
 
 	json.NewEncoder(w).Encode(recruit)
 }

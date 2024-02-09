@@ -49,7 +49,7 @@ func GetTeamByTeamIDForDiscord(w http.ResponseWriter, r *http.Request) {
 	if len(teamID) == 0 {
 		panic("User did not provide TeamID")
 	}
-	team := managers.GetTeamByTeamIDForDiscord(teamID)
+	team := managers.GetCFBTeamDataForDiscord(teamID)
 	json.NewEncoder(w).Encode(team)
 }
 

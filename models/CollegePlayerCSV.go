@@ -187,6 +187,7 @@ func MapPlayerToCSVModel(player structs.CollegePlayer) CollegePlayerCSV {
 		PotentialGrade:     player.PotentialGrade,
 		RedshirtStatus:     RedShirtStatus,
 		Shotgun:            player.Shotgun,
+		Team:               player.TeamAbbr,
 	}
 }
 

@@ -258,7 +258,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/ds/cfb/croot/{id}", controller.GetRecruitViaDiscord).Methods("GET")
 	myRouter.HandleFunc("/schedule/ds/current/week/{league}/", controller.GetCurrentWeekGamesByLeague).Methods("GET")
 	myRouter.HandleFunc("/ds/cfb/flex/{teamOneID}/{teamTwoID}/", controller.CompareTeams).Methods("GET")
-	myRouter.HandleFunc("/ds/cfb/conference/{conference}/", controller.CompareTeams).Methods("GET")
+	myRouter.HandleFunc("/ds/cfb/conference/{conference}/", controller.GetCollegeConferenceStandings).Methods("GET")
 	// Easter Controls
 	myRouter.HandleFunc("/easter/egg/collude/", controller.CollusionButton).Methods("POST")
 

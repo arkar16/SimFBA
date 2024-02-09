@@ -117,7 +117,7 @@ func GetCollegePlayer(w http.ResponseWriter, r *http.Request) {
 		panic("User did not provide a first name")
 	}
 
-	player := managers.GetCollegePlayerByCollegePlayerId(id)
+	player := managers.GetCollegePlayerViaDiscord(id)
 
 	json.NewEncoder(w).Encode(player)
 }

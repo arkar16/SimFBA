@@ -109,12 +109,12 @@ func GetCollegePlayerByCollegePlayerId(CollegePlayerId string) structs.CollegePl
 	return CollegePlayer
 }
 
-func GetCollegePlayerByNameAndTeam(firstName string, lastName string, teamID string) models.CollegePlayerCSV {
+func GetCollegePlayerViaDiscord(id string) models.CollegePlayerCSV {
 	db := dbprovider.GetInstance().GetDB()
 
 	var CollegePlayer structs.CollegePlayer
 
-	db.Where("first_name = ? and last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&CollegePlayer)
+	db.Where("id = ?", id).Find(&CollegePlayer)
 
 	collegePlayerResponse := models.MapPlayerToCSVModel(CollegePlayer)
 

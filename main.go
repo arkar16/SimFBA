@@ -253,7 +253,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/players/ds/college/season/player/{id}/", controller.GetCurrentSeasonCollegePlayerStatsByNameTeam).Methods("GET")
 	myRouter.HandleFunc("/teams/ds/college/week/team/{week}/{team}/", controller.GetWeeklyTeamStatsByTeamAbbrAndWeek).Methods("GET")
 	myRouter.HandleFunc("/teams/ds/college/season/team/{season}/{team}/", controller.GetSeasonTeamStatsByTeamAbbrAndSeason).Methods("GET")
-	myRouter.HandleFunc("/players/{id}", controller.GetCollegePlayer).Methods("GET")
+	myRouter.HandleFunc("/ds/cfb/players/{id}", controller.GetCollegePlayer).Methods("GET")
 	myRouter.HandleFunc("/croots/ds/class/{teamID}/", controller.GetRecruitingClassByTeamID).Methods("GET")
 	myRouter.HandleFunc("/croots/ds/croot/{id}", controller.GetRecruitViaDiscord).Methods("GET")
 	myRouter.HandleFunc("/schedule/ds/current/week/{league}/", controller.GetCurrentWeekGamesByLeague).Methods("GET")

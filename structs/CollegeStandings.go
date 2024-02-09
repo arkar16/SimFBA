@@ -101,3 +101,10 @@ func (cs *CollegeStandings) SetCoach(coach string) {
 func (cs *CollegeStandings) AssignRank(rank int) {
 	cs.Rank = uint(rank)
 }
+
+func (cs *CollegeStandings) MaskGames(wins, losses, confWins, confLosses int) {
+	cs.TotalWins = wins
+	cs.TotalLosses = losses
+	cs.ConferenceWins = confWins
+	cs.ConferenceLosses = confLosses
+}

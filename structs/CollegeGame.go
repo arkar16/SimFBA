@@ -114,6 +114,14 @@ func (cg *CollegeGame) AssignRank(id, rank uint) {
 	}
 }
 
+func (cg *CollegeGame) HideScore() {
+	cg.HomeTeamScore = 0
+	cg.AwayTeamScore = 0
+	cg.HomeTeamWin = false
+	cg.AwayTeamWin = false
+	cg.GameComplete = false
+}
+
 type WeatherResponse struct {
 	LowTemp      float64
 	HighTemp     float64

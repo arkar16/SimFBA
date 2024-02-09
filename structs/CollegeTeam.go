@@ -34,3 +34,9 @@ func (ct *CollegeTeam) TogglePlayersProgressed() {
 func (ct *CollegeTeam) ToggleRecruitsAdded() {
 	ct.RecruitsAdded = !ct.RecruitsAdded
 }
+
+type CollegeTeamResponseData struct {
+	TeamData        CollegeTeam
+	TeamStandings   CollegeStandings
+	UpcomingMatches []CollegeGame
+}

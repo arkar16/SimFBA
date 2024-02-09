@@ -159,3 +159,59 @@ func CompareTwoTeams(t1ID, t2ID string) structs.CFBComparisonModel {
 		LatestWin:      latestWin,
 	}
 }
+
+func GetCFBTeamDataForDiscord(id string) structs.CollegeTeamResponseData {
+	ts := GetTimestamp()
+	seasonId := strconv.Itoa(ts.CollegeSeasonID)
+
+	team := GetTeamByTeamID(id)
+	standings := GetCollegeStandingsRecordByTeamID(id, seasonId)
+	matches := GetCollegeGamesByTeamIdAndSeasonId(id, seasonId)
+	wins := 0
+	losses := 0
+	confWins := 0
+	confLosses := 0
+	matchList := []structs.CollegeGame{}
+
+	for _, m := range matches {
+		if m.Week > ts.CollegeWeek {
+			break
+		}
+		gameNotRan := (m.TimeSlot == "Thursday Night" && !ts.ThursdayGames) ||
+			(m.TimeSlot == "Friday Night" && !ts.FridayGames) ||
+			(m.TimeSlot == "Saturday Morning" && !ts.SaturdayMorning) ||
+			(m.TimeSlot == "Saturday Afternoon" && !ts.SaturdayNoon) ||
+			(m.TimeSlot == "Saturday Evening" && !ts.SaturdayEvening) ||
+			(m.TimeSlot == "Saturday Night" && !ts.SaturdayNight)
+
+		earlierWeek := m.Week < ts.CollegeWeek
+
+		if ((strconv.Itoa(int(m.HomeTeamID)) == id && m.HomeTeamWin) ||
+			(strconv.Itoa(int(m.AwayTeamID)) == id && m.AwayTeamWin)) && (earlierWeek || !gameNotRan) {
+			wins += 1
+			if m.IsConference {
+				confWins += 1
+			}
+		} else if ((strconv.Itoa(int(m.HomeTeamID)) == id && m.AwayTeamWin) ||
+			(strconv.Itoa(int(m.AwayTeamID)) == id && m.HomeTeamWin)) && (earlierWeek || !gameNotRan) {
+			losses += 1
+			if m.IsConference {
+				confLosses += 1
+			}
+		}
+		if gameNotRan {
+			m.HideScore()
+		}
+		if m.Week == ts.CollegeWeek {
+			matchList = append(matchList, m)
+		}
+	}
+
+	standings.MaskGames(wins, losses, confWins, confLosses)
+
+	return structs.CollegeTeamResponseData{
+		TeamData:        team,
+		TeamStandings:   standings,
+		UpcomingMatches: matchList,
+	}
+}

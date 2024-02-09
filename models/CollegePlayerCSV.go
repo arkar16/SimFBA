@@ -14,6 +14,7 @@ type CollegePlayerCSV struct {
 	Position           string
 	Archetype          string
 	Year               string
+	Team               string
 	Age                int
 	Stars              int
 	HighSchool         string

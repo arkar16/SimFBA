@@ -22,7 +22,7 @@ func GetSSHConfig() SshTunnelConfig {
 	sshPassword, sshPExists := os.LookupEnv("SSHP")
 	dbHost, dbHExists := os.LookupEnv("DBH")
 	dbPort, dbPExists := os.LookupEnv("DBP")
-	localPort, localExists := os.LookupEnv("LP")
+	localPort, localExists := os.LookupEnv("LCP")
 	if hnExists && sshPoExists && sshUExists && sshPExists && dbHExists && dbPExists && localExists {
 		return SshTunnelConfig{
 			SshHost:     hostName,

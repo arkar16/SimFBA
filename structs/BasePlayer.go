@@ -47,6 +47,7 @@ type BasePlayer struct {
 	InjuryType      string
 	WeeksOfRecovery uint
 	InjuryReserve   bool
+	PrimeAge        uint
 	Clutch          int // -1 is choker, 0 is normal, 1 is clutch, 2 is very clutch
 	Shotgun         int // -1 is Under Center, 0 Balanced, 1 Shotgun
 }

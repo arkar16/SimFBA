@@ -19,7 +19,7 @@ func ExportAllRostersToCSV(w http.ResponseWriter) {
 	writer := csv.NewWriter(w)
 
 	HeaderRow := []string{
-		"Team", "First Name", "Last Name", "Position",
+		"Team", "Player ID", "First Name", "Last Name", "Position",
 		"Archetype", "Year", "Age", "Stars",
 		"High School", "City", "State", "Height",
 		"Weight", "Overall", "Speed",
@@ -40,8 +40,9 @@ func ExportAllRostersToCSV(w http.ResponseWriter) {
 
 	for _, player := range players {
 		csvModel := models.MapPlayerToCSVModel(player)
+		idStr := strconv.Itoa(int(player.ID))
 		playerRow := []string{
-			player.TeamAbbr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
+			player.TeamAbbr, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
 			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
 			player.HighSchool, player.City, player.State, strconv.Itoa(player.Height),
 			strconv.Itoa(player.Weight), csvModel.OverallGrade, csvModel.SpeedGrade,
@@ -78,7 +79,7 @@ func ExportTeamToCSV(TeamID string, w http.ResponseWriter) {
 	players := GetAllCollegePlayersByTeamId(TeamID)
 
 	HeaderRow := []string{
-		"Team", "First Name", "Last Name", "Position",
+		"Team", "Player ID", "First Name", "Last Name", "Position",
 		"Archetype", "Year", "Age", "Stars",
 		"High School", "City", "State", "Height",
 		"Weight", "Overall", "Speed",
@@ -97,8 +98,9 @@ func ExportTeamToCSV(TeamID string, w http.ResponseWriter) {
 
 	for _, player := range players {
 		csvModel := models.MapPlayerToCSVModel(player)
+		idStr := strconv.Itoa(int(player.ID))
 		playerRow := []string{
-			team.TeamName, csvModel.FirstName, csvModel.LastName, csvModel.Position,
+			team.TeamName, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
 			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
 			player.HighSchool, player.City, player.State, strconv.Itoa(player.Height),
 			strconv.Itoa(player.Weight), csvModel.OverallGrade, csvModel.SpeedGrade,

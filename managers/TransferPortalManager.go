@@ -211,7 +211,6 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 			} else {
 				depthChartCompetitionMod = .5 * depthChartCompetitionMod
 			}
-
 		}
 
 		// Check for scheme based on Team Recruiting Profile.

@@ -14,6 +14,7 @@ type RecruitingTeamProfile struct {
 	SpentPoints               float64
 	TotalCommitments          int
 	RecruitClassSize          int
+	PortalReputation          int // A value between 1-100 signifying the coach's reputation and behavior in the transfer portal.
 	BaseEfficiencyScore       float64
 	RecruitingEfficiencyScore float64
 	PreviousOverallWinPer     float64
@@ -154,7 +155,6 @@ func (r *RecruitingTeamProfile) SetRecruitingClassSize(val int) {
 	} else {
 		r.RecruitClassSize = val
 	}
-
 }
 
 func (r *RecruitingTeamProfile) AddBattleWon() {

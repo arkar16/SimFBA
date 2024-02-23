@@ -32,15 +32,15 @@ func GenerateWeatherForGames() {
 	for _, stadium := range stadiums {
 		stadiumMap[stadium.ID] = stadium
 	}
-	// seasonID := strconv.Itoa(int(ts.CollegeSeasonID))
-	// collegeGames := GetCollegeGamesBySeasonID(seasonID)
+	seasonID := strconv.Itoa(int(ts.CollegeSeasonID))
+	collegeGames := GetCollegeGamesBySeasonID(seasonID)
 
-	// for _, game := range collegeGames {
-	// 	if game.WeekID < ts.CollegeWeekID {
-	// 		continue
-	// 	}
-	// 	GenerateWeatherForGame(db, game, teamRegions, regions, rainForecasts, mixForecasts, snowForecasts)
-	// }
+	for _, game := range collegeGames {
+		if game.WeekID < ts.CollegeWeekID {
+			continue
+		}
+		GenerateWeatherForGame(db, game, teamRegions, regions, rainForecasts, mixForecasts, snowForecasts)
+	}
 
 	nflGames := GetNFLGamesBySeasonID(strconv.Itoa(int(ts.NFLSeasonID)))
 

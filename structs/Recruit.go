@@ -274,3 +274,9 @@ func (r *Recruit) AssignWalkon(abbr string, teamID int, id uint) {
 	r.PlayerID = int(id)
 	r.ID = id
 }
+
+func (r *Recruit) AssignNewRecruitingBiases(bias, af1, af2 string) {
+	r.RecruitingBias = bias
+	r.AffinityOne = af1
+	r.AffinityTwo = af2
+}

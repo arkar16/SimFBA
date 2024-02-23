@@ -427,20 +427,34 @@ func MassUpdateGameplanSchemes(off, def string) {
 	offensiveSchemes := util.GetOffensiveDefaultSchemes()
 	defensiveSchemes := util.GetDefensiveDefaultSchemes()
 	for _, team := range teams {
-
+		id := team.ID
+		if id != 12 && id != 1 && id != 59 && id != 65 &&
+			id != 77 && id != 107 && id != 7 && id != 54 &&
+			id != 98 && id != 10 && id != 123 && id != 125 &&
+			id != 13 && id != 47 && id != 118 &&
+			id != 15 && id != 34 && id != 78 && id != 80 &&
+			id != 19 && id != 44 && id != 45 && id != 23 &&
+			id != 37 && id != 109 && id != 55 && id != 88 &&
+			id != 56 && id != 86 && id != 93 && id != 100 &&
+			id != 115 && id != 63 && id != 99 && id != 108 &&
+			id != 75 && id != 96 && id != 122 && id != 94 &&
+			id != 97 && id != 127 {
+			continue
+		}
 		teamID := strconv.Itoa(int(team.ID))
 		gp := GetGameplanByTeamID(teamID)
-		gp.UpdateSchemes(off, def)
-
+		// gp.UpdateSchemes(off, def)
+		offe := GetTestOffensiveSchemesByTeamID(id)
+		defe := GetTestDefensiveSchemesByTeamID(id)
 		// Map Default Scheme for offense & defense
-		offFormations := offensiveSchemes[off]
-		defFormations := defensiveSchemes[def][off]
+		offFormations := offensiveSchemes[offe]
+		defFormations := defensiveSchemes[defe][offe]
 
 		dto := structs.CollegeGameplan{
 			TeamID: int(team.ID),
 			BaseGameplan: structs.BaseGameplan{
-				OffensiveScheme:    off,
-				DefensiveScheme:    def,
+				OffensiveScheme:    offe,
+				DefensiveScheme:    defe,
 				OffensiveFormation: offFormations,
 				DefensiveFormation: defFormations,
 				BlitzSafeties:      gp.BlitzSafeties,
@@ -2092,4 +2106,66 @@ func GetDepthChartMap() map[uint]structs.CollegeTeamDepthChart {
 	wg.Wait()
 	close(semaphore)
 	return dcMap
+}
+
+func GetTestOffensiveSchemesByTeamID(id uint) string {
+	if id == 1 || id == 59 || id == 65 || id == 77 || id == 107 {
+		return "West Coast"
+	}
+	if id == 7 || id == 54 || id == 98 {
+		return "Power Run"
+	}
+	if id == 10 || id == 123 || id == 125 {
+		return "Double Wing"
+	}
+	if id == 13 || id == 12 || id == 47 || id == 118 {
+		return "Spread Option"
+	}
+	if id == 15 || id == 34 || id == 78 || id == 80 {
+		return "Wing-T"
+	}
+	if id == 19 || id == 44 || id == 45 {
+		return "Flexbone"
+	}
+	if id == 23 || id == 37 || id == 109 {
+		return "Air Raid"
+	}
+	if id == 55 || id == 88 {
+		return "I Option"
+	}
+	if id == 56 || id == 86 || id == 93 || id == 100 || id == 115 {
+		return "Vertical"
+	}
+	if id == 63 || id == 99 || id == 108 {
+		return "Pistol"
+	}
+	if id == 75 || id == 96 || id == 122 {
+		return "Run and Shoot"
+	}
+	if id == 94 || id == 97 || id == 127 {
+		return "Wishbone"
+	}
+	return ""
+}
+
+func GetTestDefensiveSchemesByTeamID(id uint) string {
+	if id == 10 || id == 13 || id == 54 || id == 77 || id == 86 || id == 93 || id == 94 || id == 97 || id == 107 {
+		return "Old School"
+	}
+	if id == 15 || id == 19 || id == 44 || id == 55 || id == 56 || id == 63 || id == 98 || id == 118 {
+		return "2-Gap"
+	}
+	if id == 1 || id == 12 || id == 34 || id == 47 || id == 80 || id == 108 || id == 109 || id == 122 || id == 127 {
+		return "4-Man Front Spread Stopper"
+	}
+	if id == 23 || id == 65 || id == 99 || id == 123 {
+		return "3-Man Front Spread Stopper"
+	}
+	if id == 37 || id == 45 || id == 75 || id == 78 || id == 88 || id == 96 || id == 100 {
+		return "Speed"
+	}
+	if id == 7 || id == 59 || id == 115 || id == 125 {
+		return "Multiple"
+	}
+	return ""
 }

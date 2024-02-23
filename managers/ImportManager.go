@@ -588,7 +588,7 @@ func ImportUDFAs() {
 func ImportCFBGames() {
 	db := dbprovider.GetInstance().GetDB()
 
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023\\2023_CFB_PostSeason_Games.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024\\2024_test_games.csv"
 
 	gamesCSV := util.ReadCSV(path)
 
@@ -611,7 +611,7 @@ func ImportCFBGames() {
 		season := util.ConvertStringToInt(row[1])
 		seasonID := season - 2020
 		week := util.ConvertStringToInt(row[2])
-		weekID := week + 43 // Week 43 is week 0 of the 2023 Season
+		weekID := week + 63 // Week 43 is week 0 of the 2023 Season
 		homeTeamAbbr := row[3]
 		awayTeamAbbr := row[4]
 		ht := teamMap[homeTeamAbbr]
@@ -817,28 +817,76 @@ func ImplementNewAttributes() {
 	db := dbprovider.GetInstance().GetDB()
 	// Implement Shotgun, Clutch
 
-	nflDraftees := GetAllNFLDraftees()
+	croots := GetAllUnsignedRecruits()
 	collegePlayers := GetAllCollegePlayers()
 
-	for _, draftee := range nflDraftees {
-		shotgunVal := getShotgunVal()
-		clutchVal := getClutchValue()
+	biasPreferencesList := []string{
+		"Average",
+		"Legacy",
+		"Open-Minded",
+		"Prefers to be Close to Home",
+		"Prefers to play for a national championship contender",
+		"Prefers to play for a recent national championship winner",
+		"Prefers to play for a specific coach",
+		"Prefers to play for a team where he can start immediately",
+		"Prefers to play for a team with a rich history",
+		"Prefers to play in a different state",
+		"Does not want to be redshirted",
+	}
 
-		draftee.AssignNewAttributes(shotgunVal, clutchVal)
-		if shotgunVal == 0 && clutchVal == 0 {
-			continue
+	affinityList := []string{
+		"Close to Home",
+		"Academics",
+		"Service",
+		"Religion",
+		"Large Crowds",
+		"Small School",
+		"Frontrunner",
+		"Small Town",
+		"Big City",
+		"Rising Stars",
+		"Media Spotlight",
+	}
+
+	for _, croot := range croots {
+		bias := croot.RecruitingBias
+		af1 := croot.AffinityOne
+		af2 := croot.AffinityTwo
+		if len(bias) == 0 {
+			bias = util.PickFromStringList(biasPreferencesList)
 		}
-		db.Save(&draftee)
+		// Check affinity fields
+		if len(croot.AffinityOne) == 0 {
+			randomNum := util.GenerateIntFromRange(0, 2)
+			if randomNum == 1 {
+				af1 = util.PickFromStringList(affinityList)
+			} else if randomNum == 2 {
+				af1 = util.PickFromStringList(affinityList)
+				af2 = util.PickFromStringList(affinityList)
+				for af1 == af2 || (af1 == "Small Town" && af2 == "Big City") {
+					af2 = util.PickFromStringList(affinityList)
+				}
+			}
+		} else if len(croot.AffinityTwo) == 0 {
+			randomNum := util.GenerateIntFromRange(0, 2)
+			if randomNum == 2 {
+				af1 = croot.AffinityOne
+				af2 = util.PickFromStringList(affinityList)
+				for af1 == af2 || (af1 == "Small Town" && af2 == "Big City") {
+					af2 = util.PickFromStringList(affinityList)
+				}
+			}
+		}
+		croot.AssignNewRecruitingBiases(bias, af1, af2)
+		db.Save(&croot)
 	}
 
 	for _, player := range collegePlayers {
-		shotgunVal := getShotgunVal()
-		clutchVal := getClutchValue()
-		if shotgunVal == 0 && clutchVal == 0 {
+		bias := player.RecruitingBias
+		if len(bias) > 0 {
 			continue
 		}
-		player.AssignNewAttributes(shotgunVal, clutchVal)
-
+		player.SetRecruitingBias(util.PickFromStringList(biasPreferencesList))
 		db.Save(&player)
 	}
 }

@@ -192,3 +192,7 @@ func (cp *BasePlayer) MapProgression(prog int, letter string) {
 	cp.Progression = prog
 	cp.PotentialGrade = letter
 }
+
+func (cp *BasePlayer) SetRecruitingBias(bias string) {
+	cp.RecruitingBias = bias
+}

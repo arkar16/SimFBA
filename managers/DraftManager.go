@@ -232,24 +232,38 @@ func RevealScoutingAttribute(dto models.RevealAttributeDTO) bool {
 
 func ExportDraftedPlayers(picks []structs.NFLDraftPick) bool {
 	db := dbprovider.GetInstance().GetDB()
-
+	ts := GetTimestamp()
 	for _, pick := range picks {
+		if (pick.IsVoid && pick.DraftNumber != 202) || pick.DraftNumber < 202 {
+			continue
+		}
 		playerId := strconv.Itoa(int(pick.SelectedPlayerID))
+		teamId := strconv.Itoa(int(pick.TeamID))
 		draftee := GetNFLDrafteeByID(playerId)
+		scoutProfile := GetOnlyScoutProfileByPlayerIDandTeamID(playerId, teamId)
 
 		draftee.AssignDraftedTeam(pick.DraftNumber, pick.ID, pick.TeamID, pick.Team)
 
+		showLetterGrade := scoutProfile.ShowCount < 4
 		NFLPlayer := structs.NFLPlayer{
-			BasePlayer:    draftee.BasePlayer, // Assuming BasePlayer fields are common
-			PlayerID:      draftee.PlayerID,
-			TeamID:        int(pick.TeamID),
-			TeamAbbr:      pick.Team,
-			CollegeID:     draftee.CollegeID,
-			College:       draftee.College,
-			DraftPickID:   pick.ID,
-			DraftedTeamID: pick.TeamID,
-			DraftedTeam:   pick.Team,
-			PrimeAge:      draftee.PrimeAge,
+			BasePlayer:      draftee.BasePlayer, // Assuming BasePlayer fields are common
+			PlayerID:        draftee.PlayerID,
+			TeamID:          int(pick.TeamID),
+			TeamAbbr:        pick.Team,
+			CollegeID:       draftee.CollegeID,
+			College:         draftee.College,
+			DraftPickID:     pick.ID,
+			DraftedTeamID:   pick.TeamID,
+			DraftedTeam:     pick.Team,
+			DraftedRound:    pick.DraftRound,
+			DraftedPick:     pick.DraftNumber,
+			PrimeAge:        draftee.PrimeAge,
+			ShowLetterGrade: showLetterGrade,
+			HighSchool:      draftee.HighSchool,
+			Hometown:        draftee.City,
+			State:           draftee.State,
+			IsActive:        true,
+			Experience:      1,
 		}
 
 		NFLPlayer.SetID(pick.SelectedPlayerID)
@@ -279,12 +293,10 @@ func ExportDraftedPlayers(picks []structs.NFLDraftPick) bool {
 			Y2Bonus:        year2Bonus,
 			Y3Bonus:        year3Bonus,
 			Y4Bonus:        year4Bonus,
-
-			IsActive: true,
+			IsActive:       true,
 		}
 
 		db.Create(&contract)
-
 		db.Create(&NFLPlayer)
 		db.Save(&draftee)
 	}
@@ -311,26 +323,21 @@ func ExportDraftedPlayers(picks []structs.NFLDraftPick) bool {
 			IsAcceptingOffers: true,
 			IsFreeAgent:       true,
 			MinimumValue:      0.7,
+			ShowLetterGrade:   true,
+			HighSchool:        draftee.HighSchool,
+			Hometown:          draftee.City,
+			State:             draftee.State,
+			IsActive:          true,
+			Experience:        1,
 		}
 
 		nflPlayer.SetID(draftee.ID)
 
-		NegotiationRound := 0
-		if draftee.Overall < 80 {
-			NegotiationRound = util.GenerateIntFromRange(2, 4)
-		} else {
-			NegotiationRound = util.GenerateIntFromRange(3, 6)
-		}
-
-		SigningRound := NegotiationRound + util.GenerateIntFromRange(2, 5)
-		if SigningRound > 10 {
-			SigningRound = 10
-		}
-		nflPlayer.AssignFAPreferences(uint(NegotiationRound), uint(SigningRound))
-
 		db.Create(&nflPlayer)
 	}
 
+	ts.DraftIsOver()
+	db.Save(&ts)
 	return true
 }
 

@@ -430,6 +430,7 @@ func SyncAcceptedTrade(proposalID string) {
 func SyncTradeFromDraftPage(proposal structs.NFLTradeProposal) bool {
 	db := dbprovider.GetInstance().GetDB()
 	syncAcceptedOptions(db, proposal.NFLTeamTradeOptions, proposal.NFLTeamID, proposal.NFLTeam, proposal.RecepientTeamID, proposal.RecepientTeam)
+	syncAcceptedOptions(db, proposal.RecepientTeamTradeOptions, proposal.RecepientTeamID, proposal.RecepientTeam, proposal.NFLTeamID, proposal.NFLTeam)
 	return false
 }
 

@@ -30,7 +30,7 @@ func GetNumericalSortValueByLetterGrade(grade string) int {
 }
 
 func GetDrafteeSalary(pick, year, round uint, isSalary bool) float64 {
-	var valueMap [38][4]float64
+	var valueMap [39][4]float64
 	if isSalary {
 		valueMap = getSalaryMap()
 	} else {
@@ -42,8 +42,8 @@ func GetDrafteeSalary(pick, year, round uint, isSalary bool) float64 {
 	return valueMap[31+round][year-1]
 }
 
-func getSalaryMap() [38][4]float64 {
-	return [38][4]float64{
+func getSalaryMap() [39][4]float64 {
+	return [39][4]float64{
 		{3.25, 3.25, 3.25, 3.25},
 		{2.75, 2.75, 2.75, 2.75},
 		{2.75, 2.75, 2.75, 2.75},
@@ -82,11 +82,12 @@ func getSalaryMap() [38][4]float64 {
 		{0.75, 0.75, 0.75, 0.75},
 		{0.9, 0.9, 0.9, 0.9},
 		{0.8, 0.8, 0.8, 0.8},
+		{0.8, 0.8, 0.8, 0.8},
 	}
 }
 
-func getBonusMap() [38][4]float64 {
-	return [38][4]float64{
+func getBonusMap() [39][4]float64 {
+	return [39][4]float64{
 		{3.25, 3.25, 3.25, 3.25},
 		{2.75, 2.75, 2.75, 2.75},
 		{2.75, 2.75, 2.75, 2.75},
@@ -123,6 +124,7 @@ func getBonusMap() [38][4]float64 {
 		{0.75, 0.75, 0.75, 0.75},
 		{0.3, 0.3, 0.3, 0.3},
 		{0.25, 0.25, 0.25, 0.25},
+		{0, 0, 0, 0},
 		{0, 0, 0, 0},
 		{0, 0, 0, 0},
 	}

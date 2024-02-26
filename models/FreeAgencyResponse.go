@@ -67,6 +67,7 @@ type WaiverWirePlayerResponse struct {
 	DraftedTeam       string
 	ShowLetterGrade   bool
 	IsPracticeSquad   bool
+	SeasonStats       structs.NFLPlayerSeasonStats
 	WaiverOffers      []structs.NFLWaiverOffer
 	Contract          structs.NFLContract
 }

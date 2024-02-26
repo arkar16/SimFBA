@@ -164,13 +164,21 @@ func GetAllFreeAgentsWithOffers() []models.FreeAgentResponse {
 
 func GetAllWaiverWirePlayersFAPage() []models.WaiverWirePlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
-
+	ts := GetTimestamp()
 	WaivedPlayers := []structs.NFLPlayer{}
-
+	seasonID := 0
+	if !ts.IsNFLOffSeason {
+		seasonID = ts.NFLSeasonID
+	} else {
+		seasonID = ts.NFLSeasonID - 1
+	}
+	seasonStr := strconv.Itoa(seasonID)
 	db.Preload("WaiverOffers", func(db *gorm.DB) *gorm.DB {
 		return db.Order("waiver_order asc").Where("is_active = true")
 	}).Preload("Contract", func(db *gorm.DB) *gorm.DB {
 		return db.Where("is_active = true")
+	}).Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ?", seasonStr)
 	}).Where("is_waived = ?", true).Find(&WaivedPlayers)
 
 	sort.Slice(WaivedPlayers[:], func(i, j int) bool {

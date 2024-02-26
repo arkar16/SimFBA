@@ -133,6 +133,8 @@ func GetAllFreeAgentsWithOffers() []models.FreeAgentResponse {
 			Archetype:         fa.Archetype,
 			Age:               fa.Age,
 			Overall:           fa.Overall,
+			Height:            fa.Height,
+			Weight:            fa.Weight,
 			PotentialGrade:    fa.PotentialGrade,
 			FreeAgency:        fa.FreeAgency,
 			Personality:       fa.Personality,

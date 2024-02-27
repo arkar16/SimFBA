@@ -5,6 +5,7 @@ type PlayerStatDTO struct {
 	LName             string
 	Position          string
 	PlayerID          int
+	Year              int
 	Pancakes          int
 	SacksAllowed      int
 	PassAttempts      int
@@ -24,12 +25,13 @@ type PlayerStatDTO struct {
 	ReceivingYards    int
 	ReceivingTDs      int
 	LongestCatch      int
-	SoloTackles       int
-	AssistedTackles   int
+	SoloTackles       float64
+	AssistedTackles   float64
 	TacklesForLoss    float64
 	Sacks             float64
 	ForcedFumbles     int
 	RecoveredFumbles  int
+	PassesDefensed    int
 	INTs              int
 	Safeties          int
 	DefensiveTDs      int
@@ -51,13 +53,16 @@ type PlayerStatDTO struct {
 	PuntReturns       int
 	PuntReturnYards   int
 	PuntReturnTDs     int
-	STSoloTackles     int
-	STAssistedTackles int
+	STSoloTackles     float64
+	STAssistedTackles float64
 	PuntsBlocked      int
 	FGBlocked         int
 	Snaps             int
 	Games             int
 	GamesStarted      int
+	IsInjured         bool
+	InjuryType        string
+	WeeksOfRecovery   uint
 }
 
 func (p *PlayerStatDTO) GetPlayerID() int {
@@ -93,6 +98,7 @@ func (p *PlayerStatDTO) MapTobasePlayerStatsObject() BasePlayerStats {
 		RecoveredFumbles:     p.RecoveredFumbles,
 		Safeties:             p.Safeties,
 		DefensiveTDs:         p.DefensiveTDs,
+		PassDeflections:      p.PassesDefensed,
 		InterceptionsCaught:  p.INTs,
 		LongestFG:            p.LongestFG,
 		FGAttempts:           p.FGAttempts,
@@ -116,5 +122,8 @@ func (p *PlayerStatDTO) MapTobasePlayerStatsObject() BasePlayerStats {
 		Snaps:                p.Snaps,
 		PlayedGame:           p.Games,
 		StartedGame:          p.GamesStarted,
+		WasInjured:           p.IsInjured,
+		InjuryType:           p.InjuryType,
+		WeeksOfRecovery:      p.WeeksOfRecovery,
 	}
 }

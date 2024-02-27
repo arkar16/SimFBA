@@ -48,7 +48,7 @@ func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) models.SimTeamBoard
 	var profile structs.RecruitingTeamProfile
 
 	err := db.Preload("Affinities").Preload("Recruits.Recruit.RecruitPlayerProfiles", func(db *gorm.DB) *gorm.DB {
-		return db.Order("total_points DESC").Where("total_points > 0")
+		return db.Order("total_points DESC")
 	}).Where("id = ?", TeamID).Find(&profile).Error
 	if err != nil {
 		log.Panicln(err)
@@ -74,6 +74,19 @@ func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) models.SimTeamBoard
 	teamProfileResponse.Map(profile, crootProfiles)
 
 	return teamProfileResponse
+}
+
+func GetOnlyAITeamRecruitingProfiles() []structs.RecruitingTeamProfile {
+	db := dbprovider.GetInstance().GetDB()
+
+	var profiles []structs.RecruitingTeamProfile
+
+	err := db.Preload("Affinities").Where("is_ai = ?", true).Find(&profiles).Error
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	return profiles
 }
 
 func GetRecruitingClassByTeamID(TeamID string) models.SimTeamBoardResponse {
@@ -172,6 +185,7 @@ func AddRecruitToBoard(RecruitDTO structs.CreateRecruitProfileDto) structs.Recru
 		TeamAbbreviation:          RecruitDTO.Team,
 		RemovedFromBoard:          false,
 		IsSigned:                  false,
+		Recruiter:                 RecruitDTO.Recruiter,
 	}
 
 	// Save
@@ -237,4 +251,46 @@ func UpdateRecruitingProfile(updateRecruitingBoardDto structs.UpdateRecruitingBo
 	db.Save(&teamProfile)
 
 	return teamProfile
+}
+
+func GetRecruitingClassSizeForTeams() {
+	db := dbprovider.GetInstance().GetDB()
+	profiles := GetRecruitingProfileForRecruitSync()
+
+	for _, team := range profiles {
+		count := 0
+
+		players := GetAllCollegePlayersByTeamId(strconv.Itoa(int(team.ID)))
+
+		rosterSize := len(players)
+
+		for _, player := range players {
+			if (player.Year == 4 && !player.IsRedshirt) || (player.Year == 5 && player.IsRedshirt) && player.Stars > 0 {
+				count++
+			}
+		}
+
+		rosterMinusGrads := rosterSize - count
+
+		if rosterMinusGrads+25 > 105 {
+			count = 105 - rosterMinusGrads
+		} else if rosterMinusGrads+25 < 85 {
+			count = 85 - rosterMinusGrads
+		} else {
+			count = 25
+		}
+
+		team.SetRecruitingClassSize(count)
+
+		db.Save(&team)
+	}
+}
+
+// SaveAIBehavior -- Toggle whether a Team will use AI recruiting or not
+func SaveAIBehavior(profile structs.RecruitingTeamProfile) {
+	db := dbprovider.GetInstance().GetDB()
+	TeamID := strconv.Itoa(int(profile.TeamID))
+	recruitingProfile := GetOnlyRecruitingProfileByTeamID(TeamID)
+	recruitingProfile.UpdateAIBehavior(profile.IsAI, profile.AIAutoOfferscholarships, profile.AIStarMax, profile.AIStarMin, profile.AIMinThreshold, profile.AIMaxThreshold, profile.OffensiveScheme, profile.DefensiveScheme)
+	db.Save(&recruitingProfile)
 }

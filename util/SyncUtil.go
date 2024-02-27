@@ -1,6 +1,17 @@
 package util
 
-import "github.com/CalebRose/SimFBA/structs"
+import (
+	"encoding/csv"
+	"encoding/json"
+	"fmt"
+	"io/ioutil"
+	"log"
+	"os"
+	"path/filepath"
+	"strconv"
+
+	"github.com/CalebRose/SimFBA/structs"
+)
 
 func GetWinsAndLossesForCollegeGames(games []structs.CollegeGame, TeamID int, ConferenceCheck bool) (int, int) {
 	wins := 0
@@ -56,7 +67,7 @@ func FilterOutRecruitingProfile(profiles []structs.RecruitPlayerProfile, ID int)
 	var rp []structs.RecruitPlayerProfile
 
 	for _, profile := range profiles {
-		if int(profile.ID) != ID {
+		if profile.ProfileID != ID {
 			rp = append(rp, profile)
 		}
 	}
@@ -197,4 +208,122 @@ func GetTeamPointsMap() map[string]float64 {
 		"WISC": 0,
 		"WYOM": 0,
 	}
+}
+
+func ConvertStringToInt(num string) int {
+	val, err := strconv.Atoi(num)
+	if err != nil {
+		log.Fatalln("Could not convert string to int")
+	}
+
+	return val
+}
+
+func ConvertStringToFloat(num string) float64 {
+	floatNum, error := strconv.ParseFloat(num, 64)
+	if error != nil {
+		fmt.Println("Could not convert string to float 64, resetting as 0.")
+		return 0
+	}
+	return floatNum
+}
+
+// Reads specific CSV values as Boolean. If the value is "0" or "FALSE" or "False", it will be read as false. Anything else is considered True.
+func ConvertStringToBool(str string) bool {
+	if str == "NULL" || str == "0" || str == "FALSE" || str == "False" {
+		return false
+	}
+	return true
+}
+
+func IsAITeamContendingForCroot(profiles []structs.RecruitPlayerProfile) float64 {
+	if len(profiles) == 0 {
+		return 0
+	}
+	var leadingVal float64 = 0
+	for _, profile := range profiles {
+		if profile.TotalPoints != 0 && profile.TotalPoints > float64(leadingVal) {
+			leadingVal = profile.TotalPoints
+		}
+	}
+
+	return leadingVal
+}
+
+func ReadJson(path string) []byte {
+	content, err := ioutil.ReadFile(path)
+	if err != nil {
+		log.Fatal("Error when opening file: ", err)
+	}
+	return content
+}
+
+func ReadLocalPath(subpath string) string {
+	path, err := filepath.Abs(subpath)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return path
+}
+
+func ReadCSV(path string) [][]string {
+	f, err := os.Open(path)
+	if err != nil {
+		log.Fatal("Unable to read input file "+path, err)
+	}
+	defer f.Close()
+
+	csvReader := csv.NewReader(f)
+	rows, err := csvReader.ReadAll()
+	if err != nil {
+		log.Fatal("Unable to parse file as CSV for "+path, err)
+	}
+
+	return rows
+}
+
+func GetStateRegionMatcher() map[string]map[string]string {
+	path := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "CalebRose", "SimFBA", "data", "regionMatcher.json")
+	content := ReadJson(path)
+
+	var payload map[string]map[string]string
+
+	err := json.Unmarshal(content, &payload)
+	if err != nil {
+		log.Fatalln("Error during unmarshal: ", err)
+	}
+
+	return payload
+}
+
+func GetStateMatcher() map[string][]string {
+	path := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "CalebRose", "SimFBA", "data", "stateMatcher.json")
+	content := ReadJson(path)
+
+	var payload map[string][]string
+
+	err := json.Unmarshal(content, &payload)
+	if err != nil {
+		log.Fatalln("Error during unmarshal: ", err)
+	}
+
+	return payload
+}
+
+func IsCrootCloseToHome(crootState string, crootCity string, teamState string, abbr string, stateMatcher map[string][]string, regionMatcher map[string]map[string]string) bool {
+	if crootState == teamState {
+		return true
+	}
+	state := crootState
+	if crootState == "TX" || crootState == "CA" || crootState == "FL" {
+		state = regionMatcher[crootState][crootCity]
+	}
+
+	for _, s := range stateMatcher[state] {
+		if s == abbr {
+			return true
+		}
+	}
+	return false
 }

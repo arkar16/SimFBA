@@ -19,7 +19,7 @@ func GetAllRecruits() []models.Croot {
 	var recruits []structs.Recruit
 
 	db.Preload("RecruitPlayerProfiles", func(db *gorm.DB) *gorm.DB {
-		return db.Order("total_points DESC").Where("total_points > 0")
+		return db.Order("total_points DESC")
 	}).Find(&recruits)
 
 	var croots []models.Croot
@@ -58,12 +58,12 @@ func GetCollegeRecruitByRecruitID(recruitID string) structs.Recruit {
 	return recruit
 }
 
-func GetCollegeRecruitByName(firstName string, lastName string) models.Croot {
+func GetCollegeRecruitViaDiscord(id string) models.Croot {
 	db := dbprovider.GetInstance().GetDB()
 
 	var recruit structs.Recruit
 
-	err := db.Preload("RecruitPlayerProfiles").Where("first_name = ? and last_name = ?", firstName, lastName).Find(&recruit).Error
+	err := db.Preload("RecruitPlayerProfiles").Where("id = ?", id).Find(&recruit).Error
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -96,6 +96,21 @@ func GetRecruitsByTeamProfileID(ProfileID string) []structs.RecruitPlayerProfile
 	var croots []structs.RecruitPlayerProfile
 
 	err := db.Preload("Recruit").Where("profile_id = ?", ProfileID).Find(&croots).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return croots
+}
+
+func GetRecruitsForAIPointSync(ProfileID string) []structs.RecruitPlayerProfile {
+	db := dbprovider.GetInstance().GetDB()
+
+	var croots []structs.RecruitPlayerProfile
+
+	err := db.Preload("Recruit", func(db *gorm.DB) *gorm.DB {
+		return db.Order("stars DESC")
+	}).Where("profile_id = ? AND removed_from_board = ?", ProfileID, false).Order("total_points DESC").Find(&croots).Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -219,26 +234,6 @@ func SendScholarshipToRecruit(updateRecruitPointsDto structs.UpdateRecruitPoints
 	crootProfile.ToggleScholarship(updateRecruitPointsDto.RewardScholarship, updateRecruitPointsDto.RevokeScholarship)
 	if !crootProfile.ScholarshipRevoked {
 		recruitingProfile.SubtractScholarshipsAvailable()
-
-		// Break the news
-		ts := GetTimestamp()
-
-		recruit := GetCollegeRecruitByRecruitID(strconv.Itoa(updateRecruitPointsDto.RecruitID))
-
-		stars := recruit.Stars
-
-		if stars >= 4 {
-			message := recruit.FirstName + " " + recruit.LastName + ", " + strconv.Itoa(stars) + " star " + recruit.Position + " from " + recruit.HighSchool + ", " + recruit.City + ", " + recruit.State + " has received an offer from " + updateRecruitPointsDto.Team
-			newLog := structs.NewsLog{
-				WeekID:      ts.CollegeWeekID,
-				SeasonID:    ts.CollegeSeasonID,
-				MessageType: "Recruiting",
-				Message:     message,
-			}
-
-			db.Save(&newLog)
-		}
-
 	} else {
 		recruitingProfile.ReallocateScholarship()
 	}

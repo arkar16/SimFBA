@@ -58,17 +58,17 @@ func GetRecruitingProfileForTeamBoardByTeamID(w http.ResponseWriter, r *http.Req
 	json.NewEncoder(w).Encode(teamBoardResponse)
 }
 
-func GetRecruitingClassByTeamID(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	teamID := vars["teamID"]
-
-	if len(teamID) == 0 {
-		panic("User did not provide teamID")
+func ToggleAIBehavior(w http.ResponseWriter, r *http.Request) {
+	var updateRecruitingBoardDto structs.UpdateRecruitingBoardDTO
+	err := json.NewDecoder(r.Body).Decode(&updateRecruitingBoardDto)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
-	recruitingProfile := managers.GetRecruitingClassByTeamID(teamID)
+	managers.SaveAIBehavior(updateRecruitingBoardDto.Profile)
 
-	json.NewEncoder(w).Encode(recruitingProfile)
+	json.NewEncoder(w).Encode("AI Behavior Switched For Team " + updateRecruitingBoardDto.Profile.Team)
 }
 
 // GetOnlyRecruitingProfileByTeamID
@@ -206,5 +206,6 @@ func SaveRecruitingBoard(w http.ResponseWriter, r *http.Request) {
 
 func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Access-Control-Allow-Origin", "*")
+	(*w).Header().Set("Vary", "Origin")
 	(*w).Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }

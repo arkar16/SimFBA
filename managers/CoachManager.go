@@ -28,3 +28,48 @@ func GetCollegeCoachByCoachName(name string) structs.CollegeCoach {
 
 	return coach
 }
+
+func GetNFLUserByUsername(username string) structs.NFLUser {
+	db := dbprovider.GetInstance().GetDB()
+
+	var user structs.NFLUser
+
+	err := db.Where("username = ?", username).Find(&user).Error
+	if err != nil || user.ID == 0 {
+		user = structs.NFLUser{
+			Username:    username,
+			TeamID:      0,
+			TotalWins:   0,
+			TotalLosses: 0,
+			IsActive:    true,
+		}
+	}
+
+	return user
+}
+
+func GetAllCollegeCoaches() []structs.CollegeCoach {
+	db := dbprovider.GetInstance().GetDB()
+
+	var coaches []structs.CollegeCoach
+
+	err := db.Find(&coaches).Error
+	if err != nil || len(coaches) == 0 {
+		return []structs.CollegeCoach{}
+	}
+
+	return coaches
+}
+
+func GetAllAICollegeCoaches() []structs.CollegeCoach {
+	db := dbprovider.GetInstance().GetDB()
+
+	var coaches []structs.CollegeCoach
+
+	err := db.Where("is_user = ?", false).Find(&coaches).Error
+	if err != nil || len(coaches) == 0 {
+		return []structs.CollegeCoach{}
+	}
+
+	return coaches
+}

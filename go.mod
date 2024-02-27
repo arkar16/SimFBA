@@ -1,13 +1,25 @@
 module github.com/CalebRose/SimFBA
 
-go 1.15
+go 1.20
 
 require (
-	github.com/gorilla/mux v1.8.0
+	github.com/gorilla/handlers v1.5.2
+	github.com/gorilla/mux v1.8.1
 	github.com/jinzhu/gorm v1.9.16
-	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/joho/godotenv v1.5.1
 	github.com/nelkinda/health-go v0.0.1
-	github.com/rs/cors v1.8.2
-	gorm.io/driver/mysql v1.3.4
-	gorm.io/gorm v1.23.5
+	github.com/robfig/cron/v3 v3.0.1
+	golang.org/x/crypto v0.0.0-20200604202706-70a84ac30bf9
+	golang.org/x/text v0.14.0
+	gorm.io/driver/mysql v1.5.2
+	gorm.io/gorm v1.25.5
+)
+
+require (
+	github.com/felixge/httpsnoop v1.0.4 // indirect
+	github.com/go-sql-driver/mysql v1.7.1 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
+	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/nelkinda/http-go v0.0.1 // indirect
+	golang.org/x/sys v0.5.0 // indirect
 )

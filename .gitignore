@@ -1,4 +1,5 @@
-data/
-config/
-secrets/
+
+data_old/
 .vscode/
+.env/
+.env

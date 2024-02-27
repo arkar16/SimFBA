@@ -16,6 +16,12 @@ func GetTeamRequests(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(requests)
 }
 
+func GetNFLTeamRequests(w http.ResponseWriter, r *http.Request) {
+	requests := managers.GetAllNFLTeamRequests()
+
+	json.NewEncoder(w).Encode(requests)
+}
+
 func CreateTeamRequest(w http.ResponseWriter, r *http.Request) {
 	var request structs.TeamRequest
 
@@ -66,6 +72,62 @@ func RemoveUserFromTeam(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.RemoveUserFromTeam(teamID)
+
+	// json.NewEncoder(w).Encode(team)
+}
+
+func CreateNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
+	var request structs.NFLRequest
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.CreateNFLTeamRequest(request)
+
+	fmt.Fprintf(w, "Request Successfully Created")
+}
+
+func ApproveNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
+	var request structs.NFLRequest
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil || request.ID == 0 {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.ApproveNFLTeamRequest(request)
+
+	fmt.Fprintf(w, "Request: %+v", request)
+}
+
+func RejectNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
+	var request structs.NFLRequest
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.RejectNFLTeamRequest(request)
+
+	fmt.Fprintf(w, "Request: %+v", request)
+}
+
+func RemoveNFLUserFromNFLTeam(w http.ResponseWriter, r *http.Request) {
+	var request structs.NFLRequest
+
+	err := json.NewDecoder(r.Body).Decode(&request)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.RemoveUserFromNFLTeam(request)
 
 	// json.NewEncoder(w).Encode(team)
 }

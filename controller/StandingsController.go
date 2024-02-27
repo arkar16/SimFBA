@@ -20,6 +20,17 @@ func GetCollegeStandingsByConferenceIDAndSeasonID(w http.ResponseWriter, r *http
 	json.NewEncoder(w).Encode(standings)
 }
 
+func GetNFLStandingsByDivisionIDAndSeasonID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	divisionID := vars["divisionID"]
+	seasonID := vars["seasonID"]
+	if len(divisionID) == 0 || len(seasonID) == 0 {
+		panic("User did not provide enough information")
+	}
+	standings := managers.GetNFLStandingsByDivisionIDAndSeasonID(divisionID, seasonID)
+	json.NewEncoder(w).Encode(standings)
+}
+
 // GetCollegeStandingsByDivisionIDAndSeasonID
 
 // GetHistoricalRecordsByTeamID
@@ -33,4 +44,24 @@ func GetHistoricalRecordsByTeamID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(standings)
 }
 
-// GetHistoricalStandingsByCoach
+// GetAllCollegeStandings
+func GetAllCollegeStandings(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	seasonID := vars["seasonID"]
+	if len(seasonID) == 0 {
+		panic("User did not provide enough information")
+	}
+	standings := managers.GetAllConferenceStandingsBySeasonID(seasonID)
+	json.NewEncoder(w).Encode(standings)
+}
+
+// Gets all NFL Standings in a Season
+func GetAllNFLStandings(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	seasonID := vars["seasonID"]
+	if len(seasonID) == 0 {
+		panic("User did not provide enough information")
+	}
+	standings := managers.GetAllNFLStandingsBySeasonID(seasonID)
+	json.NewEncoder(w).Encode(standings)
+}

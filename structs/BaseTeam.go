@@ -8,6 +8,7 @@ type BaseTeam struct {
 	City             string
 	State            string
 	Country          string
+	StadiumID        uint
 	Stadium          string
 	StadiumCapacity  int
 	RecordAttendance int

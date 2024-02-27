@@ -12,12 +12,31 @@ type CollegeTeam struct {
 	ProgramPrestige   int
 	AcademicPrestige  int
 	Facilities        int
-	CollegeCoach      CollegeCoach          `gorm:"foreignKey:TeamID"`
-	RecruitingProfile RecruitingTeamProfile `gorm:"foreignKey:TeamID"`
-	TeamStats         []CollegeTeamStats    `gorm:"foreignKey:TeamID"`
-	CollegeRivals     []CollegeRival        `gorm:"foreignKey:TeamID"`
-	TeamRecord        CollegeTeamRecords    `gorm:"foreignKey:TeamID"`
-	TeamGameplan      CollegeGameplan       `gorm:"foreignKey:TeamID"`
-	TeamDepthChart    CollegeTeamDepthChart `gorm:"foreignKey:TeamID"`
-	TeamStandings     []CollegeStandings    `gorm:"foreignKey:TeamID"`
+	IsFBS             bool
+	IsActive          bool
+	PlayersProgressed bool
+	RecruitsAdded     bool
+	CollegeCoach      CollegeCoach           `gorm:"foreignKey:TeamID"`
+	RecruitingProfile RecruitingTeamProfile  `gorm:"foreignKey:TeamID"`
+	TeamStats         []CollegeTeamStats     `gorm:"foreignKey:TeamID"`
+	TeamSeasonStats   CollegeTeamSeasonStats `gorm:"foreignKey:TeamID"`
+	// CollegeRivals     []CollegeRival         `gorm:"foreignKey:TeamOneID"`
+	TeamRecord     CollegeTeamRecords    `gorm:"foreignKey:TeamID"`
+	TeamGameplan   CollegeGameplan       `gorm:"foreignKey:TeamID"`
+	TeamDepthChart CollegeTeamDepthChart `gorm:"foreignKey:TeamID"`
+	TeamStandings  []CollegeStandings    `gorm:"foreignKey:TeamID"`
+}
+
+func (ct *CollegeTeam) TogglePlayersProgressed() {
+	ct.PlayersProgressed = !ct.PlayersProgressed
+}
+
+func (ct *CollegeTeam) ToggleRecruitsAdded() {
+	ct.RecruitsAdded = !ct.RecruitsAdded
+}
+
+type CollegeTeamResponseData struct {
+	TeamData        CollegeTeam
+	TeamStandings   CollegeStandings
+	UpcomingMatches []CollegeGame
 }

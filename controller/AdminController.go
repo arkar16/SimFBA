@@ -2,6 +2,8 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/CalebRose/SimFBA/managers"
@@ -31,19 +33,63 @@ func SyncTimestamp(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newTimestamp)
 }
 
-func SyncMissingRES(w http.ResponseWriter, r *http.Request) {
-	managers.SyncAllMissingEfficiencies()
+func SyncRecruiting(w http.ResponseWriter, r *http.Request) {
+	ts := managers.GetTimestamp()
 
+	managers.SyncRecruiting(ts)
+
+	json.NewEncoder(w).Encode("Sync Complete")
 }
 
-func GetNewsLogs(w http.ResponseWriter, r *http.Request) {
+func SyncWeek(w http.ResponseWriter, r *http.Request) {
+	newTimestamp := managers.MoveUpWeek()
+
+	json.NewEncoder(w).Encode(newTimestamp)
+}
+
+func SyncTimeslot(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
-	weekID := vars["weekID"]
+	timeslot := vars["timeslot"]
+	if len(timeslot) == 0 {
+		log.Panicln("Missing timeslot!")
+	}
+
+	managers.SyncTimeslot(timeslot)
+
+	json.NewEncoder(w).Encode("Timeslot updated")
+}
+
+func RegressTimeslot(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	timeslot := vars["timeslot"]
+	if len(timeslot) == 0 {
+		log.Panicln("Missing timeslot!")
+	}
+
+	managers.RegressTimeslot(timeslot)
+
+	json.NewEncoder(w).Encode("Timeslot updated")
+}
+
+func SyncFreeAgencyRound(w http.ResponseWriter, r *http.Request) {
+	managers.SyncFreeAgencyOffers()
+	managers.MoveUpInOffseasonFreeAgency()
+
+	json.NewEncoder(w).Encode("Moved to next free agency round")
+}
+
+func SyncMissingRES(w http.ResponseWriter, r *http.Request) {
+	managers.SyncAllMissingEfficiencies()
+}
+
+func GetWeeksInSeason(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
 	seasonID := vars["seasonID"]
+	weekID := vars["weekID"]
 
-	newsLogs := managers.GetNewsLogs(weekID, seasonID)
+	weeks := managers.GetWeeksInASeason(seasonID, weekID)
 
-	json.NewEncoder(w).Encode(newsLogs)
+	json.NewEncoder(w).Encode(weeks)
 }
 
 // CreateCollegeRecruit?
@@ -59,7 +105,57 @@ func GetNewsLogs(w http.ResponseWriter, r *http.Request) {
 // UpdateTeam
 
 // RunProgressionsForCollege
+func RunProgressionsForCollege(w http.ResponseWriter, r *http.Request) {
+
+}
+
+// GenerateWalkons
+func GenerateWalkOns(w http.ResponseWriter, r *http.Request) {
+	managers.GenerateWalkOns()
+	fmt.Println(w, "Walk ons successfully generated.")
+}
 
 // RunProgressionsForNFL
 
 // RunProgressionsForJuco?
+
+func SyncTeamRecruitingRanks(w http.ResponseWriter, r *http.Request) {
+	managers.SyncTeamRankings()
+	fmt.Println(w, "Team Ranks successfully generated.")
+}
+
+func ProgressToNextSeason(w http.ResponseWriter, r *http.Request) {
+	managers.ProgressionMain()
+	fmt.Println(w, "Team Ranks successfully generated.")
+}
+
+func ProgressNFL(w http.ResponseWriter, r *http.Request) {
+	managers.NFLProgressionMain()
+	fmt.Println(w, "Progressions Complete.")
+}
+
+func FillAIBoards(w http.ResponseWriter, r *http.Request) {
+	managers.FillAIRecruitingBoards()
+	fmt.Println(w, "Team Ranks successfully generated.")
+}
+
+func SyncAIBoards(w http.ResponseWriter, r *http.Request) {
+	managers.ResetAIBoardsForCompletedTeams()
+	managers.AllocatePointsToAIBoards()
+	fmt.Println(w, "Team Ranks successfully generated.")
+}
+
+func RunTheGames(w http.ResponseWriter, r *http.Request) {
+	managers.RunTheGames()
+	fmt.Println(w, "Games for current week are set to run.")
+}
+
+func WeatherGenerator(w http.ResponseWriter, r *http.Request) {
+	managers.GenerateWeatherForGames()
+	fmt.Println(w, "Congrats, you generated the GODDAM WEATHER!")
+}
+
+func FixSmallTownBigCityAIBoards(w http.ResponseWriter, r *http.Request) {
+	managers.FixSmallTownBigCityAIBoards()
+	fmt.Println(w, "Affinities fixed!")
+}

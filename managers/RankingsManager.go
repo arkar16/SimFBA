@@ -3,17 +3,15 @@ package managers
 import (
 	"math"
 	"math/rand"
-	"time"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	config "github.com/CalebRose/SimFBA/secrets"
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/CalebRose/SimFBA/util"
 )
 
 func AssignAllRecruitRanks() {
 	db := dbprovider.GetInstance().GetDB()
-
-	rand.Seed(time.Now().UnixNano())
 
 	var recruits []structs.Recruit
 
@@ -44,6 +42,13 @@ func AssignAllRecruitRanks() {
 		}
 
 		croot.AssignRankValues(rank247, espnRank, rivalsRank, r)
+
+		recruitingModifier := getRecruitingModifier(croot.Stars)
+
+		croot.AssignRecruitingModifier(recruitingModifier)
+		shotgunVal := getShotgunVal()
+		clutchVal := getClutchValue()
+		croot.AssignNewAttributes(shotgunVal, clutchVal)
 
 		db.Save(&croot)
 
@@ -99,18 +104,18 @@ func GetArchetypeModifier(arch string) int {
 		arch == "Ball Hawk" ||
 		arch == "Man Coverage" ||
 		arch == "Pass Rusher" ||
-		arch == "Rushing" {
+		arch == "Rushing" || arch == "Weakside" || arch == "Bandit" ||
+		arch == "Return Specialist" || arch == "Soccer Player" || arch == "Wingback" {
 		return 1
 	} else if arch == "Possession" ||
 		arch == "Field General" ||
-		arch == "Nose Tackle" ||
+		arch == "Nose Tackle" || arch == "Lineman" ||
 		arch == "Blocking" ||
 		arch == "Line Captain" {
 		return -1
 	} else if arch == "Speed Rusher" ||
-		arch == "Pass Rush" || arch == "Scrambler" ||
-		arch == "Vertical Threat" ||
-		arch == "Speed" {
+		arch == "Pass Rush" || arch == "Scrambler" || arch == "Strongside" ||
+		arch == "Vertical Threat" || arch == "Triple-Threat" || arch == "Slotback" || arch == "Speed" {
 		return 2
 	}
 	return 0
@@ -196,7 +201,6 @@ func GetPredictiveOverall(r structs.Recruit) int {
 }
 
 func GetRivalsStarModifier(stars int) float64 {
-	rand.Seed(time.Now().UnixNano())
 	if stars == 5 {
 		return 6.1
 	} else if stars == 4 {
@@ -258,4 +262,26 @@ func GetRivalsTeamRanking(rp structs.RecruitingTeamProfile, signedCroots []struc
 	}
 
 	return rivalsRank
+}
+
+func getRecruitingModifier(stars int) float64 {
+	diceRoll := util.GenerateFloatFromRange(1, 20)
+	if diceRoll == 1 {
+		return 0.02
+	}
+	num := util.GenerateIntFromRange(1, 100)
+	mod := 0.0
+	if num < 11 {
+		mod = util.GenerateFloatFromRange(1.80, 2.00)
+	} else if num < 31 {
+		mod = util.GenerateFloatFromRange(1.50, 1.69)
+	} else if num < 71 {
+		mod = util.GenerateFloatFromRange(1.15, 1.49)
+	} else if num < 91 {
+		mod = util.GenerateFloatFromRange(0.90, 1.14)
+	} else {
+		mod = util.GenerateFloatFromRange(0.80, 0.89)
+	}
+
+	return mod
 }

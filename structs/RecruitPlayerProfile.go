@@ -12,6 +12,7 @@ type RecruitPlayerProfile struct {
 	ProfileID                 int
 	TotalPoints               float64
 	CurrentWeeksPoints        float64
+	PreviousWeekPoints        float64
 	SpendingCount             int
 	RecruitingEfficiencyScore float64
 	Scholarship               bool
@@ -19,12 +20,14 @@ type RecruitPlayerProfile struct {
 	AffinityOneEligible       bool
 	AffinityTwoEligible       bool
 	TeamAbbreviation          string
+	Recruiter                 string
 	RemovedFromBoard          bool
 	IsSigned                  bool
 	IsLocked                  bool
 	CaughtCheating            bool
-	Recruit                   Recruit                  `gorm:"foreignKey:RecruitID"`
-	RecruitPoints             []RecruitPointAllocation `gorm:"foreignKey:RecruitID"`
+	TeamReachedMax            bool
+	Recruit                   Recruit `gorm:"foreignKey:RecruitID"`
+	// RecruitPoints             []RecruitPointAllocation `gorm:"foreignKey:RecruitProfileID"`
 }
 
 func (rp *RecruitPlayerProfile) AllocateCurrentWeekPoints(points float64) {
@@ -35,11 +38,18 @@ func (rp *RecruitPlayerProfile) AddCurrentWeekPointsToTotal(CurrentPoints float6
 	// If user spends points on a recruit
 	if CurrentPoints > 0 {
 		rp.TotalPoints += CurrentPoints
+		if rp.SpendingCount < 5 && CurrentPoints >= 1 {
+			rp.SpendingCount++
+			// In the event that someone tries to exploit the consistency system with a value between 0.00001 and 0.99999
+		} else if CurrentPoints > 0 && CurrentPoints < 1 {
+			rp.SpendingCount = 0
+		}
 	} else {
 		rp.TotalPoints = 0
 		rp.CaughtCheating = true
 		rp.SpendingCount = 0
 	}
+	rp.PreviousWeekPoints = rp.CurrentWeeksPoints
 	rp.CurrentWeeksPoints = 0
 }
 
@@ -76,6 +86,14 @@ func (rp *RecruitPlayerProfile) LockPlayer() {
 	rp.IsLocked = true
 }
 
+func (rp *RecruitPlayerProfile) ResetSpendingCount() {
+	rp.SpendingCount = 0
+}
+func (rp *RecruitPlayerProfile) ResetTotalPoints() {
+	rp.TotalPoints = 0
+	rp.TeamReachedMax = true
+}
+
 func (rp *RecruitPlayerProfile) AssignRES(res float64) {
 	rp.RecruitingEfficiencyScore = res
 }
@@ -87,4 +105,22 @@ func (rp ByPoints) Len() int      { return len(rp) }
 func (rp ByPoints) Swap(i, j int) { rp[i], rp[j] = rp[j], rp[i] }
 func (rp ByPoints) Less(i, j int) bool {
 	return rp[i].TotalPoints > rp[j].TotalPoints
+}
+
+type OddsAndAffinities struct {
+	Odds        int
+	Af1         bool
+	Af2         bool
+	AffinityMod int
+}
+
+type RecruitInfo struct {
+	HasAcademicAffinity    bool
+	HasCloseToHomeAffinity bool
+	HasServiceAffinity     bool
+	HasFrontRunnerAffinity bool
+	HasReligionAffinity    bool
+	HasSmallSchoolAffinity bool
+	HasSmallTownAffinity   bool
+	HasBigCityAffinity     bool
 }

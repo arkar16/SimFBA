@@ -9,3 +9,7 @@ type Player struct {
 	CollegePlayerID int
 	NFLPlayerID     int
 }
+
+func (p *Player) AssignID(newID uint) {
+	p.ID = newID
+}

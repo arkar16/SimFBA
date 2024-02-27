@@ -35,6 +35,20 @@ func AllCollegePlayersByTeamID(w http.ResponseWriter, r *http.Request) {
 }
 
 // AllCollegePlayersByTeamIDWithoutRedshirts
+func AllNFLPlayersByTeamIDForDC(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamId := vars["teamID"]
+
+	if len(teamId) == 0 {
+		panic("User did not provide TeamID")
+	}
+
+	players := managers.GetNFLPlayersForDCPage(teamId)
+
+	json.NewEncoder(w).Encode(players)
+}
+
+// AllCollegePlayersByTeamIDWithoutRedshirts
 func AllCollegePlayersByTeamIDWithoutRedshirts(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamId := vars["teamID"]
@@ -46,22 +60,6 @@ func AllCollegePlayersByTeamIDWithoutRedshirts(w http.ResponseWriter, r *http.Re
 	players := managers.GetAllCollegePlayersByTeamIdWithoutRedshirts(teamId)
 
 	json.NewEncoder(w).Encode(players)
-}
-
-// GetCollegePlayerByNameAndTeam
-func GetCollegePlayerByNameAndTeam(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	firstName := vars["firstName"]
-	lastName := vars["lastName"]
-	teamID := vars["teamID"]
-
-	if len(firstName) == 0 {
-		panic("User did not provide a first name")
-	}
-
-	player := managers.GetCollegePlayerByNameAndTeam(firstName, lastName, teamID)
-
-	json.NewEncoder(w).Encode(player)
 }
 
 // GetCollegePlayerByID
@@ -106,6 +104,16 @@ func ToggleRedshirtStatusForPlayer(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(w, "College Player successfully redshirted.")
 }
 
+// ToggleRedshirtStatusForPlayer
+func CutNFLPlayerFromRoster(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	PlayerID := vars["PlayerID"]
+
+	managers.CutNFLPlayer(PlayerID)
+
+	fmt.Println(w, "NFL Player Cut from Roster")
+}
+
 func ExportRosterToCSV(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/csv")
 
@@ -117,6 +125,19 @@ func ExportRosterToCSV(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.ExportTeamToCSV(teamId, w)
+}
+
+func ExportNFLRosterToCSV(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/csv")
+
+	vars := mux.Vars(r)
+	teamId := vars["teamID"]
+
+	if len(teamId) == 0 {
+		panic("User did not provide TeamID")
+	}
+
+	managers.ExportNFLTeamToCSV(teamId, w)
 
 	// ?
 }
@@ -124,13 +145,60 @@ func ExportRosterToCSV(w http.ResponseWriter, r *http.Request) {
 func ExportAllRostersToCSV(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/csv")
 
-	CollegeTeams := managers.GetAllCollegeTeams()
+	managers.ExportAllRostersToCSV(w)
+	// ?
+}
 
-	for _, team := range CollegeTeams {
-		id := strconv.FormatUint(uint64(team.ID), 10)
-
-		managers.ExportTeamToCSV(id, w)
+// Place player on NFL Trade block
+func PlaceNFLPlayerOnPracticeSquad(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	playerID := vars["PlayerID"]
+	if len(playerID) == 0 {
+		panic("User did not provide playerID")
 	}
 
-	// ?
+	managers.PlaceNFLPlayerOnPracticeSquad(playerID)
+
+	json.NewEncoder(w).Encode("Player " + playerID + " placed on trade block.")
+}
+
+// Place player on NFL Trade block
+func PlaceNFLPlayerOnInjuryReserve(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	playerID := vars["PlayerID"]
+	if len(playerID) == 0 {
+		panic("User did not provide playerID")
+	}
+
+	managers.PlaceNFLPlayerOnInjuryReserve(playerID)
+
+	json.NewEncoder(w).Encode("Player " + playerID + " placed on trade block.")
+}
+
+// CreateExtensionOffer - Extend Offer to NFL player to extend contract with existing team
+func CreateExtensionOffer(w http.ResponseWriter, r *http.Request) {
+	var freeAgencyOfferDTO structs.FreeAgencyOfferDTO
+	err := json.NewDecoder(r.Body).Decode(&freeAgencyOfferDTO)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	var offer = managers.CreateExtensionOffer(freeAgencyOfferDTO)
+
+	json.NewEncoder(w).Encode(offer)
+}
+
+// CancelExtensionOffer - Cancel an extension offer with an NFL player
+func CancelExtensionOffer(w http.ResponseWriter, r *http.Request) {
+	var freeAgencyOfferDTO structs.FreeAgencyOfferDTO
+	err := json.NewDecoder(r.Body).Decode(&freeAgencyOfferDTO)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.CancelExtensionOffer(freeAgencyOfferDTO)
+
+	json.NewEncoder(w).Encode(true)
 }

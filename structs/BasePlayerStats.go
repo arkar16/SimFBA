@@ -18,8 +18,8 @@ type BasePlayerStats struct {
 	ReceivingYards       int
 	ReceivingTDs         int
 	LongestReception     int
-	SoloTackles          int
-	AssistedTackles      int
+	SoloTackles          float64
+	AssistedTackles      float64
 	TacklesForLoss       float64
 	SacksMade            float64
 	ForcedFumbles        int
@@ -43,8 +43,8 @@ type BasePlayerStats struct {
 	PuntReturns          int
 	PuntReturnTDs        int
 	PuntReturnYards      int
-	STSoloTackles        int
-	STAssistedTackles    int
+	STSoloTackles        float64
+	STAssistedTackles    float64
 	PuntsBlocked         int
 	FGBlocked            int
 	Snaps                int
@@ -52,4 +52,7 @@ type BasePlayerStats struct {
 	SacksAllowed         int
 	PlayedGame           int
 	StartedGame          int
+	WasInjured           bool
+	WeeksOfRecovery      uint
+	InjuryType           string
 }

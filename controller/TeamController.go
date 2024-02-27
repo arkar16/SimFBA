@@ -3,12 +3,17 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
-	"strconv"
 
 	"github.com/CalebRose/SimFBA/managers"
-	"github.com/CalebRose/SimFBA/models"
 	"github.com/gorilla/mux"
 )
+
+// GetAllCollegeTeamsForRosterPage
+func GetAllCollegeTeamsForRosterPage(w http.ResponseWriter, r *http.Request) {
+	collegeTeams := managers.GetAllCollegeTeamsForRosterPage()
+
+	json.NewEncoder(w).Encode(collegeTeams)
+}
 
 // GetAllCollegeTeams
 func GetAllCollegeTeams(w http.ResponseWriter, r *http.Request) {
@@ -18,6 +23,11 @@ func GetAllCollegeTeams(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetAllNFLTeams
+func GetAllNFLTeams(w http.ResponseWriter, r *http.Request) {
+	nflTeams := managers.GetAllNFLTeams()
+
+	json.NewEncoder(w).Encode(nflTeams)
+}
 
 // GetAllActiveCollegeTeams
 func GetAllActiveCollegeTeams(w http.ResponseWriter, r *http.Request) {
@@ -48,13 +58,23 @@ func GetTeamByTeamID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(team)
 }
 
-func GetTeamByTeamIDForDiscord(w http.ResponseWriter, r *http.Request) {
+func GetNFLRecordsForRosterPage(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamID := vars["teamID"]
 	if len(teamID) == 0 {
 		panic("User did not provide TeamID")
 	}
-	team := managers.GetTeamByTeamIDForDiscord(teamID)
+	team := managers.GetNFLRecordsForRosterPage(teamID)
+	json.NewEncoder(w).Encode(team)
+}
+
+func GetNFLTeamByTeamID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+	if len(teamID) == 0 {
+		panic("User did not provide TeamID")
+	}
+	team := managers.GetNFLTeamWithCapsheetByTeamID(teamID)
 	json.NewEncoder(w).Encode(team)
 }
 
@@ -80,54 +100,8 @@ func GetTeamsByDivisionID(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(team)
 }
 
-// GetHomeAndAwayTeamData
-func GetHomeAndAwayTeamData(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	homeTeamAbbr := vars["HomeTeamAbbr"]
-	awayTeamAbbr := vars["AwayTeamAbbr"]
-
-	var responseModel models.SimGameDataResponse
-
-	homeTeam := managers.GetTeamByTeamAbbr(homeTeamAbbr)
-	awayTeam := managers.GetTeamByTeamAbbr(awayTeamAbbr)
-
-	homeTeamID := strconv.Itoa(int(homeTeam.ID))
-	awayTeamID := strconv.Itoa(int(awayTeam.ID))
-
-	var homeTeamResponse models.SimTeamDataResponse
-	var homeDCResponse models.SimTeamDepthChartResponse
-	var homeDCList []models.SimDepthChartPosResponse
-
-	var awayTeamResponse models.SimTeamDataResponse
-	var awayDCResponse models.SimTeamDepthChartResponse
-	var awayDCList []models.SimDepthChartPosResponse
-
-	hdc := homeTeam.TeamDepthChart
-
-	for _, dcp := range hdc.DepthChartPlayers {
-		var simDCPR models.SimDepthChartPosResponse
-		simDCPR.Map(dcp)
-		homeDCList = append(homeDCList, simDCPR)
-	}
-
-	adc := awayTeam.TeamDepthChart
-	for _, dcp := range adc.DepthChartPlayers {
-		var simDCPR models.SimDepthChartPosResponse
-		simDCPR.Map(dcp)
-		awayDCList = append(awayDCList, simDCPR)
-	}
-
-	homeDCResponse.Map(hdc, homeDCList)
-	awayDCResponse.Map(adc, awayDCList)
-
-	homeTeamResponse.Map(homeTeam, homeDCResponse)
-	awayTeamResponse.Map(awayTeam, awayDCResponse)
-
-	homeTeamRoster := managers.GetAllCollegePlayersByTeamIdWithoutRedshirts(homeTeamID)
-	awayTeamRoster := managers.GetAllCollegePlayersByTeamIdWithoutRedshirts(awayTeamID)
-
-	responseModel.AssignHomeTeam(homeTeamResponse, homeTeamRoster)
-	responseModel.AssignAwayTeam(awayTeamResponse, awayTeamRoster)
-
-	json.NewEncoder(w).Encode(responseModel)
+// GetTeamsByDivisionID
+func GetRecruitingClassSizeForTeams(w http.ResponseWriter, r *http.Request) {
+	managers.GetRecruitingClassSizeForTeams()
+	json.NewEncoder(w).Encode("Sync for Class Size complete")
 }

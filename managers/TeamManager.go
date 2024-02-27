@@ -10,6 +10,17 @@ import (
 	"gorm.io/gorm"
 )
 
+func GetAllCollegeTeamsForRosterPage() models.RosterPageResponse {
+
+	teams := GetAllCollegeTeams()
+	coaches := GetAllCollegeCoaches()
+
+	return models.RosterPageResponse{
+		Teams:   teams,
+		Coaches: coaches,
+	}
+}
+
 func GetAllCollegeTeams() []structs.CollegeTeam {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -45,6 +56,52 @@ func GetTeamByTeamID(teamId string) structs.CollegeTeam {
 	var team structs.CollegeTeam
 	db := dbprovider.GetInstance().GetDB()
 	err := db.Where("id = ?", teamId).Find(&team).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return team
+}
+
+// GetTeamByTeamID - straightforward
+func GetAllNFLTeams() []structs.NFLTeam {
+	var teams []structs.NFLTeam
+	db := dbprovider.GetInstance().GetDB()
+	err := db.Order("team_name asc").Find(&teams).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return teams
+}
+
+// Get NFL Records for Roster Page
+func GetNFLRecordsForRosterPage(teamId string) models.NFLRosterPageResponse {
+
+	team := GetNFLTeamWithCapsheetByTeamID(teamId)
+
+	players := GetNFLPlayersForRosterPage(teamId)
+
+	return models.NFLRosterPageResponse{
+		Team:   team,
+		Roster: players,
+	}
+}
+
+// GetTeamByTeamID - straightforward
+func GetNFLTeamByTeamID(teamId string) structs.NFLTeam {
+	var team structs.NFLTeam
+	db := dbprovider.GetInstance().GetDB()
+	err := db.Where("id = ?", teamId).Find(&team).Error
+	if err != nil {
+		log.Fatal(err)
+	}
+	return team
+}
+
+// GetTeamByTeamID - straightforward
+func GetNFLTeamWithCapsheetByTeamID(teamId string) structs.NFLTeam {
+	var team structs.NFLTeam
+	db := dbprovider.GetInstance().GetDB()
+	err := db.Preload("Capsheet").Where("id = ?", teamId).Find(&team).Error
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -101,33 +158,6 @@ func GetTeamsByDivisionID(conferenceID string) []structs.CollegeTeam {
 	return teams
 }
 
-func RemoveUserFromTeam(teamId string) {
-	db := dbprovider.GetInstance().GetDB()
-
-	team := GetTeamByTeamID(teamId)
-
-	coach := GetCollegeCoachByCoachName(team.Coach)
-
-	coach.SetAsInactive()
-
-	team.RemoveUserFromTeam()
-
-	db.Save(&team)
-
-	db.Save(&coach)
-
-	timestamp := GetTimestamp()
-
-	newsLog := structs.NewsLog{
-		WeekID:      timestamp.CollegeWeekID,
-		SeasonID:    timestamp.CollegeSeasonID,
-		MessageType: "CoachJob",
-		Message:     coach.CoachName + " has decided to step down as the head coach of the " + team.TeamName + " " + team.Mascot + "!",
-	}
-
-	db.Create(&newsLog)
-}
-
 func GetTeamsInConference(conference string) []structs.CollegeTeam {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -142,8 +172,32 @@ func GetTeamsInConference(conference string) []structs.CollegeTeam {
 
 func GetTeamByTeamAbbr(abbr string) structs.CollegeTeam {
 	db := dbprovider.GetInstance().GetDB()
-
 	var team structs.CollegeTeam
+	err := db.Preload("TeamGameplan").Preload("TeamDepthChart.DepthChartPlayers").Where("team_abbr = ?", abbr).Find(&team).Error
+	if err != nil {
+		log.Panicln("Could not find team by given abbreviation:"+abbr+"\n", err)
+	}
+
+	return team
+}
+
+func GetNFLTeamByTeamIDForSim(id string) structs.NFLTeam {
+	db := dbprovider.GetInstance().GetDB()
+
+	var team structs.NFLTeam
+
+	err := db.Preload("TeamGameplan").Preload("TeamDepthChart.DepthChartPlayers").Where("id = ?", id).Find(&team).Error
+	if err != nil {
+		log.Panicln("Could not find team by given id:"+id+"\n", err)
+	}
+
+	return team
+}
+
+func GetNFLTeamByTeamAbbr(abbr string) structs.NFLTeam {
+	db := dbprovider.GetInstance().GetDB()
+
+	var team structs.NFLTeam
 
 	err := db.Preload("TeamGameplan").Preload("TeamDepthChart.DepthChartPlayers").Where("team_abbr = ?", abbr).Find(&team).Error
 	if err != nil {
@@ -177,38 +231,6 @@ func GetAllCollegeTeamsWithCurrentYearStandings() []structs.CollegeTeam {
 	return teams
 }
 
-func GetAllCollegeTeamsWithCurrentSeasonStats() []models.CollegeTeamResponse {
-	db := dbprovider.GetInstance().GetDB()
-
-	ts := GetTimestamp()
-
-	var teams []structs.CollegeTeam
-
-	db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ? and week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
-	}).Find(&teams)
-
-	var ctResponse []models.CollegeTeamResponse
-
-	for _, team := range teams {
-		ct := models.CollegeTeamResponse{
-			ID:           int(team.ID),
-			BaseTeam:     team.BaseTeam,
-			ConferenceID: team.ConferenceID,
-			Conference:   team.Conference,
-			DivisionID:   team.DivisionID,
-			Division:     team.Division,
-			TeamStats:    team.TeamStats,
-		}
-
-		ct.MapSeasonalStats()
-
-		ctResponse = append(ctResponse, ct)
-	}
-
-	return ctResponse
-}
-
 func GetCollegeConferences() []structs.CollegeConference {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -217,4 +239,14 @@ func GetCollegeConferences() []structs.CollegeConference {
 	db.Preload("Divisions").Find(&conferences)
 
 	return conferences
+}
+
+func GetCollegeTeamsByConference(conf string) []structs.CollegeTeam {
+	db := dbprovider.GetInstance().GetDB()
+
+	var teams []structs.CollegeTeam
+
+	db.Where("conference = ?", conf).Find(&teams)
+
+	return teams
 }

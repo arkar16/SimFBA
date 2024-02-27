@@ -1,6 +1,7 @@
 package managers
 
 import (
+	"fmt"
 	"log"
 	"sort"
 	"strconv"
@@ -33,12 +34,57 @@ func GetAllCollegePlayers() []structs.CollegePlayer {
 	return CollegePlayers
 }
 
+func GetAllHistoricCollegePlayers() []structs.HistoricCollegePlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var CollegePlayers []structs.HistoricCollegePlayer
+
+	db.Find(&CollegePlayers)
+
+	return CollegePlayers
+}
+
+func GetAllNFLPlayers() []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var nflPlayers []structs.NFLPlayer
+
+	db.Find(&nflPlayers)
+
+	return nflPlayers
+}
+
+func GetAllNFLPlayersWithCurrentSeasonStats(seasonID string) []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var nflPlayers []structs.NFLPlayer
+
+	db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ?", seasonID)
+	}).Find(&nflPlayers)
+
+	return nflPlayers
+}
+
+func GetAllUnsignedPlayers() []structs.UnsignedPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var unsignedPlayers []structs.UnsignedPlayer
+
+	db.Find(&unsignedPlayers)
+
+	return unsignedPlayers
+}
+
 func GetAllCollegePlayersByTeamId(TeamID string) []structs.CollegePlayer {
 	db := dbprovider.GetInstance().GetDB()
 
 	var CollegePlayers []structs.CollegePlayer
 
-	db.Order("overall desc").Where("team_id = ?", TeamID).Where("has_graduated = ?", false).Find(&CollegePlayers)
+	err := db.Order("overall desc").Where("team_id = ?", TeamID).Where("has_graduated = ?", false).Find(&CollegePlayers).Error
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 
 	return CollegePlayers
 }
@@ -63,30 +109,62 @@ func GetCollegePlayerByCollegePlayerId(CollegePlayerId string) structs.CollegePl
 	return CollegePlayer
 }
 
-func GetCollegePlayerByNameAndTeam(firstName string, lastName string, teamID string) models.CollegePlayerCSV {
+func GetCollegePlayerViaDiscord(id string) models.CollegePlayerCSV {
 	db := dbprovider.GetInstance().GetDB()
 
 	var CollegePlayer structs.CollegePlayer
 
-	db.Where("first_name = ? and last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&CollegePlayer)
+	db.Where("id = ?", id).Find(&CollegePlayer)
 
 	collegePlayerResponse := models.MapPlayerToCSVModel(CollegePlayer)
 
 	return collegePlayerResponse
 }
 
-func GetCollegePlayerByNameTeamAndWeek(firstName string, lastName string, teamID string, week string) models.CollegePlayerCSV {
+func GetCollegePlayerByIdAndWeek(id, week string) models.CollegePlayerCSV {
 	db := dbprovider.GetInstance().GetDB()
 
-	collegeWeek := GetCollegeWeek(week)
+	ts := GetTimestamp()
+
+	collegeWeek := GetCollegeWeek(week, ts)
+
+	if collegeWeek.ID == uint(ts.CollegeWeekID) {
+		return models.CollegePlayerCSV{}
+	} else {
+		var CollegePlayer structs.CollegePlayer
+
+		db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ? AND week_id = ?", collegeWeek.SeasonID, collegeWeek.ID)
+		}).Where("id = ?", id).Find(&CollegePlayer)
+
+		collegePlayerResponse := models.MapPlayerForStats(CollegePlayer)
+
+		return collegePlayerResponse
+	}
+}
+
+func GetSeasonalCollegePlayerByNameTeam(id string) models.CollegePlayerResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
 
 	var CollegePlayer structs.CollegePlayer
 
-	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ? AND week_id = ?", collegeWeek.SeasonID, collegeWeek.ID)
-	}).Where("first_name = ? and last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&CollegePlayer)
+	db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ?", strconv.Itoa(ts.CollegeSeasonID))
+	}).Where("id = ?", id).Find(&CollegePlayer)
 
-	collegePlayerResponse := models.MapPlayerForStats(CollegePlayer)
+	collegePlayerResponse := models.CollegePlayerResponse{
+		ID:          int(CollegePlayer.ID),
+		BasePlayer:  CollegePlayer.BasePlayer,
+		TeamID:      CollegePlayer.TeamID,
+		TeamAbbr:    CollegePlayer.TeamAbbr,
+		City:        CollegePlayer.City,
+		State:       CollegePlayer.State,
+		Year:        CollegePlayer.Year,
+		IsRedshirt:  CollegePlayer.IsRedshirt,
+		SeasonStats: CollegePlayer.SeasonStats,
+	}
 
 	return collegePlayerResponse
 }
@@ -109,30 +187,68 @@ func SetRedshirtStatusForPlayer(playerId string) structs.CollegePlayer {
 	return player
 }
 
-func GetAllNFLDraftees() []structs.NFLDraftee {
+func GetAllNFLDraftees() []models.NFLDraftee {
 	db := dbprovider.GetInstance().GetDB()
 
-	var NFLDraftees []structs.NFLDraftee
+	var NFLDraftees []models.NFLDraftee
 
-	db.Order("overall desc").Find(&NFLDraftees)
+	db.Find(&NFLDraftees)
+
+	sort.Slice(NFLDraftees, func(i, j int) bool {
+		iVal := util.GetNumericalSortValueByLetterGrade(NFLDraftees[i].OverallGrade)
+		jVal := util.GetNumericalSortValueByLetterGrade(NFLDraftees[j].OverallGrade)
+		return iVal < jVal
+	})
 
 	return NFLDraftees
 }
 
-func GetAllCollegePlayersWithCurrentYearStatistics(cMap map[int]int, cNMap map[int]string) []models.CollegePlayerResponse {
+func GetNFLDrafteeByPlayerID(PlayerID string) models.NFLDraftee {
 	db := dbprovider.GetInstance().GetDB()
 
-	var collegePlayers []structs.CollegePlayer
+	var player models.NFLDraftee
+
+	db.Where("id = ?", PlayerID).Find(&player)
+
+	return player
+}
+
+func GetAllCollegePlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]string, seasonID, weekID, viewType string) []models.CollegePlayerResponse {
+	db := dbprovider.GetInstance().GetDB()
 
 	ts := GetTimestamp()
 
-	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ? and week_id < ? and snaps > 0", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
-	}).Find(&collegePlayers)
+	seasonIDVal := util.ConvertStringToInt(seasonID)
+
+	var collegePlayers []structs.CollegePlayer
+
+	// var distinctCollegeStats []structs.CollegePlayerStats
+	var distinctCollegeStats []structs.CollegePlayerSeasonStats
+
+	db.Distinct("college_player_id").Where("snaps > 0 AND season_id = ?", seasonID).Find(&distinctCollegeStats)
+
+	distinctCollegePlayerIDs := util.GetCollegePlayerIDsBySeasonStats(distinctCollegeStats)
+
+	if viewType == "SEASON" {
+		db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ?", seasonID)
+		}).Where("id in ?", distinctCollegePlayerIDs).Find(&collegePlayers)
+	} else {
+		db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ? AND week_id = ? and snaps > 0", seasonID, weekID)
+		}).Where("id in ?", distinctCollegePlayerIDs).Find(&collegePlayers)
+	}
 
 	var cpResponse []models.CollegePlayerResponse
 
 	for _, player := range collegePlayers {
+		if len(player.Stats) == 0 && viewType == "WEEK" {
+			continue
+		}
+		var stat structs.CollegePlayerStats
+		if viewType == "WEEK" {
+			stat = player.Stats[0]
+		}
 		cp := models.CollegePlayerResponse{
 			ID:           int(player.ID),
 			BasePlayer:   player.BasePlayer,
@@ -144,15 +260,507 @@ func GetAllCollegePlayersWithCurrentYearStatistics(cMap map[int]int, cNMap map[i
 			State:        player.State,
 			Year:         player.Year,
 			IsRedshirt:   player.IsRedshirt,
-			PlayerStats:  player.Stats,
+			SeasonStats:  player.SeasonStats,
+			Stats:        stat,
 		}
 
-		cp.MapSeasonalStats()
+		// cp.MapSeasonalStats()
 
 		cpResponse = append(cpResponse, cp)
 	}
 
+	// If viewing a past season, get all past season players too
+	if seasonIDVal <= ts.CollegeSeasonID {
+		var historicCollegePlayers []structs.HistoricCollegePlayer
+
+		if viewType == "SEASON" {
+			db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+				return db.Where("season_id = ?", seasonID)
+			}).Where("id in ?", distinctCollegePlayerIDs).Find(&historicCollegePlayers)
+		} else {
+			db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+				return db.Where("season_id = ? AND week_id = ?", seasonID, weekID)
+			}).Where("id in ?", distinctCollegePlayerIDs).Find(&historicCollegePlayers)
+		}
+
+		for _, player := range historicCollegePlayers {
+			if len(player.Stats) == 0 && viewType == "WEEK" {
+				continue
+			}
+			var stat structs.CollegePlayerStats
+			if viewType == "WEEK" {
+				stat = player.Stats[0]
+			}
+			cp := models.CollegePlayerResponse{
+				ID:           int(player.ID),
+				BasePlayer:   player.BasePlayer,
+				ConferenceID: cMap[player.TeamID],
+				Conference:   cNMap[player.TeamID],
+				TeamID:       player.TeamID,
+				TeamAbbr:     player.TeamAbbr,
+				City:         player.City,
+				State:        player.State,
+				Year:         player.Year,
+				IsRedshirt:   player.IsRedshirt,
+				SeasonStats:  player.SeasonStats,
+				Stats:        stat,
+			}
+
+			cpResponse = append(cpResponse, cp)
+		}
+	}
+
 	return cpResponse
+}
+
+func GetAllNFLPlayersWithStatsBySeasonID(cMap, dMap map[int]int, cNMap, dNMap map[int]string, seasonID, weekID, viewType string) []models.NFLPlayerResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
+
+	seasonIDVal := util.ConvertStringToInt(seasonID)
+
+	var nflPlayers []structs.NFLPlayer
+
+	// var distinctNFLStats []structs.CollegePlayerStats
+	var distinctNFLStats []structs.NFLPlayerSeasonStats
+
+	db.Distinct("nfl_player_id").Where("snaps > 0 AND season_id = ?", seasonID).Find(&distinctNFLStats)
+
+	distinctCollegePlayerIDs := util.GetNFLPlayerIDsBySeasonStats(distinctNFLStats)
+
+	if viewType == "SEASON" {
+		db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ?", seasonID)
+		}).Where("id in ?", distinctCollegePlayerIDs).Find(&nflPlayers)
+	} else {
+		db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+			return db.Where("season_id = ? AND week_id = ? and snaps > 0", seasonID, weekID)
+		}).Where("id in ?", distinctCollegePlayerIDs).Find(&nflPlayers)
+	}
+
+	var cpResponse []models.NFLPlayerResponse
+
+	for _, player := range nflPlayers {
+		if len(player.Stats) == 0 && viewType == "WEEK" {
+			continue
+		}
+		var stat structs.NFLPlayerStats
+		if viewType == "WEEK" {
+			stat = player.Stats[0]
+		}
+		cp := models.NFLPlayerResponse{
+			ID:           int(player.ID),
+			BasePlayer:   player.BasePlayer,
+			ConferenceID: cMap[player.TeamID],
+			Conference:   cNMap[player.TeamID],
+			DivisionID:   dMap[player.TeamID],
+			Division:     dNMap[player.TeamID],
+			TeamID:       player.TeamID,
+			TeamAbbr:     player.TeamAbbr,
+			State:        player.State,
+			Year:         int(player.Experience),
+			SeasonStats:  player.SeasonStats,
+			Stats:        stat,
+		}
+
+		// cp.MapSeasonalStats()
+
+		cpResponse = append(cpResponse, cp)
+	}
+
+	// If viewing a past season, get all past season players too
+	if seasonIDVal < ts.NFLSeasonID {
+		var historicNFLPlayers []structs.NFLRetiredPlayer
+
+		if viewType == "SEASON" {
+			db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+				return db.Where("season_id = ?", seasonID)
+			}).Where("id in ?", distinctCollegePlayerIDs).Find(&historicNFLPlayers)
+		} else {
+			db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+				return db.Where("season_id = ? AND week_id = ?", seasonID, weekID)
+			}).Where("id in ?", distinctCollegePlayerIDs).Find(&historicNFLPlayers)
+		}
+
+		for _, player := range historicNFLPlayers {
+			if len(player.Stats) == 0 && viewType == "WEEK" {
+				continue
+			}
+			var stat structs.NFLPlayerStats
+			if viewType == "WEEK" {
+				stat = player.Stats[0]
+			}
+			cp := models.NFLPlayerResponse{
+				ID:           int(player.ID),
+				BasePlayer:   player.BasePlayer,
+				ConferenceID: cMap[player.TeamID],
+				Conference:   cNMap[player.TeamID],
+				TeamID:       player.TeamID,
+				TeamAbbr:     player.TeamAbbr,
+				State:        player.State,
+				Year:         int(player.Experience),
+				SeasonStats:  player.SeasonStats,
+				Stats:        stat,
+			}
+
+			cpResponse = append(cpResponse, cp)
+		}
+	}
+
+	return cpResponse
+}
+
+func GetAllCollegePlayersWithStatsByTeamID(TeamID string, SeasonID string) []structs.CollegePlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var collegePlayers []structs.CollegePlayer
+
+	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ? and team_id = ? and snaps > 0", SeasonID, TeamID)
+	}).Where("team_id = ?", TeamID).Find(&collegePlayers)
+
+	return collegePlayers
+}
+
+func GetAllCollegePlayersWithGameStatsByTeamID(TeamID string, GameID string) []structs.GameResultsPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var collegePlayers []structs.CollegePlayer
+	var matchRows []structs.GameResultsPlayer
+
+	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("game_id = ? and team_id = ? and snaps > 0", GameID, TeamID)
+	}).Where("team_id = ?", TeamID).Find(&collegePlayers)
+
+	for _, p := range collegePlayers {
+		if len(p.Stats) == 0 {
+			continue
+		}
+
+		s := p.Stats[0]
+		if s.Snaps == 0 {
+			continue
+		}
+
+		row := structs.GameResultsPlayer{
+			FirstName:            p.FirstName,
+			LastName:             p.LastName,
+			Position:             p.Position,
+			Archetype:            p.Archetype,
+			Year:                 uint(p.Year),
+			League:               "CFB",
+			Snaps:                s.Snaps,
+			PassingYards:         s.PassingYards,
+			PassAttempts:         s.PassAttempts,
+			PassCompletions:      s.PassCompletions,
+			PassingTDs:           s.PassingTDs,
+			Interceptions:        s.Interceptions,
+			LongestPass:          s.LongestPass,
+			Sacks:                s.Sacks,
+			RushAttempts:         s.RushAttempts,
+			RushingYards:         s.RushingYards,
+			RushingTDs:           s.RushingTDs,
+			Fumbles:              s.Fumbles,
+			LongestRush:          s.LongestRush,
+			Targets:              s.Targets,
+			Catches:              s.Catches,
+			ReceivingYards:       s.ReceivingYards,
+			ReceivingTDs:         s.ReceivingTDs,
+			LongestReception:     s.LongestReception,
+			SoloTackles:          s.SoloTackles,
+			AssistedTackles:      s.AssistedTackles,
+			TacklesForLoss:       s.TacklesForLoss,
+			SacksMade:            s.SacksMade,
+			ForcedFumbles:        s.ForcedFumbles,
+			RecoveredFumbles:     s.RecoveredFumbles,
+			PassDeflections:      s.PassDeflections,
+			InterceptionsCaught:  s.InterceptionsCaught,
+			Safeties:             s.Safeties,
+			DefensiveTDs:         s.DefensiveTDs,
+			FGMade:               s.FGMade,
+			FGAttempts:           s.FGAttempts,
+			LongestFG:            s.LongestFG,
+			ExtraPointsMade:      s.ExtraPointsMade,
+			ExtraPointsAttempted: s.ExtraPointsAttempted,
+			KickoffTouchbacks:    s.KickoffTouchbacks,
+			Punts:                s.Punts,
+			PuntTouchbacks:       s.PuntTouchbacks,
+			PuntsInside20:        s.PuntsInside20,
+			KickReturns:          s.KickReturns,
+			KickReturnTDs:        s.KickReturnTDs,
+			KickReturnYards:      s.KickReturnYards,
+			PuntReturns:          s.PuntReturns,
+			PuntReturnTDs:        s.PuntReturnTDs,
+			PuntReturnYards:      s.PuntReturnYards,
+			STSoloTackles:        s.STSoloTackles,
+			STAssistedTackles:    s.STAssistedTackles,
+			PuntsBlocked:         s.PuntsBlocked,
+			FGBlocked:            s.FGBlocked,
+			Pancakes:             s.Pancakes,
+			SacksAllowed:         s.SacksAllowed,
+			PlayedGame:           s.PlayedGame,
+			StartedGame:          s.StartedGame,
+			WasInjured:           s.WasInjured,
+			WeeksOfRecovery:      s.WeeksOfRecovery,
+			InjuryType:           s.InjuryType,
+		}
+
+		matchRows = append(matchRows, row)
+	}
+
+	historicPlayers := []structs.HistoricCollegePlayer{}
+	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("game_id = ? and team_id = ? and snaps > 0", GameID, TeamID)
+	}).Where("team_id = ?", TeamID).Find(&historicPlayers)
+
+	for _, p := range historicPlayers {
+		if len(p.Stats) == 0 {
+			continue
+		}
+
+		s := p.Stats[0]
+		if s.Snaps == 0 {
+			continue
+		}
+
+		row := structs.GameResultsPlayer{
+			FirstName:            p.FirstName,
+			LastName:             p.LastName,
+			Position:             p.Position,
+			Archetype:            p.Archetype,
+			Year:                 uint(p.Year),
+			League:               "CFB",
+			Snaps:                s.Snaps,
+			PassingYards:         s.PassingYards,
+			PassAttempts:         s.PassAttempts,
+			PassCompletions:      s.PassCompletions,
+			PassingTDs:           s.PassingTDs,
+			Interceptions:        s.Interceptions,
+			LongestPass:          s.LongestPass,
+			Sacks:                s.Sacks,
+			RushAttempts:         s.RushAttempts,
+			RushingYards:         s.RushingYards,
+			RushingTDs:           s.RushingTDs,
+			Fumbles:              s.Fumbles,
+			LongestRush:          s.LongestRush,
+			Targets:              s.Targets,
+			Catches:              s.Catches,
+			ReceivingYards:       s.ReceivingYards,
+			ReceivingTDs:         s.ReceivingTDs,
+			LongestReception:     s.LongestReception,
+			SoloTackles:          s.SoloTackles,
+			AssistedTackles:      s.AssistedTackles,
+			TacklesForLoss:       s.TacklesForLoss,
+			SacksMade:            s.SacksMade,
+			ForcedFumbles:        s.ForcedFumbles,
+			RecoveredFumbles:     s.RecoveredFumbles,
+			PassDeflections:      s.PassDeflections,
+			InterceptionsCaught:  s.InterceptionsCaught,
+			Safeties:             s.Safeties,
+			DefensiveTDs:         s.DefensiveTDs,
+			FGMade:               s.FGMade,
+			FGAttempts:           s.FGAttempts,
+			LongestFG:            s.LongestFG,
+			ExtraPointsMade:      s.ExtraPointsMade,
+			ExtraPointsAttempted: s.ExtraPointsAttempted,
+			KickoffTouchbacks:    s.KickoffTouchbacks,
+			Punts:                s.Punts,
+			PuntTouchbacks:       s.PuntTouchbacks,
+			PuntsInside20:        s.PuntsInside20,
+			KickReturns:          s.KickReturns,
+			KickReturnTDs:        s.KickReturnTDs,
+			KickReturnYards:      s.KickReturnYards,
+			PuntReturns:          s.PuntReturns,
+			PuntReturnTDs:        s.PuntReturnTDs,
+			PuntReturnYards:      s.PuntReturnYards,
+			STSoloTackles:        s.STSoloTackles,
+			STAssistedTackles:    s.STAssistedTackles,
+			PuntsBlocked:         s.PuntsBlocked,
+			FGBlocked:            s.FGBlocked,
+			Pancakes:             s.Pancakes,
+			SacksAllowed:         s.SacksAllowed,
+			PlayedGame:           s.PlayedGame,
+			StartedGame:          s.StartedGame,
+			WasInjured:           s.WasInjured,
+			WeeksOfRecovery:      s.WeeksOfRecovery,
+			InjuryType:           s.InjuryType,
+		}
+
+		matchRows = append(matchRows, row)
+	}
+
+	return matchRows
+}
+
+func GetAllNFLPlayersWithGameStatsByTeamID(TeamID string, GameID string) []structs.GameResultsPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var nflPlayers []structs.NFLPlayer
+	var matchRows []structs.GameResultsPlayer
+
+	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("game_id = ? and team_id = ? and snaps > 0", GameID, TeamID)
+	}).Where("team_id = ?", TeamID).Find(&nflPlayers)
+
+	for _, p := range nflPlayers {
+		if len(p.Stats) == 0 {
+			continue
+		}
+
+		s := p.Stats[0]
+		if s.Snaps == 0 {
+			continue
+		}
+
+		row := structs.GameResultsPlayer{
+			FirstName:            p.FirstName,
+			LastName:             p.LastName,
+			Position:             p.Position,
+			Archetype:            p.Archetype,
+			Year:                 uint(s.Year),
+			League:               "NFL",
+			Snaps:                s.Snaps,
+			PassingYards:         s.PassingYards,
+			PassAttempts:         s.PassAttempts,
+			PassCompletions:      s.PassCompletions,
+			PassingTDs:           s.PassingTDs,
+			Interceptions:        s.Interceptions,
+			LongestPass:          s.LongestPass,
+			Sacks:                s.Sacks,
+			RushAttempts:         s.RushAttempts,
+			RushingYards:         s.RushingYards,
+			RushingTDs:           s.RushingTDs,
+			Fumbles:              s.Fumbles,
+			LongestRush:          s.LongestRush,
+			Targets:              s.Targets,
+			Catches:              s.Catches,
+			ReceivingYards:       s.ReceivingYards,
+			ReceivingTDs:         s.ReceivingTDs,
+			LongestReception:     s.LongestReception,
+			SoloTackles:          s.SoloTackles,
+			AssistedTackles:      s.AssistedTackles,
+			TacklesForLoss:       s.TacklesForLoss,
+			SacksMade:            s.SacksMade,
+			ForcedFumbles:        s.ForcedFumbles,
+			RecoveredFumbles:     s.RecoveredFumbles,
+			PassDeflections:      s.PassDeflections,
+			InterceptionsCaught:  s.InterceptionsCaught,
+			Safeties:             s.Safeties,
+			DefensiveTDs:         s.DefensiveTDs,
+			FGMade:               s.FGMade,
+			FGAttempts:           s.FGAttempts,
+			LongestFG:            s.LongestFG,
+			ExtraPointsMade:      s.ExtraPointsMade,
+			ExtraPointsAttempted: s.ExtraPointsAttempted,
+			KickoffTouchbacks:    s.KickoffTouchbacks,
+			Punts:                s.Punts,
+			PuntTouchbacks:       s.PuntTouchbacks,
+			PuntsInside20:        s.PuntsInside20,
+			KickReturns:          s.KickReturns,
+			KickReturnTDs:        s.KickReturnTDs,
+			KickReturnYards:      s.KickReturnYards,
+			PuntReturns:          s.PuntReturns,
+			PuntReturnTDs:        s.PuntReturnTDs,
+			PuntReturnYards:      s.PuntReturnYards,
+			STSoloTackles:        s.STSoloTackles,
+			STAssistedTackles:    s.STAssistedTackles,
+			PuntsBlocked:         s.PuntsBlocked,
+			FGBlocked:            s.FGBlocked,
+			Pancakes:             s.Pancakes,
+			SacksAllowed:         s.SacksAllowed,
+			PlayedGame:           s.PlayedGame,
+			StartedGame:          s.StartedGame,
+			WasInjured:           s.WasInjured,
+			WeeksOfRecovery:      s.WeeksOfRecovery,
+			InjuryType:           s.InjuryType,
+		}
+
+		matchRows = append(matchRows, row)
+	}
+
+	historicPlayers := []structs.NFLRetiredPlayer{}
+	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("game_id = ? and team_id = ? and snaps > 0", GameID, TeamID)
+	}).Where("team_id = ?", TeamID).Find(&historicPlayers)
+
+	for _, p := range historicPlayers {
+		if len(p.Stats) == 0 {
+			continue
+		}
+
+		s := p.Stats[0]
+		if s.Snaps == 0 {
+			continue
+		}
+
+		row := structs.GameResultsPlayer{
+			FirstName:            p.FirstName,
+			LastName:             p.LastName,
+			Position:             p.Position,
+			Archetype:            p.Archetype,
+			Year:                 uint(s.Year),
+			League:               "NFL",
+			Snaps:                s.Snaps,
+			PassingYards:         s.PassingYards,
+			PassAttempts:         s.PassAttempts,
+			PassCompletions:      s.PassCompletions,
+			PassingTDs:           s.PassingTDs,
+			Interceptions:        s.Interceptions,
+			LongestPass:          s.LongestPass,
+			Sacks:                s.Sacks,
+			RushAttempts:         s.RushAttempts,
+			RushingYards:         s.RushingYards,
+			RushingTDs:           s.RushingTDs,
+			Fumbles:              s.Fumbles,
+			LongestRush:          s.LongestRush,
+			Targets:              s.Targets,
+			Catches:              s.Catches,
+			ReceivingYards:       s.ReceivingYards,
+			ReceivingTDs:         s.ReceivingTDs,
+			LongestReception:     s.LongestReception,
+			SoloTackles:          s.SoloTackles,
+			AssistedTackles:      s.AssistedTackles,
+			TacklesForLoss:       s.TacklesForLoss,
+			SacksMade:            s.SacksMade,
+			ForcedFumbles:        s.ForcedFumbles,
+			RecoveredFumbles:     s.RecoveredFumbles,
+			PassDeflections:      s.PassDeflections,
+			InterceptionsCaught:  s.InterceptionsCaught,
+			Safeties:             s.Safeties,
+			DefensiveTDs:         s.DefensiveTDs,
+			FGMade:               s.FGMade,
+			FGAttempts:           s.FGAttempts,
+			LongestFG:            s.LongestFG,
+			ExtraPointsMade:      s.ExtraPointsMade,
+			ExtraPointsAttempted: s.ExtraPointsAttempted,
+			KickoffTouchbacks:    s.KickoffTouchbacks,
+			Punts:                s.Punts,
+			PuntTouchbacks:       s.PuntTouchbacks,
+			PuntsInside20:        s.PuntsInside20,
+			KickReturns:          s.KickReturns,
+			KickReturnTDs:        s.KickReturnTDs,
+			KickReturnYards:      s.KickReturnYards,
+			PuntReturns:          s.PuntReturns,
+			PuntReturnTDs:        s.PuntReturnTDs,
+			PuntReturnYards:      s.PuntReturnYards,
+			STSoloTackles:        s.STSoloTackles,
+			STAssistedTackles:    s.STAssistedTackles,
+			PuntsBlocked:         s.PuntsBlocked,
+			FGBlocked:            s.FGBlocked,
+			Pancakes:             s.Pancakes,
+			SacksAllowed:         s.SacksAllowed,
+			PlayedGame:           s.PlayedGame,
+			StartedGame:          s.StartedGame,
+			WasInjured:           s.WasInjured,
+			WeeksOfRecovery:      s.WeeksOfRecovery,
+			InjuryType:           s.InjuryType,
+		}
+
+		matchRows = append(matchRows, row)
+	}
+
+	return matchRows
 }
 
 func GetHeismanList() []models.HeismanWatchModel {
@@ -169,34 +777,54 @@ func GetHeismanList() []models.HeismanWatchModel {
 	var teamWeight = make(map[string]float64)
 
 	var homeTeamMapper = make(map[int]string)
+	var teamGameMapper = make(map[int][]structs.CollegeGame)
 
 	for _, team := range teamWithStandings {
 		homeTeamMapper[int(team.ID)] = team.TeamAbbr
 
+		games := GetCollegeGamesByTeamIdAndSeasonId(strconv.Itoa(int(team.ID)), strconv.Itoa(ts.CollegeSeasonID))
+
+		if len(games) == 0 || len(team.TeamStandings) == 0 {
+			continue
+		}
+
+		teamGameMapper[int(team.ID)] = games
+
 		currentYearStandings := team.TeamStandings[0]
 
-		var weight float64 = 1
+		var weight float64 = 0 // 1
 		if currentYearStandings.TotalLosses+currentYearStandings.TotalWins > 0 {
-			newWeight := (float64(currentYearStandings.TotalWins) / 12) + 1
+			// newWeight := (float64(currentYearStandings.TotalWins) / 12) + 1
 
-			if newWeight > weight {
-				weight = newWeight
-			}
+			// if newWeight > weight {
+			// 	weight = newWeight
+			// }
+			weight = float64(currentYearStandings.TotalWins) / 100
 		}
 
 		teamWeight[team.TeamAbbr] = weight
 	}
 
+	// db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
+	// 	return db.Where("snaps > 0 and season_id = ? and week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
+	// }).Where("Stats.snaps > 0").Find(&collegePlayers)
+
+	var distinctCollegeStats []structs.CollegePlayerStats
+
+	db.Distinct("college_player_id").Where("snaps > 0").Find(&distinctCollegeStats)
+
+	distinctCollegePlayerIDs := util.GetCollegePlayerIDs(distinctCollegeStats)
+
 	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
 		return db.Where("snaps > 0 and season_id = ? and week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
-	}).Find(&collegePlayers)
+	}).Where("id IN ?", distinctCollegePlayerIDs).Find(&collegePlayers)
 
 	for _, cp := range collegePlayers {
 		if len(cp.Stats) == 0 {
 			continue
 		}
 
-		score := util.GetHeismanScore(cp, teamWeight, homeTeamMapper)
+		score := util.GetHeismanScore(cp, teamWeight, homeTeamMapper, teamGameMapper[cp.TeamID])
 
 		h := models.HeismanWatchModel{
 			FirstName: cp.FirstName,
@@ -215,4 +843,369 @@ func GetHeismanList() []models.HeismanWatchModel {
 	sort.Sort(models.ByScore(heismanCandidates))
 
 	return heismanCandidates
+}
+
+func GetGlobalPlayerRecord(playerID string) structs.Player {
+	db := dbprovider.GetInstance().GetDB()
+
+	var player structs.Player
+
+	db.Where("id = ?", playerID).Find(&player)
+
+	return player
+}
+
+func GetOnlyNFLPlayerRecord(playerID string) structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var player structs.NFLPlayer
+
+	db.Where("id = ?", playerID).Find(&player)
+
+	return player
+}
+
+func GetNFLPlayerRecord(playerID string) structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var player structs.NFLPlayer
+
+	db.Preload("Contract").Where("id = ?", playerID).Find(&player)
+
+	return player
+}
+
+func GetNFLPlayersForDCPage(TeamID string) []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Preload("Contract").Where("team_id = ? AND is_practice_squad = ?", TeamID, false).Find(&players)
+
+	return players
+}
+
+func GetTradableNFLPlayersByTeamID(TeamID string) []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Preload("Contract").Where("team_id = ? AND is_on_trade_block = ?", TeamID, true).Find(&players)
+
+	return players
+}
+
+func GetNFLPlayersForRosterPage(TeamID string) []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Preload("Contract", func(db *gorm.DB) *gorm.DB {
+		return db.Where("is_active = true")
+	}).Preload("Extensions").Where("team_id = ?", TeamID).Find(&players)
+
+	return players
+}
+
+func GetNFLPlayersRecordsByTeamID(TeamID string) []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Where("team_id = ?", TeamID).Find(&players)
+
+	return players
+}
+
+func GetNFLPlayersWithContractsByTeamID(TeamID string) []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Preload("Contract", func(db *gorm.DB) *gorm.DB {
+		return db.Where("is_active = true")
+	}).Where("team_id = ?", TeamID).Find(&players)
+
+	return players
+}
+
+func CutNFLPlayer(playerId string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	player := GetOnlyNFLPlayerRecord(playerId)
+	contract := GetContractByPlayerID(playerId)
+	capsheet := GetCapsheetByTeamID(strconv.Itoa(int(player.TeamID)))
+	ts := GetTimestamp()
+
+	if player.Experience < 4 && !ts.IsNFLOffSeason && !player.IsPracticeSquad {
+		player.WaivePlayer()
+	} else {
+		player.ToggleIsFreeAgent()
+		contract.DeactivateContract()
+	}
+
+	capsheet.CutPlayerFromCapsheet(contract)
+	db.Save(&contract)
+	db.Save(&player)
+	db.Save(&capsheet)
+}
+
+func PlaceNFLPlayerOnPracticeSquad(playerId string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	player := GetOnlyNFLPlayerRecord(playerId)
+	player.ToggleIsPracticeSquad()
+
+	if !player.IsPracticeSquad {
+		Offers := GetFreeAgentOffersByPlayerID(strconv.Itoa(int(player.ID)))
+		for _, o := range Offers {
+			db.Delete(&o)
+		}
+	}
+
+	db.Save(&player)
+}
+
+func PlaceNFLPlayerOnInjuryReserve(playerId string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	player := GetOnlyNFLPlayerRecord(playerId)
+	player.ToggleInjuryReserve()
+
+	db.Save(&player)
+}
+
+func GetNFLRosterForSimulation(TeamID string) []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Where("team_id = ? AND is_practice_squad = ?", TeamID, false).Find(&players)
+
+	return players
+}
+
+func RecoverPlayers() {
+	db := dbprovider.GetInstance().GetDB()
+
+	collegePlayers := GetAllCollegePlayers()
+
+	for _, p := range collegePlayers {
+		if !p.IsInjured {
+			continue
+		}
+		p.RecoveryCheck()
+		db.Save(&p)
+	}
+
+	nflPlayers := GetAllNFLPlayers()
+
+	for _, p := range nflPlayers {
+		if !p.IsInjured {
+			continue
+		}
+
+		p.RecoveryCheck()
+		db.Save(&p)
+	}
+}
+
+func CheckNFLRookiesForLetterGrade(seasonID string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	nflPlayers := GetAllNFLPlayersWithCurrentSeasonStats(seasonID)
+
+	for _, p := range nflPlayers {
+		if !p.ShowLetterGrade {
+			continue
+		}
+
+		seasonStats := p.SeasonStats
+		if seasonStats.Snaps >= 250 {
+			p.ShowRealAttributeValue()
+			db.Save(&p)
+		}
+	}
+}
+
+func GetAllPracticeSquadPlayers() []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Where("is_practice_squad = ?", true).Find(&players)
+
+	return players
+}
+
+func GetAllPracticeSquadPlayersForFAPage() []models.FreeAgentResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	var players []structs.NFLPlayer
+
+	db.Preload("Offers", func(db *gorm.DB) *gorm.DB {
+		return db.Order("contract_value DESC").Where("is_active = true")
+	}).Where("is_practice_squad = ?", true).Find(&players)
+
+	faResponseList := make([]models.FreeAgentResponse, len(players))
+
+	for i, fa := range players {
+		faResponseList[i] = models.FreeAgentResponse{
+			ID:                fa.ID,
+			PlayerID:          fa.PlayerID,
+			TeamID:            fa.TeamID,
+			College:           fa.College,
+			TeamAbbr:          fa.TeamAbbr,
+			FirstName:         fa.FirstName,
+			LastName:          fa.LastName,
+			Position:          fa.Position,
+			Archetype:         fa.Archetype,
+			Age:               fa.Age,
+			Overall:           fa.Overall,
+			PotentialGrade:    fa.PotentialGrade,
+			FreeAgency:        fa.FreeAgency,
+			Personality:       fa.Personality,
+			RecruitingBias:    fa.RecruitingBias,
+			WorkEthic:         fa.WorkEthic,
+			AcademicBias:      fa.AcademicBias,
+			PreviousTeam:      fa.PreviousTeam,
+			PreviousTeamID:    fa.PreviousTeamID,
+			Shotgun:           fa.Shotgun,
+			Experience:        fa.Experience,
+			Hometown:          fa.Hometown,
+			State:             fa.State,
+			IsActive:          fa.IsActive,
+			IsWaived:          fa.IsWaived,
+			IsPracticeSquad:   fa.IsPracticeSquad,
+			IsFreeAgent:       fa.IsFreeAgent,
+			IsAcceptingOffers: fa.IsAcceptingOffers,
+			IsNegotiating:     fa.IsNegotiating,
+			MinimumValue:      fa.MinimumValue,
+			DraftedTeam:       fa.DraftedTeam,
+			ShowLetterGrade:   fa.ShowLetterGrade,
+			SeasonStats:       fa.SeasonStats,
+			Offers:            fa.Offers,
+		}
+	}
+
+	return faResponseList
+}
+
+func GetInjuredCollegePlayers() []structs.CollegePlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var collegePlayers []structs.CollegePlayer
+
+	db.Order("team_id asc").Where("is_injured = true").Find(&collegePlayers)
+
+	return collegePlayers
+}
+
+func GetInjuredNFLPlayers() []structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var nflPlayers []structs.NFLPlayer
+
+	db.Order("team_id asc").Where("is_injured = true").Find(&nflPlayers)
+
+	return nflPlayers
+}
+
+func GetExtensionOffersByPlayerID(playerID string) []structs.NFLExtensionOffer {
+	db := dbprovider.GetInstance().GetDB()
+
+	offers := []structs.NFLExtensionOffer{}
+
+	err := db.Where("nfl_player_id = ?", playerID).Find(&offers).Error
+	if err != nil {
+		return offers
+	}
+
+	return offers
+}
+
+func GetExtensionOfferByOfferID(OfferID string) structs.NFLExtensionOffer {
+	db := dbprovider.GetInstance().GetDB()
+
+	offer := structs.NFLExtensionOffer{}
+
+	err := db.Where("id = ?", OfferID).Find(&offer).Error
+	if err != nil {
+		return offer
+	}
+
+	return offer
+}
+
+func CreateExtensionOffer(offer structs.FreeAgencyOfferDTO) structs.NFLExtensionOffer {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+	extensionOffer := GetExtensionOfferByOfferID(strconv.Itoa(int(offer.ID)))
+	player := GetNFLPlayerRecord(strconv.Itoa(int(offer.NFLPlayerID)))
+
+	extensionOffer.CalculateOffer(offer)
+
+	// If the owning team is sending an offer to a player
+	if extensionOffer.ID == 0 {
+		id := GetLatestExtensionOfferInDB(db)
+		extensionOffer.AssignID(id)
+		db.Create(&extensionOffer)
+		fmt.Println("Creating Extension Offer!")
+
+		message := offer.Team + " have offered a " + strconv.Itoa(offer.ContractLength) + " year contract extension for " + player.Position + " " + player.FirstName + " " + player.LastName + "."
+		CreateNewsLog("NFL", message, "Free Agency", player.TeamID, ts)
+	} else {
+		fmt.Println("Updating Extension Offer!")
+		db.Save(&extensionOffer)
+	}
+
+	return extensionOffer
+}
+
+func CancelExtensionOffer(offer structs.FreeAgencyOfferDTO) {
+	db := dbprovider.GetInstance().GetDB()
+
+	OfferID := strconv.Itoa(int(offer.ID))
+
+	freeAgentOffer := GetExtensionOfferByOfferID(OfferID)
+
+	freeAgentOffer.CancelOffer()
+
+	db.Save(&freeAgentOffer)
+}
+
+func GetRetiredSimNFLPlayers() []structs.NFLRetiredPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	players := []structs.NFLRetiredPlayer{}
+
+	db.Find(&players)
+
+	return players
+}
+
+func GetHistoricCollegePlayerByID(id string) structs.HistoricCollegePlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var player structs.HistoricCollegePlayer
+
+	err := db.Where("id = ?", id).Find(&player).Error
+	if err != nil {
+		fmt.Println("Could not find player in historics DB")
+	}
+
+	return player
+}
+
+func GetNFLDrafteeByID(id string) models.NFLDraftee {
+	db := dbprovider.GetInstance().GetDB()
+
+	var player models.NFLDraftee
+
+	err := db.Where("id = ?", id).Find(&player).Error
+	if err != nil {
+		fmt.Println("Could not find player in historics DB")
+	}
+
+	return player
 }

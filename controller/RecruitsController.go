@@ -18,20 +18,6 @@ func AllRecruits(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(recruits)
 }
 
-func GetRecruitByFirstNameAndLastName(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	firstName := vars["firstName"]
-	lastName := vars["lastName"]
-
-	if len(firstName) == 0 {
-		panic("User did not provide a first name")
-	}
-
-	recruit := managers.GetCollegeRecruitByName(firstName, lastName)
-
-	json.NewEncoder(w).Encode(recruit)
-}
-
 // AllJUCOCollegeRecruits
 func AllJUCOCollegeRecruits(w http.ResponseWriter, r *http.Request) {
 	// Need to write manager code for getting all college recruits who age / year is greater than 18
@@ -95,6 +81,11 @@ func ExportCroots(w http.ResponseWriter, r *http.Request) {
 	managers.ExportCrootsToCSV(w)
 }
 
+func GenerateRecruitClass(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/csv")
+	managers.ExportCrootsToCSV(w)
+}
+
 // UpdateCollegeRecruit
 func UpdateCollegeRecruit(w http.ResponseWriter, r *http.Request) {
 	// Update DTO for College Recruit
@@ -108,22 +99,6 @@ func UpdateCollegeRecruit(w http.ResponseWriter, r *http.Request) {
 	// Return new recruit
 
 	// Send to interface?
-
-	fmt.Println(w, "Recruit successfully updated.")
-}
-
-func SyncCrootRankings(w http.ResponseWriter, r *http.Request) {
-	// Get all recruits, sort by overall
-
-	// Loop through each recruit (get index?)
-
-	// Calculate ESPN Ranking
-
-	// Calculate Rivals Ranking
-
-	// Third ranking?
-
-	// Save recruit
 
 	fmt.Println(w, "Recruit successfully updated.")
 }

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/managers"
 	"github.com/CalebRose/SimFBA/structs"
 )
 
@@ -18,10 +19,14 @@ func CollusionButton(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	ts := managers.GetTimestamp()
+
 	newsLog := structs.NewsLog{
 		WeekID:      collusionButton.WeekID,
+		Week:        ts.CollegeWeek,
 		SeasonID:    collusionButton.SeasonID,
 		MessageType: "Collusion",
+		League:      "CFB",
 		Message:     collusionButton.Message,
 	}
 

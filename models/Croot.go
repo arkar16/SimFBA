@@ -8,37 +8,42 @@ import (
 )
 
 type Croot struct {
-	ID             uint
-	PlayerID       int
-	TeamID         int
-	College        string
-	FirstName      string
-	LastName       string
-	Position       string
-	Archetype      string
-	Height         int
-	Weight         int
-	Stars          int
-	PotentialGrade string
-	Personality    string
-	RecruitingBias string
-	AcademicBias   string
-	WorkEthic      string
-	HighSchool     string
-	City           string
-	State          string
-	AffinityOne    string
-	AffinityTwo    string
-	IsSigned       bool
-	OverallGrade   string
-	TotalRank      float64
-	LeadingTeams   []LeadingTeams
+	ID               uint
+	PlayerID         int
+	TeamID           int
+	College          string
+	FirstName        string
+	LastName         string
+	Position         string
+	Archetype        string
+	Height           int
+	Weight           int
+	Stars            int
+	PotentialGrade   string
+	Personality      string
+	RecruitingBias   string
+	AcademicBias     string
+	WorkEthic        string
+	HighSchool       string
+	City             string
+	State            string
+	AffinityOne      string
+	AffinityTwo      string
+	RecruitingStatus string
+	RecruitModifier  float64
+	IsCustomCroot    bool
+	CustomCrootFor   string
+	IsSigned         bool
+	OverallGrade     string
+	TotalRank        float64
+	LeadingTeams     []LeadingTeams
 }
 
 type LeadingTeams struct {
-	TeamName string
-	TeamAbbr string
-	Odds     float64
+	TeamName       string
+	TeamAbbr       string
+	Odds           float64
+	HasScholarship bool
 }
 
 // Sorting Funcs
@@ -72,8 +77,12 @@ func (c *Croot) Map(r structs.Recruit) {
 	c.AffinityOne = r.AffinityOne
 	c.AffinityTwo = r.AffinityTwo
 	c.College = r.College
-	c.OverallGrade = util.GetOverallGrade(r.Overall)
+	c.OverallGrade = util.GetOverallGrade(r.Overall, 1)
 	c.IsSigned = r.IsSigned
+	c.RecruitingStatus = r.RecruitingStatus
+	c.RecruitModifier = r.RecruitingModifier
+	c.IsCustomCroot = r.IsCustomCroot
+	c.CustomCrootFor = r.CustomCrootFor
 
 	mod := r.TopRankModifier
 	if mod == 0 {
@@ -84,24 +93,37 @@ func (c *Croot) Map(r structs.Recruit) {
 	var totalPoints float64 = 0
 	var runningThreshold float64 = 0
 
-	for idx, recruitProfile := range r.RecruitPlayerProfiles {
-		if idx == 0 && recruitProfile.Scholarship || (runningThreshold == 0 && recruitProfile.Scholarship && idx != 0) {
-			runningThreshold = float64(recruitProfile.TotalPoints) / 2
+	sortedProfiles := r.RecruitPlayerProfiles
+
+	sort.Sort(structs.ByPoints(sortedProfiles))
+
+	for _, recruitProfile := range sortedProfiles {
+		if recruitProfile.TeamReachedMax {
+			continue
 		}
-		if recruitProfile.TotalPoints >= runningThreshold && recruitProfile.Scholarship {
+		if runningThreshold == 0 {
+			runningThreshold = float64(recruitProfile.TotalPoints) * 0.66
+		}
+
+		if recruitProfile.TotalPoints >= runningThreshold {
 			totalPoints += float64(recruitProfile.TotalPoints)
 		}
+
 	}
 
-	for i := 0; i < len(r.RecruitPlayerProfiles); i++ {
+	for i := 0; i < len(sortedProfiles); i++ {
+		if sortedProfiles[i].TeamReachedMax || sortedProfiles[i].RemovedFromBoard {
+			continue
+		}
 		var odds float64 = 0
 
-		if r.RecruitPlayerProfiles[i].TotalPoints >= runningThreshold && r.RecruitPlayerProfiles[i].Scholarship {
-			odds = float64(r.RecruitPlayerProfiles[i].TotalPoints) / totalPoints
+		if sortedProfiles[i].TotalPoints >= runningThreshold && runningThreshold > 0 {
+			odds = float64(sortedProfiles[i].TotalPoints) / totalPoints
 		}
 		leadingTeam := LeadingTeams{
-			TeamAbbr: r.RecruitPlayerProfiles[i].TeamAbbreviation,
-			Odds:     odds,
+			TeamAbbr:       r.RecruitPlayerProfiles[i].TeamAbbreviation,
+			Odds:           odds,
+			HasScholarship: r.RecruitPlayerProfiles[i].Scholarship,
 		}
 		c.LeadingTeams = append(c.LeadingTeams, leadingTeam)
 	}
@@ -113,5 +135,5 @@ type ByCrootRank []Croot
 func (c ByCrootRank) Len() int      { return len(c) }
 func (c ByCrootRank) Swap(i, j int) { c[i], c[j] = c[j], c[i] }
 func (c ByCrootRank) Less(i, j int) bool {
-	return c[i].TotalRank > c[j].TotalRank
+	return c[i].TotalRank > c[j].TotalRank || c[i].Stars > c[j].Stars
 }

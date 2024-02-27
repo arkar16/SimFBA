@@ -39,7 +39,7 @@ func GetDrafteeSalary(pick, year, round uint, isSalary bool) float64 {
 	if pick >= 1 && pick <= 32 && year >= 1 && year <= 4 {
 		return valueMap[pick-1][year-1]
 	}
-	return valueMap[31+round][year-1]
+	return valueMap[30+round][year-1]
 }
 
 func getSalaryMap() [39][4]float64 {
@@ -83,6 +83,15 @@ func getSalaryMap() [39][4]float64 {
 		{0.9, 0.9, 0.9, 0.9},
 		{0.8, 0.8, 0.8, 0.8},
 		{0.8, 0.8, 0.8, 0.8},
+		/* BONUS BY ROUND
+		{1, 1, 1, 1},
+		{0.75, 0.75, 0.75, 0.75},
+		{0.3, 0.3, 0.3, 0.3},
+		{0.25, 0.25, 0.25, 0.25},
+		{0, 0, 0, 0},
+		{0, 0, 0, 0},
+		{0, 0, 0, 0},
+		*/
 	}
 }
 

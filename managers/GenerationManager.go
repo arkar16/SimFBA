@@ -112,7 +112,7 @@ func GenerateWalkOns() {
 
 func CreateCustomCroots() {
 	db := dbprovider.GetInstance().GetDB()
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023_Custom_Croot_Class.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024\\2024_Custom_Croot_Class.csv"
 	crootCSV := util.ReadCSV(path)
 	attributeBlob := getAttributeBlob()
 	latestID := getLatestRecord(db)
@@ -120,7 +120,7 @@ func CreateCustomCroots() {
 	crootList := []structs.Recruit{}
 
 	for idx, row := range crootCSV {
-		if idx < 2 {
+		if idx < 1 {
 			continue
 		}
 		if row[0] == "" {
@@ -290,13 +290,13 @@ func createCustomCroot(croot []string, id uint, blob map[string]map[string]map[s
 	lastName := croot[1]
 	position := croot[2]
 	archetype := croot[3]
-	stars := util.ConvertStringToInt(croot[4])
-	height := util.ConvertStringToInt(croot[5])
-	weight := util.ConvertStringToInt(croot[6])
-	city := croot[7]
-	highSchool := croot[8]
-	state := croot[9]
-	crootFor := croot[10]
+	stars := getCustomCrootStarRating()
+	height := util.ConvertStringToInt(croot[4])
+	weight := util.ConvertStringToInt(croot[5])
+	city := croot[6]
+	highSchool := croot[7]
+	state := croot[8]
+	crootFor := croot[9]
 	age := 18
 	footballIQ := getAttributeValue(position, archetype, stars, "Football IQ", blob)
 	speed := getAttributeValue(position, archetype, stars, "Speed", blob)
@@ -933,6 +933,8 @@ func getAttributeValue(pos string, arch string, star int, attr string, blob map[
 			return getValueFromInterfaceRange(starStr, blob["Under"]["Under"]["Under"])
 		}
 		return getValueFromInterfaceRange(starStr, blob[pos][arch][attr])
+	} else if pos == "ATH" {
+		return getValueFromInterfaceRange(starStr, blob[pos][arch][attr])
 	}
 	return util.GenerateIntFromRange(5, 15)
 }
@@ -964,6 +966,17 @@ func getValueFromInterfaceRange(star string, starMap map[string]interface{}) int
 		fmt.Printf("This is not an int: " + star)
 	}
 	return util.GenerateIntFromRange(int(min), int(max))
+}
+
+func getCustomCrootStarRating() int {
+	weightedRoll := util.GenerateIntFromRange(1, 100)
+
+	if weightedRoll < 45 {
+		return 3
+	} else if weightedRoll < 80 {
+		return 4
+	}
+	return 5
 }
 
 func getStarRating() int {

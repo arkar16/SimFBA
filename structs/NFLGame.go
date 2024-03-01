@@ -45,6 +45,8 @@ type NFLGame struct {
 	GameTitle                string // For rivalry match-ups, bowl games, championships, and more
 	NextGameID               uint
 	NextGameHOA              string
+	HomePreviousBye          bool
+	AwayPreviousBye          bool
 }
 
 func (ng *NFLGame) UpdateScore(HomeScore int, AwayScore int) {

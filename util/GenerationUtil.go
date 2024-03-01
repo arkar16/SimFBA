@@ -16,6 +16,23 @@ func GenerateFloatFromRange(min float64, max float64) float64 {
 	return min + rand.Float64()*(max-min)
 }
 
+func GenerateNormalizedIntFromRange(min int, max int) int {
+	mean := float64(min+max) / 2.0
+	stdDev := float64(max-min) / 6.0 // This approximates the 3-sigma rule
+
+	for {
+		// Generate a number using normal distribution around the mean
+		num := rand.NormFloat64()*stdDev + mean
+		// Round to nearest integer and convert to int type
+		intNum := int(num + 0.5) // Adding 0.5 before truncating simulates rounding
+		// Check if the generated number is within bounds
+		if intNum >= min && intNum <= max {
+			return intNum
+		}
+		// If not within bounds, loop again
+	}
+}
+
 func PickFromStringList(list []string) string {
 	return list[rand.Intn(len(list))]
 }
@@ -111,6 +128,171 @@ func GetWeightedPotentialGrade(rating int) string {
 	return "F"
 }
 
+func GetPrimeAge(pos, arch string) int {
+	min := 25
+	max := 27
+	mod := 0
+	diceRoll := GenerateIntFromRange(1, 20)
+	if pos == "QB" {
+		if diceRoll == 100 {
+			mod += GenerateIntFromRange(1, 5)
+		}
+		min = 26
+		max = 32
+	}
+	if pos == "RB" {
+		if diceRoll == 100 {
+			mod += GenerateIntFromRange(1, 3)
+		}
+		min = 24
+		max = 27
+	}
+	if pos == "FB" {
+		if diceRoll == 100 {
+			mod += GenerateIntFromRange(1, 3)
+		}
+		min = 24
+		max = 29
+	}
+	if pos == "WR" {
+		if diceRoll == 100 {
+			mod += GenerateIntFromRange(1, 3)
+		}
+		min = 25
+		max = 29
+	}
+	if pos == "TE" {
+		if diceRoll == 100 {
+			mod += GenerateIntFromRange(1, 3)
+		}
+		min = 26
+		max = 29
+	}
+	if pos == "OG" {
+		min = 27
+		max = 30
+	}
+	if pos == "OT" {
+		min = 27
+		max = 30
+	}
+	if pos == "C" {
+		min = 27
+		max = 30
+	}
+	if pos == "DE" {
+		min = 27
+		max = 30
+	}
+	if pos == "DT" {
+		min = 27
+		max = 30
+	}
+	if pos == "ILB" {
+		if diceRoll == 100 {
+			mod += GenerateIntFromRange(1, 3)
+		}
+		min = 26
+		max = 29
+	}
+	if pos == "OLB" {
+		if diceRoll == 100 {
+			mod += GenerateIntFromRange(1, 3)
+		}
+		min = 26
+		max = 29
+	}
+	if pos == "CB" {
+		if diceRoll == 100 {
+			mod += GenerateIntFromRange(1, 3)
+		}
+		min = 25
+		max = 29
+	}
+	if pos == "FS" {
+		if diceRoll == 100 {
+			mod += GenerateIntFromRange(1, 3)
+		}
+		min = 26
+		max = 28
+	}
+	if pos == "SS" {
+		if diceRoll == 100 {
+			mod += GenerateIntFromRange(1, 3)
+		}
+		min = 26
+		max = 28
+	}
+	if pos == "K" {
+		min = 25
+		max = 30
+	}
+	if pos == "P" {
+		min = 25
+		max = 30
+	}
+	if pos == "ATH" {
+		if arch == "Field General" {
+			if diceRoll == 100 {
+				mod += GenerateIntFromRange(1, 3)
+			}
+			min = 25
+			max = 30
+		}
+		if arch == "Triple-Threat" {
+			if diceRoll == 100 {
+				mod += GenerateIntFromRange(1, 3)
+			}
+			min = 24
+			max = 27
+		}
+		if arch == "Wingback" {
+			if diceRoll == 100 {
+				mod += GenerateIntFromRange(1, 3)
+			}
+			min = 24
+			max = 28
+		}
+		if arch == "Slotback" {
+			if diceRoll == 100 {
+				mod += GenerateIntFromRange(1, 3)
+			}
+			min = 24
+			max = 28
+		}
+		if arch == "Lineman" {
+			min = 27
+			max = 30
+		}
+		if arch == "Strongside" {
+			if diceRoll == 100 {
+				mod += GenerateIntFromRange(1, 3)
+			}
+			min = 26
+			max = 29
+		}
+		if arch == "Weakside" {
+			if diceRoll == 100 {
+				mod += GenerateIntFromRange(1, 3)
+			}
+			min = 26
+			max = 29
+		}
+		if arch == "Bandit" {
+			if diceRoll == 100 {
+				mod += GenerateIntFromRange(1, 3)
+			}
+			min = 26
+			max = 29
+		}
+		if arch == "Soccer Player" {
+			min = 26
+			max = 29
+		}
+	}
+	return GenerateNormalizedIntFromRange(min, max) + mod
+}
+
 func GetPersonality() string {
 	chance := GenerateIntFromRange(1, 3)
 	if chance < 3 {
@@ -191,18 +373,14 @@ func GetRecruitingBias() string {
 	list := []string{"Prefers to play in a different state",
 		"Prefers to play for an up-and-coming team",
 		"Open-Minded",
-		"Prefers to play with former teammates",
-		"Fanboy",
-		"Multi-Sport",
 		"Prefers to play for a team where he can start immediately",
-		"Is going to school mainly for academics",
 		"Prefers to be close to home",
 		"Prefers to play for a national championship contender",
 		"Prefers to play for a specific coach",
 		"Average",
 		"Legacy",
 		"Prefers to play for a team with a rich history",
-		"Wants that NIL money"}
+	}
 
 	return PickFromStringList(list)
 }
@@ -238,7 +416,8 @@ func GetFreeAgencyBias() string {
 	if chance < 3 {
 		return "Average"
 	}
-	list := []string{"I'm the starter",
+	list := []string{
+		"I'm the starter",
 		"Market-driven",
 		"Wants extensions",
 		"Drafted team discount",
@@ -250,8 +429,7 @@ func GetFreeAgencyBias() string {
 		"Money motivated",
 		"Hates Tags",
 		"Adversarial",
-		"Hates Cleveland",
-		"Will eventually play for LeBron"}
+		"Considering retirement"}
 
 	return PickFromStringList(list)
 }

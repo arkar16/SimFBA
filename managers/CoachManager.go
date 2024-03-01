@@ -23,6 +23,7 @@ func GetCollegeCoachByCoachName(name string) structs.CollegeCoach {
 			PlayoffWins:                    0,
 			PlayoffLosses:                  0,
 			IsActive:                       false,
+			IsUser:                         true,
 		}
 	}
 

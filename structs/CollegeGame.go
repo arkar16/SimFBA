@@ -48,6 +48,8 @@ type CollegeGame struct {
 	GameTitle                string // For rivalry match-ups, bowl games, championships, and more
 	NextGameID               uint
 	NextGameHOA              string
+	HomePreviousBye          bool
+	AwayPreviousBye          bool
 }
 
 func (cg *CollegeGame) UpdateScore(HomeScore int, AwayScore int) {

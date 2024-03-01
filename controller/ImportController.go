@@ -71,7 +71,7 @@ func FixBrokenExtensions(w http.ResponseWriter, r *http.Request) {
 }
 
 func ImplementRecruitingBiases(w http.ResponseWriter, r *http.Request) {
-	managers.ImplementNewAttributes()
+	managers.ImplementPrimeAge()
 }
 
 func GenerateDraftWarRooms(w http.ResponseWriter, r *http.Request) {

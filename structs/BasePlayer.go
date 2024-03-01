@@ -210,3 +210,7 @@ func (cp *BasePlayer) MapProgression(prog int, letter string) {
 func (cp *BasePlayer) SetRecruitingBias(bias string) {
 	cp.RecruitingBias = bias
 }
+
+func (cp *BasePlayer) AssignPrimeAge(age uint) {
+	cp.PrimeAge = age
+}

@@ -117,8 +117,8 @@ func GetHomeAndAwayTeamData(w http.ResponseWriter, r *http.Request) {
 	homeDCResponse.Map(hdc, homeDCList)
 	awayDCResponse.Map(adc, awayDCList)
 
-	homeTeamResponse.Map(homeTeam, homeDCResponse)
-	awayTeamResponse.Map(awayTeam, awayDCResponse)
+	homeTeamResponse.Map(homeTeam, homeDCResponse, game.HomePreviousBye)
+	awayTeamResponse.Map(awayTeam, awayDCResponse, game.AwayPreviousBye)
 
 	responseModel.AssignHomeTeam(homeTeamResponse, homeTeamRoster)
 	responseModel.AssignAwayTeam(awayTeamResponse, awayTeamRoster)

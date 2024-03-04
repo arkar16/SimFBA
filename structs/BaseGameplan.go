@@ -35,7 +35,7 @@ type BaseGameplan struct {
 	DefaultDefense       bool
 	PreviousWeekBye      bool
 	FocusPlays           string
-	DoubleTeam           uint
+	DoubleTeam           int
 }
 
 func (cg *BaseGameplan) ApplySchemePenalty(IsOffense bool) {

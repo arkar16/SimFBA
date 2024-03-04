@@ -14,6 +14,7 @@ type SimTeamDataResponse struct {
 	ColorTwo        string
 	TeamGameplan    structs.CollegeGameplan
 	TeamDepthChart  SimTeamDepthChartResponse
+	PreviousByeWeek bool
 }
 
 type SimTeamDepthChartResponse struct {
@@ -28,7 +29,7 @@ type SimDepthChartPosResponse struct {
 	PositionLevel string
 }
 
-func (stdr *SimTeamDataResponse) Map(team structs.CollegeTeam, dcr SimTeamDepthChartResponse) {
+func (stdr *SimTeamDataResponse) Map(team structs.CollegeTeam, dcr SimTeamDepthChartResponse, isPrev bool) {
 	stdr.TeamName = team.TeamName
 	stdr.Mascot = team.Mascot
 	stdr.City = team.City
@@ -39,6 +40,7 @@ func (stdr *SimTeamDataResponse) Map(team structs.CollegeTeam, dcr SimTeamDepthC
 	stdr.StadiumCapacity = team.StadiumCapacity
 	stdr.TeamGameplan = team.TeamGameplan
 	stdr.TeamDepthChart = dcr
+	stdr.PreviousByeWeek = isPrev
 }
 
 func (stdcr *SimTeamDepthChartResponse) Map(dc structs.CollegeTeamDepthChart, dcp []SimDepthChartPosResponse) {

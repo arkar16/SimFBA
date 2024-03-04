@@ -620,12 +620,12 @@ func ImportCFBGames() {
 		awayTeamID := at.ID
 		homeTeamCoach := ht.Coach
 		awayTeamCoach := at.Coach
-		timeSlot := row[18]
+		timeSlot := row[20]
 		// Need to implement Stadium ID
-		stadium := row[19]
-		city := row[20]
-		state := row[21]
-		isDomed := util.ConvertStringToBool(row[22])
+		stadium := row[21]
+		city := row[22]
+		state := row[23]
+		isDomed := util.ConvertStringToBool(row[24])
 		// Need to check for if a game is in a domed stadium or not
 		isConferenceGame := util.ConvertStringToBool(row[9])
 		isDivisionGame := util.ConvertStringToBool(row[10])
@@ -634,9 +634,11 @@ func ImportCFBGames() {
 		isBowlGame := util.ConvertStringToBool(row[13])
 		isPlayoffGame := util.ConvertStringToBool(row[14])
 		isNationalChampionship := util.ConvertStringToBool(row[15])
-		gameTitle := row[23]
-		nextGame := util.ConvertStringToInt(row[25])
-		nextGameHOA := row[26]
+		isHomePrevBye := util.ConvertStringToBool(row[16])
+		isAwayPrevBye := util.ConvertStringToBool(row[17])
+		gameTitle := row[25]
+		nextGame := util.ConvertStringToInt(row[27])
+		nextGameHOA := row[28]
 
 		game := structs.CollegeGame{
 			Model:                    gorm.Model{ID: uint(gameID)},
@@ -665,6 +667,8 @@ func ImportCFBGames() {
 			GameTitle:                gameTitle,
 			NextGameID:               uint(nextGame),
 			NextGameHOA:              nextGameHOA,
+			HomePreviousBye:          isHomePrevBye,
+			AwayPreviousBye:          isAwayPrevBye,
 		}
 
 		db.Create(&game)
@@ -953,6 +957,43 @@ func ImportSeasonStandings() {
 			},
 		}
 		db.Create(&newStandings)
+	}
+}
+
+func ImplementPrimeAge() {
+	db := dbprovider.GetInstance().GetDB()
+
+	// Recruits
+	croots := GetAllUnsignedRecruits()
+	// College Players
+	collegePlayers := GetAllCollegePlayers()
+	// Unsigned Players
+	unsignedPlayers := GetAllUnsignedPlayers()
+	// NFL Players
+	nflPlayers := GetAllNFLPlayers()
+
+	for _, c := range croots {
+		primeAge := util.GetPrimeAge(c.Position, c.Archetype)
+		c.AssignPrimeAge(uint(primeAge))
+		db.Save(&c)
+	}
+
+	for _, cp := range collegePlayers {
+		primeAge := util.GetPrimeAge(cp.Position, cp.Archetype)
+		cp.AssignPrimeAge(uint(primeAge))
+		db.Save(&cp)
+	}
+
+	for _, up := range unsignedPlayers {
+		primeAge := util.GetPrimeAge(up.Position, up.Archetype)
+		up.AssignPrimeAge(uint(primeAge))
+		db.Save(&up)
+	}
+
+	for _, nflP := range nflPlayers {
+		primeAge := util.GetPrimeAge(nflP.Position, nflP.Archetype)
+		nflP.AssignPrimeAge(uint(primeAge))
+		db.Save(&nflP)
 	}
 }
 

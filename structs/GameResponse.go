@@ -9,9 +9,11 @@ type GameResponse struct {
 	HomeTeam                 string
 	HomeTeamCoach            string
 	HomeTeamRecord           string
+	HomePreviousBye          bool
 	AwayTeamID               int
 	AwayTeam                 string
 	AwayTeamCoach            string
+	AwayPreviousBye          bool
 	TimeSlot                 string
 	AwayTeamRecord           string
 	StadiumID                uint

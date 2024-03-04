@@ -452,17 +452,7 @@ func MassUpdateGameplanSchemes(off, def string) {
 	defensiveSchemes := util.GetDefensiveDefaultSchemes()
 	for _, team := range teams {
 		id := team.ID
-		if id != 12 && id != 1 && id != 59 && id != 65 &&
-			id != 77 && id != 107 && id != 7 && id != 54 &&
-			id != 98 && id != 10 && id != 123 && id != 125 &&
-			id != 13 && id != 47 && id != 118 &&
-			id != 15 && id != 34 && id != 78 && id != 80 &&
-			id != 19 && id != 44 && id != 45 && id != 23 &&
-			id != 37 && id != 109 && id != 55 && id != 88 &&
-			id != 56 && id != 86 && id != 93 && id != 100 &&
-			id != 115 && id != 63 && id != 99 && id != 108 &&
-			id != 75 && id != 96 && id != 122 && id != 94 &&
-			id != 97 && id != 127 {
+		if id != 39 && id != 62 {
 			continue
 		}
 		teamID := strconv.Itoa(int(team.ID))
@@ -2160,7 +2150,7 @@ func GetTestOffensiveSchemesByTeamID(id uint) string {
 	if id == 56 || id == 86 || id == 93 || id == 100 || id == 115 {
 		return "Vertical"
 	}
-	if id == 63 || id == 99 || id == 108 {
+	if id == 63 || id == 99 || id == 108 || id == 62 || id == 39 {
 		return "Pistol"
 	}
 	if id == 75 || id == 96 || id == 122 {
@@ -2185,7 +2175,7 @@ func GetTestDefensiveSchemesByTeamID(id uint) string {
 	if id == 23 || id == 65 || id == 99 || id == 123 {
 		return "3-Man Front Spread Stopper"
 	}
-	if id == 37 || id == 45 || id == 75 || id == 78 || id == 88 || id == 96 || id == 100 {
+	if id == 37 || id == 45 || id == 75 || id == 78 || id == 88 || id == 96 || id == 100 || id == 39 || id == 62 {
 		return "Speed"
 	}
 	if id == 7 || id == 59 || id == 115 || id == 125 {

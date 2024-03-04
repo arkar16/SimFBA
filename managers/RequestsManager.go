@@ -115,11 +115,11 @@ func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 	db.Save(&standings)
 
 	recruitingProfile := GetOnlyRecruitingProfileByTeamID(teamId)
-
+	recruitingProfile.AssignRecruiter(coach.CoachName)
 	if recruitingProfile.IsAI {
 		recruitingProfile.DeactivateAI()
-		db.Save(&recruitingProfile)
 	}
+	db.Save(&recruitingProfile)
 
 	err := db.Save(&team).Error
 	if err != nil {

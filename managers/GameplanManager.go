@@ -480,6 +480,8 @@ func MassUpdateGameplanSchemes(off, def string) {
 				DefaultOffense:     gp.DefaultOffense,
 				DefaultDefense:     gp.DefaultDefense,
 				PrimaryHB:          75,
+				PitchFocus:         50,
+				DiveFocus:          50,
 			},
 		}
 

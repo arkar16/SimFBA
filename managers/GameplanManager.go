@@ -79,10 +79,22 @@ func GetGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 
 	opponentGameplan := GetGameplanByTeamID(opponentID)
 
+	opponentRoster := GetDepthchartByTeamID(opponentID)
+
+	oppDepthChartPlayers := []structs.CollegePlayer{}
+
+	for _, p := range opponentRoster.DepthChartPlayers {
+		if p.Position != "WR" && p.Position != "TE" && p.Position != "RB" && p.Position != "FB" {
+			continue
+		}
+		oppDepthChartPlayers = append(oppDepthChartPlayers, p.CollegePlayer)
+	}
+
 	return structs.GamePlanResponse{
-		CollegeGP:       gamePlan,
-		CollegeDC:       depthChart,
-		CollegeOpponent: opponentGameplan,
+		CollegeGP:         gamePlan,
+		CollegeDC:         depthChart,
+		CollegeOpponent:   opponentGameplan,
+		CollegeOppPlayers: oppDepthChartPlayers,
 	}
 }
 
@@ -122,10 +134,22 @@ func GetNFLGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 
 	opponentGameplan := GetNFLGameplanByTeamID(opponentID)
 
+	opponentRoster := GetNFLDepthchartByTeamID(opponentID)
+
+	oppDepthChartPlayers := []structs.NFLPlayer{}
+
+	for _, p := range opponentRoster.DepthChartPlayers {
+		if p.Position != "WR" && p.Position != "TE" && p.Position != "RB" && p.Position != "FB" {
+			continue
+		}
+		oppDepthChartPlayers = append(oppDepthChartPlayers, p.NFLPlayer)
+	}
+
 	return structs.GamePlanResponse{
-		NFLGP:       gamePlan,
-		NFLDC:       depthChart,
-		NFLOpponent: opponentGameplan,
+		NFLGP:         gamePlan,
+		NFLDC:         depthChart,
+		NFLOpponent:   opponentGameplan,
+		NFLOppPlayers: oppDepthChartPlayers,
 	}
 }
 

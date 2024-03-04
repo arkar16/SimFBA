@@ -1,12 +1,14 @@
 package structs
 
 type GamePlanResponse struct {
-	CollegeGP       CollegeGameplan
-	NFLGP           NFLGameplan
-	CollegeDC       CollegeTeamDepthChart
-	NFLDC           NFLDepthChart
-	CollegeOpponent CollegeGameplan
-	NFLOpponent     NFLGameplan
+	CollegeGP         CollegeGameplan
+	NFLGP             NFLGameplan
+	CollegeDC         CollegeTeamDepthChart
+	NFLDC             NFLDepthChart
+	CollegeOpponent   CollegeGameplan
+	NFLOpponent       NFLGameplan
+	CollegeOppPlayers []CollegePlayer
+	NFLOppPlayers     []NFLPlayer
 }
 
 type BaseGameplan struct {

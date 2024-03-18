@@ -13,8 +13,8 @@ type PlayByPlay struct {
 	TimeRemaining        string // Will always be at a maximum of 5 characters: "00:00" format
 	Down                 uint
 	Distance             uint
-	LineOfScrimmage      string // Could make into a uint? Keep track of which side of field? Maybe as a bool? Enum?
-	PlayTypeID           uint8  // Enum using specific IDs as reference
+	LineOfScrimmage      int8  // Could make into a uint? Keep track of which side of field? Maybe as a bool? Enum?
+	PlayTypeID           uint8 // Enum using specific IDs as reference
 	PlayNameID           uint8
 	OffFormationID       uint8
 	OffensivePoA         uint

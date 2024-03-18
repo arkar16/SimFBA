@@ -45,6 +45,7 @@ type Timestamp struct {
 	DeadCapLimit               float64
 	FreeAgencyRound            uint
 	RunCron                    bool
+	IsTesting                  bool
 }
 
 func (t *Timestamp) MoveUpWeekCollege() {

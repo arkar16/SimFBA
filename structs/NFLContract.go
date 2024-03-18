@@ -24,6 +24,7 @@ type NFLContract struct {
 	BonusPercentage float64
 	ContractType    string // Pro Bowl, Starter, Veteran, New ?
 	ContractValue   float64
+	SigningValue    float64
 	IsActive        bool
 	IsComplete      bool
 	IsExtended      bool
@@ -97,6 +98,7 @@ func (c *NFLContract) MapExtension(e NFLExtensionOffer) {
 	c.Y5Bonus = e.Y5Bonus
 	c.BonusPercentage = e.BonusPercentage
 	c.CalculateContract()
+	c.SigningValue = c.ContractValue
 	c.IsActive = true
 	c.IsComplete = false
 	c.IsExtended = true

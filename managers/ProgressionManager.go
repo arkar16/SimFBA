@@ -210,13 +210,6 @@ func ProgressNFLPlayers() {
 				continue
 			}
 
-			if player.ID == 387 || player.ID == 67924 ||
-				player.ID == 55373 || player.ID == 41718 || player.ID == 57100 || player.ID == 60489 || player.ID == 45264 ||
-				player.ID == 30539 || player.ID == 5332 || player.ID == 60148 || player.ID == 45417 || player.ID == 51262 || player.ID == 65418 ||
-				player.ID == 5257 || player.ID == 62249 {
-				fmt.Println("STOP HERE")
-			}
-
 			// Progress the Player
 			// Get Latest Stats
 			stats := GetNFLPlayerStatsByPlayerIDAndSeason(strconv.Itoa(int(player.ID)), SeasonID)

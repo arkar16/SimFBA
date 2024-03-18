@@ -340,6 +340,7 @@ func SignFreeAgent(offer structs.FreeAgencyOffer, FreeAgent structs.NFLPlayer, t
 			Y5BaseSalary:   offer.Y5BaseSalary,
 			Y5Bonus:        offer.Y5Bonus,
 			ContractValue:  offer.ContractValue,
+			SigningValue:   offer.ContractValue,
 			IsActive:       true,
 			IsComplete:     false,
 			IsExtended:     false,

@@ -63,7 +63,7 @@ type PlayByPlay struct {
 	IsRight              bool
 	IsOffUpright         bool
 	IsShort              bool
-	PuntDistance         uint8
+	KickDistance         int8
 }
 
 func (p *PlayByPlay) Map(play PlayByPlayDTO) {
@@ -120,6 +120,7 @@ func (p *PlayByPlay) Map(play PlayByPlayDTO) {
 	p.IsLeft = play.IsRight
 	p.IsOffUpright = play.IsOffUpright
 	p.IsShort = play.IsShort
+	p.KickDistance = int8(play.KickDistance)
 }
 
 type PlayByPlayDTO struct {
@@ -142,7 +143,6 @@ type PlayByPlayDTO struct {
 	DefensiveFormationID uint
 	DefensiveTendency    uint
 	BlitzNumber          uint
-	PuntDistance         uint
 	LBCoverage           bool // 0 == Man, 1 == Zone
 	CBCoverage           bool // 0 == Man, 1 == Zone
 	SCoverage            bool // 0 == Man, 1 == Zone
@@ -177,4 +177,5 @@ type PlayByPlayDTO struct {
 	IsRight              bool
 	IsOffUpright         bool
 	IsShort              bool
+	KickDistance         int
 }

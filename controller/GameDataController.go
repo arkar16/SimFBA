@@ -25,7 +25,11 @@ func GetHomeAndAwayTeamData(w http.ResponseWriter, r *http.Request) {
 	game := <-gameChan
 	close(gameChan)
 
-	var responseModel models.SimGameDataResponse
+	responseModel := models.SimGameDataResponse{
+		GameID:   int(game.ID),
+		WeekID:   game.WeekID,
+		SeasonID: game.SeasonID,
+	}
 	var waitgroup sync.WaitGroup
 	waitgroup.Add(2)
 

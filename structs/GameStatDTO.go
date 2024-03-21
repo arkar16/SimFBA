@@ -8,5 +8,5 @@ type GameStatDTO struct {
 	AwayPlayers []PlayerStatDTO
 	HomeScore   int
 	AwayScore   int
-	Plays       []PlayByPlay
+	Plays       []PlayByPlayDTO
 }

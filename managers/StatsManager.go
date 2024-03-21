@@ -2,11 +2,11 @@ package managers
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"gorm.io/gorm"
 )
@@ -485,16 +485,6 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	db := dbprovider.GetInstance().GetDB()
 	fmt.Println("START")
 
-	tsChn := make(chan structs.Timestamp)
-
-	go func() {
-		ts := GetTimestamp()
-		tsChn <- ts
-	}()
-
-	timestamp := <-tsChn
-	close(tsChn)
-
 	var teamStats []structs.CollegeTeamStats
 
 	for _, gameDataDTO := range gameStats {
@@ -591,38 +581,28 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		// Update Game
 		gameRecord.UpdateScore(gameDataDTO.HomeScore, gameDataDTO.AwayScore)
 
-		err := db.Save(&gameRecord).Error
-		if err != nil {
-			log.Panicln("Could not save Game " + strconv.Itoa(int(gameRecord.ID)) + "Between " + gameRecord.HomeTeam + " and " + gameRecord.AwayTeam)
-		}
+		repository.SaveCFBGameRecord(gameRecord, db)
 
-		err = db.CreateInBatches(&playerStats, len(playerStats)).Error
-		if err != nil {
-			log.Panicln("Could not save player stats from week " + strconv.Itoa(timestamp.CollegeWeek))
+		repository.CreateCFBPlayerStatsInBatch(playerStats, db)
+
+		pbp := gameDataDTO.Plays
+		playByPlays := []structs.CollegePlayByPlay{}
+		for _, p := range pbp {
+			play := structs.CollegePlayByPlay{}
+			play.Map(p)
+			playByPlays = append(playByPlays, play)
 		}
+		repository.CreateCFBPlayByPlaysInBatch(playByPlays, db)
 
 		fmt.Println("Finished Game " + strconv.Itoa(int(gameRecord.ID)) + " Between " + gameRecord.HomeTeam + " and " + gameRecord.AwayTeam)
 	}
 
-	err := db.CreateInBatches(&teamStats, len(teamStats)).Error
-	if err != nil {
-		log.Panicln("Could not save team stats!")
-	}
+	repository.CreateCFBTeamStatsInBatch(teamStats, db)
 }
 
 func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	db := dbprovider.GetInstance().GetDB()
 	fmt.Println("START")
-
-	tsChn := make(chan structs.Timestamp)
-
-	go func() {
-		ts := GetTimestamp()
-		tsChn <- ts
-	}()
-
-	timestamp := <-tsChn
-	close(tsChn)
 
 	var teamStats []structs.NFLTeamStats
 
@@ -721,23 +701,23 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		// Update Game
 		gameRecord.UpdateScore(gameDataDTO.HomeScore, gameDataDTO.AwayScore)
 
-		err := db.Save(&gameRecord).Error
-		if err != nil {
-			log.Panicln("Could not save Game " + strconv.Itoa(int(gameRecord.ID)) + "Between " + gameRecord.HomeTeam + " and " + gameRecord.AwayTeam)
-		}
+		repository.SaveNFLGameRecord(gameRecord, db)
 
-		err = db.CreateInBatches(&playerStats, len(playerStats)).Error
-		if err != nil {
-			log.Panicln("Could not save player stats from week " + strconv.Itoa(timestamp.CollegeWeek))
+		repository.CreateNFLPlayerStatsInBatch(playerStats, db)
+
+		pbp := gameDataDTO.Plays
+		playByPlays := []structs.NFLPlayByPlay{}
+		for _, p := range pbp {
+			play := structs.NFLPlayByPlay{}
+			play.Map(p)
+			playByPlays = append(playByPlays, play)
 		}
+		repository.CreateNFLPlayByPlaysInBatch(playByPlays, db)
 
 		fmt.Println("Finished Game " + strconv.Itoa(int(gameRecord.ID)) + " Between " + gameRecord.HomeTeam + " and " + gameRecord.AwayTeam)
 	}
 
-	err := db.CreateInBatches(&teamStats, len(teamStats)).Error
-	if err != nil {
-		log.Panicln("Could not save team stats!")
-	}
+	repository.CreateNFLTeamStatsInBatch(teamStats, db)
 }
 
 func GetCFBGameResultsByGameID(gameID string) structs.GameResultsResponse {

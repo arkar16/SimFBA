@@ -158,7 +158,9 @@ func (r *RecruitingTeamProfile) SetRecruitingClassSize(val int) {
 }
 
 func (r *RecruitingTeamProfile) IncrementClassSize() {
-	r.RecruitClassSize += 1
+	if r.RecruitClassSize < 25 {
+		r.RecruitClassSize += 1
+	}
 }
 
 func (r *RecruitingTeamProfile) AddBattleWon() {

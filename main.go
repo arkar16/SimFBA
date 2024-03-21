@@ -144,6 +144,7 @@ func handleRequests() {
 
 	// Player Controls
 	myRouter.HandleFunc("/players/all/", controller.AllPlayers).Methods("GET")
+	myRouter.HandleFunc("/collegeplayers/cut/player/{PlayerID}/", controller.CutCFBPlayerFromRoster).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/heisman/", controller.GetHeismanList).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/{teamID}/", controller.AllCollegePlayersByTeamID).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/nors/{teamID}/", controller.AllCollegePlayersByTeamIDWithoutRedshirts).Methods("GET")

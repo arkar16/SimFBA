@@ -8,6 +8,7 @@ import (
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 	"gorm.io/gorm"
@@ -929,6 +930,21 @@ func GetNFLPlayersWithContractsByTeamID(TeamID string) []structs.NFLPlayer {
 	return players
 }
 
+func CutCFBPlayer(playerId string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	player := GetCollegePlayerByCollegePlayerId(playerId)
+	player.WillTransfer()
+	ts := GetTimestamp()
+	if ts.IsOffSeason || ts.CollegeWeek == 1 {
+		previousTeamID := strconv.Itoa(int(player.PreviousTeamID))
+		teamProfile := GetOnlyRecruitingProfileByTeamID(previousTeamID)
+		teamProfile.IncrementClassSize()
+		repository.SaveRecruitingTeamProfile(teamProfile, db)
+	}
+	repository.SaveCFBPlayer(player, db)
+}
+
 func CutNFLPlayer(playerId string) {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -945,9 +961,9 @@ func CutNFLPlayer(playerId string) {
 	}
 
 	capsheet.CutPlayerFromCapsheet(contract)
-	db.Save(&contract)
-	db.Save(&player)
-	db.Save(&capsheet)
+	repository.SaveNFLContract(contract, db)
+	repository.SaveNFLPlayer(player, db)
+	repository.SaveNFLCapsheet(capsheet, db)
 }
 
 func PlaceNFLPlayerOnPracticeSquad(playerId string) {

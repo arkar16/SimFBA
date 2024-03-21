@@ -21,13 +21,13 @@ type PlayByPlay struct {
 	TimeRemaining        string // Will always be at a maximum of 5 characters: "00:00" format
 	Down                 uint8
 	Distance             uint8
-	LineOfScrimmage      int8  // Could make into a uint? Keep track of which side of field? Maybe as a bool? Enum?
+	LineOfScrimmage      int8  // 0 is the team with the ball, 100 is the other side of the field
 	PlayTypeID           uint8 // Enum using specific IDs as reference
 	PlayNameID           uint8
 	OffFormationID       uint8
 	OffensivePoA         uint8
 	DefensiveFormationID uint8
-	DefensiveTendency    uint
+	DefensiveTendency    uint8
 	BlitzNumber          uint
 	LBCoverage           bool  // 0 == Man, 1 == Zone
 	CBCoverage           bool  // 0 == Man, 1 == Zone
@@ -63,6 +63,7 @@ type PlayByPlay struct {
 	IsRight              bool
 	IsOffUpright         bool
 	IsShort              bool
+	PuntDistance         uint8
 }
 
 func (p *PlayByPlay) Map(play PlayByPlayDTO) {
@@ -83,7 +84,7 @@ func (p *PlayByPlay) Map(play PlayByPlayDTO) {
 	p.OffFormationID = uint8(play.OffFormationID)
 	p.OffensivePoA = uint8(play.OffensivePoA)
 	p.DefensiveFormationID = uint8(play.DefensiveFormationID)
-	p.DefensiveTendency = play.DefensiveTendency
+	p.DefensiveTendency = uint8(play.DefensiveTendency)
 	p.BlitzNumber = play.BlitzNumber
 	p.LBCoverage = play.LBCoverage
 	p.CBCoverage = play.CBCoverage
@@ -133,7 +134,7 @@ type PlayByPlayDTO struct {
 	TimeRemaining        string // Will always be at a maximum of 5 characters: "00:00" format
 	Down                 uint
 	Distance             uint
-	LineOfScrimmage      int  // Could make into a uint? Keep track of which side of field? Maybe as a bool? Enum?
+	LineOfScrimmage      uint // Could make into a uint? Keep track of which side of field? Maybe as a bool? Enum?
 	PlayTypeID           uint // Enum using specific IDs as reference
 	PlayNameID           uint
 	OffFormationID       uint
@@ -141,6 +142,7 @@ type PlayByPlayDTO struct {
 	DefensiveFormationID uint
 	DefensiveTendency    uint
 	BlitzNumber          uint
+	PuntDistance         uint
 	LBCoverage           bool // 0 == Man, 1 == Zone
 	CBCoverage           bool // 0 == Man, 1 == Zone
 	SCoverage            bool // 0 == Man, 1 == Zone
@@ -156,7 +158,7 @@ type PlayByPlayDTO struct {
 	InjuredPlayerID      uint // If a player was injured, show the player
 	InjuryType           uint // Show injury type. The UINT stands for the enum
 	InjurySeverity       uint // In the event that there are different categories of an injury type, this column is here
-	InjuryDuration       uint // Duration should by a number
+	InjuryDuration       int  // Duration should by a number
 	IsTouchdown          bool
 	IsTurnover           bool
 	IsOutOfBounds        bool

@@ -105,6 +105,16 @@ func ToggleRedshirtStatusForPlayer(w http.ResponseWriter, r *http.Request) {
 }
 
 // ToggleRedshirtStatusForPlayer
+func CutCFBPlayerFromRoster(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	PlayerID := vars["PlayerID"]
+
+	managers.CutNFLPlayer(PlayerID)
+
+	fmt.Println(w, "NFL Player Cut from Roster")
+}
+
+// CutNFLPlayer
 func CutNFLPlayerFromRoster(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	PlayerID := vars["PlayerID"]

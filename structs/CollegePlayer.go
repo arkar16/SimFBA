@@ -302,4 +302,8 @@ func (cp *CollegePlayer) WillNotTransfer() {
 
 func (cp *CollegePlayer) WillTransfer() {
 	cp.TransferStatus = 2
+	cp.PreviousTeam = cp.TeamAbbr
+	cp.PreviousTeamID = uint(cp.TeamID)
+	cp.TeamAbbr = ""
+	cp.TeamID = 0
 }

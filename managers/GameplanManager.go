@@ -131,6 +131,7 @@ func GetNFLGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 		} else {
 			opponentID = homeTeamID
 		}
+		break
 	}
 
 	opponentGameplan := GetNFLGameplanByTeamID(opponentID)

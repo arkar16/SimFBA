@@ -3,6 +3,7 @@ package structs
 type GameResultsResponse struct {
 	HomePlayers []GameResultsPlayer
 	AwayPlayers []GameResultsPlayer
+	PlayByPlays []PlayByPlayResponse
 }
 
 type GameResultsPlayer struct {

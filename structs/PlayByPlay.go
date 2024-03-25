@@ -179,3 +179,37 @@ type PlayByPlayDTO struct {
 	IsShort              bool
 	KickDistance         int
 }
+
+type PlayByPlayResponse struct {
+	PlayNumber         uint
+	HomeTeamID         uint
+	HomeTeamScore      uint8
+	AwayTeamID         uint
+	AwayTeamScore      uint8
+	Quarter            uint8
+	TimeRemaining      string
+	Down               uint8
+	Distance           uint8
+	LineOfScrimmage    int8
+	PlayType           string
+	PlayName           string
+	OffensiveFormation string
+	DefensiveFormation string
+	PointOfAttack      string
+	LBCoverage         bool
+	CBCoverage         bool
+	SCoverage          bool
+	Result             string
+}
+
+func (p *PlayByPlayResponse) AddPlayInformation(playType, playName, offFormation, defFormation, poa string) {
+	p.PlayType = playType
+	p.PlayName = playName
+	p.OffensiveFormation = offFormation
+	p.DefensiveFormation = defFormation
+	p.PointOfAttack = poa
+}
+
+func (p *PlayByPlayResponse) AddResult(result string) {
+	p.Result = result
+}

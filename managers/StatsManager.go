@@ -8,6 +8,7 @@ import (
 	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/CalebRose/SimFBA/util"
 	"gorm.io/gorm"
 )
 
@@ -726,9 +727,32 @@ func GetCFBGameResultsByGameID(gameID string) structs.GameResultsResponse {
 	homePlayers := GetAllCollegePlayersWithGameStatsByTeamID(strconv.Itoa(game.HomeTeamID), gameID)
 	awayPlayers := GetAllCollegePlayersWithGameStatsByTeamID(strconv.Itoa(game.AwayTeamID), gameID)
 
+	playByPlays := GetPlayByPlaysByGameID(gameID)
+	// Generate the Play By Play Response
+	playbyPlayResponseList := []structs.PlayByPlayResponse{}
+
+	for idx, p := range playByPlays {
+		number := idx + 1
+		play := structs.PlayByPlayResponse{
+			PlayNumber:      uint(number),
+			HomeTeamID:      p.HomeTeamID,
+			HomeTeamScore:   p.HomeTeamScore,
+			AwayTeamID:      p.AwayTeamID,
+			AwayTeamScore:   p.AwayTeamScore,
+			Quarter:         p.Quarter,
+			TimeRemaining:   p.TimeRemaining,
+			Down:            p.Down,
+			Distance:        p.Distance,
+			LineOfScrimmage: p.LineOfScrimmage,
+		}
+
+		playbyPlayResponseList = append(playbyPlayResponseList, play)
+	}
+
 	return structs.GameResultsResponse{
 		HomePlayers: homePlayers,
 		AwayPlayers: awayPlayers,
+		PlayByPlays: playbyPlayResponseList,
 	}
 }
 
@@ -742,4 +766,45 @@ func GetNFLGameResultsByGameID(gameID string) structs.GameResultsResponse {
 		HomePlayers: homePlayers,
 		AwayPlayers: awayPlayers,
 	}
+}
+
+func GetPlayByPlaysByGameID(id string) []structs.PlayByPlay {
+	db := dbprovider.GetInstance().GetDB()
+
+	plays := []structs.PlayByPlay{}
+
+	db.Where("game_id = ?", id).Find(&plays)
+
+	return plays
+}
+
+func GeneratePlayByPlayResponse(playByPlays []structs.PlayByPlay) []structs.PlayByPlayResponse {
+	playbyPlayResponseList := []structs.PlayByPlayResponse{}
+
+	for idx, p := range playByPlays {
+		number := idx + 1
+		playType := util.GetPlayTypeByEnum(p.PlayTypeID)
+		offFormation := util.GetOffensiveFormationByEnum(p.OffFormationID)
+		defFormation := util.GetDefensiveFormationByEnum(p.DefensiveFormationID)
+		defTendency := util.GetDefensiveTendencyByEnum(p.DefensiveTendency)
+		poa := util.GetPointOfAttackByEnum(p.OffensivePoA)
+
+		play := structs.PlayByPlayResponse{
+			PlayNumber:      uint(number),
+			HomeTeamID:      p.HomeTeamID,
+			HomeTeamScore:   p.HomeTeamScore,
+			AwayTeamID:      p.AwayTeamID,
+			AwayTeamScore:   p.AwayTeamScore,
+			Quarter:         p.Quarter,
+			TimeRemaining:   p.TimeRemaining,
+			Down:            p.Down,
+			Distance:        p.Distance,
+			LineOfScrimmage: p.LineOfScrimmage,
+			PlayType:        playType,
+		}
+
+		playbyPlayResponseList = append(playbyPlayResponseList, play)
+	}
+
+	return playbyPlayResponseList
 }

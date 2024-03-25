@@ -8,6 +8,12 @@ type CollegeGameplan struct {
 	BaseGameplan
 }
 
+type CollegeGameplanTEST struct {
+	gorm.Model
+	TeamID int
+	BaseGameplan
+}
+
 type SchemeFits struct {
 	GoodFits []string
 	BadFits  []string

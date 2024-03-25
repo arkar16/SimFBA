@@ -113,6 +113,34 @@ func GetGameplanByTeamID(teamID string) structs.CollegeGameplan {
 	return gamePlan
 }
 
+func GetGameplanTESTByTeamID(teamID string) structs.CollegeGameplanTEST {
+	db := dbprovider.GetInstance().GetDB()
+
+	var gamePlan structs.CollegeGameplanTEST
+
+	err := db.Where("id = ?", teamID).Find(&gamePlan).Error
+	if err != nil {
+		fmt.Println(err)
+		return structs.CollegeGameplanTEST{}
+	}
+
+	return gamePlan
+}
+
+func GetDCTESTByTeamID(teamID string) structs.CollegeTeamDepthChartTEST {
+	db := dbprovider.GetInstance().GetDB()
+
+	var dc structs.CollegeTeamDepthChartTEST
+
+	err := db.Preload("DepthChartPlayers").Where("id = ?", teamID).Find(&dc).Error
+	if err != nil {
+		fmt.Println(err)
+		return structs.CollegeTeamDepthChartTEST{}
+	}
+
+	return dc
+}
+
 func GetNFLGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 	ts := GetTimestamp()
 	seasonID := strconv.Itoa(ts.NFLSeasonID)

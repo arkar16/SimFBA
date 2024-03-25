@@ -89,3 +89,46 @@ func (sgdr *NFLSimGameDataResponse) AssignPostSeasonStatus(isPostSeason, isNeutr
 	sgdr.IsPostSeason = isPostSeason
 	sgdr.IsNeutral = isNeutral
 }
+
+type SimGameDataResponseTEST struct {
+	HomeTeam       SimTeamDataResponseTEST
+	HomeTeamRoster []structs.CollegePlayer
+	AwayTeam       SimTeamDataResponseTEST
+	AwayTeamRoster []structs.CollegePlayer
+	Stadium        structs.Stadium
+	GameID         int
+	WeekID         int
+	SeasonID       int
+	GameTemp       float64
+	Cloud          string
+	Precip         string
+	WindSpeed      float64
+	WindCategory   string
+	IsPostSeason   bool
+}
+
+func (sgdr *SimGameDataResponseTEST) AssignHomeTeam(team SimTeamDataResponseTEST, roster []structs.CollegePlayer) {
+	sgdr.HomeTeam = team
+	sgdr.HomeTeamRoster = roster
+}
+
+func (sgdr *SimGameDataResponseTEST) AssignAwayTeam(team SimTeamDataResponseTEST, roster []structs.CollegePlayer) {
+	sgdr.AwayTeam = team
+	sgdr.AwayTeamRoster = roster
+}
+
+func (sgdr *SimGameDataResponseTEST) AssignWeather(temp float64, cloud string, precip string, wind string, windspeed float64) {
+	sgdr.GameTemp = temp
+	sgdr.Cloud = cloud
+	sgdr.Precip = precip
+	sgdr.WindSpeed = windspeed
+	sgdr.WindCategory = wind
+}
+
+func (sgdr *SimGameDataResponseTEST) AssignStadium(s structs.Stadium) {
+	sgdr.Stadium = s
+}
+
+func (sgdr *SimGameDataResponseTEST) AssignPostSeasonStatus(isPostSeason bool) {
+	sgdr.IsPostSeason = isPostSeason
+}

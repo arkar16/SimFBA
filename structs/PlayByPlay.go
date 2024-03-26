@@ -124,6 +124,7 @@ func (p *PlayByPlay) Map(play PlayByPlayDTO) {
 	p.IsShort = play.IsShort
 	p.KickDistance = int8(play.KickDistance)
 	p.OnOffense = play.OnOffense
+	p.HomeHasBall = play.HomeHasBall
 }
 
 type PlayByPlayDTO struct {

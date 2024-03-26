@@ -18,6 +18,7 @@ type PlayByPlay struct {
 	AwayTeamID           uint
 	AwayTeamScore        uint8
 	Quarter              uint8
+	HomeHasBall          bool
 	TimeRemaining        string // Will always be at a maximum of 5 characters: "00:00" format
 	Down                 uint8
 	Distance             uint8
@@ -135,6 +136,7 @@ type PlayByPlayDTO struct {
 	AwayTeamScore        uint
 	Quarter              uint
 	TimeRemaining        string // Will always be at a maximum of 5 characters: "00:00" format
+	HomeHasBall          bool
 	Down                 uint
 	Distance             uint
 	LineOfScrimmage      uint // Could make into a uint? Keep track of which side of field? Maybe as a bool? Enum?

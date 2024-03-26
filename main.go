@@ -50,7 +50,6 @@ func handleRequests() {
 	myRouter.HandleFunc("/simfba/sync/recruiting/", controller.SyncRecruiting).Methods("GET")
 	// myRouter.HandleFunc("/simfba/sync/missing/", controller.SyncMissingRES).Methods("GET")
 	myRouter.HandleFunc("/simfba/mass/{off}/{def}", controller.MassUpdateGameplans).Methods("GET")
-	myRouter.HandleFunc("/simfba/mass/test/{off}/{def}", controller.MassUpdateGameplansTEST).Methods("GET")
 	myRouter.HandleFunc("/simfba/sync/weather/", controller.WeatherGenerator).Methods("GET")
 	myRouter.HandleFunc("/simfba/current/weather/forecast/", controller.GetWeatherForecast).Methods("GET")
 	myRouter.HandleFunc("/simfba/future/weather/forecast/", controller.GetFutureWeatherForecast).Methods("GET")
@@ -231,9 +230,13 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/nfl/team/{teamID}/", controller.GetNFLTeamByTeamID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/conference/{conferenceID}/", controller.GetTeamsByConferenceID).Methods("GET")
 	myRouter.HandleFunc("/teams/college/division/{divisionID}/", controller.GetTeamsByDivisionID).Methods("GET")
-	myRouter.HandleFunc("/teams/college/test/sim/{gameID}/", controller.GetHomeAndAwayTeamTestData).Methods("GET")
 	myRouter.HandleFunc("/teams/college/sim/{gameID}/", controller.GetHomeAndAwayTeamData).Methods("GET")
 	myRouter.HandleFunc("/teams/nfl/sim/{gameID}/", controller.GetNFLHomeAndAwayTeamData).Methods("GET")
+
+	// TEST Controls
+	myRouter.HandleFunc("/simfba/team/test/{teamID}/{off}/{def}", controller.UpdateIndividualGameplanTEST).Methods("GET")
+	myRouter.HandleFunc("/simfba/mass/test/{off}/{def}", controller.MassUpdateGameplansTEST).Methods("GET")
+	myRouter.HandleFunc("/teams/college/test/sim/{gameID}/", controller.GetHomeAndAwayTeamTestData).Methods("GET")
 
 	// Trade Controls
 	myRouter.HandleFunc("/trades/nfl/all/accepted", controller.GetAllAcceptedTrades).Methods("GET")

@@ -481,24 +481,20 @@ func MassUpdateGameplanSchemes(off, def string) {
 	offensiveSchemes := util.GetOffensiveDefaultSchemes()
 	defensiveSchemes := util.GetDefensiveDefaultSchemes()
 	for _, team := range teams {
-		id := team.ID
-		if id != 39 && id != 62 {
-			continue
-		}
 		teamID := strconv.Itoa(int(team.ID))
 		gp := GetGameplanByTeamID(teamID)
-		// gp.UpdateSchemes(off, def)
-		offe := GetTestOffensiveSchemesByTeamID(id)
-		defe := GetTestDefensiveSchemesByTeamID(id)
+		gp.UpdateSchemes(off, def)
+		// offe := GetTestOffensiveSchemesByTeamID(id)
+		// defe := GetTestDefensiveSchemesByTeamID(id)
 		// Map Default Scheme for offense & defense
-		offFormations := offensiveSchemes[offe]
-		defFormations := defensiveSchemes[defe][offe]
+		offFormations := offensiveSchemes[off]
+		defFormations := defensiveSchemes[def][off]
 
 		dto := structs.CollegeGameplan{
 			TeamID: int(team.ID),
 			BaseGameplan: structs.BaseGameplan{
-				OffensiveScheme:    offe,
-				DefensiveScheme:    defe,
+				OffensiveScheme:    off,
+				DefensiveScheme:    def,
 				OffensiveFormation: offFormations,
 				DefensiveFormation: defFormations,
 				BlitzSafeties:      gp.BlitzSafeties,
@@ -2222,24 +2218,20 @@ func MassUpdateGameplanSchemesTEST(off, def string) {
 	offensiveSchemes := util.GetOffensiveDefaultSchemes()
 	defensiveSchemes := util.GetDefensiveDefaultSchemes()
 	for _, team := range teams {
-		id := team.ID
-		if id != 39 && id != 62 {
-			continue
-		}
 		teamID := strconv.Itoa(int(team.ID))
 		gp := GetGameplanTESTByTeamID(teamID)
-		// gp.UpdateSchemes(off, def)
-		offe := GetTestOffensiveSchemesByTeamID(id)
-		defe := GetTestDefensiveSchemesByTeamID(id)
+		gp.UpdateSchemes(off, def)
+		// offe := GetTestOffensiveSchemesByTeamID(id)
+		// defe := GetTestDefensiveSchemesByTeamID(id)
 		// Map Default Scheme for offense & defense
-		offFormations := offensiveSchemes[offe]
-		defFormations := defensiveSchemes[defe][offe]
+		offFormations := offensiveSchemes[off]
+		defFormations := defensiveSchemes[def][off]
 
 		dto := structs.CollegeGameplanTEST{
 			TeamID: int(team.ID),
 			BaseGameplan: structs.BaseGameplan{
-				OffensiveScheme:    offe,
-				DefensiveScheme:    defe,
+				OffensiveScheme:    off,
+				DefensiveScheme:    def,
 				OffensiveFormation: offFormations,
 				DefensiveFormation: defFormations,
 				BlitzSafeties:      gp.BlitzSafeties,
@@ -2263,6 +2255,47 @@ func MassUpdateGameplanSchemesTEST(off, def string) {
 
 		db.Save(&gp)
 	}
+}
+
+func UpdateIndividualGameplanSchemeTEST(teamID, off, def string) {
+	db := dbprovider.GetInstance().GetDB()
+	offensiveSchemes := util.GetOffensiveDefaultSchemes()
+	defensiveSchemes := util.GetDefensiveDefaultSchemes()
+
+	gp := GetGameplanTESTByTeamID(teamID)
+	gp.UpdateSchemes(off, def)
+	// Map Default Scheme for offense & defense
+	offFormations := offensiveSchemes[off]
+	defFormations := defensiveSchemes[def][off]
+
+	dto := structs.CollegeGameplanTEST{
+		TeamID: gp.TeamID,
+		BaseGameplan: structs.BaseGameplan{
+			OffensiveScheme:    off,
+			DefensiveScheme:    def,
+			OffensiveFormation: offFormations,
+			DefensiveFormation: defFormations,
+			BlitzSafeties:      gp.BlitzSafeties,
+			BlitzCorners:       gp.BlitzCorners,
+			LinebackerCoverage: gp.LinebackerCoverage,
+			MaximumFGDistance:  gp.MaximumFGDistance,
+			GoFor4AndShort:     gp.GoFor4AndShort,
+			GoFor4AndLong:      gp.GoFor4AndLong,
+			DefaultOffense:     gp.DefaultOffense,
+			DefaultDefense:     gp.DefaultDefense,
+			PrimaryHB:          75,
+			PitchFocus:         50,
+			DiveFocus:          50,
+		},
+	}
+
+	gp.UpdateCollegeGameplanTEST(dto)
+
+	// Autosort Depth Chart
+	ReAlignCollegeDepthChartTEST(db, teamID, gp)
+
+	db.Save(&gp)
+
 }
 
 func ReAlignCollegeDepthChartTEST(db *gorm.DB, teamID string, gp structs.CollegeGameplanTEST) {

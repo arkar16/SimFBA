@@ -3,9 +3,11 @@ package structs
 type GameResultsResponse struct {
 	HomePlayers []GameResultsPlayer
 	AwayPlayers []GameResultsPlayer
+	PlayByPlays []PlayByPlayResponse
 }
 
 type GameResultsPlayer struct {
+	ID                   uint
 	FirstName            string
 	LastName             string
 	Position             string

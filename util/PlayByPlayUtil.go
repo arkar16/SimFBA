@@ -109,6 +109,51 @@ func getPlayTypeMap() map[uint8]string {
 	}
 }
 
+func GetPlayNameByEnum(playName uint8) string {
+	playNameMap := getPlayNameMap()
+	return playNameMap[playName]
+}
+
+func getPlayNameMap() map[uint8]string {
+	return map[uint8]string{
+		0:  "N/A",
+		1:  "Outside Run Left",
+		2:  "Outside Run Right",
+		3:  "Inside Run Left",
+		4:  "Inside Run Right",
+		5:  "Power Run Left",
+		6:  "Power Run Right",
+		7:  "Draw Left",
+		8:  "Draw Right",
+		9:  "Read Option Left",
+		10: "Read Option Right",
+		11: "Speed Option Left",
+		12: "Speed Option Right",
+		13: "Inverted Option Left",
+		14: "Inverted Option Right",
+		15: "Triple Option Left",
+		16: "Triple Option Right",
+		17: "Choice Inside Right",
+		18: "Choice Inside Left",
+		19: "Choice Outside Right",
+		20: "Choice Outside Left",
+		21: "Choice Power Right",
+		22: "Choice Power Left",
+		23: "Peek Inside Right",
+		24: "Peek Inside Left",
+		25: "Peek Outside Right",
+		26: "Peek Outside Left",
+		27: "Peek Power Right",
+		28: "Peek Power Left",
+		29: "Quick",
+		30: "Short",
+		31: "Long",
+		32: "Screen",
+		33: "Play Action Short",
+		34: "Play Action Long",
+	}
+}
+
 func GetPointOfAttackByEnum(poa uint8) string {
 	playMap := getPointOfAttackMap()
 	return playMap[poa]
@@ -129,6 +174,54 @@ func getPointOfAttackMap() map[uint8]string {
 		10: "Quick",
 		11: "Short",
 		12: "Long",
+	}
+}
+
+func GetPenaltyByEnum(penalty uint8) string {
+	penaltyMap := getPenaltyMap()
+	return penaltyMap[penalty]
+}
+
+func getPenaltyMap() map[uint8]string {
+	return map[uint8]string{
+		0:  "N/A",
+		1:  "Catch Interference",
+		2:  "Defensive Holding",
+		3:  "Defensive Pass Interference",
+		4:  "Delay of Game",
+		5:  "Enchroachment",
+		6:  "Face Mask",
+		7:  "False Start",
+		8:  "Holding",
+		9:  "Holding Kicking Team",
+		10: "Holding Returning Team",
+		11: "Horse Collar",
+		12: "Horse Collar Tackle",
+		13: "Illegal Block",
+		14: "Illegal Block Above the Waist",
+		15: "Illegal Contact",
+		16: "Illegal Double-Team Block",
+		17: "Illegal Fair Catch Signal",
+		18: "Illegal Formation",
+		19: "Illegal Forward Pass",
+		20: "Illegal Motion",
+		21: "Illegal Shift",
+		22: "Illegal Touch(Player Out of Bounds)",
+		23: "Illegal Use of Hands",
+		24: "Ineligible Downfield",
+		25: "Intentional Grounding",
+		26: "Kickoff Out of Bounds",
+		27: "Neutral Zone Infraction",
+		28: "Offensive Holding",
+		29: "Offensive Pass Interference",
+		30: "Offside",
+		31: "Offsides",
+		32: "Roughing the Kicker",
+		33: "Roughing the Passer",
+		34: "Running Into the Kicker",
+		35: "Too Many Men on the Field",
+		36: "Unnecessary Roughness",
+		37: "Unsportsmanlike Conduct",
 	}
 }
 
@@ -233,27 +326,27 @@ func getInjuryMap() map[uint8]string {
 
 func GetInjuryLength(injr int) string {
 	if injr == -4 {
-		return "Quarter"
+		return "a quarter"
 	}
 	if injr == 2 {
-		return "Half"
+		return "the remainder of the half"
 	}
 	if injr == 0 {
 		return "N/A"
 	}
 	if injr == 1 {
-		return "Rest of the Game"
+		return "the rest of the game"
 	}
 	if injr == 2 {
-		return "Rest of the Game and next week"
+		return "the rest of the Game and next week"
 	}
 	if injr > 2 && injr < 5 {
-		return "Couple of weeks"
+		return "a couple of weeks"
 	}
 	if injr < 8 {
-		return "Several Weeks"
+		return "several Weeks"
 	}
-	return "Most likely the remainder of the season"
+	return "most likely the remainder of the season"
 }
 
 func GetInjurySeverity(sev int) string {

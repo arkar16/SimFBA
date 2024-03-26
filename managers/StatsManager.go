@@ -723,31 +723,16 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 
 func GetCFBGameResultsByGameID(gameID string) structs.GameResultsResponse {
 	game := GetCollegeGameByGameID(gameID)
+	htID := strconv.Itoa(game.HomeTeamID)
+	atID := strconv.Itoa(game.AwayTeamID)
 
-	homePlayers := GetAllCollegePlayersWithGameStatsByTeamID(strconv.Itoa(game.HomeTeamID), gameID)
-	awayPlayers := GetAllCollegePlayersWithGameStatsByTeamID(strconv.Itoa(game.AwayTeamID), gameID)
+	homePlayers := GetAllCollegePlayersWithGameStatsByTeamID(htID, gameID)
+	awayPlayers := GetAllCollegePlayersWithGameStatsByTeamID(atID, gameID)
+	participantMap := getGameParticipantMap(homePlayers, awayPlayers)
 
 	playByPlays := GetPlayByPlaysByGameID(gameID)
 	// Generate the Play By Play Response
-	playbyPlayResponseList := []structs.PlayByPlayResponse{}
-
-	for idx, p := range playByPlays {
-		number := idx + 1
-		play := structs.PlayByPlayResponse{
-			PlayNumber:      uint(number),
-			HomeTeamID:      p.HomeTeamID,
-			HomeTeamScore:   p.HomeTeamScore,
-			AwayTeamID:      p.AwayTeamID,
-			AwayTeamScore:   p.AwayTeamScore,
-			Quarter:         p.Quarter,
-			TimeRemaining:   p.TimeRemaining,
-			Down:            p.Down,
-			Distance:        p.Distance,
-			LineOfScrimmage: p.LineOfScrimmage,
-		}
-
-		playbyPlayResponseList = append(playbyPlayResponseList, play)
-	}
+	playbyPlayResponseList := GeneratePlayByPlayResponse(playByPlays, participantMap)
 
 	return structs.GameResultsResponse{
 		HomePlayers: homePlayers,
@@ -778,33 +763,185 @@ func GetPlayByPlaysByGameID(id string) []structs.PlayByPlay {
 	return plays
 }
 
-func GeneratePlayByPlayResponse(playByPlays []structs.PlayByPlay) []structs.PlayByPlayResponse {
+func GeneratePlayByPlayResponse(playByPlays []structs.PlayByPlay, participantMap map[uint]structs.GameResultsPlayer) []structs.PlayByPlayResponse {
 	playbyPlayResponseList := []structs.PlayByPlayResponse{}
-
+	// Get Player Information
 	for idx, p := range playByPlays {
 		number := idx + 1
 		playType := util.GetPlayTypeByEnum(p.PlayTypeID)
 		offFormation := util.GetOffensiveFormationByEnum(p.OffFormationID)
 		defFormation := util.GetDefensiveFormationByEnum(p.DefensiveFormationID)
 		defTendency := util.GetDefensiveTendencyByEnum(p.DefensiveTendency)
+		playName := util.GetPlayNameByEnum(p.PlayNameID)
 		poa := util.GetPointOfAttackByEnum(p.OffensivePoA)
 
 		play := structs.PlayByPlayResponse{
-			PlayNumber:      uint(number),
-			HomeTeamID:      p.HomeTeamID,
-			HomeTeamScore:   p.HomeTeamScore,
-			AwayTeamID:      p.AwayTeamID,
-			AwayTeamScore:   p.AwayTeamScore,
-			Quarter:         p.Quarter,
-			TimeRemaining:   p.TimeRemaining,
-			Down:            p.Down,
-			Distance:        p.Distance,
-			LineOfScrimmage: p.LineOfScrimmage,
-			PlayType:        playType,
+			PlayNumber:         uint(number),
+			HomeTeamID:         p.HomeTeamID,
+			HomeTeamScore:      p.HomeTeamScore,
+			AwayTeamID:         p.AwayTeamID,
+			AwayTeamScore:      p.AwayTeamScore,
+			Quarter:            p.Quarter,
+			TimeRemaining:      p.TimeRemaining,
+			Down:               p.Down,
+			Distance:           p.Distance,
+			LineOfScrimmage:    p.LineOfScrimmage,
+			PlayType:           playType,
+			PlayName:           playName,
+			PointOfAttack:      poa,
+			OffensiveFormation: offFormation,
+			DefensiveFormation: defFormation,
+			DefensiveTendency:  defTendency,
 		}
 
 		playbyPlayResponseList = append(playbyPlayResponseList, play)
 	}
 
 	return playbyPlayResponseList
+}
+
+func generateResultsString(play structs.PlayByPlay, playType, playName string, participantMap map[uint]structs.GameResultsPlayer, twoPtCheck bool) string {
+	qbID := play.QBPlayerID
+	bcID := play.BallCarrierID
+	t1ID := play.Tackler1ID
+	t2ID := play.Tackler2ID
+	turnID := play.TurnoverPlayerID
+	ijID := play.InjuredPlayerID
+	pnID := play.PenaltyPlayerID
+	yardsSTR := strconv.Itoa(int(play.ResultYards))
+	firstSegment := ""
+	secondSegment := ""
+	thirdSegment := ""
+
+	// First Segment
+	if playType == "Pass" {
+		qbLabel := getPlayerLabel(participantMap[qbID])
+		yards := " yards. "
+		if play.ResultYards == 1 || play.ResultYards == -1 {
+			yards = " yard. "
+		}
+		firstSegment = qbLabel
+
+		// Scenarios
+		if play.IsScramble {
+			firstSegment += " scrambles for " + yardsSTR + yards
+		} else if play.IsSacked {
+			tackle1Label := getPlayerLabel(participantMap[t1ID])
+			if t2ID > 0 {
+				tackle2Label := getPlayerLabel(participantMap[t2ID])
+				tackle1Label += " and " + tackle2Label
+			}
+			firstSegment += " is sacked on the play by " + tackle1Label + "for a loss of " + yardsSTR + yards
+		} else if play.IsComplete {
+			bcLabel := getPlayerLabel(participantMap[bcID])
+			firstSegment += " throws to " + bcLabel + ", complete for " + yardsSTR + yards
+		} else if play.IsINT {
+			bcLabel := getPlayerLabel(participantMap[bcID])
+			turnOverLabel := getPlayerLabel(participantMap[turnID])
+			secondSegment += "throws and is intercepted! Caught by " +
+				turnOverLabel + " and returned for " +
+				yardsSTR + " yards from the LOS. Pass was intended for " + bcLabel
+		} else {
+			if bcID > 0 {
+				bcLabel := getPlayerLabel(participantMap[bcID])
+				firstSegment += " trhows it, and is incomplete. Pass intended for " + bcLabel
+			} else {
+				firstSegment += " can't find an open receiver and throws it away."
+			}
+		}
+
+	} else if playType == "Run" {
+		bcLabel := getPlayerLabel(participantMap[bcID])
+		firstSegment = bcLabel + " carries for " + yardsSTR
+		yards := " yards ."
+		if play.ResultYards == 1 || play.ResultYards == -1 {
+			yards = " yard. "
+		}
+		firstSegment += yards
+	} else if playType == "Kickoff" {
+		// Need assistance for kickign player ID and returner ID
+	} else if playType == "Punt" {
+		// Need assistance for punting player ID and returner ID
+	} else if playType == "Extra Point" {
+		// Need assistance for kicking player ID and outcome
+	}
+
+	// Second Segment - Tackles and OOB
+	if play.IsOutOfBounds {
+		secondSegment = "Ran out of bounds."
+	} else if play.IsTouchdown && !twoPtCheck {
+		secondSegment = "TOUCHDOWN!"
+	} else if !play.IsSacked && t1ID > 0 {
+		tackle1Label := getPlayerLabel(participantMap[t1ID])
+		secondSegment = "Tackled by " + tackle1Label
+		if t2ID > 0 {
+			tackle2Label := getPlayerLabel(participantMap[t2ID])
+			secondSegment += " and " + tackle2Label
+		}
+		secondSegment += ". "
+	}
+
+	if play.IsTouchdown && twoPtCheck {
+		secondSegment += "The 2 Point Conversion is GOOD!"
+	} else if !play.IsTouchdown && twoPtCheck {
+		secondSegment += "The 2 Point Conversion is NO GOOD!"
+	}
+
+	if play.IsFumble {
+		turnOverLabel := getPlayerLabel(participantMap[turnID])
+		secondSegment += "Fumble! Recovered by " + turnOverLabel + "."
+	} else if play.IsSafety {
+		secondSegment += "Safety. "
+	}
+
+	// Third Segments -- Penalties and Injuries
+	if play.PenaltyID > 0 {
+		penalty := util.GetPenaltyByEnum(play.PenaltyID)
+		thirdSegment = "PENALTY: " + penalty + ". "
+		offendingTeam := "By the Offense. "
+		if !play.OnOffense {
+			offendingTeam = "By the Defense. "
+		}
+		thirdSegment += offendingTeam
+		if pnID > 0 {
+			player := participantMap[pnID]
+			penaltyLabel := getPlayerLabel(player)
+			thirdSegment += "Player: " + penaltyLabel + ". "
+		}
+		penaltyYards := strconv.Itoa(int(play.PenaltyYards))
+		yards := " yards. "
+		if play.PenaltyYards == 1 || play.PenaltyYards == -1 {
+			yards = " yard. "
+		}
+		thirdSegment += penaltyYards + yards
+
+	}
+
+	if ijID > 0 {
+		thirdSegment += "INJURY: "
+		injLabel := getPlayerLabel(participantMap[ijID])
+		injuryType := util.GetInjuryByEnum(play.InjuryType)
+		injLength := util.GetInjuryLength(int(play.InjuryDuration))
+		injSev := util.GetInjurySeverity(int(play.InjurySeverity))
+		thirdSegment += injLabel + " has a " + injSev + " " + injuryType + " and will be out for " + injLength + "."
+	}
+
+	return firstSegment + secondSegment + thirdSegment
+}
+
+func getPlayerLabel(player structs.GameResultsPlayer) string {
+	return player.Position + " " + player.FirstName + " " + player.LastName
+}
+
+func getGameParticipantMap(homePlayers, awayPlayers []structs.GameResultsPlayer) map[uint]structs.GameResultsPlayer {
+	playerMap := make(map[uint]structs.GameResultsPlayer)
+
+	for _, p := range homePlayers {
+		playerMap[p.ID] = p
+	}
+
+	for _, p := range awayPlayers {
+		playerMap[p.ID] = p
+	}
+	return playerMap
 }

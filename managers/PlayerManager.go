@@ -445,6 +445,7 @@ func GetAllCollegePlayersWithGameStatsByTeamID(TeamID string, GameID string) []s
 		}
 
 		row := structs.GameResultsPlayer{
+			ID:                   p.ID,
 			FirstName:            p.FirstName,
 			LastName:             p.LastName,
 			Position:             p.Position,
@@ -526,6 +527,7 @@ func GetAllCollegePlayersWithGameStatsByTeamID(TeamID string, GameID string) []s
 		}
 
 		row := structs.GameResultsPlayer{
+			ID:                   p.ID,
 			FirstName:            p.FirstName,
 			LastName:             p.LastName,
 			Position:             p.Position,
@@ -615,6 +617,7 @@ func GetAllNFLPlayersWithGameStatsByTeamID(TeamID string, GameID string) []struc
 		}
 
 		row := structs.GameResultsPlayer{
+			ID:                   p.ID,
 			FirstName:            p.FirstName,
 			LastName:             p.LastName,
 			Position:             p.Position,
@@ -696,6 +699,7 @@ func GetAllNFLPlayersWithGameStatsByTeamID(TeamID string, GameID string) []struc
 		}
 
 		row := structs.GameResultsPlayer{
+			ID:                   p.ID,
 			FirstName:            p.FirstName,
 			LastName:             p.LastName,
 			Position:             p.Position,

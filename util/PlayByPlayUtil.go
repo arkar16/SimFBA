@@ -367,3 +367,10 @@ func GetInjurySeverity(sev int) string {
 	}
 	return "Career-Ending"
 }
+
+func GetCoverageStr(cov bool) string {
+	if cov {
+		return "Zone"
+	}
+	return "Man"
+}

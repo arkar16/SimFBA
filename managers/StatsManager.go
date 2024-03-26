@@ -730,9 +730,9 @@ func GetCFBGameResultsByGameID(gameID string) structs.GameResultsResponse {
 	awayPlayers := GetAllCollegePlayersWithGameStatsByTeamID(atID, gameID)
 	participantMap := getGameParticipantMap(homePlayers, awayPlayers)
 
-	playByPlays := GetPlayByPlaysByGameID(gameID)
+	playByPlays := GetCFBPlayByPlaysByGameID(gameID)
 	// Generate the Play By Play Response
-	playbyPlayResponseList := GeneratePlayByPlayResponse(playByPlays, participantMap)
+	playbyPlayResponseList := GenerateCFBPlayByPlayResponse(playByPlays, participantMap)
 
 	return structs.GameResultsResponse{
 		HomePlayers: homePlayers,
@@ -753,19 +753,30 @@ func GetNFLGameResultsByGameID(gameID string) structs.GameResultsResponse {
 	}
 }
 
-func GetPlayByPlaysByGameID(id string) []structs.PlayByPlay {
+func GetCFBPlayByPlaysByGameID(id string) []structs.CollegePlayByPlay {
 	db := dbprovider.GetInstance().GetDB()
 
-	plays := []structs.PlayByPlay{}
+	plays := []structs.CollegePlayByPlay{}
 
 	db.Where("game_id = ?", id).Find(&plays)
 
 	return plays
 }
 
-func GeneratePlayByPlayResponse(playByPlays []structs.PlayByPlay, participantMap map[uint]structs.GameResultsPlayer) []structs.PlayByPlayResponse {
+func GetNFLPlayByPlaysByGameID(id string) []structs.NFLPlayByPlay {
+	db := dbprovider.GetInstance().GetDB()
+
+	plays := []structs.NFLPlayByPlay{}
+
+	db.Where("game_id = ?", id).Find(&plays)
+
+	return plays
+}
+
+func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, participantMap map[uint]structs.GameResultsPlayer) []structs.PlayByPlayResponse {
 	playbyPlayResponseList := []structs.PlayByPlayResponse{}
 	// Get Player Information
+	touchDown := false
 	for idx, p := range playByPlays {
 		number := idx + 1
 		playType := util.GetPlayTypeByEnum(p.PlayTypeID)
@@ -774,7 +785,6 @@ func GeneratePlayByPlayResponse(playByPlays []structs.PlayByPlay, participantMap
 		defTendency := util.GetDefensiveTendencyByEnum(p.DefensiveTendency)
 		playName := util.GetPlayNameByEnum(p.PlayNameID)
 		poa := util.GetPointOfAttackByEnum(p.OffensivePoA)
-
 		play := structs.PlayByPlayResponse{
 			PlayNumber:         uint(number),
 			HomeTeamID:         p.HomeTeamID,
@@ -792,6 +802,21 @@ func GeneratePlayByPlayResponse(playByPlays []structs.PlayByPlay, participantMap
 			OffensiveFormation: offFormation,
 			DefensiveFormation: defFormation,
 			DefensiveTendency:  defTendency,
+			Possession:         p.HomeHasBall,
+			QBPlayerID:         p.QBPlayerID,
+			BallCarrierID:      p.BallCarrierID,
+			Tackler1ID:         p.Tackler1ID,
+			Tackler2ID:         p.Tackler2ID,
+			ResultYards:        p.ResultYards,
+		}
+
+		result := generateResultsString(p.PlayByPlay, playType, playName, participantMap, touchDown)
+		play.AddResult(result)
+
+		if p.IsTouchdown && !touchDown {
+			touchDown = true
+		} else if !p.IsTouchdown && touchDown {
+			touchDown = false
 		}
 
 		playbyPlayResponseList = append(playbyPlayResponseList, play)
@@ -816,10 +841,7 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 	// First Segment
 	if playType == "Pass" {
 		qbLabel := getPlayerLabel(participantMap[qbID])
-		yards := " yards. "
-		if play.ResultYards == 1 || play.ResultYards == -1 {
-			yards = " yard. "
-		}
+		yards := getYardsString(play.ResultYards)
 		firstSegment = qbLabel
 
 		// Scenarios
@@ -853,21 +875,83 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 	} else if playType == "Run" {
 		bcLabel := getPlayerLabel(participantMap[bcID])
 		firstSegment = bcLabel + " carries for " + yardsSTR
-		yards := " yards ."
-		if play.ResultYards == 1 || play.ResultYards == -1 {
-			yards = " yard. "
-		}
+		yards := getYardsString(play.ResultYards)
 		firstSegment += yards
 	} else if playType == "Kickoff" {
 		// Need assistance for kickign player ID and returner ID
+		kickerLabel := getPlayerLabel(participantMap[qbID])
+		recLabel := getPlayerLabel(participantMap[bcID])
+		distanceStr := getYardsString(play.KickDistance)
+		verb := " kicks for "
+		firstSegment = kickerLabel + verb + strconv.Itoa(int(play.KickDistance)) + distanceStr
+		if play.KickDistance > 64 {
+			if play.KickDistance == 65 {
+				firstSegment += " Fielded at the goalline by " + recLabel
+			} else {
+				firstSegment += " Fielded deep in the endzone by " + recLabel
+			}
+		} else {
+			outside := 65 - play.KickDistance
+			firstSegment += " Fielded at the " + strconv.Itoa(int(outside)) + " yardline by " + recLabel + ". "
+		}
+		if play.IsTouchback {
+			firstSegment += " Touchback. "
+		} else {
+			resultYdsStr := strconv.Itoa(int(play.ResultYards))
+			resultYards := getYardsString(play.ResultYards)
+			firstSegment += recLabel + " returns the ball " + resultYdsStr + resultYards
+		}
 	} else if playType == "Punt" {
 		// Need assistance for punting player ID and returner ID
-	} else if playType == "Extra Point" {
+		// Need assistance for kickign player ID and returner ID
+		kickerLabel := getPlayerLabel(participantMap[qbID])
+		recLabel := getPlayerLabel(participantMap[bcID])
+		distanceStr := getYardsString(play.KickDistance)
+		verb := " punts for "
+		firstSegment = kickerLabel + verb + strconv.Itoa(int(play.KickDistance)) + distanceStr
+		resultYdsStr := strconv.Itoa(int(play.ResultYards + 20))
+		resultYards := getYardsString(play.ResultYards)
+		if !play.IsTouchback {
+			resultYdsStr = strconv.Itoa(int(play.ResultYards))
+		}
+
+		if play.IsBlocked {
+			blockerLabel := getPlayerLabel(participantMap[turnID])
+			firstSegment += " BLOCKED by " + blockerLabel
+		} else if play.IsFairCatch {
+			firstSegment += recLabel + " calls for a fair catch. "
+		} else if play.IsTouchback {
+			firstSegment += " Touchback. "
+		} else {
+			firstSegment += recLabel + " returns the ball " + resultYdsStr + resultYards
+		}
+	} else if playType == "XP" {
 		// Need assistance for kicking player ID and outcome
+		kickerLabel := getPlayerLabel(participantMap[qbID])
+		firstSegment = kickerLabel + "'s extra point attempt is "
+		if play.IsBlocked {
+			blockerLabel := getPlayerLabel(participantMap[turnID])
+			firstSegment += " BLOCKED by " + blockerLabel + ". No good. "
+		} else if play.IsGood {
+			firstSegment += "good. "
+		} else {
+			firstSegment += "no good. "
+		}
+	} else if playType == "FG" {
+		kickerLabel := getPlayerLabel(participantMap[qbID])
+		firstSegment = kickerLabel + "'s field goal attempt is "
+		if play.IsBlocked {
+			blockerLabel := getPlayerLabel(participantMap[turnID])
+			firstSegment += " BLOCKED by " + blockerLabel + ". No good. "
+		} else if play.IsGood {
+			firstSegment += "good. "
+		} else {
+			firstSegment += "no good. "
+		}
 	}
 
 	// Second Segment - Tackles and OOB
-	if play.IsOutOfBounds {
+	if play.IsOutOfBounds && playType != "Kickoff" {
 		secondSegment = "Ran out of bounds."
 	} else if play.IsTouchdown && !twoPtCheck {
 		secondSegment = "TOUCHDOWN!"
@@ -909,10 +993,7 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 			thirdSegment += "Player: " + penaltyLabel + ". "
 		}
 		penaltyYards := strconv.Itoa(int(play.PenaltyYards))
-		yards := " yards. "
-		if play.PenaltyYards == 1 || play.PenaltyYards == -1 {
-			yards = " yard. "
-		}
+		yards := getYardsString(play.PenaltyYards)
 		thirdSegment += penaltyYards + yards
 
 	}
@@ -944,4 +1025,12 @@ func getGameParticipantMap(homePlayers, awayPlayers []structs.GameResultsPlayer)
 		playerMap[p.ID] = p
 	}
 	return playerMap
+}
+
+func getYardsString(yds int8) string {
+	yards := " yards ."
+	if yds == 1 || yds == -1 {
+		yards = " yard. "
+	}
+	return yards
 }

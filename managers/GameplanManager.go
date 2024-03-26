@@ -113,6 +113,34 @@ func GetGameplanByTeamID(teamID string) structs.CollegeGameplan {
 	return gamePlan
 }
 
+func GetGameplanTESTByTeamID(teamID string) structs.CollegeGameplanTEST {
+	db := dbprovider.GetInstance().GetDB()
+
+	var gamePlan structs.CollegeGameplanTEST
+
+	err := db.Where("id = ?", teamID).Find(&gamePlan).Error
+	if err != nil {
+		fmt.Println(err)
+		return structs.CollegeGameplanTEST{}
+	}
+
+	return gamePlan
+}
+
+func GetDCTESTByTeamID(teamID string) structs.CollegeTeamDepthChartTEST {
+	db := dbprovider.GetInstance().GetDB()
+
+	var dc structs.CollegeTeamDepthChartTEST
+
+	err := db.Preload("DepthChartPlayers").Where("id = ?", teamID).Find(&dc).Error
+	if err != nil {
+		fmt.Println(err)
+		return structs.CollegeTeamDepthChartTEST{}
+	}
+
+	return dc
+}
+
 func GetNFLGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 	ts := GetTimestamp()
 	seasonID := strconv.Itoa(ts.NFLSeasonID)
@@ -453,24 +481,20 @@ func MassUpdateGameplanSchemes(off, def string) {
 	offensiveSchemes := util.GetOffensiveDefaultSchemes()
 	defensiveSchemes := util.GetDefensiveDefaultSchemes()
 	for _, team := range teams {
-		id := team.ID
-		if id != 39 && id != 62 {
-			continue
-		}
 		teamID := strconv.Itoa(int(team.ID))
 		gp := GetGameplanByTeamID(teamID)
-		// gp.UpdateSchemes(off, def)
-		offe := GetTestOffensiveSchemesByTeamID(id)
-		defe := GetTestDefensiveSchemesByTeamID(id)
+		gp.UpdateSchemes(off, def)
+		// offe := GetTestOffensiveSchemesByTeamID(id)
+		// defe := GetTestDefensiveSchemesByTeamID(id)
 		// Map Default Scheme for offense & defense
-		offFormations := offensiveSchemes[offe]
-		defFormations := defensiveSchemes[defe][offe]
+		offFormations := offensiveSchemes[off]
+		defFormations := defensiveSchemes[def][off]
 
 		dto := structs.CollegeGameplan{
 			TeamID: int(team.ID),
 			BaseGameplan: structs.BaseGameplan{
-				OffensiveScheme:    offe,
-				DefensiveScheme:    defe,
+				OffensiveScheme:    off,
+				DefensiveScheme:    def,
 				OffensiveFormation: offFormations,
 				DefensiveFormation: defFormations,
 				BlitzSafeties:      gp.BlitzSafeties,
@@ -2186,4 +2210,845 @@ func GetTestDefensiveSchemesByTeamID(id uint) string {
 		return "Multiple"
 	}
 	return ""
+}
+
+func MassUpdateGameplanSchemesTEST(off, def string) {
+	db := dbprovider.GetInstance().GetDB()
+	teams := GetAllCollegeTeams()
+	offensiveSchemes := util.GetOffensiveDefaultSchemes()
+	defensiveSchemes := util.GetDefensiveDefaultSchemes()
+	for _, team := range teams {
+		teamID := strconv.Itoa(int(team.ID))
+		gp := GetGameplanTESTByTeamID(teamID)
+		gp.UpdateSchemes(off, def)
+		// offe := GetTestOffensiveSchemesByTeamID(id)
+		// defe := GetTestDefensiveSchemesByTeamID(id)
+		// Map Default Scheme for offense & defense
+		offFormations := offensiveSchemes[off]
+		defFormations := defensiveSchemes[def][off]
+
+		dto := structs.CollegeGameplanTEST{
+			TeamID: int(team.ID),
+			BaseGameplan: structs.BaseGameplan{
+				OffensiveScheme:    off,
+				DefensiveScheme:    def,
+				OffensiveFormation: offFormations,
+				DefensiveFormation: defFormations,
+				BlitzSafeties:      gp.BlitzSafeties,
+				BlitzCorners:       gp.BlitzCorners,
+				LinebackerCoverage: gp.LinebackerCoverage,
+				MaximumFGDistance:  gp.MaximumFGDistance,
+				GoFor4AndShort:     gp.GoFor4AndShort,
+				GoFor4AndLong:      gp.GoFor4AndLong,
+				DefaultOffense:     gp.DefaultOffense,
+				DefaultDefense:     gp.DefaultDefense,
+				PrimaryHB:          75,
+				PitchFocus:         50,
+				DiveFocus:          50,
+			},
+		}
+
+		gp.UpdateCollegeGameplanTEST(dto)
+
+		// Autosort Depth Chart
+		ReAlignCollegeDepthChartTEST(db, teamID, gp)
+
+		db.Save(&gp)
+	}
+}
+
+func UpdateIndividualGameplanSchemeTEST(teamID, off, def string) {
+	db := dbprovider.GetInstance().GetDB()
+	offensiveSchemes := util.GetOffensiveDefaultSchemes()
+	defensiveSchemes := util.GetDefensiveDefaultSchemes()
+
+	gp := GetGameplanTESTByTeamID(teamID)
+	gp.UpdateSchemes(off, def)
+	// Map Default Scheme for offense & defense
+	offFormations := offensiveSchemes[off]
+	defFormations := defensiveSchemes[def][off]
+
+	dto := structs.CollegeGameplanTEST{
+		TeamID: gp.TeamID,
+		BaseGameplan: structs.BaseGameplan{
+			OffensiveScheme:    off,
+			DefensiveScheme:    def,
+			OffensiveFormation: offFormations,
+			DefensiveFormation: defFormations,
+			BlitzSafeties:      gp.BlitzSafeties,
+			BlitzCorners:       gp.BlitzCorners,
+			LinebackerCoverage: gp.LinebackerCoverage,
+			MaximumFGDistance:  gp.MaximumFGDistance,
+			GoFor4AndShort:     gp.GoFor4AndShort,
+			GoFor4AndLong:      gp.GoFor4AndLong,
+			DefaultOffense:     gp.DefaultOffense,
+			DefaultDefense:     gp.DefaultDefense,
+			PrimaryHB:          75,
+			PitchFocus:         50,
+			DiveFocus:          50,
+		},
+	}
+
+	gp.UpdateCollegeGameplanTEST(dto)
+
+	// Autosort Depth Chart
+	ReAlignCollegeDepthChartTEST(db, teamID, gp)
+
+	db.Save(&gp)
+
+}
+
+func ReAlignCollegeDepthChartTEST(db *gorm.DB, teamID string, gp structs.CollegeGameplanTEST) {
+	roster := GetAllCollegePlayersByTeamIdWithoutRedshirts(teamID)
+	dcPositions := GetDepthChartPositionPlayersByDepthchartIDTEST(teamID)
+	sort.Sort(structs.ByOverall(roster))
+	positionMap := make(map[string][]structs.DepthChartPositionDTO)
+	starterMap := make(map[uint]bool)
+	backupMap := make(map[uint]bool)
+	stuMap := make(map[uint]bool)
+	offScheme := gp.OffensiveScheme
+	defScheme := gp.DefensiveScheme
+	isLT := true
+	isLG := true
+	isLE := true
+	isLOLB := true
+
+	goodFits := GetFitsByScheme(offScheme, false)
+	badFits := GetFitsByScheme(defScheme, false)
+
+	// Allocate the Position Map
+	for _, cp := range roster {
+		if cp.IsInjured || cp.IsRedshirting {
+			continue
+		}
+		pos := cp.Position
+		arch := cp.Archetype
+		player := arch + " " + pos
+		isGoodFit := CheckPlayerFits(player, goodFits)
+		isBadFit := CheckPlayerFits(player, badFits)
+
+		// Add to QB List
+		if pos == "QB" || pos == "RB" || pos == "FB" || pos == "ATH" {
+			score := 0
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+			if pos == "QB" {
+				score += 100
+			} else if pos == "ATH" && (arch == "Triple-Threat" || arch == "Field General") {
+				score += 50
+			}
+			// score += ((cp.ThrowAccuracy + cp.ThrowPower) / 2)
+			score += cp.Overall
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["QB"] = append(positionMap["QB"], dcpObj)
+		}
+		// Add to RB List
+		if pos == "RB" || pos == "FB" || pos == "WR" || pos == "TE" || pos == "ATH" {
+			score := 0
+			if pos == "RB" {
+				score += 100
+			} else if pos == "FB" {
+				score += 25
+			} else if pos == "ATH" && (arch == "Wingback" || arch == "Soccer Player" || arch == "Triple-Threat") {
+				score += 50
+			}
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += ((cp.Speed + cp.Agility + cp.Strength + cp.Carrying) / 4)
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["RB"] = append(positionMap["RB"], dcpObj)
+		}
+
+		// Add to FB List
+		if pos == "FB" || pos == "TE" || pos == "RB" || pos == "ATH" {
+			score := 0
+			if pos == "FB" {
+				score += 100
+			} else if pos == "ATH" && (arch == "Wingback") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+			score += ((cp.Strength + cp.Carrying + cp.PassBlock + cp.RunBlock) / 4)
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["FB"] = append(positionMap["FB"], dcpObj)
+		}
+
+		// Add to TE List
+		if pos == "FB" || pos == "TE" || pos == "ATH" {
+			score := 0
+			if pos == "TE" {
+				score += 100
+			} else if pos == "ATH" && (arch == "Slotback") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.5) + int(float64(cp.RunBlock)*0.125) + int(float64(cp.PassBlock)*0.125) + int(float64(cp.Catching)*0.125) + int(float64(cp.Strength)*0.125)
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["TE"] = append(positionMap["TE"], dcpObj)
+		}
+		// Add to WR List
+		if pos == "WR" || pos == "TE" || pos == "RB" || pos == "ATH" {
+			score := 0
+			if pos == "WR" {
+				score += 100
+			} else if pos == "ATH" && (arch == "Wingback" || arch == "Slotback") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.4) +
+				int(float64(cp.Speed)*0.12) +
+				int(float64(cp.Agility)*0.12) +
+				int(float64(cp.Catching)*0.12) +
+				int(float64(cp.Strength)*0.12) +
+				int(float64(cp.RouteRunning)*0.12)
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["WR"] = append(positionMap["WR"], dcpObj)
+		}
+		// Add to LT and RT List
+		if pos == "OT" || pos == "OG" || pos == "C" || pos == "ATH" {
+			score := 0
+			if pos == "OT" {
+				score += 100
+			} else if pos == "OG" {
+				score += 25
+			} else if pos == "ATH" && (arch == "Lineman") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.7) +
+				int(float64(cp.Strength)*0.10) +
+				int(float64(cp.RunBlock)*0.75) +
+				int(float64(cp.PassBlock)*0.75) +
+				int(float64(cp.Agility)*0.05)
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			if isLT {
+				positionMap["LT"] = append(positionMap["LT"], dcpObj)
+			} else {
+				positionMap["RT"] = append(positionMap["RT"], dcpObj)
+			}
+			isLT = !isLT
+		}
+		// Add to LG and RG List
+		if pos == "OT" || pos == "OG" || pos == "C" || pos == "ATH" {
+			score := 0
+			if pos == "OG" {
+				score += 100
+			} else if pos == "C" {
+				score += 25
+			} else if pos == "ATH" && (arch == "Lineman") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 30
+			} else if isBadFit && !isGoodFit {
+				score -= 30
+			}
+
+			score += int(float64(cp.Overall)*0.7) +
+				int(float64(cp.Strength)*0.10) +
+				int(float64(cp.RunBlock)*0.75) +
+				int(float64(cp.PassBlock)*0.75) +
+				int(float64(cp.Agility)*0.05)
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			if isLG {
+				positionMap["LG"] = append(positionMap["LG"], dcpObj)
+			} else {
+				positionMap["RG"] = append(positionMap["RG"], dcpObj)
+			}
+			isLG = !isLG
+		}
+		// Add to C List
+		if pos == "OT" || pos == "OG" || pos == "C" || pos == "ATH" {
+			score := 0
+			if pos == "C" {
+				score += 100
+			} else if pos == "OG" {
+				score += 25
+			} else if pos == "ATH" && (arch == "Lineman") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.7) +
+				int(float64(cp.Strength)*0.10) +
+				int(float64(cp.RunBlock)*0.75) +
+				int(float64(cp.PassBlock)*0.75) +
+				int(float64(cp.Agility)*0.05)
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["C"] = append(positionMap["C"], dcpObj)
+		}
+
+		// Add to LE List
+		if pos == "DE" || pos == "DT" || pos == "OLB" || pos == "ATH" {
+			score := 0
+			if pos == "DE" {
+				score += 100
+			} else if pos == "OLB" {
+				score += 25
+			} else if pos == "DT" {
+				score += 3
+			} else if pos == "ATH" && (arch == "Lineman" || arch == "Strongside") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.7) +
+				int(float64(cp.Strength)*0.05) +
+				int(float64(cp.Tackle)*0.05) +
+				int(float64(cp.PassRush)*0.75) +
+				int(float64(cp.RunDefense)*0.75) +
+				int(float64(cp.Agility)*0.05)
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			if isLE {
+				positionMap["LE"] = append(positionMap["LE"], dcpObj)
+			} else {
+				positionMap["RE"] = append(positionMap["RE"], dcpObj)
+			}
+			isLE = !isLE
+		}
+
+		// Add to DT list
+		if pos == "DE" || pos == "DT" || pos == "OLB" || pos == "ATH" {
+			score := 0
+			if pos == "DT" {
+				score += 100
+			} else if pos == "DE" {
+				score += 25
+			} else if pos == "OLB" {
+				score += 12
+			} else if pos == "ATH" && (arch == "Lineman" || arch == "Strongside") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.7) +
+				int(float64(cp.Strength)*0.05) +
+				int(float64(cp.Tackle)*0.05) +
+				int(float64(cp.PassRush)*0.75) +
+				int(float64(cp.RunDefense)*0.75) +
+				int(float64(cp.Agility)*0.05)
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["DT"] = append(positionMap["DT"], dcpObj)
+		}
+
+		// Add to OLB list
+		if pos == "OLB" || pos == "DE" || pos == "ILB" || pos == "SS" || pos == "FS" || pos == "ATH" {
+			score := 0
+			if pos == "OLB" {
+				score += 100
+			} else if pos == "DE" {
+				score += 10
+			} else if pos == "ILB" {
+				score += 25
+			} else if pos == "SS" {
+				score += 3
+			} else if pos == "ATH" && (arch == "Weakside" || arch == "Strongside" || arch == "Bandit") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.6) +
+				int(float64(cp.Strength)*0.025) +
+				int(float64(cp.Tackle)*0.055) +
+				int(float64(cp.PassRush)*0.0755) +
+				int(float64(cp.RunDefense)*0.0755) +
+				int(float64(cp.ManCoverage)*0.075) +
+				int(float64(cp.ZoneCoverage)*0.075) +
+				int(float64(cp.Agility)*0.025)
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			if isLOLB {
+				positionMap["LOLB"] = append(positionMap["LOLB"], dcpObj)
+			} else {
+				positionMap["ROLB"] = append(positionMap["ROLB"], dcpObj)
+			}
+			isLOLB = !isLOLB
+		}
+
+		// Add to ILB list
+		if pos == "OLB" || pos == "DE" || pos == "ILB" || pos == "SS" || pos == "FS" || pos == "ATH" {
+			score := 0
+			if pos == "ILB" {
+				score += 100
+			} else if pos == "OLB" {
+				score += 25
+			} else if pos == "SS" {
+				score += 8
+			} else if pos == "DE" {
+				score += 3
+			} else if pos == "ATH" && (arch == "Weakside" || arch == "Bandit" || arch == "Field General") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.6) +
+				int(float64(cp.Strength)*0.025) +
+				int(float64(cp.Tackle)*0.055) +
+				int(float64(cp.PassRush)*0.0755) +
+				int(float64(cp.RunDefense)*0.0755) +
+				int(float64(cp.ManCoverage)*0.075) +
+				int(float64(cp.ZoneCoverage)*0.075) +
+				int(float64(cp.Agility)*0.025)
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["MLB"] = append(positionMap["MLB"], dcpObj)
+		}
+
+		// Add to CB List
+		if pos == "CB" || pos == "FS" || pos == "SS" || pos == "ATH" {
+			score := 0
+			if pos == "CB" {
+				score += 100
+			} else if pos == "FS" {
+				score += 10
+			} else if pos == "SS" {
+				score += 8
+			} else if pos == "ATH" && (arch == "Triple-Threat" || arch == "Bandit" || arch == "Weakside") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.5) +
+				int(float64(cp.Tackle)*0.05) +
+				int(float64(cp.Agility)*0.1) +
+				int(float64(cp.Catching)*0.1) +
+				int(float64(cp.ManCoverage)*0.01) +
+				int(float64(cp.ZoneCoverage)*0.01) +
+				int(float64(cp.Speed)*0.05)
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["CB"] = append(positionMap["CB"], dcpObj)
+		}
+
+		// Add to FS list
+		if pos == "CB" || pos == "FS" || pos == "SS" || pos == "ATH" {
+			score := 0
+			if pos == "FS" {
+				score += 100
+			} else if pos == "CB" {
+				score += 25
+			} else if pos == "SS" {
+				score += 12
+			} else if pos == "ATH" && (arch == "Bandit" || arch == "Weakside") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.5) +
+				int(float64(cp.Tackle)*0.05) +
+				int(float64(cp.Agility)*0.1) +
+				int(float64(cp.Catching)*0.1) +
+				int(float64(cp.ManCoverage)*0.01) +
+				int(float64(cp.ZoneCoverage)*0.01) +
+				int(float64(cp.Speed)*0.05)
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["FS"] = append(positionMap["FS"], dcpObj)
+		}
+
+		// Add to SS list
+		if pos == "CB" || pos == "FS" || pos == "SS" || pos == "ATH" {
+			score := 0
+			if pos == "SS" {
+				score += 100
+			} else if pos == "FS" {
+				score += 25
+			} else if pos == "CB" {
+				score += 12
+			} else if pos == "ATH" && (arch == "Bandit" || arch == "Weakside") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.5) +
+				int(float64(cp.Tackle)*0.05) +
+				int(float64(cp.Agility)*0.1) +
+				int(float64(cp.Catching)*0.1) +
+				int(float64(cp.ManCoverage)*0.01) +
+				int(float64(cp.ZoneCoverage)*0.01) +
+				int(float64(cp.Speed)*0.05)
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["SS"] = append(positionMap["SS"], dcpObj)
+		}
+
+		// Add to P list
+		if pos == "K" || pos == "P" || pos == "QB" || pos == "ATH" {
+			score := 0
+			if pos == "P" {
+				score += 100
+			} else if pos == "K" {
+				score += 25
+			} else if pos == "ATH" && (arch == "Soccer Player") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += cp.PuntAccuracy + cp.PuntPower
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["P"] = append(positionMap["P"], dcpObj)
+		}
+
+		// Add to K list (Field Goal)
+		if pos == "K" || pos == "P" || pos == "QB" || pos == "ATH" {
+			score := 0
+			if pos == "K" {
+				score += 100
+			} else if pos == "P" {
+				score += 25
+			} else if pos == "ATH" && (arch == "Soccer Player") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+			score += cp.KickAccuracy + cp.KickPower
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["K"] = append(positionMap["K"], dcpObj)
+		}
+
+		// FG List
+		if pos == "K" || pos == "P" || pos == "QB" || pos == "ATH" {
+			score := 0
+			if pos == "K" {
+				score += 100
+			} else if pos == "P" {
+				score += 25
+			} else if pos == "ATH" && (arch == "Soccer Player") {
+				score += 50
+			}
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += cp.KickAccuracy + cp.KickPower
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["FG"] = append(positionMap["FG"], dcpObj)
+		}
+
+		// PR
+		if pos == "WR" || pos == "RB" || pos == "FS" || pos == "SS" || pos == "CB" || pos == "ATH" {
+			score := 0
+			if pos == "ATH" && arch == "Return Specialist" {
+				score += 50
+			} else if pos == "WR" || pos == "RB" {
+				score += 25
+			}
+			score += cp.Agility
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["PR"] = append(positionMap["PR"], dcpObj)
+		}
+
+		// KR
+		if pos == "WR" || pos == "RB" || pos == "FS" || pos == "SS" || pos == "CB" || pos == "ATH" {
+			score := 0
+			if pos == "ATH" && arch == "Return Specialist" {
+				score += 50
+			} else if pos == "WR" || pos == "RB" {
+				score += 25
+			}
+			score += cp.Speed
+
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["KR"] = append(positionMap["KR"], dcpObj)
+		}
+
+		// STU
+		if pos == "FB" || pos == "TE" || pos == "ILB" || pos == "OLB" || pos == "RB" || pos == "CB" || pos == "FS" || pos == "SS" || pos == "WR" || pos == "ATH" {
+			score := 0
+			if cp.Year == 2 || cp.Year == 1 {
+				score += 50
+			} else if cp.Year == 3 && cp.IsRedshirt {
+				score += 25
+			}
+
+			score += cp.Tackle
+			dcpObj := structs.DepthChartPositionDTO{
+				Position:      pos,
+				Archetype:     arch,
+				Score:         score,
+				CollegePlayer: cp,
+			}
+			positionMap["STU"] = append(positionMap["STU"], dcpObj)
+		}
+	}
+
+	// Sort Each DC Position
+	sort.Sort(structs.ByDCPosition(positionMap["QB"]))
+	sort.Sort(structs.ByDCPosition(positionMap["RB"]))
+	sort.Sort(structs.ByDCPosition(positionMap["FB"]))
+	sort.Sort(structs.ByDCPosition(positionMap["WR"]))
+	sort.Sort(structs.ByDCPosition(positionMap["TE"]))
+	sort.Sort(structs.ByDCPosition(positionMap["LT"]))
+	sort.Sort(structs.ByDCPosition(positionMap["RT"]))
+	sort.Sort(structs.ByDCPosition(positionMap["LG"]))
+	sort.Sort(structs.ByDCPosition(positionMap["RG"]))
+	sort.Sort(structs.ByDCPosition(positionMap["C"]))
+	sort.Sort(structs.ByDCPosition(positionMap["DT"]))
+	sort.Sort(structs.ByDCPosition(positionMap["LE"]))
+	sort.Sort(structs.ByDCPosition(positionMap["RE"]))
+	sort.Sort(structs.ByDCPosition(positionMap["LOLB"]))
+	sort.Sort(structs.ByDCPosition(positionMap["ROLB"]))
+	sort.Sort(structs.ByDCPosition(positionMap["MLB"]))
+	sort.Sort(structs.ByDCPosition(positionMap["CB"]))
+	sort.Sort(structs.ByDCPosition(positionMap["FS"]))
+	sort.Sort(structs.ByDCPosition(positionMap["SS"]))
+	sort.Sort(structs.ByDCPosition(positionMap["P"]))
+	sort.Sort(structs.ByDCPosition(positionMap["K"]))
+	sort.Sort(structs.ByDCPosition(positionMap["PR"]))
+	sort.Sort(structs.ByDCPosition(positionMap["KR"]))
+	sort.Sort(structs.ByDCPosition(positionMap["FG"]))
+	sort.Sort(structs.ByDCPosition(positionMap["STU"]))
+
+	for _, dcp := range dcPositions {
+		positionList := positionMap[dcp.Position]
+		for _, pos := range positionList {
+			if starterMap[pos.CollegePlayer.ID] &&
+				dcp.Position != "FG" &&
+				dcp.Position != "PR" &&
+				dcp.Position != "KR" {
+				continue
+			}
+			if backupMap[pos.CollegePlayer.ID] && dcp.PositionLevel != "1" && dcp.Position != "STU" {
+				continue
+			}
+			if dcp.Position == "STU" && stuMap[pos.CollegePlayer.ID] {
+				continue
+			}
+
+			if dcp.Position == "WR" {
+				runnerDistPostition := gp.RunnerDistributionWRPosition
+				positionLabel := dcp.Position + "" + dcp.PositionLevel
+				if runnerDistPostition == positionLabel {
+					gp.AssignRunnerWRID(dcp.CollegePlayer.ID)
+				}
+			}
+
+			if dcp.Position == "STU" {
+				stuMap[pos.CollegePlayer.ID] = true
+			} else if dcp.PositionLevel == "1" && !starterMap[pos.CollegePlayer.ID] {
+				starterMap[pos.CollegePlayer.ID] = true
+			} else {
+				backupMap[pos.CollegePlayer.ID] = true
+			}
+			dto := structs.CollegeDepthChartPositionTEST{
+				DepthChartID:     dcp.DepthChartID,
+				PlayerID:         int(pos.CollegePlayer.ID),
+				FirstName:        pos.CollegePlayer.FirstName,
+				LastName:         pos.CollegePlayer.LastName,
+				OriginalPosition: pos.CollegePlayer.Position,
+			}
+			dto.AssignID(dcp.ID)
+			dcp.UpdateDepthChartPosition(dto)
+			db.Save(&dcp)
+			break
+		}
+	}
+}
+
+func GetDepthChartPositionPlayersByDepthchartIDTEST(depthChartID string) []structs.CollegeDepthChartPositionTEST {
+	db := dbprovider.GetInstance().GetDB()
+
+	var positionPlayers []structs.CollegeDepthChartPositionTEST
+
+	err := db.Where("depth_chart_id = ?", depthChartID).Find(&positionPlayers).Error
+	if err != nil {
+		fmt.Println(err)
+		panic("Depth Chart does not exist for this ID")
+	}
+
+	return positionPlayers
 }

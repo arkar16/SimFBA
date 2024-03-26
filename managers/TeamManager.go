@@ -199,7 +199,8 @@ func GetNFLTeamByTeamAbbr(abbr string) structs.NFLTeam {
 
 	var team structs.NFLTeam
 
-	err := db.Preload("TeamGameplan").Preload("TeamDepthChart.DepthChartPlayers").Where("team_abbr = ?", abbr).Find(&team).Error
+	err := db.Preload("TeamGameplan").
+		Preload("TeamDepthChart.DepthChartPlayers").Where("team_abbr = ?", abbr).Find(&team).Error
 	if err != nil {
 		log.Panicln("Could not find team by given abbreviation:"+abbr+"\n", err)
 	}

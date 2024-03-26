@@ -233,6 +233,11 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/college/sim/{gameID}/", controller.GetHomeAndAwayTeamData).Methods("GET")
 	myRouter.HandleFunc("/teams/nfl/sim/{gameID}/", controller.GetNFLHomeAndAwayTeamData).Methods("GET")
 
+	// TEST Controls
+	myRouter.HandleFunc("/simfba/team/test/{teamID}/{off}/{def}", controller.UpdateIndividualGameplanTEST).Methods("GET")
+	myRouter.HandleFunc("/simfba/mass/test/{off}/{def}", controller.MassUpdateGameplansTEST).Methods("GET")
+	myRouter.HandleFunc("/teams/college/test/sim/{gameID}/", controller.GetHomeAndAwayTeamTestData).Methods("GET")
+
 	// Trade Controls
 	myRouter.HandleFunc("/trades/nfl/all/accepted", controller.GetAllAcceptedTrades).Methods("GET")
 	myRouter.HandleFunc("/trades/nfl/all/rejected", controller.GetAllRejectedTrades).Methods("GET")

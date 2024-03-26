@@ -105,3 +105,60 @@ func (sdcpr *NFLSimDepthChartPosResponse) Map(dc structs.NFLDepthChartPosition) 
 	sdcpr.Position = dc.Position
 	sdcpr.PositionLevel = dc.PositionLevel
 }
+
+/*
+TEST PURPOSES ONLY
+*/
+
+type SimTeamDataResponseTEST struct {
+	TeamName        string
+	Mascot          string
+	Coach           string
+	City            string
+	State           string
+	Stadium         string
+	StadiumCapacity int
+	ColorOne        string
+	ColorTwo        string
+	TeamGameplan    structs.CollegeGameplanTEST
+	TeamDepthChart  SimTeamDepthChartResponseTEST
+	PreviousByeWeek bool
+}
+
+type SimTeamDepthChartResponseTEST struct {
+	ID                uint
+	TeamID            int
+	DepthChartPlayers []SimDepthChartPosResponseTEST
+}
+
+type SimDepthChartPosResponseTEST struct {
+	PlayerID      int
+	Position      string
+	PositionLevel string
+}
+
+func (stdr *SimTeamDataResponseTEST) Map(team structs.CollegeTeam, gp structs.CollegeGameplanTEST, dcr SimTeamDepthChartResponseTEST, isPrev bool) {
+	stdr.TeamName = team.TeamName
+	stdr.Mascot = team.Mascot
+	stdr.City = team.City
+	stdr.State = team.State
+	stdr.Stadium = team.Stadium
+	stdr.ColorOne = team.ColorOne
+	stdr.ColorTwo = team.ColorTwo
+	stdr.StadiumCapacity = team.StadiumCapacity
+	stdr.TeamGameplan = gp
+	stdr.TeamDepthChart = dcr
+	stdr.PreviousByeWeek = isPrev
+}
+
+func (stdcr *SimTeamDepthChartResponseTEST) Map(dc structs.CollegeTeamDepthChartTEST, dcp []SimDepthChartPosResponseTEST) {
+	stdcr.ID = dc.ID
+	stdcr.TeamID = dc.TeamID
+	stdcr.DepthChartPlayers = dcp
+}
+
+func (sdcpr *SimDepthChartPosResponseTEST) Map(dc structs.CollegeDepthChartPositionTEST) {
+	sdcpr.PlayerID = dc.PlayerID
+	sdcpr.Position = dc.Position
+	sdcpr.PositionLevel = dc.PositionLevel
+}

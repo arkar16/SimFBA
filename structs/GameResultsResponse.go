@@ -7,6 +7,7 @@ type GameResultsResponse struct {
 }
 
 type GameResultsPlayer struct {
+	ID                   uint
 	FirstName            string
 	LastName             string
 	Position             string

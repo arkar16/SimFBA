@@ -55,7 +55,7 @@ type CollegeDepthChartPositionTEST struct {
 }
 
 // Update DepthChartPosition -- Updates the Player taking the position
-func (dcp *CollegeDepthChartPositionTEST) UpdateDepthChartPosition(dto CollegeDepthChartPosition) {
+func (dcp *CollegeDepthChartPositionTEST) UpdateDepthChartPosition(dto CollegeDepthChartPositionTEST) {
 	if dcp.ID != dto.ID || dcp.DepthChartID != dto.DepthChartID {
 		return
 	}

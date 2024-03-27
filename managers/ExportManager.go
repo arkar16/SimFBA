@@ -411,7 +411,7 @@ func ExportPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 	// Initialize writer
 	writer := csv.NewWriter(w)
 	HeaderRow := []string{
-		"Play", game.HomeTeam + " Score", game.AwayTeam + "Score", "Quarter", "Time Remaining",
+		"Play", game.HomeTeam + " Score", game.AwayTeam + " Score", "Quarter", "Time Remaining",
 		"Possession", "Down", "Distance", "Line of Scrimmage", "Type of Play",
 		"Offensive Formation", "Offensive Play", "Offensive PoA", "Defensive Formation",
 		"Defensive Tendency", "# of Blitzers", "LB Coverage", "CB Coverage", "S Coverage",
@@ -444,11 +444,12 @@ func ExportPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 		t1ID := strconv.Itoa(int(play.Tackler1ID))
 		t2ID := strconv.Itoa(int(play.Tackler2ID))
 		yards := strconv.Itoa(int(play.ResultYards))
+		blitzNumber := strconv.Itoa(int(play.BlitzNumber))
 
 		row := []string{
 			num, hcs, acs, qt, tr, possession, down, dist, los,
 			play.PlayType, play.OffensiveFormation, play.PlayName, play.PointOfAttack, play.DefensiveFormation,
-			play.DefensiveTendency, lb, db, s,
+			play.DefensiveTendency, blitzNumber, lb, db, s,
 			qbID, bcID, t1ID, t2ID, yards,
 			play.Result,
 		}

@@ -808,6 +808,7 @@ func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, part
 			Tackler1ID:         p.Tackler1ID,
 			Tackler2ID:         p.Tackler2ID,
 			ResultYards:        p.ResultYards,
+			BlitzNumber:        p.BlitzNumber,
 		}
 
 		result := generateResultsString(p.PlayByPlay, playType, playName, participantMap, touchDown)
@@ -856,17 +857,17 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 			firstSegment += " is sacked on the play by " + tackle1Label + "for a loss of " + yardsSTR + yards
 		} else if play.IsComplete {
 			bcLabel := getPlayerLabel(participantMap[bcID])
-			firstSegment += " throws to " + bcLabel + ", complete for " + yardsSTR + yards
+			firstSegment += " throws to " + bcLabel + " complete for " + yardsSTR + yards
 		} else if play.IsINT {
 			bcLabel := getPlayerLabel(participantMap[bcID])
 			turnOverLabel := getPlayerLabel(participantMap[turnID])
 			secondSegment += "throws and is intercepted! Caught by " +
 				turnOverLabel + " and returned for " +
-				yardsSTR + " yards from the LOS. Pass was intended for " + bcLabel
+				yardsSTR + " yards from the LOS. Pass was intended for " + bcLabel + ". "
 		} else {
 			if bcID > 0 {
 				bcLabel := getPlayerLabel(participantMap[bcID])
-				firstSegment += " trhows it, and is incomplete. Pass intended for " + bcLabel
+				firstSegment += " throws it... and it's incomplete. Pass intended for " + bcLabel + ". "
 			} else {
 				firstSegment += " can't find an open receiver and throws it away."
 			}
@@ -939,7 +940,8 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 		}
 	} else if playType == "FG" {
 		kickerLabel := getPlayerLabel(participantMap[qbID])
-		firstSegment = kickerLabel + "'s field goal attempt is "
+		kickDistance := strconv.Itoa(int(play.KickDistance))
+		firstSegment = kickerLabel + "'s " + kickDistance + " field goal attempt is "
 		if play.IsBlocked {
 			blockerLabel := getPlayerLabel(participantMap[turnID])
 			firstSegment += " BLOCKED by " + blockerLabel + ". No good. "
@@ -967,7 +969,7 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 
 	if play.IsTouchdown && twoPtCheck {
 		secondSegment += "The 2 Point Conversion is GOOD!"
-	} else if !play.IsTouchdown && twoPtCheck {
+	} else if !play.IsTouchdown && twoPtCheck && playType != "XP" && playType != "FG" {
 		secondSegment += "The 2 Point Conversion is NO GOOD!"
 	}
 
@@ -982,9 +984,9 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 	if play.PenaltyID > 0 {
 		penalty := util.GetPenaltyByEnum(play.PenaltyID)
 		thirdSegment = "PENALTY: " + penalty + ". "
-		offendingTeam := "By the Offense. "
+		offendingTeam := "Offense. "
 		if !play.OnOffense {
-			offendingTeam = "By the Defense. "
+			offendingTeam = "Defense. "
 		}
 		thirdSegment += offendingTeam
 		if pnID > 0 {
@@ -1028,7 +1030,7 @@ func getGameParticipantMap(homePlayers, awayPlayers []structs.GameResultsPlayer)
 }
 
 func getYardsString(yds int8) string {
-	yards := " yards ."
+	yards := " yards. "
 	if yds == 1 || yds == -1 {
 		yards = " yard. "
 	}

@@ -48,3 +48,10 @@ func CreateNFLPlayerStatsInBatch(stats []structs.NFLPlayerStats, db *gorm.DB) {
 		log.Panicln("Could not save team stats!")
 	}
 }
+
+func CreateRecruitProfileRecord(cp structs.RecruitPlayerProfile, db *gorm.DB) {
+	err := db.Create(&cp).Error
+	if err != nil {
+		log.Panicln("Could not create recruit profile record!")
+	}
+}

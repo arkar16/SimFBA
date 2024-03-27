@@ -204,6 +204,7 @@ type PlayByPlayResponse struct {
 	DefensiveFormation string
 	PointOfAttack      string
 	DefensiveTendency  string
+	BlitzNumber        uint
 	LBCoverage         bool
 	CBCoverage         bool
 	SCoverage          bool

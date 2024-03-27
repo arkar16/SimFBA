@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 	"gorm.io/gorm"
@@ -630,18 +631,13 @@ func FillAIRecruitingBoards() {
 				Recruiter:                 collegeCoach.CoachName,
 			}
 
-			err := db.Create(&playerProfile).Error
-			if err != nil {
-				log.Fatalln("Could not add " + croot.FirstName + " " + croot.LastName + " to " + team.TeamAbbreviation + "'s Recruiting Board.")
-			}
-
+			repository.CreateRecruitProfileRecord(playerProfile, db)
 			teamNeeds[croot.Position] -= 1
 			recruitProfileMap[croot.ID] = append(recruitProfileMap[croot.ID], playerProfile)
 			sort.Slice(recruitProfileMap[croot.ID], func(i, j int) bool {
 				return recruitProfileMap[croot.ID][i].TotalPoints > recruitProfileMap[croot.ID][j].TotalPoints
 			})
 			count++
-
 		}
 	}
 }

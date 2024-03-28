@@ -793,6 +793,11 @@ func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, part
 			poss = at
 		}
 
+		los := p.LineOfScrimmage
+		if los > 50 {
+			los = 100 - p.LineOfScrimmage
+		}
+
 		play := structs.PlayByPlayResponse{
 			PlayNumber:         uint(number),
 			HomeTeamID:         p.HomeTeamID,
@@ -803,7 +808,7 @@ func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, part
 			TimeRemaining:      p.TimeRemaining,
 			Down:               p.Down,
 			Distance:           p.Distance,
-			LineOfScrimmage:    p.LineOfScrimmage,
+			LineOfScrimmage:    los,
 			PlayType:           playType,
 			PlayName:           playName,
 			PointOfAttack:      poa,
@@ -973,13 +978,13 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 	}
 
 	// Second Segment - Tackles and OOB
-	if play.IsOutOfBounds && playType != "Kickoff" {
+	if play.IsOutOfBounds && playType != "Kickoff" && !play.IsTouchdown {
 		secondSegment = "Ran out of bounds. "
 	}
 	if play.IsTouchdown && !twoPtCheck {
-		secondSegment += "TOUCHDOWN!"
+		secondSegment += "TOUCHDOWN! "
 	}
-	if !play.IsSacked && t1ID > 0 {
+	if !play.IsSacked && t1ID > 0 && !play.IsTouchdown {
 		tackle1Label := getPlayerLabel(participantMap[t1ID])
 		secondSegment += "Tackled by " + tackle1Label
 		if t2ID > 0 {

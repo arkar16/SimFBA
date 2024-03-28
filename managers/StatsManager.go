@@ -732,7 +732,7 @@ func GetCFBGameResultsByGameID(gameID string) structs.GameResultsResponse {
 
 	playByPlays := GetCFBPlayByPlaysByGameID(gameID)
 	// Generate the Play By Play Response
-	playbyPlayResponseList := GenerateCFBPlayByPlayResponse(playByPlays, participantMap, false)
+	playbyPlayResponseList := GenerateCFBPlayByPlayResponse(playByPlays, participantMap, false, game.HomeTeam, game.AwayTeam)
 
 	return structs.GameResultsResponse{
 		HomePlayers: homePlayers,
@@ -773,7 +773,7 @@ func GetNFLPlayByPlaysByGameID(id string) []structs.NFLPlayByPlay {
 	return plays
 }
 
-func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, participantMap map[uint]structs.GameResultsPlayer, isStream bool) []structs.PlayByPlayResponse {
+func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, participantMap map[uint]structs.GameResultsPlayer, isStream bool, ht, at string) []structs.PlayByPlayResponse {
 	playbyPlayResponseList := []structs.PlayByPlayResponse{}
 	// Get Player Information
 	touchDown := false
@@ -785,6 +785,14 @@ func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, part
 		defTendency := util.GetDefensiveTendencyByEnum(p.DefensiveTendency)
 		playName := util.GetPlayNameByEnum(p.PlayNameID)
 		poa := util.GetPointOfAttackByEnum(p.OffensivePoA)
+		lb := util.GetCoverageStr(p.LBCoverage)
+		cb := util.GetCoverageStr(p.LBCoverage)
+		s := util.GetCoverageStr(p.LBCoverage)
+		poss := ht
+		if !p.HomeHasBall {
+			poss = at
+		}
+
 		play := structs.PlayByPlayResponse{
 			PlayNumber:         uint(number),
 			HomeTeamID:         p.HomeTeamID,
@@ -802,13 +810,16 @@ func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, part
 			OffensiveFormation: offFormation,
 			DefensiveFormation: defFormation,
 			DefensiveTendency:  defTendency,
-			Possession:         p.HomeHasBall,
+			Possession:         poss,
 			QBPlayerID:         p.QBPlayerID,
 			BallCarrierID:      p.BallCarrierID,
 			Tackler1ID:         p.Tackler1ID,
 			Tackler2ID:         p.Tackler2ID,
 			ResultYards:        p.ResultYards,
 			BlitzNumber:        p.BlitzNumber,
+			LBCoverage:         lb,
+			CBCoverage:         cb,
+			SCoverage:          s,
 		}
 		var result []string
 		if isStream {
@@ -850,9 +861,8 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 		firstSegment = qbLabel
 
 		// Scenarios
-		if play.IsScramble {
-			firstSegment += " scrambles for " + yardsSTR + yards
-		} else if play.IsSacked {
+		if play.IsSacked {
+			firstSegment += util.GetScrambleText(play.IsScramble)
 			tackle1Label := getPlayerLabel(participantMap[t1ID])
 			if t2ID > 0 {
 				tackle2Label := getPlayerLabel(participantMap[t2ID])
@@ -860,19 +870,25 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 			}
 			firstSegment += " is sacked on the play by " + tackle1Label + "for a loss of " + yardsSTR + yards
 		} else if play.IsComplete {
+			firstSegment += util.GetScrambleText(play.IsScramble)
 			bcLabel := getPlayerLabel(participantMap[bcID])
 			firstSegment += " throws to " + bcLabel + " complete for " + yardsSTR + yards
 		} else if play.IsINT {
+			firstSegment += util.GetScrambleText(play.IsScramble)
 			bcLabel := getPlayerLabel(participantMap[bcID])
 			turnOverLabel := getPlayerLabel(participantMap[turnID])
 			secondSegment += "throws and is intercepted! Caught by " +
 				turnOverLabel + " and returned for " +
 				yardsSTR + " yards from the LOS. Pass was intended for " + bcLabel + ". "
+		} else if play.IsScramble {
+			firstSegment += " scrambles for " + yardsSTR + yards
 		} else {
 			if bcID > 0 {
+				firstSegment += util.GetScrambleText(play.IsScramble)
 				bcLabel := getPlayerLabel(participantMap[bcID])
 				firstSegment += " throws it... and it's incomplete. Pass intended for " + bcLabel + ". "
 			} else {
+				firstSegment += util.GetScrambleText(play.IsScramble)
 				firstSegment += " can't find an open receiver and throws it away."
 			}
 		}

@@ -292,7 +292,7 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 		wg.Wait()
 
 		participantMap := getGameParticipantMap(homePlayers, awayPlayers)
-		playbyPlayResponse := GenerateCFBPlayByPlayResponse(playByPlays, participantMap, true)
+		playbyPlayResponse := GenerateCFBPlayByPlayResponse(playByPlays, participantMap, true, game.HomeTeam, game.AwayTeam)
 
 		stream := structs.StreamResponse{
 			GameID:              game.ID,

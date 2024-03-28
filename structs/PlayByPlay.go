@@ -193,7 +193,7 @@ type PlayByPlayResponse struct {
 	AwayTeamID         uint
 	AwayTeamScore      uint8
 	Quarter            uint8
-	Possession         bool
+	Possession         string
 	TimeRemaining      string
 	Down               uint8
 	Distance           uint8
@@ -205,9 +205,9 @@ type PlayByPlayResponse struct {
 	PointOfAttack      string
 	DefensiveTendency  string
 	BlitzNumber        uint
-	LBCoverage         bool
-	CBCoverage         bool
-	SCoverage          bool
+	LBCoverage         string
+	CBCoverage         string
+	SCoverage          string
 	QBPlayerID         uint
 	BallCarrierID      uint // The player that attains from the result of the acting player. RBs, WRs, DBs, LBs
 	Tackler1ID         uint // ID of the player doing the tackle

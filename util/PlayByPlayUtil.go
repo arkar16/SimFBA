@@ -578,3 +578,10 @@ func GetReturnVerb(yards int, touchdown, oob bool) string {
 
 	return PickFromStringList(list)
 }
+
+func GetScrambleText(scramble bool) string {
+	if scramble {
+		return " scrambles, and"
+	}
+	return ""
+}

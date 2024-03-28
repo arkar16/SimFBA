@@ -402,7 +402,7 @@ func ExportPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 
 	playByPlays := GetCFBPlayByPlaysByGameID(gameID)
 	// Generate the Play By Play Response
-	playbyPlayResponseList := GenerateCFBPlayByPlayResponse(playByPlays, participantMap, false)
+	playbyPlayResponseList := GenerateCFBPlayByPlayResponse(playByPlays, participantMap, false, game.HomeTeam, game.AwayTeam)
 
 	// Begin Writing
 	fileName := gameID + "_" + game.HomeTeam + "_vs_" + game.AwayTeam + "_play_by_play"
@@ -424,10 +424,6 @@ func ExportPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 	}
 
 	for _, play := range playbyPlayResponseList {
-		possession := game.HomeTeam
-		if !play.Possession {
-			possession = game.AwayTeam
-		}
 		num := strconv.Itoa(int(play.PlayNumber))
 		hcs := strconv.Itoa(int(play.HomeTeamScore))
 		acs := strconv.Itoa(int(play.AwayTeamScore))
@@ -436,9 +432,6 @@ func ExportPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 		down := strconv.Itoa(int(play.Down))
 		dist := strconv.Itoa(int(play.Distance))
 		los := strconv.Itoa(int(play.LineOfScrimmage))
-		db := util.GetCoverageStr(play.CBCoverage)
-		lb := util.GetCoverageStr(play.LBCoverage)
-		s := util.GetCoverageStr(play.SCoverage)
 		qbID := strconv.Itoa(int(play.QBPlayerID))
 		bcID := strconv.Itoa(int(play.BallCarrierID))
 		t1ID := strconv.Itoa(int(play.Tackler1ID))
@@ -447,9 +440,9 @@ func ExportPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 		blitzNumber := strconv.Itoa(int(play.BlitzNumber))
 
 		row := []string{
-			num, hcs, acs, qt, tr, possession, down, dist, los,
+			num, hcs, acs, qt, tr, play.Possession, down, dist, los,
 			play.PlayType, play.OffensiveFormation, play.PlayName, play.PointOfAttack, play.DefensiveFormation,
-			play.DefensiveTendency, blitzNumber, lb, db, s,
+			play.DefensiveTendency, blitzNumber, play.LBCoverage, play.CBCoverage, play.SCoverage,
 			qbID, bcID, t1ID, t2ID, yards,
 			play.Result,
 		}

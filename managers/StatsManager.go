@@ -1046,6 +1046,19 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 		yards := getYardsString(play.PenaltyYards)
 		thirdSegment += penaltyYards + yards
 
+		if play.PenaltyID == 4 ||
+			play.PenaltyID == 5 ||
+			play.PenaltyID == 7 ||
+			play.PenaltyID == 18 ||
+			play.PenaltyID == 20 ||
+			play.PenaltyID == 21 ||
+			play.PenaltyID == 27 ||
+			play.PenaltyID == 30 ||
+			play.PenaltyID == 31 ||
+			play.PenaltyID == 35 {
+			firstSegment = ""
+			secondSegment = ""
+		}
 	}
 
 	if ijID > 0 {

@@ -923,7 +923,7 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 		if play.IsTouchback {
 			firstSegment += " Touchback. "
 		} else {
-			resultYdsStr := strconv.Itoa(int(play.ResultYards))
+			resultYdsStr := strconv.Itoa(int(100 - play.ResultYards))
 			resultYards := getYardsString(play.ResultYards)
 			firstSegment += recLabel + " returns the ball " + resultYdsStr + resultYards
 		}

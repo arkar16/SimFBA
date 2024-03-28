@@ -63,4 +63,14 @@ type BaseTeamStats struct {
 	DefensivePenalties            int
 	OffPenaltyYards               int
 	DefPenaltyYards               int
+	Score1Q                       int
+	Score2Q                       int
+	Score3Q                       int
+	Score4Q                       int
+	Score5Q                       int
+	Score6Q                       int
+	Score7Q                       int
+	ScoreOT                       int
+	OffensiveScheme               string
+	DefensiveScheme               string
 }

@@ -47,6 +47,16 @@ type TeamStatDTO struct {
 	DefPenalties     int
 	OffPenaltyYards  int
 	DefPenaltyYards  int
+	Score1Q          int
+	Score2Q          int
+	Score3Q          int
+	Score4Q          int
+	Score5Q          int
+	Score6Q          int
+	Score7Q          int
+	ScoreOT          int
+	OffensiveScheme  string
+	DefensiveScheme  string
 }
 
 func (t *TeamStatDTO) GetAbbreviation() string {
@@ -100,5 +110,15 @@ func (t *TeamStatDTO) MapToBaseTeamStatsObject() BaseTeamStats {
 		OffPenaltyYards:        t.OffPenaltyYards,
 		DefensivePenalties:     t.DefPenalties,
 		DefPenaltyYards:        t.DefPenaltyYards,
+		Score1Q:                t.Score1Q,
+		Score2Q:                t.Score2Q,
+		Score3Q:                t.Score3Q,
+		Score4Q:                t.Score4Q,
+		Score5Q:                t.Score5Q,
+		Score6Q:                t.Score6Q,
+		Score7Q:                t.Score7Q,
+		ScoreOT:                t.ScoreOT,
+		OffensiveScheme:        t.OffensiveScheme,
+		DefensiveScheme:        t.DefensiveScheme,
 	}
 }

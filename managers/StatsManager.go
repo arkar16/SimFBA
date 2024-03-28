@@ -974,12 +974,14 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 
 	// Second Segment - Tackles and OOB
 	if play.IsOutOfBounds && playType != "Kickoff" {
-		secondSegment = "Ran out of bounds."
-	} else if play.IsTouchdown && !twoPtCheck {
-		secondSegment = "TOUCHDOWN!"
-	} else if !play.IsSacked && t1ID > 0 {
+		secondSegment = "Ran out of bounds. "
+	}
+	if play.IsTouchdown && !twoPtCheck {
+		secondSegment += "TOUCHDOWN!"
+	}
+	if !play.IsSacked && t1ID > 0 {
 		tackle1Label := getPlayerLabel(participantMap[t1ID])
-		secondSegment = "Tackled by " + tackle1Label
+		secondSegment += "Tackled by " + tackle1Label
 		if t2ID > 0 {
 			tackle2Label := getPlayerLabel(participantMap[t2ID])
 			secondSegment += " and " + tackle2Label

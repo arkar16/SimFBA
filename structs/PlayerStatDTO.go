@@ -46,6 +46,8 @@ type PlayerStatDTO struct {
 	LongestPunt       int
 	PuntTBs           int
 	PuntYards         int
+	GrossPuntDistance int
+	NetPuntDistance   int
 	PuntInside20      int
 	KickoffReturns    int
 	KickReturnYards   int

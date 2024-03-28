@@ -35,6 +35,8 @@ type BasePlayerStats struct {
 	ExtraPointsAttempted int
 	KickoffTouchbacks    int
 	Punts                int
+	GrossPuntDistance    int
+	NetPuntDistance      int
 	PuntTouchbacks       int
 	PuntsInside20        int
 	KickReturns          int

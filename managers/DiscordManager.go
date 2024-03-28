@@ -2,8 +2,10 @@ package managers
 
 import (
 	"strconv"
+	"sync"
 
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/CalebRose/SimFBA/util"
 )
 
 func CompareTwoTeams(t1ID, t2ID string) structs.CFBComparisonModel {
@@ -214,4 +216,103 @@ func GetCFBTeamDataForDiscord(id string) structs.CollegeTeamResponseData {
 		TeamStandings:   standings,
 		UpcomingMatches: matchList,
 	}
+}
+
+func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.StreamResponse {
+	ts := GetTimestamp()
+	weekNum := util.ConvertStringToInt(week)
+	collegeWeek := ts.CollegeWeek
+	collegeWeekID := ts.CollegeWeekID
+	if collegeWeek == weekNum {
+		// Continue
+	} else {
+		diff := collegeWeek - weekNum
+		collegeWeekID = ts.CollegeWeekID - diff
+	}
+	teamMap := GetTeamProfileMap()
+	games := GetCollegeGamesByTimeslotAndWeekId(timeslot, strconv.Itoa(collegeWeekID))
+
+	streams := []structs.StreamResponse{}
+
+	for _, game := range games {
+		homeTeam := teamMap[game.HomeTeam]
+		awayTeam := teamMap[game.AwayTeam]
+		// If it's a full FCS match up and we're not streaming FCS, skip
+		if !homeTeam.IsFBS && !awayTeam.IsFBS && isFBS {
+			continue
+		}
+
+		// If it's a partial FCS and we're streaming FCS, skip. It was streamed in FBS
+		if ((!homeTeam.IsFBS && awayTeam.IsFBS) || (homeTeam.IsFBS && !awayTeam.IsFBS)) && !isFBS {
+			continue
+		}
+
+		// If it's an FBS match and we're streaming FCS, skip
+		if homeTeam.IsFBS && awayTeam.IsFBS && !isFBS {
+			continue
+		}
+		gameID := strconv.Itoa(int(game.ID))
+		var wg sync.WaitGroup
+		wg.Add(5)
+		var (
+			homeGameplan structs.CollegeGameplan
+			awayGameplan structs.CollegeGameplan
+			playByPlays  []structs.CollegePlayByPlay
+			homePlayers  []structs.GameResultsPlayer
+			awayPlayers  []structs.GameResultsPlayer
+		)
+		homeTeamID := strconv.Itoa(game.HomeTeamID)
+		awayTeamID := strconv.Itoa(game.HomeTeamID)
+
+		go func() {
+			defer wg.Done()
+			homeGameplan = GetGameplanByTeamID(homeTeamID)
+		}()
+
+		go func() {
+			defer wg.Done()
+			awayGameplan = GetGameplanByTeamID(awayTeamID)
+		}()
+
+		go func() {
+			defer wg.Done()
+			playByPlays = GetCFBPlayByPlaysByGameID(gameID)
+		}()
+
+		go func() {
+			defer wg.Done()
+			homePlayers = GetAllCollegePlayersWithGameStatsByTeamID(homeTeamID, gameID)
+		}()
+
+		go func() {
+			defer wg.Done()
+			awayPlayers = GetAllCollegePlayersWithGameStatsByTeamID(awayTeamID, gameID)
+		}()
+
+		wg.Wait()
+
+		participantMap := getGameParticipantMap(homePlayers, awayPlayers)
+		playbyPlayResponse := GenerateCFBPlayByPlayResponse(playByPlays, participantMap, true)
+
+		stream := structs.StreamResponse{
+			GameID:              game.ID,
+			HomeTeamID:          uint(game.HomeTeamID),
+			HomeTeam:            game.HomeTeam,
+			HomeTeamCoach:       game.HomeTeamCoach,
+			HomeTeamRank:        game.HomeTeamRank,
+			AwayTeamID:          uint(game.AwayTeamID),
+			AwayTeam:            game.AwayTeam,
+			AwayTeamCoach:       game.AwayTeam,
+			AwayTeamRank:        game.AwayTeamRank,
+			HomeOffensiveScheme: homeGameplan.OffensiveScheme,
+			HomeDefensiveScheme: homeGameplan.DefensiveScheme,
+			AwayOffensiveScheme: awayGameplan.OffensiveScheme,
+			AwayDefensiveScheme: awayGameplan.DefensiveScheme,
+			Streams:             playbyPlayResponse,
+		}
+
+		streams = append(streams, stream)
+	}
+
+	return streams
 }

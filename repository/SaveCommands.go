@@ -8,6 +8,13 @@ import (
 	"gorm.io/gorm"
 )
 
+func SaveTimestamp(ts structs.Timestamp, db *gorm.DB) {
+	err := db.Save(&ts).Error
+	if err != nil {
+		log.Panicln("Could not save timestamp")
+	}
+}
+
 func SaveCFBGameRecord(gameRecord structs.CollegeGame, db *gorm.DB) {
 	err := db.Save(&gameRecord).Error
 	if err != nil {

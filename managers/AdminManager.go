@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 )
 
@@ -33,24 +34,36 @@ func GetCollegeWeek(weekID string, ts structs.Timestamp) structs.CollegeWeek {
 
 func MoveUpWeek() structs.Timestamp {
 	db := dbprovider.GetInstance().GetDB()
-	timestamp := GetTimestamp()
+	ts := GetTimestamp()
+	if ts.CollegeWeek < 21 || !ts.IsOffSeason {
+		ResetCollegeStandingsRanks()
+	}
 
 	// Sync to Next Week
 	UpdateGameplanPenalties()
 	RecoverPlayers()
-	CheckNFLRookiesForLetterGrade(strconv.Itoa(int(timestamp.NFLSeasonID)))
-	timestamp.SyncToNextWeek()
-	if timestamp.NFLWeek > 15 {
+	CheckNFLRookiesForLetterGrade(strconv.Itoa(int(ts.NFLSeasonID)))
+	ts.SyncToNextWeek()
+	if ts.CollegeWeek < 21 && !ts.CollegeSeasonOver && !ts.IsOffSeason && !ts.CFBSpringGames {
+		SyncCollegePollSubmissionForCurrentWeek()
+	}
+	if ts.NFLWeek > 15 {
 		SyncExtensionOffers()
 	}
-	if timestamp.NFLWeek > 22 {
-		timestamp.MoveUpSeason()
+	if ts.CollegeSeasonOver && ts.NFLSeasonOver {
+		ts.MoveUpSeason()
 		// Run Progressions
+		if !ts.ProgressedCollegePlayers {
+
+		}
+		if !ts.ProgressedProfessionalPlayers {
+
+		}
 		//
 	}
-	db.Save(&timestamp)
+	repository.SaveTimestamp(ts, db)
 
-	return timestamp
+	return ts
 }
 
 func RegressTimeslot(timeslot string) {

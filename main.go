@@ -290,15 +290,22 @@ func handleCron() {
 	go func() {
 		c := cron.New()
 		// Fill AI Recruiting Boards
-		// Update AI Gameplans and DCs
-		// Allocate AI Boards
-		// Sync Recruiting
-		// Sync Free Agency
-		c.AddFunc("0 16 * * 2", controller.SyncFreeAgencyViaCron)
-		// Sync Extension Offers
-		// Run the Games
-		// Reveal Timeslot Results
-		// Sync Week
+		// c.AddFunc("0 5 * * 4", controller.FillAIBoardsViaCron)
+		// // Update AI Gameplans and DCs
+		// // Allocate AI Boards
+		// c.AddFunc("0 3 * * 4,6", controller.SyncAIBoardsViaCron)
+		// // Sync Recruiting
+		// c.AddFunc("0 16 * * 3", controller.SyncRecruitingViaCron)
+		// // Sync Free Agency
+		// c.AddFunc("0 16 * * 2", controller.SyncFreeAgencyViaCron)
+		// // Sync Extension Offers
+		// // Run the Games
+		// c.AddFunc("0 2 * * 4", controller.RunTheGamesViaCron)
+		// // Reveal Timeslot Results
+		// c.AddFunc("0 19,21,23 * * 6", controller.ShowGamesViaCron) // Morning, Afternoon, evening
+		// c.AddFunc("0 1 * * 0,5,6", controller.ShowGamesViaCron)
+		// // Sync Week
+		// c.AddFunc("0 0 * * 0", controller.SyncToNextWeekViaCron)
 		c.Start()
 	}()
 }

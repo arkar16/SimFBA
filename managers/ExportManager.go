@@ -402,7 +402,7 @@ func ExportPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 
 	playByPlays := GetCFBPlayByPlaysByGameID(gameID)
 	// Generate the Play By Play Response
-	playbyPlayResponseList := GenerateCFBPlayByPlayResponse(playByPlays, participantMap)
+	playbyPlayResponseList := GenerateCFBPlayByPlayResponse(playByPlays, participantMap, false)
 
 	// Begin Writing
 	fileName := gameID + "_" + game.HomeTeam + "_vs_" + game.AwayTeam + "_play_by_play"

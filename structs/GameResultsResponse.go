@@ -12,6 +12,7 @@ type GameResultsPlayer struct {
 	LastName             string
 	Position             string
 	Archetype            string
+	TeamAbbr             string
 	League               string
 	Year                 uint
 	PassingYards         int
@@ -68,4 +69,21 @@ type GameResultsPlayer struct {
 	WasInjured           bool
 	WeeksOfRecovery      uint
 	InjuryType           string
+}
+
+type StreamResponse struct {
+	GameID              uint
+	HomeTeamID          uint
+	HomeTeam            string
+	HomeTeamCoach       string
+	HomeTeamRank        uint
+	HomeOffensiveScheme string
+	HomeDefensiveScheme string
+	AwayTeamID          uint
+	AwayTeam            string
+	AwayTeamCoach       string
+	AwayTeamRank        uint
+	AwayOffensiveScheme string
+	AwayDefensiveScheme string
+	Streams             []PlayByPlayResponse
 }

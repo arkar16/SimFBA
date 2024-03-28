@@ -47,12 +47,18 @@ func SyncFreeAgencyViaCron() {
 func SyncToNextWeekViaCron() {
 	ts := managers.GetTimestamp()
 	if ts.RunCron {
-		if !ts.IsOffSeason {
-			// managers.ResetCollegeStandingsRanks()
+		if !ts.IsOffSeason || !ts.IsNFLOffSeason {
+			managers.MoveUpWeek()
 		}
 		managers.MoveUpWeek()
+	}
+}
+
+func RunTheGamesViaCron() {
+	ts := managers.GetTimestamp()
+	if ts.RunCron {
 		if !ts.IsOffSeason {
-			// managers.SyncCollegePollSubmissionForCurrentWeek()
+			managers.RunTheGames()
 		}
 	}
 }

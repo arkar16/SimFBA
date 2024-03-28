@@ -214,6 +214,7 @@ type PlayByPlayResponse struct {
 	Tackler2ID         uint
 	ResultYards        int8
 	Result             string
+	StreamResult       []string
 }
 
 func (p *PlayByPlayResponse) AddPlayInformation(playType, playName, offFormation, defFormation, poa string) {
@@ -224,6 +225,10 @@ func (p *PlayByPlayResponse) AddPlayInformation(playType, playName, offFormation
 	p.PointOfAttack = poa
 }
 
-func (p *PlayByPlayResponse) AddResult(result string) {
-	p.Result = result
+func (p *PlayByPlayResponse) AddResult(result []string, isStream bool) {
+	if isStream {
+		p.StreamResult = result
+	} else {
+		p.Result = result[0]
+	}
 }

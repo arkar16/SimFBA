@@ -186,3 +186,10 @@ func GetCollegeStandingsRecordByTeamID(id string, seasonID string) structs.Colle
 
 	return standing
 }
+
+func ResetCollegeStandingsRanks() {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+	seasonID := strconv.Itoa(int(ts.CollegeSeasonID))
+	db.Model(&structs.CollegeStandings{}).Where("season_id = ?", seasonID).Updates(structs.CollegeStandings{Rank: 0})
+}

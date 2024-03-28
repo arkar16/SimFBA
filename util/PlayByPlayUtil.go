@@ -374,3 +374,207 @@ func GetCoverageStr(cov bool) string {
 	}
 	return "Man"
 }
+
+func GetPuntVerb() string {
+	list := []string{" punts for ", " punts it for ", " punts it off for ", " sends it away for "}
+	return PickFromStringList(list)
+}
+
+func GetKickoffVerb(num int) string {
+	var list []string
+	if num == 1 {
+		// First verb
+		list = []string{" kicks for ", " kicks it off for "}
+	} else if num == 2 {
+		list = []string{" Fielded at the goalline by ", " there to catch it by the goalline is "}
+	} else if num == 3 {
+		list = []string{" Fielded at the goalline by ", " caught in the endzone by ", " what a kick! Fielded deep in the endzone by "}
+	}
+
+	return PickFromStringList(list)
+}
+
+func GetFairCatchStatement() string {
+	list := []string{" And the receiver raises their hand, signaling a fair catch. ", " calls for a fair catch ", " waves for a fair catch. "}
+	return PickFromStringList(list)
+}
+
+func GetFGStartingStatement(isFG bool) string {
+	verb := "field goal"
+	if !isFG {
+		verb = "extra point"
+	}
+	list := []string{
+		" with the " + verb + " attempt...",
+		" with the " + verb + "...",
+		verb + " kick is up...",
+	}
+
+	return PickFromStringList(list)
+}
+
+func GetBlockedStatement(isKick bool) string {
+	verb := "kick"
+	if !isKick {
+		verb = "punt"
+	}
+	list := []string{
+		" BLOCKED BY ",
+		"...and it's BLOCKED! ",
+		"...and the attempt is BLOCKED! Swatted away, and the defense scrambles for the ball! Block made by ",
+		"...and the attempt is BLOCKED! Swatted down by ",
+		"...and the attempt is BLOCKED! Denied by ",
+		"...and it's BLOCKED! The crowd goes wild as the defense storms the field! ",
+		" - and the ball is BLOCKED! What a turn of events! Blocked by ",
+		"...and the attempt is BLOCKED! Swatted away, and the defense takes control! ",
+		"...and the attempt is BLOCKED! The special teams unit has made a statement! ",
+		"...and the attempt is BLOCKED! That's a game changer right there by ",
+		"...thwarted! The " + verb + " is BLOCKED and the momentum shifts! ",
+		"...and the attempt is SMOTHERED! The defense has put up the wall! Blocked by ",
+		"...and the " + verb + " is REJECTED! A colossal block by ",
+		"...denied! The " + verb + " is BLOCKED, sending shockwaves through the stadium! Block made by ",
+		"...and it's STUFFED! The " + verb + " is BLOCKED and the defense is ecstatic! Denial made by ",
+		"...and it's REBUFFED at the line! The " + verb + " is BLOCKED, incredible effort by ",
+		"...and it's SNATCHED from the sky! BLOCKED with authority by ",
+		"...and it's SLAPPED DOWN! The " + verb + " is BLOCKED - a crushing blow by ",
+	}
+
+	return PickFromStringList(list)
+}
+
+func GetFGEndStatement(isGood bool, isLeft, isOffUpright, isRight bool) string {
+	list := []string{
+		" and it's good!",
+		" and it looks good!",
+		" good.",
+		" the kick is good.",
+		" and it goes right through the uprights!",
+		" the kick is good!",
+	}
+	if !isGood {
+		list = []string{
+			" and it's no good!",
+			" no good.",
+			" and the crowd groans, it's not through! No good.",
+			" and it's a miss! No good.",
+			" and the kick is wide! No good.",
+			" and the attempt falls short! No good",
+		}
+		if isLeft {
+			list = append(list,
+				" and its just slightly misses from the left. No good.",
+				" and it looks like it's just too far left. No good.",
+				" and it's too wide left. No good.",
+				" and it just misses from the left. The kicker looks frustrated.",
+				" and it veers left, no good!",
+				" and it hooks to the left! No good!",
+				" and the kick is left of the mark! No good.",
+				" and it's wide to the left, no good!",
+				" and it's pushed to the left!",
+				" and the ball misses to the left!",
+				" and it's off course, to the left!",
+			)
+		} else if isOffUpright {
+			list = append(list,
+				" and it hits the upright, no good!",
+				" and it clangs off the upright! No good.",
+				" and the ball ricochets off the upright! No good.",
+				" and it's off the iron, denied! No good.",
+			)
+		} else if isRight {
+			list = append(list,
+				" and it's wide to the right, no good!",
+				" and it's pushed to the right!",
+				" and the ball misses to the right!",
+				" and it's off course, to the right!",
+				" and its just slightly misses from the right. No good.",
+				" and it looks like it's just too far right. No good.",
+				" and it's too wide right. No good.",
+				" and it just misses from the left. The kicker looks frustrated.",
+				" and it veers right, no good!",
+				" and it hooks to the right! No good!",
+				" and the kick is right of the mark! No good.",
+			)
+		}
+	}
+
+	return PickFromStringList(list)
+}
+
+func GetTouchbackStatement() string {
+	list := []string{" Touchback. ", " And it looks like it will be a touchback, folks. ", " And it's a touchback, folks. "}
+	return PickFromStringList(list)
+}
+
+func GetReturnVerb(yards int, touchdown, oob bool) string {
+	list := []string{" returns the ball ", " runs it for ", " runs it by for ", " advances the ball for ", " hustles for "}
+	if !touchdown && !oob {
+		if yards > 9 {
+			list = append(list,
+				" spins past a defender, runs toward the left side and makes some headway! Bulldozes a defender but is quickly pulled down. Wow. Ran for ",
+				" spins past a defender, runs toward the right side. Bulldozes a defender but is quickly pulled down. Wow. Ran for ",
+				" charges upfield, shrugging off tacklers and marking a significant run of ",
+				" blazes down the field, eluding defenders and finally tackled after a fantastic run of ",
+				" blazes down the field, eluding defenders and finally tackled. Fantastic gain of ",
+				" gallops downfield like a freight train, eventually brought down after a tremendous run of ",
+				" gallops downfield like a freight train, eventually brought down after a tremendous effort. A run for ")
+		} else if yards > 4 {
+			list = append(list, " runs by the sideline, passes a defender... and now he's tackled. Ran for ",
+				" darts down the middle of the field, jukes past a defender and is tackled. Goes for ",
+				" finds a gap, dodges a tackle, and is eventually stopped. A run of ",
+				" breaks to the outside, gaining momentum for a solid return of ",
+				" hurdles over a defender and pushes forward, a decent return of ",
+				" catches, tucks, and rolls out an agile run, netting ",
+				" takes off like a cannonball, squeezing out a valuable ")
+		} else if yards > 2 {
+			list = append(list, " runs past a defender before getting tackled. Looks like it will be for ",
+				" speeds past a defender but is swiftly tackled. Ran for ",
+				" weaves through traffic is brought down after gaining ",
+				"pushes ahead and is taken down after a small advance of ")
+		} else {
+			list = append(list, " makes a run for it but is brought down quickly. Ran for ",
+				" speeds past a defender but is swiftly tackled. Ran for ",
+				" scoots up the field for ",
+				" squeezes past the line of scrimmage but is quickly halted. A gain of ",
+				" charges forward but meets a wall of defenders. A short gain of ",
+				" finds little room and is stopped after a modest gain of ",
+				" stumbles slightly but regains footing, a short return for ",
+				" gets a grip on the ball and scurries ahead, only managing ",
+				" gathers the kick and charges ahead into the arms of the opposition, a minimal gain of ",
+			)
+		}
+	} else if !touchdown && oob {
+		if yards > 9 {
+			list = append(list,
+				" bolts to the edge and turns upfield with a burst of speed, pushing his way out of bounds after gaining ",
+				" dashes toward the sideline, narrowly avoiding a tackle and stepping out after a solid ",
+				" evades the first wave of tacklers and smartly steps out to avoid a hit. A good return for ",
+			)
+		} else if yards > 4 {
+			list = append(list,
+				" shuffles his way to the side, squeezing out a few hard-earned yards before being forced out at ",
+				" takes it to the sideline, sidestepping a defender and going out with a gain of ",
+				" manages to skirt the sideline, picking up a modest ",
+			)
+		} else {
+			list = append(list, " nimbly steps along the sideline before being pushed out of bounds after ",
+				" speeds along the edge, narrowly avoiding tackles and stepping out after ",
+				" tiptoes the sideline, making good ground before being ushered out after ",
+				" is quickly corralled by the coverage team and nudged out at the ",
+				" sprints to the boundary, only to be met by a defender. Ends up with just ",
+				" catches the ball and instinctively heads out of bounds. Not much there, just ",
+			)
+		}
+	} else {
+		list = append(list,
+			" darts toward the sideline, turns upfield and takes it all the way! Touchdown! ",
+			" races across the field, leaving defenders in his wake and crosses the goal line for a touchdown! ",
+			" explodes past the coverage team, finds an opening and sprints to the end zone for six points! ",
+			" finds a seam and explodes through, he could go all the way, touchdown after a tremendous ",
+			" catches the kick, weaves through traffic like a speedboat through water, and he's gone! ",
+			" grabs the ball and turns on the jets, leaving defenders in the dust. That's six points with an electric ",
+		)
+	}
+
+	return PickFromStringList(list)
+}

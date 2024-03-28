@@ -891,9 +891,9 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 		firstSegment = kickerLabel + verb + strconv.Itoa(int(play.KickDistance)) + distanceStr
 		if play.KickDistance > 64 {
 			if play.KickDistance == 65 {
-				firstSegment += " Fielded at the goalline by " + recLabel
+				firstSegment += " Fielded at the goalline by " + recLabel + ". "
 			} else {
-				firstSegment += " Fielded deep in the endzone by " + recLabel
+				firstSegment += " Fielded deep in the endzone by " + recLabel + ". "
 			}
 		} else {
 			outside := 65 - play.KickDistance

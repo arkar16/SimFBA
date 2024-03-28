@@ -728,6 +728,26 @@ func GetCFBGameResultsByGameID(gameID string) structs.GameResultsResponse {
 
 	homePlayers := GetAllCollegePlayersWithGameStatsByTeamID(htID, gameID)
 	awayPlayers := GetAllCollegePlayersWithGameStatsByTeamID(atID, gameID)
+	homeStats := GetCollegeTeamStatsByGame(htID, gameID)
+	awayStats := GetCollegeTeamStatsByGame(atID, gameID)
+	score := structs.ScoreBoard{
+		Q1Home:  homeStats.Score1Q,
+		Q2Home:  homeStats.Score2Q,
+		Q3Home:  homeStats.Score3Q,
+		Q4Home:  homeStats.Score4Q,
+		OT1Home: homeStats.Score5Q,
+		OT2Home: homeStats.Score6Q,
+		OT3Home: homeStats.Score7Q,
+		OT4Home: homeStats.ScoreOT,
+		Q1Away:  awayStats.Score1Q,
+		Q2Away:  awayStats.Score2Q,
+		Q3Away:  awayStats.Score3Q,
+		Q4Away:  awayStats.Score4Q,
+		OT1Away: awayStats.Score5Q,
+		OT2Away: awayStats.Score6Q,
+		OT3Away: awayStats.Score7Q,
+		OT4Away: awayStats.ScoreOT,
+	}
 	participantMap := getGameParticipantMap(homePlayers, awayPlayers)
 
 	playByPlays := GetCFBPlayByPlaysByGameID(gameID)
@@ -738,6 +758,7 @@ func GetCFBGameResultsByGameID(gameID string) structs.GameResultsResponse {
 		HomePlayers: homePlayers,
 		AwayPlayers: awayPlayers,
 		PlayByPlays: playbyPlayResponseList,
+		Score:       score,
 	}
 }
 

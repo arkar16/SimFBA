@@ -431,7 +431,6 @@ func ExportPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 		tr := play.TimeRemaining
 		down := strconv.Itoa(int(play.Down))
 		dist := strconv.Itoa(int(play.Distance))
-		los := strconv.Itoa(int(play.LineOfScrimmage))
 		qbID := strconv.Itoa(int(play.QBPlayerID))
 		bcID := strconv.Itoa(int(play.BallCarrierID))
 		t1ID := strconv.Itoa(int(play.Tackler1ID))
@@ -440,7 +439,7 @@ func ExportPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 		blitzNumber := strconv.Itoa(int(play.BlitzNumber))
 
 		row := []string{
-			num, hcs, acs, qt, tr, play.Possession, down, dist, los,
+			num, hcs, acs, qt, tr, play.Possession, down, dist, play.LineOfScrimmage,
 			play.PlayType, play.OffensiveFormation, play.PlayName, play.PointOfAttack, play.DefensiveFormation,
 			play.DefensiveTendency, blitzNumber, play.LBCoverage, play.CBCoverage, play.SCoverage,
 			qbID, bcID, t1ID, t2ID, yards,

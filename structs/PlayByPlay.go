@@ -197,7 +197,7 @@ type PlayByPlayResponse struct {
 	TimeRemaining      string
 	Down               uint8
 	Distance           uint8
-	LineOfScrimmage    int8
+	LineOfScrimmage    string
 	PlayType           string
 	PlayName           string
 	OffensiveFormation string

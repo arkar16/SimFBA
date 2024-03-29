@@ -815,9 +815,12 @@ func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, part
 		}
 
 		los := p.LineOfScrimmage
+		losSide := ht
 		if los > 50 {
 			los = 100 - p.LineOfScrimmage
+			losSide = at
 		}
+		losFull := strconv.Itoa(int(los)) + " " + losSide
 
 		play := structs.PlayByPlayResponse{
 			PlayNumber:         uint(number),
@@ -829,7 +832,7 @@ func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, part
 			TimeRemaining:      p.TimeRemaining,
 			Down:               p.Down,
 			Distance:           p.Distance,
-			LineOfScrimmage:    los,
+			LineOfScrimmage:    losFull,
 			PlayType:           playType,
 			PlayName:           playName,
 			PointOfAttack:      poa,

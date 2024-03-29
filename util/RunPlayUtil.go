@@ -13,9 +13,9 @@ func GetRunVerb(yards int, playName string, touchdown, outOfBounds, twoPtConvers
 	} else if playName == "Power Run Left" || playName == "Power Run Right" {
 		list = append(list, getPowerRunList(yards, playName == "Power Run Left", touchdown, outOfBounds, twoPtConversion, fumble, safety)...)
 	} else if playName == "Draw Left" || playName == "Draw Right" {
-
+		list = append(list, getDrawRunList(yards, playName == "Draw Left", touchdown, outOfBounds, twoPtConversion, fumble, safety)...)
 	} else if playName == "Read Option Left" || playName == "Read Option Right" {
-
+		list = append(list, getReadOptionList(yards, playName == "Read Option Left", touchdown, outOfBounds, twoPtConversion, fumble, safety)...)
 	} else if playName == "Speed Option Left" || playName == "Speed Option Right" {
 
 	} else if playName == "Inverted Option Left" || playName == "Inverted Option Right" {
@@ -499,88 +499,270 @@ func getReadOptionList(yards int, isleft, touchdown, outOfBounds, twoPtConversio
 	// Depending on the yards gained or lost, append appropriate descriptions
 	if touchdown {
 		list = append(list, " makes the perfect read and takes it all the way to the house for a touchdown! ",
-			" reads the defense, opts to keep it, and dashes to the end zone for six! ",
-			" deceives the defense with a slick read option, sprinting into the end zone for a score! ")
+			" reads the goalline defense, opts to keep it, and dashes to the end zone for six! ",
+			" deceives the goalline defense with a slick read option, sprinting into the end zone for a score! ",
+			" navigates the read option with precision, blazing his way to the end zone for a spectacular touchdown! ",
+			" outwits the goalline defense with a masterful read, darting to paydirt for the touchdown! ",
+			" showcases his athleticism on the goalline, turning the read option into a thrilling touchdown run! ")
 	} else if outOfBounds {
 		list = append(list, " opts for the "+direction+" and steps out after a decent gain. ",
-			" reads, keeps, and sprints to the "+direction+", going out of bounds after gaining yards. ")
+			" reads, keeps, and sprints to the "+direction+", going out of bounds after gaining yards. ",
+			" leverages the read option to gain the edge and smartly steps out, banking ",
+			" exploits the defense's hesitation on the read and scoots out of bounds for a gain of ",
+			" exploits the defense's hesitation on the option and scoots out of bounds for a gain of ",
+			" surprises the defensive line on the option and edges out of bounds for a gain of ",
+			" surprises the defensive line on the option and edges out of bounds, gaining ")
 	} else if twoPtConversion && touchdown {
-		list = append(list, " executes the read option flawlessly for a two-point conversion! ",
-			" makes the right read and converts for two crucial points! ")
+		list = append(list, " executes the read option flawlessly on the goalline for a two-point conversion! ",
+			" makes the right read in the red zone and converts for two crucial points! ",
+			" brilliantly navigates the read option, crossing into the end zone for the extra points! ",
+			" capitalizes on the read option, weaving his way for a successful two-point play! ")
 	} else if twoPtConversion && !touchdown {
 		list = append(list, " tries the read option for the conversion but gets stopped short! ",
-			" opts to keep but can't break through for the two points. ")
+			" opts to keep but can't break through for the two points. ",
+			" hesitates on the read option, can't break through for the two points. ",
+			" gives the read option a go for the two points, but the defense stands tall, denying the conversion. ",
+			" opts for the read on the conversion attempt, yet the defense snuffs it out, thwarting the extra points. ",
+			" stalls on the read option attempt and stopped short of the goalline, thwarting the extra points. ",
+			" stalls on the read option attempt and stopped short of the end zone, thwarting the extra points. ",
+			" stalls on the read option attempt and stopped short of the end zone, thwarting the two point attempt. ",
+			" trips up on the read option attempt and stopped short of the goalline, thwarting the extra points. ",
+			" trips up on the read option attempt and stopped short of the end zone, thwarting the extra points. ",
+			" trips up on the read option attempt and stopped short of the end zone, thwarting the two point attempt. ",
+			" attempts the read option and is stopped short of the goalline, thwarting the extra points. ",
+			" attempts the read option and is stopped short of the end zone, thwarting the extra points. ",
+			" attempts the read option and is stopped short of the end zone, thwarting the two point attempt. ")
 	} else if fumble {
-		list = append(list, " fumbles while executing the read option, losing the ball after gaining yards. ",
-			" makes a read but loses the ball on the run, a costly turnover. ")
+		list = append(list, " fumbles while executing the read option, losing the ball after gaining ",
+			" makes a read but loses the ball on the run, a costly turnover after ",
+			" tries to navigate the read option but ends up turning the ball over with a fumble after ",
+			" keeps on the read option, only to lose control of the ball, squandering ")
 	} else if safety {
 		list = append(list, " gets trapped in the end zone on a read option, resulting in a safety! ",
-			" opts to keep but is caught in the end zone for a safety! ")
+			" opts to keep but is caught in the end zone for a safety! ",
+			" disastrously misreads the option in the end zone, leading to a safety against his team. ",
+			" hesitates on the option in the end zone, leading to a safety against his team. ",
+			" hesitates on the read option in the end zone, leading to a safety against his team. ",
+			" is enveloped by the defense in the end zone during the read option, resulting in a safety. ")
 	} else {
 		switch {
 		case yards > 14:
 			list = append(list, " makes a great read and breaks free, galloping for a huge gain of ",
-				" reads the defense perfectly and darts through the "+direction+" for a big pickup of ")
+				" reads the defense perfectly and darts through the "+direction+" for a big pickup of ",
+				" takes the read option and finds a gap in the defense for a pickup of ",
+				" takes advantage of the defense's anticipation on the read, breaking free for ",
+				" surprises the defense on the read option and nimbly navigates the middle of the field for a big gain of ",
+				" surprises the defense on the read option and nimbly navigates the "+direction+" side of the field for a big gain of ",
+				" surprises the defense on the read option and elusively navigates the "+direction+" side of the field for a huge gain of ",
+				" reads the defense on the option and elusively navigates the "+direction+" side of the field for a gain of ",
+				" reads the defense on the option and hits the gas towards the "+direction+" side of the field for a huge gain of ",
+				" reads the defense on the option and dashes towards the "+direction+" edge for a huge gain of ")
 		case yards > 9:
 			list = append(list, " opts to keep and finds a seam, powering ahead for ",
+				" opts to keep and finds a gap on the "+direction+" side, powering ahead for ",
+				" opts to keep and finds a seam on the "+direction+" side, powering ahead for ",
+				" executes the option and finds a seam on the "+direction+" side, powering through for ",
+				" executes the option and finds a gap on the "+direction+" side, powering through for ",
+				" executes the option and finds a seam on the "+direction+" side, powering ahead for ",
+				" executes the option and finds a seam on the "+direction+" side for a gain of ",
+				" executes the option and finds a seam on the "+direction+" side gaining ",
+				" executes the option and finds a seam on the "+direction+" side, a gain of ",
 				" makes the right call on the read option, rushing for a solid gain of ")
 		case yards > 4:
 			list = append(list, " keeps on the read option and maneuvers for a decent pickup of ",
-				" reads the play well, keeping it and grinding out ")
+				" reads the play well, keeping it and grinding out ",
+				" reads the play well, keeping the option and grinding out ",
+				" reads the play well, keeping it and churning out ",
+				" reads the play well, executes the option and running for ",
+				" reads the play well, executes the option and running for a gain of ",
+				" reads the play well, executes the option and running for a moderate gain of ",
+				" surprises the defensive line on the option but is stopped shortly on the "+direction+" side for a moderate gain of ",
+				" finds a gap on the defensive line on the option but is stopped shortly on the "+direction+" side for a gain of ",
+				" finds a seam on the defensive line on the option but is stopped shortly on the "+direction+" side for a gain of ",
+				" finds a seam through the read option but is stopped shortly on the "+direction+" side for a moderate gain of ")
 		case yards > 0:
 			list = append(list, " decides to keep but is quickly brought down after gaining ",
-				" makes a quick read and pushes forward for a short gain of ")
+				" makes a quick read and pushes forward for a short gain of ",
+				" makes a quick read and is brought down quickly a short gain of ",
+				" makes a quick read and is brought down for short gain of ",
+				" makes a quick read and is brought down shortly, gaining ")
 		case yards == 0:
 			list = append(list, " is met at the line of scrimmage on the option, no gain on the play. ",
 				" is immediately stopped at the line of scrimmage on the option, no gain on the play. ",
+				" attempts to execute the read option but cannot trick the defense, no gain on the play. ",
+				" attempts to execute the read option but is stopped swiftly, no gain on the play. ",
+				" attempts to execute the read option but is stopped on the line of scrimmage, no gain on the play. ",
+				" attempts to execute the read option but is shut down on the line of scrimmage, no gain on the play. ",
+				" attempts the read option but is shut down on the line of scrimmage, no gain on the play. ",
+				" attempts the read and is immediately tackled on the line. No gain on the play. ",
 				" is immediately tackled by the defensive line. No gain on the play. ")
 		default: // Negative yardage
-			list = append(list, " makes a read but is swarmed behind the line, losing ",
-				" opts to keep but is tackled for a loss of ")
+			list = append(list,
+				" makes a read but is swarmed behind the line, losing ",
+				" makes a read but is met before the line of scrimmage, losing ",
+				" makes a read but is tackled behind the line, losing ",
+				" makes a read but is stopped behind the line, losing ",
+				" makes a read but is stopped swiftly, losing ",
+				" attempts a read but is swarmed behind the line, losing ",
+				" attempts a read but is met before the line of scrimmage, losing ",
+				" attempts a read but is tackled behind the line, losing ",
+				" attempts a read but is stopped behind the line, losing ",
+				" attempts a read but is stopped swiftly, losing ",
+				" opts to keep but is tackled for a loss of ",
+			)
 		}
 	}
 	return list
 }
 
-// func getSpeedOptionList(yards int, isleft, touchdown, outOfBounds, twoPtConversion, fumble, safety bool) []string {
-// 	list := []string{}
-// 	direction := "left"
-// 	if isleft {
-// 		direction = "right"
-// 	}
-// 	// Depending on the yards gained or lost, append appropriate descriptions
-// 	if touchdown {
-// 		list = append(list, "")
-// 	} else if outOfBounds {
-// 		list = append(list, "")
-// 	} else if twoPtConversion && touchdown {
-// 		list = append(list, "")
-// 	} else if twoPtConversion && !touchdown {
-// 		list = append(list, "")
-// 	} else if fumble {
-// 		list = append(list, "")
-// 	} else if safety {
-// 		list = append(list, "")
-// 	} else {
-// 		switch {
-// 		case yards > 14:
-// 			list = append(list, "")
-// 		case yards > 9:
-// 			list = append(list, "")
-// 		case yards > 4:
-// 			list = append(list, "")
-// 		case yards > 0:
-// 			list = append(list, "")
-// 		case yards == 0:
-// 			list = append(list, " is met at the line of scrimmage, no gain on the play. ",
-// 				" is immediately stopped at the line of scrimmage, no gain on the play. ",
-// 				" is immediately tackled by the defensive line. No gain on the play. ")
-// 		default: // Negative yardage
-// 			list = append(list, "")
-// 		}
-// 	}
-// 	return list
-// }
+func getSpeedOptionList(yards int, isleft, touchdown, outOfBounds, twoPtConversion, fumble, safety bool) []string {
+	list := []string{}
+	direction := "left"
+	if isleft {
+		direction = "right"
+	}
+	// Depending on the yards gained or lost, append appropriate descriptions
+	if touchdown {
+		list = append(list,
+			" executes the speed option flawlessly, pitching it to the running back who dashes to the "+direction+" and into the end zone!",
+			" perfects the pitch on the speed option, leading to a breathtaking dash down the "+direction+" sideline for a touchdown!",
+			" orchestrates the speed option to perfection, resulting in an electrifying touchdown sprint to the "+direction+"!")
+	} else if outOfBounds {
+		list = append(list,
+			" pitches it out on the speed option and the runner bolts to the "+direction+", stepping out after a solid gain of ",
+			" utilizes the speed option, sending the back towards the "+direction+" where he's pushed out after a decent advance ")
+	} else if twoPtConversion && touchdown {
+		list = append(list,
+			" nails the speed option for a successful two-point conversion, with the runner breaking to the "+direction+" and crossing the plane! ",
+			" capitalizes on the speed option, pitching it for a successful dash into the end zone for two points! ")
+	} else if twoPtConversion && !touchdown {
+		list = append(list,
+			" attempts the speed option for two points but the defense clamps down, thwarting the conversion to the "+direction+". ",
+			" tries to convert with a speed option but the pitch to the "+direction+" is stopped, no extra points. ")
+	} else if fumble {
+		list = append(list,
+			" makes a run for it on the speed option but loses control of the ball after gaining ",
+			" makes a break for it on the speed option and he's lost the ball! It's a fumble! What a turn of events after ",
+			" makes a break for it on the speed option and with the tackl- it's a fumble! What a turn of events after ",
+			" makes a break for it on the speed option and with the tack- it's a fumble! What a turn of events after ",
+			" makes a run for it on the option and loses the football on the tackle! ",
+			" makes a run for it on the option and loses the ball after being brought down for ",
+			" fumbles the pitch on the speed option, losing control of the ball after a minor gain of ",
+			" fumbles the pitch on the speed option and loses the ball after a minor gain of ",
+			" sees the speed option go awry as the ball hits the ground during the pitch, missing ",
+			" mistakes the pitch and loses control of the ball, fumbling for ")
+	} else if safety {
+		list = append(list,
+			" disastrously opts for a speed option that ends in a safety, with the runner tackled in the end zone! ",
+			" tries a risky speed option in the end zone, which backfires for a safety against them! ",
+			"attempts the speed option but cannot fool the defense, and that's a safety! ",
+			"attempts the speed option but can't fool the defense, and that's a safety! ")
+	} else {
+		switch {
+		case yards > 14:
+			list = append(list,
+				" tricks the defense on the speed option and tears down the "+direction+" for a huge gain of ",
+				" tricks the defense on the speed option and runs to the "+direction+" for a huge gain of ",
+				" surprises the defense on the speed option and runs to the "+direction+" for a huge gain of ",
+				" surprises the defense on the speed option and tears down the "+direction+" for a huge gain of ",
+				" surprises the defense on the speed option and runs to the "+direction+" for a gain of ",
+				" surprises the defense on the speed option and runs to the "+direction+" for a huge gain of ",
+				" masterfully executes the speed option and tears down the "+direction+" for a huge gain of ",
+				" masterfully executes the speed option and runs to the "+direction+" for a gain of ",
+				" masterfully executes the speed option and runs to the "+direction+" for a huge gain of ",
+				" breaks a tackle on the speed option and makes a run for the "+direction+" for a huge pickup of ",
+				" breaks a tackle on the speed option and makes a break for the "+direction+" side for a huge pickup of ",
+				" breaks a tackle on the speed option and dashes for the "+direction+" sideline for a huge pickup of ",
+				" breaks a tackle on the speed option and dashes downfield towards the "+direction+" sideline for a huge pickup of ",
+				" breaks a tackle on the speed option and breaks downfield towards the "+direction+" sideline for a huge pickup of ",
+				" skillfully executes a speed option, leading to a sprint along the "+direction+" that racks up significant yardage of ")
+		case yards > 9:
+			list = append(list,
+				" opts for the speed option, making a timely pitch that results in a brisk "+direction+" run for ",
+				" opts for the speed option, succeeding the pitch that results in a brisk "+direction+" run for ",
+				" opts for the speed option, succeeding the pitch that results in a brisk "+direction+" run for a large gain of ",
+				" opts for the speed option, succeeding the pitch that results in a brisk "+direction+" run for a huge gain of ",
+				" opts for the speed option, making a timely pitch that results in a swift "+direction+" run for ",
+				" opts for the speed option, succeeding the pitch that results in a swift "+direction+" run for ",
+				" opts for the speed option, making a timely pitch that results in a swift "+direction+" run for a large gain of ",
+				" opts for the speed option, succeeding the pitch that results in a swift "+direction+" run for a large gain of ",
+				" eludes defenders on the speed option and makes some ground before being brought down for ",
+				" eludes defenders on the speed option and makes some ground before being brought down for a gain of ",
+				" eludes defenders on the speed option and darts to the "+direction+" before being brought down for a gain of ",
+				" eludes defenders on the speed option and darts to the "+direction+" before being brought down for a solid gain of ",
+				" eludes defenders on the speed option and darts to the "+direction+" before being brought down, gaining ",
+				" eludes defenders on the speed option and runs to the "+direction+" before being brought down for a gain of ",
+				" eludes defenders on the speed option and runs to the "+direction+" before being brought down for a solid gain of ",
+				" eludes defenders on the speed option and runs to the "+direction+" before being brought down, gaining ",
+				" misses a tackle on the speed option and runs to the "+direction+" before being brought down for a gain of ",
+				" misses a tackle on the speed option and runs to the "+direction+" before being brought down for a solid gain of ",
+				" misses a tackle on the speed option and runs to the "+direction+" before being brought down, gaining ",
+				" capitalizes on the speed option, breaking to the "+direction+" for a solid pickup of ",
+				" capitalizes on the option, breaking to the "+direction+" for a solid pickup of ",
+				" capitalizes on the speed option, breaking to the "+direction+" for a solid gain of ",
+				" capitalizes on the option, breaking to the "+direction+" for a solid gain of ",
+				" capitalizes on the speed option, breaking to the "+direction+" for a solid run of ",
+				" capitalizes on the option, breaking to the "+direction+" for a run of ")
+		case yards > 4:
+			list = append(list,
+				" carries out on the speed option to the "+direction+" for a moderate gain of ",
+				" carries out on the speed option to the "+direction+" for a gain of ",
+				" carries out on the speed option to the "+direction+", gaining ",
+				" goes with the speed option, going around the "+direction+" edge for a respectable gain of ",
+				" goes with the speed option, going around the "+direction+" edge for a gain of ",
+				" goes with the speed option, going around the "+direction+" edge, gaining ",
+				" takes the speed option to the "+direction+" edge for a respectable gain of ",
+				" takes the speed option to the "+direction+" edge for a gain of ",
+				" takes the speed option to the "+direction+" edge, gaining ",
+				" takes the speed option to the "+direction+" and makes some ground for a moderate gain of ",
+				" takes the speed option to the "+direction+" and makes some ground for a gain of ",
+				" takes the speed option to the "+direction+" and makes some ground, gaining",
+			)
+		case yards > 0:
+			list = append(list,
+				" manages to eke out a few yards on a speed option to the "+direction+", advancing for ",
+				" manages to eke out a few yards on the option pitch to the "+direction+", advancing for ",
+				" manages to eke out a few yards on the option pitch to the "+direction+", a small gain of ",
+				" manages to eke out a few yards on the option pitch to the "+direction+", gaining ",
+				" edges out a few yards on the option pitch to the "+direction+", advancing for ",
+				" edges out a few yards on the option pitch to the "+direction+", a small gain of ",
+				" edges out a few yards on the option pitch to the "+direction+", gaining ",
+				" takes the option to the "+direction+" side and is brought down, advancing for ",
+				" takes the option to the "+direction+" side and is brought down, a small gain of ",
+				" takes the option to the "+direction+" side and is brought down, gaining ",
+				" takes the option to the "+direction+" side and is tackled, advancing for ",
+				" takes the option to the "+direction+" side and is tackled, a small gain of ",
+				" takes the option to the "+direction+" side and is tackled, gaining ",
+				" sees a modest return on the speed option, with the pitch leading to a slight gain of ")
+		case yards == 0:
+			list = append(list, " is met at the line of scrimmage, no gain on the play. ",
+				" is immediately stopped at the line of scrimmage, no gain on the play. ",
+				" is immediately tackled by the defensive line. No gain on the play. ")
+		default: // Negative yardage
+			list = append(list,
+				" is stopped on the speed option as two defenders spy both option players. Caught behind the line for a loss of ",
+				" is stopped on the speed option as two defenders spy both option players, losing ",
+				" has trouble with the option pitch, handles the ball and goes down behind the line, losing ",
+				" has trouble with the option pitch and goes down behind the line, losing ",
+				" has trouble with the option pitch and goes down behind the line for a loss of ",
+				" hesitates on the speed option pitch and goes down behind the line for a loss of ",
+				" hesitates on the speed option pitch and is tackled behind the line for a loss of ",
+				" hesitates on the speed option pitch and is tackled behind the line, losing ",
+				" hesitates on the speed option pitch and is stopped behind the line, losing ",
+				" hesitates on the speed option pitch and is stopped behind the line for a loss of",
+				" can't escape the edge on the option and is stopped behind the line for a loss of",
+				" can't escape the edge on the option and is stopped behind the line, losing",
+				" misreads the speed option and is stopped behind the line, losing",
+				" misreads the speed option and is tackled behind the line, losing",
+				" misreads the speed option and goes down behind the line, losing",
+				" misreads the speed option and is manhandled behind the line, losing",
+				" misreads the speed option and is manhandled behind the line for a loss of",
+				" sees the speed option falter, with the runner caught behind the line for a loss of ",
+				" watches the speed option play crumble, resulting in negative yardage of ")
+		}
+	}
+	return list
+}
 
 // func getInvertedOptionList(yards int, isleft, touchdown, outOfBounds, twoPtConversion, fumble, safety bool) []string {
 // 	list := []string{}

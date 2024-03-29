@@ -10,7 +10,7 @@ import (
 )
 
 func GetOffensiveDefaultSchemes() map[string]structs.OffensiveFormation {
-	path := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "CalebRose", "SimFBA", "data", "defaultOffensiveSchemes.json")
+	path := filepath.Join(os.Getenv("ROOT"), "data", "defaultOffensiveSchemes.json")
 	content := ReadJson(path)
 
 	var payload map[string]structs.OffensiveFormation
@@ -24,7 +24,7 @@ func GetOffensiveDefaultSchemes() map[string]structs.OffensiveFormation {
 }
 
 func GetDefensiveDefaultSchemes() map[string]map[string]structs.DefensiveFormation {
-	path := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "CalebRose", "SimFBA", "data", "defaultDefensiveSchemes.json")
+	path := filepath.Join(os.Getenv("ROOT"), "data", "defaultDefensiveSchemes.json")
 	content := ReadJson(path)
 
 	var payload map[string]map[string]structs.DefensiveFormation

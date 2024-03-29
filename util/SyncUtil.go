@@ -284,7 +284,7 @@ func ReadCSV(path string) [][]string {
 }
 
 func GetStateRegionMatcher() map[string]map[string]string {
-	path := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "CalebRose", "SimFBA", "data", "regionMatcher.json")
+	path := filepath.Join(os.Getenv("ROOT"), "data", "regionMatcher.json")
 	content := ReadJson(path)
 
 	var payload map[string]map[string]string
@@ -298,7 +298,7 @@ func GetStateRegionMatcher() map[string]map[string]string {
 }
 
 func GetStateMatcher() map[string][]string {
-	path := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "CalebRose", "SimFBA", "data", "stateMatcher.json")
+	path := filepath.Join(os.Getenv("ROOT"), "data", "stateMatcher.json")
 	content := ReadJson(path)
 
 	var payload map[string][]string

@@ -16,15 +16,17 @@ RUN CGO_ENABLED=0 go build
 
 FROM alpine:latest
 
-WORKDIR /root/
+WORKDIR /app
 
-COPY --from=base-builder /app/data/stateMatcher.json /root/
-COPY --from=base-builder /app/data/regionMatcher.json /root/
-COPY --from=base-builder /app/data/defaultOffensiveSchemes.json /root/
-COPY --from=base-builder /app/data/defaultDefensiveSchemes.json /root/
 COPY --from=base-builder /app/SimFBA .
 
+COPY --from=base-builder /app/data/stateMatcher.json ./data/
+COPY --from=base-builder /app/data/regionMatcher.json ./data/
+COPY --from=base-builder /app/data/defaultOffensiveSchemes.json ./data/
+COPY --from=base-builder /app/data/defaultDefensiveSchemes.json ./data/
+
 ENV PORT 8081
+ENV ROOT=/app
 ENV GOPATH /go
 EXPOSE 8081
 

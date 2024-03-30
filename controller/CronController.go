@@ -71,7 +71,7 @@ func ShowGamesViaCron() {
 	} else if !ts.NFLThursday {
 		timeslot = "Thursday Night Football"
 	} else if !ts.SaturdayMorning {
-		timeslot = "Saturday Noon"
+		timeslot = "Saturday Morning"
 	} else if !ts.SaturdayNoon {
 		timeslot = "Saturday Afternoon"
 	} else if !ts.SaturdayEvening {

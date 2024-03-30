@@ -302,7 +302,7 @@ func handleCron() {
 		// // Run the Games
 		// c.AddFunc("0 2 * * 4", controller.RunTheGamesViaCron)
 		// // Reveal Timeslot Results
-		c.AddFunc("0 19,21,23 * * 6", controller.ShowGamesViaCron) // Morning, Afternoon, evening
+		c.AddFunc("0 16,18,20 * * 6", controller.ShowGamesViaCron) // Morning, Afternoon, evening
 		// c.AddFunc("0 1 * * 0,1,2,5,6", controller.ShowGamesViaCron)
 		// // Sync Week
 		// c.AddFunc("0 0 * * 0", controller.SyncToNextWeekViaCron)

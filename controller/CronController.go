@@ -27,16 +27,12 @@ func SyncAIBoardsViaCron() {
 
 func SyncRecruitingViaCron() {
 	ts := managers.GetTimestamp()
-	if ts.RunCron {
+	if ts.RunCron && !ts.CollegeSeasonOver && !ts.CFBSpringGames {
 		managers.SyncRecruiting(ts)
 	}
-
-	managers.MoveUpInOffseasonFreeAgency()
-	managers.SyncFreeAgencyOffers()
 }
 
 func SyncFreeAgencyViaCron() {
-	fmt.Println("PONG!")
 	ts := managers.GetTimestamp()
 	if ts.RunCron && !ts.IsDraftTime {
 		managers.SyncFreeAgencyOffers()
@@ -50,7 +46,6 @@ func SyncToNextWeekViaCron() {
 		if !ts.IsOffSeason || !ts.IsNFLOffSeason {
 			managers.MoveUpWeek()
 		}
-		managers.MoveUpWeek()
 	}
 }
 

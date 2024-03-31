@@ -295,7 +295,7 @@ func handleCron() {
 		// // Allocate AI Boards
 		// c.AddFunc("0 3 * * 4,6", controller.SyncAIBoardsViaCron)
 		// // Sync Recruiting
-		// c.AddFunc("0 16 * * 3", controller.SyncRecruitingViaCron)
+		c.AddFunc("0 16 * * 3", controller.SyncRecruitingViaCron)
 		// // Sync Free Agency
 		// c.AddFunc("0 16 * * 2", controller.SyncFreeAgencyViaCron)
 		// // Sync Extension Offers
@@ -305,7 +305,7 @@ func handleCron() {
 		c.AddFunc("0 16,18,20 * * 6", controller.ShowGamesViaCron) // Morning, Afternoon, evening
 		// c.AddFunc("0 1 * * 0,1,2,5,6", controller.ShowGamesViaCron)
 		// // Sync Week
-		// c.AddFunc("0 0 * * 0", controller.SyncToNextWeekViaCron)
+		c.AddFunc("0 7 * * 0", controller.SyncToNextWeekViaCron)
 		c.Start()
 	}()
 }

@@ -807,8 +807,8 @@ func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, part
 		playName := util.GetPlayNameByEnum(p.PlayNameID)
 		poa := util.GetPointOfAttackByEnum(p.OffensivePoA)
 		lb := util.GetCoverageStr(p.LBCoverage)
-		cb := util.GetCoverageStr(p.LBCoverage)
-		s := util.GetCoverageStr(p.LBCoverage)
+		cb := util.GetCoverageStr(p.CBCoverage)
+		s := util.GetCoverageStr(p.SCoverage)
 		poss := ht
 		if !p.HomeHasBall {
 			poss = at

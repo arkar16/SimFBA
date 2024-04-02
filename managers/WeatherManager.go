@@ -36,7 +36,7 @@ func GenerateWeatherForGames() {
 	collegeGames := GetCollegeGamesBySeasonID(seasonID)
 
 	for _, game := range collegeGames {
-		if game.WeekID < ts.CollegeWeekID {
+		if game.WeekID < ts.CollegeWeekID || (game.LowTemp != 0 && game.HighTemp != 0) {
 			continue
 		}
 		GenerateWeatherForGame(db, game, teamRegions, regions, rainForecasts, mixForecasts, snowForecasts)

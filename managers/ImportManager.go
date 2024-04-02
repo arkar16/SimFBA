@@ -678,7 +678,7 @@ func ImportCFBGames() {
 func ImportNFLGames() {
 	db := dbprovider.GetInstance().GetDB()
 
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023\\2023_NFL_Games.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024\\2024_NFL_Games.csv"
 
 	gamesCSV := util.ReadCSV(path)
 
@@ -699,9 +699,12 @@ func ImportNFLGames() {
 
 		gameID := util.ConvertStringToInt(row[0])
 		season := util.ConvertStringToInt(row[1])
-		seasonID := season - 2021
+		seasonID := season - 2020
 		week := util.ConvertStringToInt(row[2])
-		weekID := week // Week 43 is week 0 of the 2023 Season
+		weekID := week + 23 // Week 43 is week 0 of the 2024 Season
+		if gameID > 381 {
+			weekID = week + 26
+		}
 		homeTeamAbbr := row[3]
 		awayTeamAbbr := row[4]
 		ht := teamMap[homeTeamAbbr]
@@ -735,11 +738,11 @@ func ImportNFLGames() {
 		isNeutralSite := util.ConvertStringToBool(row[11])
 		// isPreseasonGame := util.ConvertStringToBool(row[12])
 		// isConferenceChampionship := util.ConvertStringToBool(row[13])
-		// isPlayoffGame := util.ConvertStringToBool(row[14])
-		// isNationalChampionship := util.ConvertStringToBool(row[15])
+		isPlayoffGame := util.ConvertStringToBool(row[14])
+		isNationalChampionship := util.ConvertStringToBool(row[15])
 		gameTitle := row[23]
-		nextGame := util.ConvertStringToInt(row[25])
-		nextGameHOA := row[26]
+		nextGame := util.ConvertStringToInt(row[24])
+		nextGameHOA := row[25]
 
 		game := structs.NFLGame{
 			Model:           gorm.Model{ID: uint(gameID)},
@@ -763,6 +766,8 @@ func ImportNFLGames() {
 			GameTitle:       gameTitle,
 			NextGameID:      uint(nextGame),
 			NextGameHOA:     nextGameHOA,
+			IsPlayoffGame:   isPlayoffGame,
+			IsSuperBowl:     isNationalChampionship,
 		}
 
 		db.Create(&game)

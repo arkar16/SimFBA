@@ -63,6 +63,10 @@ func (t *Timestamp) MoveUpWeekCollege() {
 func (t *Timestamp) MoveUpWeekNFL() {
 	t.NFLWeekID++
 	t.NFLWeek++
+	if t.NFLPreseason && t.NFLWeek > 3 {
+		t.NFLWeek = 1
+		t.NFLPreseason = false
+	}
 }
 
 func (t *Timestamp) MoveUpFreeAgencyRound() {

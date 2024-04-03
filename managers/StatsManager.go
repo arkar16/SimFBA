@@ -852,7 +852,7 @@ func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, part
 		}
 		var result []string
 		if isStream {
-			result = generateStreamString(p.PlayByPlay, playType, playName, participantMap, touchDown)
+			result = generateStreamString(p.PlayByPlay, playType, playName, poa, participantMap, touchDown)
 		} else {
 			result = generateResultsString(p.PlayByPlay, playType, playName, participantMap, touchDown)
 		}
@@ -886,7 +886,7 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 	// First Segment
 	if playType == "Pass" {
 		qbLabel := getPlayerLabel(participantMap[qbID])
-		yards := getYardsString(play.ResultYards)
+		yards := util.GetYardsString(play.ResultYards)
 		firstSegment = qbLabel
 
 		// Scenarios
@@ -906,7 +906,7 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 			firstSegment += util.GetScrambleText(play.IsScramble)
 			bcLabel := getPlayerLabel(participantMap[bcID])
 			turnOverLabel := getPlayerLabel(participantMap[turnID])
-			secondSegment += "throws and is intercepted! Caught by " +
+			secondSegment += " throws and is intercepted! Caught by " +
 				turnOverLabel + " and returned for " +
 				yardsSTR + " yards from the LOS. Pass was intended for " + bcLabel + ". "
 		} else if play.IsScramble {
@@ -925,13 +925,13 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 	} else if playType == "Run" {
 		bcLabel := getPlayerLabel(participantMap[bcID])
 		firstSegment = bcLabel + " carries for " + yardsSTR
-		yards := getYardsString(play.ResultYards)
+		yards := util.GetYardsString(play.ResultYards)
 		firstSegment += yards
 	} else if playType == "Kickoff" {
 		// Need assistance for kickign player ID and returner ID
 		kickerLabel := getPlayerLabel(participantMap[qbID])
 		recLabel := getPlayerLabel(participantMap[bcID])
-		distanceStr := getYardsString(play.KickDistance)
+		distanceStr := util.GetYardsString(play.KickDistance)
 		verb := " kicks for "
 		firstSegment = kickerLabel + verb + strconv.Itoa(int(play.KickDistance)) + distanceStr
 		if play.KickDistance > 64 {
@@ -948,7 +948,7 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 			firstSegment += " Touchback. "
 		} else {
 			resultYdsStr := strconv.Itoa(int(100 - play.ResultYards))
-			resultYards := getYardsString(play.ResultYards)
+			resultYards := util.GetYardsString(play.ResultYards)
 			firstSegment += recLabel + " returns the ball " + resultYdsStr + resultYards
 		}
 	} else if playType == "Punt" {
@@ -956,11 +956,11 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 		// Need assistance for kickign player ID and returner ID
 		kickerLabel := getPlayerLabel(participantMap[qbID])
 		recLabel := getPlayerLabel(participantMap[bcID])
-		distanceStr := getYardsString(play.KickDistance)
+		distanceStr := util.GetYardsString(play.KickDistance)
 		verb := " punts for "
 		firstSegment = kickerLabel + verb + strconv.Itoa(int(play.KickDistance)) + distanceStr
 		resultYdsStr := strconv.Itoa(int(play.ResultYards + 20))
-		resultYards := getYardsString(play.ResultYards)
+		resultYards := util.GetYardsString(play.ResultYards)
 		if !play.IsTouchback {
 			resultYdsStr = strconv.Itoa(int(play.ResultYards))
 		}
@@ -1046,7 +1046,7 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 			thirdSegment += "Player: " + penaltyLabel + ". "
 		}
 		penaltyYards := strconv.Itoa(int(play.PenaltyYards))
-		yards := getYardsString(play.PenaltyYards)
+		yards := util.GetYardsString(play.PenaltyYards)
 		thirdSegment += penaltyYards + yards
 
 		if play.PenaltyID == 4 ||
@@ -1076,7 +1076,7 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 	return []string{firstSegment + secondSegment + thirdSegment}
 }
 
-func generateStreamString(play structs.PlayByPlay, playType, playName string, participantMap map[uint]structs.GameResultsPlayer, twoPtCheck bool) []string {
+func generateStreamString(play structs.PlayByPlay, playType, playName, poa string, participantMap map[uint]structs.GameResultsPlayer, twoPtCheck bool) []string {
 	qbID := play.QBPlayerID
 	bcID := play.BallCarrierID
 	t1ID := play.Tackler1ID
@@ -1093,19 +1093,28 @@ func generateStreamString(play structs.PlayByPlay, playType, playName string, pa
 	// First Segment
 	if playType == "Pass" {
 		qbLabel := getPlayerLabel(participantMap[qbID])
-		yards := getYardsString(play.ResultYards)
+		recLabel := ""
+		if bcID > 0 {
+			recLabel = getPlayerLabel(participantMap[bcID])
+		}
+		turnoverLabel := ""
+		if turnID > 0 {
+			turnoverLabel = getPlayerLabel(participantMap[turnID])
+		}
+		yards := util.GetYardsString(play.ResultYards)
 		firstSegment = qbLabel
+		offForm := util.GetOffensiveFormationByEnum(play.OffFormationID)
+		passStatement := util.GetPassStatement(int(play.ResultYards), offForm, playName, poa, recLabel, play.IsTouchdown, play.IsOutOfBounds, twoPtCheck, play.IsFumble, play.IsSafety, play.IsScramble, play.IsSacked, play.IsComplete, play.IsINT, turnoverLabel)
 
+		firstSegment += passStatement
 		// Scenarios
-		if play.IsScramble {
-			firstSegment += " scrambles for " + yardsSTR + yards
-		} else if play.IsSacked {
+		if play.IsSacked {
 			tackle1Label := getPlayerLabel(participantMap[t1ID])
 			if t2ID > 0 {
 				tackle2Label := getPlayerLabel(participantMap[t2ID])
 				tackle1Label += " and " + tackle2Label
 			}
-			firstSegment += " is sacked on the play by " + tackle1Label + "for a loss of " + yardsSTR + yards
+			firstSegment += "Sacked on the play by " + tackle1Label + "for a loss of " + yardsSTR + yards
 		} else if play.IsComplete {
 			bcLabel := getPlayerLabel(participantMap[bcID])
 			firstSegment += " throws to " + bcLabel + " complete for " + yardsSTR + yards
@@ -1125,16 +1134,16 @@ func generateStreamString(play structs.PlayByPlay, playType, playName string, pa
 		}
 
 	} else if playType == "Run" {
-		verb := util.GetRunVerb(int(play.ResultYards), playName, play.IsTouchdown, play.IsOutOfBounds, twoPtCheck, play.IsFumble, play.IsSafety)
+		runStatement := util.GetRunVerb(int(play.ResultYards), playName, poa, play.IsTouchdown, play.IsOutOfBounds, twoPtCheck, play.IsFumble, play.IsSafety)
 		bcLabel := getPlayerLabel(participantMap[bcID])
-		firstSegment = bcLabel + verb + yardsSTR
-		yards := getYardsString(play.ResultYards)
+		firstSegment = bcLabel + runStatement + yardsSTR
+		yards := util.GetYardsString(play.ResultYards)
 		firstSegment += yards
 	} else if playType == "Kickoff" {
 		// Need assistance for kickign player ID and returner ID
 		kickerLabel := getPlayerLabel(participantMap[qbID])
 		recLabel := getPlayerLabel(participantMap[bcID])
-		distanceStr := getYardsString(play.KickDistance)
+		distanceStr := util.GetYardsString(play.KickDistance)
 		verb := util.GetKickoffVerb(1)
 		firstSegment = kickerLabel + verb + strconv.Itoa(int(play.KickDistance)) + distanceStr
 		if play.KickDistance > 64 {
@@ -1153,7 +1162,7 @@ func generateStreamString(play structs.PlayByPlay, playType, playName string, pa
 			firstSegment += util.GetTouchbackStatement()
 		} else {
 			resultYdsStr := strconv.Itoa(int(play.ResultYards))
-			resultYards := getYardsString(play.ResultYards)
+			resultYards := util.GetYardsString(play.ResultYards)
 			verb := util.GetReturnVerb(int(play.ResultYards), play.IsTouchdown, play.IsOutOfBounds)
 			firstSegment += recLabel + verb + resultYdsStr + resultYards
 		}
@@ -1162,11 +1171,11 @@ func generateStreamString(play structs.PlayByPlay, playType, playName string, pa
 		// Need assistance for kickign player ID and returner ID
 		kickerLabel := getPlayerLabel(participantMap[qbID])
 		recLabel := getPlayerLabel(participantMap[bcID])
-		distanceStr := getYardsString(play.KickDistance)
+		distanceStr := util.GetYardsString(play.KickDistance)
 		verb := util.GetPuntVerb()
 		firstSegment = kickerLabel + verb + strconv.Itoa(int(play.KickDistance)) + distanceStr
 		resultYdsStr := strconv.Itoa(int(play.ResultYards + 20))
-		resultYards := getYardsString(play.ResultYards)
+		resultYards := util.GetYardsString(play.ResultYards)
 		if !play.IsTouchback {
 			resultYdsStr = strconv.Itoa(int(play.ResultYards))
 		}
@@ -1214,9 +1223,7 @@ func generateStreamString(play structs.PlayByPlay, playType, playName string, pa
 	}
 
 	// Second Segment - Tackles and OOB
-	if play.IsTouchdown && !twoPtCheck {
-		secondSegment = "TOUCHDOWN!"
-	} else if !play.IsSacked && t1ID > 0 {
+	if !play.IsSacked && t1ID > 0 {
 		tackle1Label := getPlayerLabel(participantMap[t1ID])
 		secondSegment = "Tackled by " + tackle1Label
 		if t2ID > 0 {
@@ -1228,7 +1235,7 @@ func generateStreamString(play structs.PlayByPlay, playType, playName string, pa
 
 	if play.IsFumble {
 		turnOverLabel := getPlayerLabel(participantMap[turnID])
-		secondSegment += "Fumble! Recovered by " + turnOverLabel + "."
+		secondSegment += "Fumble recovered by " + turnOverLabel + "."
 	}
 
 	// Third Segments -- Penalties and Injuries
@@ -1246,7 +1253,7 @@ func generateStreamString(play structs.PlayByPlay, playType, playName string, pa
 			thirdSegment += "Player: " + penaltyLabel + ". "
 		}
 		penaltyYards := strconv.Itoa(int(play.PenaltyYards))
-		yards := getYardsString(play.PenaltyYards)
+		yards := util.GetYardsString(play.PenaltyYards)
 		thirdSegment += penaltyYards + yards
 
 	}
@@ -1279,12 +1286,4 @@ func getGameParticipantMap(homePlayers, awayPlayers []structs.GameResultsPlayer)
 		playerMap[p.ID] = p
 	}
 	return playerMap
-}
-
-func getYardsString(yds int8) string {
-	yards := " yards. "
-	if yds == 1 || yds == -1 {
-		yards = " yard. "
-	}
-	return yards
 }

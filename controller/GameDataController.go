@@ -146,8 +146,11 @@ func GetNFLHomeAndAwayTeamData(w http.ResponseWriter, r *http.Request) {
 	game := <-gameChan
 	close(gameChan)
 
-	var responseModel models.NFLSimGameDataResponse
-
+	responseModel := models.NFLSimGameDataResponse{
+		GameID:   int(game.ID),
+		WeekID:   game.WeekID,
+		SeasonID: game.SeasonID,
+	}
 	var waitgroup sync.WaitGroup
 	waitgroup.Add(2)
 	var rosterGroup sync.WaitGroup

@@ -316,3 +316,84 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 
 	return streams
 }
+
+func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse {
+	ts := GetTimestamp()
+	weekNum := util.ConvertStringToInt(week)
+	nflWeek := ts.NFLWeek
+	nflWeekID := ts.NFLWeekID
+	if nflWeek == weekNum {
+		// Continue
+	} else {
+		diff := nflWeek - weekNum
+		nflWeekID = ts.CollegeWeekID - diff
+	}
+	games := GetNFLGamesByTimeslotAndWeekId(timeslot, strconv.Itoa(nflWeekID))
+
+	streams := []structs.StreamResponse{}
+
+	for _, game := range games {
+
+		gameID := strconv.Itoa(int(game.ID))
+		var wg sync.WaitGroup
+		wg.Add(5)
+		var (
+			homeGameplan structs.NFLGameplan
+			awayGameplan structs.NFLGameplan
+			playByPlays  []structs.NFLPlayByPlay
+			homePlayers  []structs.GameResultsPlayer
+			awayPlayers  []structs.GameResultsPlayer
+		)
+		homeTeamID := strconv.Itoa(game.HomeTeamID)
+		awayTeamID := strconv.Itoa(game.HomeTeamID)
+
+		go func() {
+			defer wg.Done()
+			homeGameplan = GetNFLGameplanByTeamID(homeTeamID)
+		}()
+
+		go func() {
+			defer wg.Done()
+			awayGameplan = GetNFLGameplanByTeamID(awayTeamID)
+		}()
+
+		go func() {
+			defer wg.Done()
+			playByPlays = GetNFLPlayByPlaysByGameID(gameID)
+		}()
+
+		go func() {
+			defer wg.Done()
+			homePlayers = GetAllNFLPlayersWithGameStatsByTeamID(homeTeamID, gameID)
+		}()
+
+		go func() {
+			defer wg.Done()
+			awayPlayers = GetAllNFLPlayersWithGameStatsByTeamID(awayTeamID, gameID)
+		}()
+
+		wg.Wait()
+
+		participantMap := getGameParticipantMap(homePlayers, awayPlayers)
+		playbyPlayResponse := GenerateNFLPlayByPlayResponse(playByPlays, participantMap, true, game.HomeTeam, game.AwayTeam)
+
+		stream := structs.StreamResponse{
+			GameID:              game.ID,
+			HomeTeamID:          uint(game.HomeTeamID),
+			HomeTeam:            game.HomeTeam,
+			HomeTeamCoach:       game.HomeTeamCoach,
+			AwayTeamID:          uint(game.AwayTeamID),
+			AwayTeam:            game.AwayTeam,
+			AwayTeamCoach:       game.AwayTeam,
+			HomeOffensiveScheme: homeGameplan.OffensiveScheme,
+			HomeDefensiveScheme: homeGameplan.DefensiveScheme,
+			AwayOffensiveScheme: awayGameplan.OffensiveScheme,
+			AwayDefensiveScheme: awayGameplan.DefensiveScheme,
+			Streams:             playbyPlayResponse,
+		}
+
+		streams = append(streams, stream)
+	}
+
+	return streams
+}

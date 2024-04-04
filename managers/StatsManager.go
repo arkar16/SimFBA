@@ -499,6 +499,10 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 
 		gameRecord := <-record
 		close(record)
+
+		if gameRecord.GameComplete {
+			continue
+		}
 		var playerStats []structs.CollegePlayerStats
 
 		homeTeamID := strconv.Itoa(int(gameRecord.HomeTeamID))
@@ -618,7 +622,9 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 
 		gameRecord := <-record
 		close(record)
-
+		if gameRecord.GameComplete {
+			continue
+		}
 		homeTeamID := strconv.Itoa(int(gameRecord.HomeTeamID))
 		awayTeamID := strconv.Itoa(int(gameRecord.AwayTeamID))
 
@@ -1219,21 +1225,7 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 			}
 			firstSegment += "Sacked on the play by " + tackle1Label + "for a loss of " + yardsSTR + yards
 		} else if play.IsComplete {
-			bcLabel := getPlayerLabel(participantMap[bcID])
-			firstSegment += " throws to " + bcLabel + " complete for " + yardsSTR + yards
-		} else if play.IsINT {
-			bcLabel := getPlayerLabel(participantMap[bcID])
-			turnOverLabel := getPlayerLabel(participantMap[turnID])
-			secondSegment += "throws and is intercepted! Caught by " +
-				turnOverLabel + " and returned for " +
-				yardsSTR + " yards from the LOS. Pass was intended for " + bcLabel + ". "
-		} else {
-			if bcID > 0 {
-				bcLabel := getPlayerLabel(participantMap[bcID])
-				firstSegment += " throws it... and it's incomplete. Pass intended for " + bcLabel + ". "
-			} else {
-				firstSegment += " can't find an open receiver and throws it away."
-			}
+			firstSegment += yardsSTR + yards
 		}
 
 	} else if playType == "Run" {
@@ -1306,7 +1298,7 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 			verb := util.GetBlockedStatement(true)
 			firstSegment += verb + blockerLabel + ". No good. "
 		} else if play.IsGood {
-			firstSegment += "good. "
+			firstSegment += " the kick is good. "
 		} else {
 			firstSegment += "no good. "
 		}
@@ -1328,37 +1320,37 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 	// Second Segment - Tackles and OOB
 	if !play.IsSacked && t1ID > 0 {
 		tackle1Label := getPlayerLabel(participantMap[t1ID])
-		secondSegment = "Tackled by " + tackle1Label
+		firstSegment += "Tackled by " + tackle1Label
 		if t2ID > 0 {
 			tackle2Label := getPlayerLabel(participantMap[t2ID])
-			secondSegment += " and " + tackle2Label
+			firstSegment += " and " + tackle2Label
 		}
-		secondSegment += ". "
+		firstSegment += ". "
 	}
 
 	if play.IsFumble {
 		turnOverLabel := getPlayerLabel(participantMap[turnID])
 		secondSegment += "Fumble recovered by " + turnOverLabel + "."
 	}
-
-	// Third Segments -- Penalties and Injuries
+	list = append(list, firstSegment)
+	// Second Item -- Penalties and Injuries
 	if play.PenaltyID > 0 {
 		penalty := util.GetPenaltyByEnum(play.PenaltyID)
-		thirdSegment = "PENALTY: " + penalty + ". "
+		secondSegment = "PENALTY: " + penalty + ". "
 		offendingTeam := "Offense. "
 		if !play.OnOffense {
 			offendingTeam = "Defense. "
 		}
-		thirdSegment += offendingTeam
+		secondSegment += offendingTeam
 		if pnID > 0 {
 			player := participantMap[pnID]
 			penaltyLabel := getPlayerLabel(player)
-			thirdSegment += "Player: " + penaltyLabel + ". "
+			secondSegment += "Player: " + penaltyLabel + ". "
 		}
 		penaltyYards := strconv.Itoa(int(play.PenaltyYards))
 		yards := util.GetYardsString(play.PenaltyYards)
-		thirdSegment += penaltyYards + yards
-
+		secondSegment += penaltyYards + yards
+		list = append(list, secondSegment)
 	}
 
 	if ijID > 0 {
@@ -1368,13 +1360,15 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 		injLength := util.GetInjuryLength(int(play.InjuryDuration))
 		injSev := util.GetInjurySeverity(int(play.InjurySeverity))
 		thirdSegment += injLabel + " has a " + injSev + " " + injuryType + " and will be out for " + injLength + "."
+		list = append(list, thirdSegment)
 	}
-	list = append(list, firstSegment+secondSegment+thirdSegment)
-	// return firstSegment + secondSegment + thirdSegment
 	return list
 }
 
 func getPlayerLabel(player structs.GameResultsPlayer) string {
+	if player.ID == 0 {
+		return ""
+	}
 	return player.TeamAbbr + " " + player.Position + " " + player.FirstName + " " + player.LastName
 }
 

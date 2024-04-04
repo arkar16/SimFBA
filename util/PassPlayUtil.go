@@ -20,18 +20,196 @@ func GetPassStatement(yards int, offensiveFormation, playName, poa, recLabel str
 		sackText := getSackText(safety, fumble, touchdown)
 		return snapText + sackText
 	}
+	throwStatement := getThrowStatement(yards, playName, recLabel)
 	if interception {
 		intText := getInterceptText(yards, recLabel, turnOverLabel, fumble, touchdown)
-		return intText
+		return snapText + throwStatement + intText
+	}
+	resultText := ""
+	if !complete && len(recLabel) == 0 {
+		resultText = getIncompleteThrowText(recLabel)
+		return snapText + resultText
 	}
 	if complete {
-
+		resultText = getCompleteThrowText(yards, recLabel, turnOverLabel, fumble, touchdown, twoPtConversion, outOfBounds, safety)
 	} else {
-
+		resultText = getIncompleteThrowText(recLabel)
 	}
 
-	finalString := snapText + scrambleText
+	finalString := snapText + scrambleText + throwStatement + resultText
 	return finalString
+}
+
+func getIncompleteThrowText(recLabel string) string {
+	var list []string
+	if len(recLabel) > 0 {
+		// If there is an intended receiver
+		list = append(list, " and misses his man. Incomplete pass intended for "+recLabel,
+			" and the ball is tipped off "+recLabel+"'s hands and onto the field. Incomplete pass intended for "+recLabel,
+			" and the ball bounces off "+recLabel+"'s hands and it's incomplete. Pass intended for "+recLabel,
+			" aims for "+recLabel+", but the pass falls incomplete under tight coverage.  Pass intended for "+recLabel+". ",
+			" but the pass sails over his head. Incomplete. Pass intended for "+recLabel+". ",
+			" but the throw is just out of reach. Incomplete. Pass intended for "+recLabel,
+			" but the throw goes right through his hands and hits the turf. Incomplete. Pass intended for "+recLabel,
+			" but the throw veers too far left. Incomplete. Pass intended for "+recLabel,
+			" tries to connect with "+recLabel+", but the throw veers too far right. Incomplete. ",
+			" but the pass is deflected! Incomplete. Pass intended for "+recLabel+". ",
+			" but the pass is broken up! Incomplete.  Pass intended for "+recLabel+". ",
+			" and it's overthrown, beyond the reach of "+recLabel+". Incomplete. ",
+			" and the ball is too low and hits the turf. Incomplete pass intended for "+recLabel+". ",
+		)
+	} else {
+		// If there is no open receiver
+		list = append(list, " tries to find an open receiver but faces pressure. Throws it out of bounds. ",
+			" is flushed out of the pocket and has to throw it away. Incomplete. ",
+			" is forced out of the pocket and has to throw it away. Incomplete. ",
+			" is forced out of the pocket and has to throw it to the sideline. Incomplete. ",
+			" is forced out of the pocket and throws it out of bounds. Incomplete. ",
+			" cannot find an open man and chucks it out of bounds to avoid the sack. ",
+			" is in trouble and tosses the ball into the sidelines. Incomplete. ",
+			" feels the heat from the defense and throws the ball to the sideline. Incomplete. ",
+		)
+	}
+	return PickFromStringList(list)
+}
+
+func getCompleteThrowText(yards int, recLabel, turnoverLabel string, fumble, touchdown, twoPtConversion, outofbounds, safety bool) string {
+	baseList := []string{" and it's caught! ", " and he catches it! "}
+	tackleVerb := getTackledVerb()
+	var list []string
+	if fumble && !touchdown && !twoPtConversion {
+		// Fumble & recovery
+		fumex := getFumbleExpression()
+		list = append(list, recLabel+" tries to get control of the ball and it fumbles loose! "+fumex+" ",
+			recLabel+" can't seem to have control of the ball and loses it! "+fumex+" ",
+			recLabel+" is brought down after the catch and the ball is loose! "+fumex+" ")
+	} else if fumble && touchdown && !twoPtConversion {
+		// Defensive return
+		list = append(list, recLabel+" is quickly brought down - the ball is loose! The defense has recovered the ball and are taking it home! TOUCHDOWN! ",
+			recLabel+" makes a run for it an- THE BALL IS STRIPPED FROM HIS HANDS! "+turnoverLabel+" makes a run for the other side! TOUCHDOWN! ",
+			recLabel+" runs for it an- HE FUMBLES THE BALL! "+turnoverLabel+" scoops it up and is making a run for the endzone! No other man in sight! TOUCHDOWN! ",
+			recLabel+" fights for control and it's stripped from his hands by "+turnoverLabel+"! "+turnoverLabel+" breaks away and makes marches down the field to the end zone! TOUCHDOWN! ")
+	} else if !fumble && touchdown && !twoPtConversion {
+		// Deep throws for a touchdown
+		if yards > 30 {
+			list = append(list, recLabel+" runs it down the sideline, no DB in sight, and brings it the endzone! TOUCHDOWN!",
+				recLabel+" catches it out in the open and takes it straight home! TOUCHDOWN!",
+				recLabel+" catches it one-handed on a dive into the endzone! TOUCHDOWN!",
+				recLabel+" catches the deep ball and shakes off the coverage. He's going for the endzone! TOUCHDOWN!",
+			)
+		} else if yards > 10 {
+			// Medium throws for a touchdown
+			list = append(list, "")
+		} else {
+			// Short throws within the red zone/endzone
+			list = append(list, recLabel+" makes the catch right into the endzone, TOUCHDOWN! ",
+				recLabel+" catches it in tight coverage and steps in the endzone before being pushed out of bounds! TOUCHDOWN! ",
+				recLabel+" runs it down and dives for the endzone! TOUCHDOWN! ",
+				recLabel+" makes the catch in traffic and is pushed out of bounds in the endzone. TOUCHDOWN! ",
+				recLabel+" makes the catch out in the open and steps right into the endzone! TOUCHDOWN! ",
+				recLabel+" jukes a defender and makes a mad dash right into the endzone! TOUCHDOWN!",
+			)
+		}
+	} else if !fumble && touchdown && twoPtConversion {
+		list = append(list, recLabel+" has caught it in the endzone and succeeds on the two point conversion! ",
+			recLabel+" catches it in tight coverage and banks on the two point conversion! ",
+			recLabel+" makes the catch in traffic and succeeds on the two point conversion! ",
+			recLabel+" on the two point conversion in the endzone! ",
+		)
+	} else if safety {
+		// Safety
+		list = append(list, recLabel+" struggles to make it out of the endzone and is "+tackleVerb+"! Safety! ",
+			recLabel+" tries to find an open lane with the catch, but is "+tackleVerb+" in the endzone! Safety! ",
+			recLabel+" is swarmed in the endzone and is brought down. Safety! ",
+		)
+	}
+
+	gainStatement := getGainSuffix(yards > 0, yards)
+	if outofbounds {
+		list = append(list,
+			recLabel+" makes the catch and steps out of bounds after "+gainStatement,
+			recLabel+" hauls in the pass and quickly goes out of bounds, stopping the clock after"+gainStatement,
+			recLabel+" grabs the throw and is immediately out of bounds,"+gainStatement,
+			recLabel+" grabs the ball and is pushed out of bounds for"+gainStatement,
+			recLabel+" with the catch and gets out of bounds for"+gainStatement,
+			recLabel+" with the catch in traffic and steps out of bounds for"+gainStatement,
+			recLabel+" catches the ball and tiptoes the sideline before stepping out,"+gainStatement)
+	} else {
+		tackleVerb := getTackledVerb()
+		switch {
+		case yards > 25:
+			list = append(list,
+				recLabel+" catches the deep ball and is "+tackleVerb+" after"+gainStatement,
+				recLabel+" catches the ball and makes some significant headway before being "+tackleVerb+" after"+gainStatement,
+				recLabel+" catches the ball and makes a run for it before being "+tackleVerb+" after"+gainStatement,
+				recLabel+" catches the deep ball in traffic and is immediately "+tackleVerb+" after"+gainStatement,
+				recLabel+" with the catch and makes a run through the secondary before being tackled "+tackleVerb+" after"+gainStatement,
+				recLabel+" makes the catch out in the open and is chased down. Makes significant yardage with"+gainStatement,
+				recLabel+" wows the stadium with an incredible catch and is "+tackleVerb+" by the defense. A great impact on the drive for"+gainStatement,
+				recLabel+" hauls in the long pass and is "+tackleVerb+" after"+gainStatement,
+				recLabel+" on the streak with the catch and is "+tackleVerb+" after"+gainStatement,
+			)
+		case yards > 14:
+			list = append(list,
+				recLabel+" snatches the pass out of the air and is "+tackleVerb+" after"+gainStatement,
+				recLabel+" secures the catch and is "+tackleVerb+", but not before"+gainStatement,
+				recLabel+" makes the catch in traffic and is "+tackleVerb+","+gainStatement,
+				recLabel+" makes the catch in coverage and is "+tackleVerb+","+gainStatement,
+				recLabel+" makes the catch nearly escapes but is "+tackleVerb+","+gainStatement,
+				recLabel+" makes the catch nearly escapes but is "+tackleVerb+" for"+gainStatement,
+				recLabel+" with the catch and is "+tackleVerb+","+gainStatement,
+				recLabel+" with the catch and is "+tackleVerb+" for"+gainStatement,
+				recLabel+" catches the ball and is "+tackleVerb+" for"+gainStatement,
+				recLabel+" secures the pass and is "+tackleVerb+" for"+gainStatement,
+				recLabel+" on the post with the catch and is "+tackleVerb+" after"+gainStatement,
+			)
+		case yards > 9:
+			list = append(list,
+				recLabel+" grabs the throw and after a quick move is "+tackleVerb+", marking "+gainStatement,
+				recLabel+" makes the catch in coverage and is "+tackleVerb+","+gainStatement,
+				recLabel+" with the catch and is "+tackleVerb+","+gainStatement,
+				recLabel+" with the catch and is "+tackleVerb+" for"+gainStatement,
+				recLabel+" catches the ball and is "+tackleVerb+" for"+gainStatement,
+				recLabel+" secures the pass and is "+tackleVerb+" for"+gainStatement,
+				recLabel+" on the flag route with the catch and is "+tackleVerb+" after"+gainStatement,
+				recLabel+" catches the pass and fights his way through to add "+gainStatement+" before being "+tackleVerb)
+		case yards > 4:
+			list = append(list,
+				recLabel+" makes a short catch and is "+tackleVerb+" after"+gainStatement,
+				recLabel+" pulls in the pass and is "+tackleVerb+" after"+gainStatement,
+				recLabel+" on the short route with the catch and is "+tackleVerb+" after"+gainStatement,
+				recLabel+" on the slant with the catch and is "+tackleVerb+" after"+gainStatement,
+				recLabel+" on the hook with the catch and is "+tackleVerb+" after"+gainStatement,
+			)
+		case yards > 0:
+			list = append(list,
+				recLabel+" makes the catch and is quickly "+tackleVerb+" after"+gainStatement,
+				recLabel+" makes a quick catch and is "+tackleVerb+" after"+gainStatement,
+				recLabel+" on the quick route and is "+tackleVerb+" after"+gainStatement,
+				recLabel+" on the slants, faces coverage and is "+tackleVerb+" after"+gainStatement,
+				recLabel+" on the slants, faces coverage and is "+tackleVerb+" for"+gainStatement,
+				recLabel+" barely gets the catch and is immediately "+tackleVerb+","+gainStatement,
+				recLabel+" barely makes the catch and is quickly "+tackleVerb+","+gainStatement,
+				recLabel+" barely makes the catch and is quickly "+tackleVerb+" after"+gainStatement,
+				recLabel+" barely makes the catch and is quickly "+tackleVerb+" for"+gainStatement,
+				recLabel+" makes the reception and is "+tackleVerb+" with"+gainStatement)
+		case yards == 0:
+			list = append(list,
+				recLabel+" catches the ball but is "+tackleVerb+" at the spot, no gain on the play. ",
+				recLabel+" catches the ball on the line but is "+tackleVerb+", no gain on the play. ",
+				recLabel+" catches the ball on the line but is "+tackleVerb+", no gain on the play. ",
+				recLabel+" makes the catch but is "+tackleVerb+" on the line, no gain on the play. ",
+				recLabel+" makes the catch but is "+tackleVerb+" on the line, no progress made. ",
+				recLabel+" secures the pass but is instantly "+tackleVerb+", no progress made. ")
+		default:
+			list = append(list,
+				recLabel+" is "+tackleVerb+" for a loss after catching the ball, a tough break,"+gainStatement,
+				recLabel+" catches it but is "+tackleVerb+" behind the line,"+gainStatement,
+				recLabel+" tries to make some headway but is pushed back, a tough break for"+gainStatement,
+				recLabel+" makes the catch but is quickly swarmed for a loss,"+gainStatement)
+		}
+	}
+	return PickFromStringList(baseList) + PickFromStringList(list)
 }
 
 func getInterceptText(yards int, recLabel, turnOverLabel string, fumble, touchdown bool) string {
@@ -39,27 +217,58 @@ func getInterceptText(yards int, recLabel, turnOverLabel string, fumble, touchdo
 	yardsInt := int(absYards)
 	ydStr := strconv.Itoa(yardsInt)
 	yardsStr := GetYardsString(int8(yardsInt))
+	intVerb := getInterceptVerb()
 	var list []string
 	// Very rare case -- the problem is that I don't think we have the capacity to tell who scored based on the play data tangible
 	if fumble && touchdown {
-		list = append(list, " and he's picked off! Caught by "+turnOverLabel+" with the catch and he makes a run for it! Brought down, an- the ball is lose! It looks like it's a fight for it, and it's picked up! The player's making it to the endzone! TOUCHDOWN! ")
+		list = append(list, " and he's "+intVerb+"! Caught by "+turnOverLabel+" with the catch and he makes a run for it! Brought down, an- the ball is lose! It looks like it's a fight for it, and it's picked up! The player's making it to the endzone! TOUCHDOWN! ",
+			" and he's "+intVerb+"! "+turnOverLabel+" who dashes forward, and loses the ball! And it's scooped up! A crazy turn of events, as the ball is NOW being brought to the endzone! TOUCHDOWN! ")
 	} else if fumble && !touchdown {
-		list = append(list, " and he's picked off! Caught by "+turnOverLabel+" with the catch and he makes a run for it! Brought down, an- the ball is lose! It's a fight for the pigskin! ")
+		fumex := getFumbleExpression()
+		list = append(list, " and he's "+intVerb+"! Caught by "+turnOverLabel+" with the catch and he makes a run for it! Brought down, an- the ball is lose! "+fumex+" ",
+			" and he's "+intVerb+"! "+turnOverLabel+" tries to make a break for it, but fumbles the football! "+fumex+" ",
+			" and he's "+intVerb+"! "+turnOverLabel+" tries to make a break for it, but fumbles the football! "+fumex+" ")
 	} else if !fumble && touchdown {
-		list = append(list, " and he's picked off! Caught by "+turnOverLabel+" with the catch and he makes a return all the way into the endzone! TOUCHDOWN! ")
+		list = append(list, " and he's "+intVerb+"! Caught by "+turnOverLabel+" with the catch and he makes a return all the way into the endzone! TOUCHDOWN! ",
+			" and he's "+intVerb+"! Caught by "+turnOverLabel+" who takes it all the way back! TOUCHDOWN! What an incredible return. ",
+			" and he's "+intVerb+"! Caught by "+turnOverLabel+", now making a fantastic return to all the way back! TOUCHDOWN! ",
+			" and he's "+intVerb+"! "+turnOverLabel+" with the catch and he's breaking away from the pack, this is going to be a return all the way for a TOUCHDOWN! ",
+			" and he's "+intVerb+"! "+turnOverLabel+" turns it over and is taking it all the way back! No one can stop him! TOUCHDOWN! ",
+			" and he's "+intVerb+"! "+turnOverLabel+" turns it over and is taking it all the way back! The fan's are in shock and awe! TOUCHDOWN! ",
+			" and he's "+intVerb+"! "+turnOverLabel+" turns it over and there is no one to stop him! He's going all the way to the endzone! What a turn of events, TOUCHDOWN! ",
+			" and he's "+intVerb+"! "+turnOverLabel+" turns it over and there is no one to stop him! He's going all the way to the endzone! What a turn of events, TOUCHDOWN! ",
+			" and he's "+intVerb+"! There it is! "+turnOverLabel+" is going towards the endzone with no one to stop him. A pick six! TOUCHDOWN! ",
+			" and he's "+intVerb+"! "+turnOverLabel+" is going towards the endzone with no one to stop him. A pick six! TOUCHDOWN! ",
+			" and it flies into the hands of "+turnOverLabel+"! "+turnOverLabel+" marches down the field with no one else in sight! TOUCHDOWN! ")
 	} else {
-		list = append(list, " and he's picked off! Caught by "+turnOverLabel+" with the catch and he makes a return for "+ydStr+yardsStr)
+		baseOptions := []string{" and he's " + intVerb + "! Caught by " + turnOverLabel + " with the catch and he makes a return for " + ydStr + yardsStr,
+			" and it flies into the hands of " + turnOverLabel + "! He manages to get " + ydStr + " yards before being taken down. ",
+			" and he's intercepted! A one-handed catch by " + turnOverLabel + "! And just like that he's brought down after " + ydStr + yardsStr,
+			" and the ball is tipped off - it's " + intVerb + "! " + turnOverLabel + " with the catch and a return for " + ydStr + yardsStr,
+			" and the ball is tipped off - it's " + intVerb + "! " + turnOverLabel + " catches it and manages a return for " + ydStr + yardsStr,
+			" and he's " + intVerb + "! " + turnOverLabel + " with the catch and runs it down for " + ydStr + yardsStr,
+			" and he's " + intVerb + "! " + turnOverLabel + " with the catch and runs it down for " + ydStr + yardsStr,
+			" - OH and he's " + intVerb + "! " + turnOverLabel + " with the catch! Returns it downfield for " + ydStr + yardsStr,
+			" and he's " + intVerb + "! " + turnOverLabel + " with the catch and runs it down for " + ydStr + yardsStr}
+		base := PickFromStringList(baseOptions)
 		if yards > 19 {
-
+			list = append(list, base+"An impressive return following the pick! ",
+				base+"Great coverage by "+turnOverLabel+" on "+recLabel+", and an amazing return too. ",
+				base+"Great coverage by "+turnOverLabel+" on "+recLabel+", seizing the opportunity for value field position too. ")
 		} else if yards > 9 {
-
+			list = append(list, base+"A solid effort on the interception! ",
+				base+turnOverLabel+" capitalized on that play and made a fantastic play for the defense. ")
 		} else if yards > 4 {
-
+			list = append(list, base+"Every yard counts as they fight to gain ground post-interception. ",
+				base+"Fantastic coverage by "+turnOverLabel+" and a crucial turnover as well. ",
+				base+turnOverLabel+" didn't lose sight on "+recLabel+" and seized this fantastic opportunity. ")
 		} else {
-
+			list = append(list, base+"Not much room to run, but the turnover is crucial. ",
+				base+"Not much room to run, but what a crucial turnover! ",
+				base+"Great coverage on "+recLabel+" and a turnover that could shake things up! ",
+				base+turnOverLabel+" didn't lose sight on "+recLabel+", kept him covered, and seized this fantastic opportunity. ")
 		}
 	}
-
 	return PickFromStringList(list)
 }
 
@@ -73,15 +282,16 @@ func getSackText(safety, fumble, touchdown bool) string {
 			"The pressure gets to him, resulting in a sack for a safety! ",
 			"Is overwhelmed by the defense and sacked for a safety! ")
 	} else if fumble && !touchdown {
+		fumex := getFumbleExpression()
 		list = append(list,
-			"Tries to evade the rush but is sacked! What's this? The ball is loose! It's a scramble to recover the football! ",
-			"Takes too long to find a man and the defense has broken through! A sack on the play -- and the ball has fumbled! Both sides are scrambling to recover the ball. ",
-			"Tries to throw it away but is sacked on the play! And wi- the ball is loose onto the field! Everyone's scrambling for the ball in an attempt to recover it. ",
-			"Can't find a man and is sacked AND fumbles the ball! The defense is scrambling to recover it! ",
+			"Tries to evade the rush but is sacked! What's this? The ball is loose! "+fumex+" ",
+			"Takes too long to find a man and the defense has broken through! A sack on the play -- and the ball has fumbled! "+fumex+" ",
+			"Tries to throw it away but is sacked on the play! And wi- the ball is loose onto the field! "+fumex+" ",
+			"Can't find a man and is sacked AND fumbles the ball! "+fumex+" ",
 			"Can't evade the rush and is sack. What's this? He's lost his grip while being sacked, and the ball is loose on the field! ",
 			"And he's brought down by the pass rush. The hit caused a fumble! The quarterback loses the ball as he's sacked! ",
-			"The pocket collapses, and he's sacked! What's this? The ball is knocked loose! A potential turnover here! ",
-			"The defense has broken through and he's taken down hard - and the ball pops out! A fumble during the sack! Both sides are trying to recover! ",
+			"The pocket collapses, and he's sacked! What's this? The ball is knocked loose! "+fumex+" ",
+			"The defense has broken through and he's taken down hard - and the ball pops out! A fumble during the sack! "+fumex+" ",
 		)
 	} else if fumble && touchdown {
 		list = append(list,
@@ -153,10 +363,10 @@ func getSnapText(form string) string {
 	if isShotgunPlay {
 		list = append(list, " drops back to pass. ",
 			" takes the snap in the shotgun formation. ",
-			" gets the ball in the shotgun.",
-			" fields the snap in the shotgun.",
-			" catches the snap while in the shotgun, scanning for options.",
-			" from the shotgun, secures the snap and setups the throw.",
+			" gets the ball in the shotgun. ",
+			" fields the snap in the shotgun. ",
+			" catches the snap while in the shotgun, scanning for options. ",
+			" from the shotgun, secures the snap and setups the throw. ",
 		)
 	} else {
 		list = append(list, " takes the snap from under center. ",
@@ -171,41 +381,68 @@ func getSnapText(form string) string {
 	return PickFromStringList(list)
 }
 
+func getFumbleExpression() string {
+	list := []string{
+		"It's a fight for the ball!",
+		"Both sides are scrambling to recover the ball.",
+		"It's a scramble to recover the football!",
+		"Everyone's scrambling for the ball in an attempt to recover it.",
+		"The defense is scrambling to recover it!",
+		"A potential turnover here!",
+		"Both sides are trying to recover!",
+		"A scramble for the ball has ensued!",
+		"It's a fight for the pigskin!",
+	}
+
+	return PickFromStringList(list)
+}
+
+func getThrowStatement(yards int, playName, recLabel string) string {
+	throwVerb := getThrowingVerb(yards)
+	distance := getDistance(playName, yards)
+	list := []string{throwVerb + " it ",
+		throwVerb + " it to " + recLabel,
+		throwVerb + " it " + distance + " to " + recLabel,
+		throwVerb + " it " + distance + ", targeting " + recLabel}
+	return PickFromStringList(list)
+}
+
 func getThrowingVerb(yards int) string {
-	list := []string{"throws", "slings", "makes the pass", "fires", "lobs", "hurls",
-		"tosses", "flings"}
+	list := []string{"Throws", "Slings", "Passes", "Fires", "Lobs", "Hurls", "Lets it loose",
+		"Tosses", "Flings"}
 	if yards > 19 {
-		list = append(list, "chucks")
+		list = append(list, "Chucks")
 	}
 	return PickFromStringList(list)
 }
 
+func getInterceptVerb() string {
+	list := []string{"intercepted", "picked off"}
+	return PickFromStringList(list)
+}
+
 func getDistance(playName string, yards int) string {
-	list := []string{}
 	direction := GenerateIntFromRange(1, 3) // 1 == left, 2 == Middle, 3 == right
 	dirs := ""
-	dirsList := []string{}
+	var dirsList []string
 	if direction == 1 {
-		dirsList = []string{"left side", "left"}
-		dirs = "left side"
+		dirsList = []string{"towards the left sideline", "towards the left"}
+		dirs = "left"
 	} else if direction == 2 {
-		dirsList = []string{"middle of the field", "middle"}
-		dirs = "middle of the field"
+		dirsList = []string{"towards the middle of the field", "towards the middle", "over the middle"}
 	} else {
-		dirsList = []string{"right side", "right"}
+		dirsList = []string{"towards the right sideline", "towards the right"}
+		dirs = "right"
 	}
 	dirs = PickFromStringList(dirsList)
-	if yards > 45 {
-		list = append(list, "across midfield")
+	if yards > 30 {
+		dirsList = append(dirsList, "across midfield", " downfield ", " across the field ")
 		if direction == 1 || direction == 3 {
-			list = append(list, "across the field to the "+dirs, "across midfield to the "+dirs)
+			dirsList = append(dirsList, "across the field to the "+dirs, "across midfield to the "+dirs, " downfield to the "+dirs)
 		}
 	}
-	if yards > 19 {
 
-	}
-
-	return PickFromStringList(list)
+	return PickFromStringList(dirsList)
 }
 
 func CheckSubstring(text, subtext string) bool {

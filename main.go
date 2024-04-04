@@ -266,6 +266,10 @@ func handleRequests() {
 	myRouter.HandleFunc("/schedule/ds/current/week/{league}/", controller.GetCurrentWeekGamesByLeague).Methods("GET")
 	myRouter.HandleFunc("/ds/cfb/flex/{teamOneID}/{teamTwoID}/", controller.CompareTeams).Methods("GET")
 	myRouter.HandleFunc("/ds/cfb/conference/{conference}/", controller.GetCollegeConferenceStandings).Methods("GET")
+	myRouter.HandleFunc("/ds/cfb/fbs/stream/{timeslot}/{week}/", controller.GetFBSGameStreams).Methods("GET")
+	myRouter.HandleFunc("/ds/cfb/fcs/stream/{timeslot}/{week}/", controller.GetFCSGameStreams).Methods("GET")
+	myRouter.HandleFunc("/ds/nfl/league/stream/{timeslot}/{week}/", controller.GetNFLGameStreams).Methods("GET")
+
 	// Easter Controls
 	myRouter.HandleFunc("/easter/egg/collude/", controller.CollusionButton).Methods("POST")
 

@@ -457,4 +457,5 @@ func ExportPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 			log.Fatal("Error while writing to file ::", err)
 		}
 	}
+
 }

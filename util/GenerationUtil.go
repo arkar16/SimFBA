@@ -34,6 +34,9 @@ func GenerateNormalizedIntFromRange(min int, max int) int {
 }
 
 func PickFromStringList(list []string) string {
+	if len(list) == 0 {
+		return ""
+	}
 	return list[rand.Intn(len(list))]
 }
 

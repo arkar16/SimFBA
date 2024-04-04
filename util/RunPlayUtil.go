@@ -801,8 +801,8 @@ func getGainSuffix(isGain bool, yards int) string {
 	if isGain {
 		list := []string{" a gain of ", " gaining ", " a moderate gain of ", " advancing for ", " a positive gain of ", " banking ", " racking up ", " picking up ", " adding "}
 		if yards > 14 {
-			list = append(list, " for a massive gain of ", " for a fantastic gain of ",
-				" for an incredible gain of ", " a massive gain of ", " massively gaining ", " a tremendous run of ", " a fantastic gain of ", " an incredible gain of ", " weaving through traffic for ", " for a significant gain of ", " breaking free for ")
+			list = append(list, " a massive gain of ", " a fantastic gain of ",
+				" an incredible gain of ", " a massive gain of ", " massively gaining ", " a tremendous run of ", " a fantastic gain of ", " an incredible gain of ", " weaving through traffic for ", " a significant gain of ", " breaking free for ")
 		}
 		if yards > 9 {
 			list = append(list, " a strong gain of ", " a strong gain of ", " strongly gaining ", " a pickup of ", " picking up ", " a solid gain of ", " a solid run of ", " amassing ", " a hard earned ", " powering ahead for ", " powering through for ")

@@ -510,6 +510,9 @@ func GetCurrentWeekWeather() []structs.GameResponse {
 	nflGames := GetNFLGamesByWeekAndSeasonID(nflWeekID, nflSeasonID)
 
 	for _, cg := range collegeGames {
+		if cg.GameComplete {
+			continue
+		}
 		homeTeamStandings := GetCFBStandingsByTeamIDAndSeasonID(strconv.Itoa(int(cg.HomeTeamID)), seasonID)
 		awayTeamStandings := GetCFBStandingsByTeamIDAndSeasonID(strconv.Itoa(int(cg.AwayTeamID)), seasonID)
 		htRecord := strconv.Itoa(homeTeamStandings.TotalWins) + "-" + strconv.Itoa(homeTeamStandings.TotalLosses)
@@ -562,6 +565,9 @@ func GetCurrentWeekWeather() []structs.GameResponse {
 	}
 
 	for _, nflG := range nflGames {
+		if nflG.GameComplete {
+			continue
+		}
 		homeTeamStandings := GetNFLStandingsByTeamIDAndSeasonID(strconv.Itoa(int(nflG.HomeTeamID)), nflSeasonID)
 		awayTeamStandings := GetNFLStandingsByTeamIDAndSeasonID(strconv.Itoa(int(nflG.AwayTeamID)), nflSeasonID)
 		htRecord := strconv.Itoa(homeTeamStandings.TotalWins) + "-" + strconv.Itoa(homeTeamStandings.TotalLosses)

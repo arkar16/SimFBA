@@ -452,7 +452,7 @@ func createCollegeCoach(team structs.RecruitingTeamProfile, almaMaterID uint, al
 		}
 	}
 
-	offensiveSchemeList := []string{"Power Run", "Vertical", "West Coast", "I-Option", "Run and Shoot", "Air Raid", "Pistol", "Spread Option", "Wing-T", "Double Wing", "Wishbone", "Flexbone"}
+	offensiveSchemeList := []string{"Power Run", "Vertical", "West Coast", "I Option", "Run and Shoot", "Air Raid", "Pistol", "Spread Option", "Wing-T", "Double Wing", "Wishbone", "Flexbone"}
 	offensiveScheme := util.PickFromStringList(offensiveSchemeList)
 	defensiveSchemeList := []string{"Old School Front 7 Man", "2-Gap Zone", "4-man Front Spread Stopper Zone", "3-man Front Spread Stopper Zone", "Speed Man", "Multiple Man"}
 	defensiveScheme := util.PickFromStringList(defensiveSchemeList)

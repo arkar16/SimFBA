@@ -1350,6 +1350,18 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 		penaltyYards := strconv.Itoa(int(play.PenaltyYards))
 		yards := util.GetYardsString(play.PenaltyYards)
 		secondSegment += penaltyYards + yards
+		if play.PenaltyID == 4 ||
+			play.PenaltyID == 5 ||
+			play.PenaltyID == 7 ||
+			play.PenaltyID == 18 ||
+			play.PenaltyID == 20 ||
+			play.PenaltyID == 21 ||
+			play.PenaltyID == 27 ||
+			play.PenaltyID == 30 ||
+			play.PenaltyID == 31 ||
+			play.PenaltyID == 35 {
+			list = []string{}
+		}
 		list = append(list, secondSegment)
 	}
 

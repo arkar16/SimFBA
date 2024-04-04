@@ -215,6 +215,6 @@ func GetNFLGameStreams(w http.ResponseWriter, r *http.Request) {
 	if len(timeslot) == 0 {
 		panic("User did not provide week")
 	}
-	streams := managers.GetNFLPlayByPlayStreamData(timeslot, week, false)
+	streams := managers.GetNFLPlayByPlayStreamData(timeslot, week)
 	json.NewEncoder(w).Encode(streams)
 }

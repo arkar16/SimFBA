@@ -27,7 +27,7 @@ func SyncAIBoardsViaCron() {
 
 func SyncRecruitingViaCron() {
 	ts := managers.GetTimestamp()
-	if ts.RunCron && !ts.CollegeSeasonOver && !ts.CFBSpringGames {
+	if ts.RunCron && !ts.CollegeSeasonOver && !ts.CFBSpringGames && ts.CollegeWeek > 0 && ts.CollegeWeek < 21 {
 		managers.SyncRecruiting(ts)
 	}
 }

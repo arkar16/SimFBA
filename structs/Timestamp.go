@@ -58,6 +58,11 @@ type Timestamp struct {
 func (t *Timestamp) MoveUpWeekCollege() {
 	t.CollegeWeekID++
 	t.CollegeWeek++
+	if t.CollegeWeek > 3 && t.CFBSpringGames {
+		t.CollegeWeek = 0
+		t.CFBSpringGames = false
+		t.CollegeWeekID -= 4
+	}
 }
 
 func (t *Timestamp) MoveUpWeekNFL() {

@@ -764,13 +764,40 @@ func GetCFBGameResultsByGameID(gameID string) structs.GameResultsResponse {
 
 func GetNFLGameResultsByGameID(gameID string) structs.GameResultsResponse {
 	game := GetNFLGameByGameID(gameID)
-
+	htID := strconv.Itoa(game.HomeTeamID)
+	atID := strconv.Itoa(game.AwayTeamID)
 	homePlayers := GetAllNFLPlayersWithGameStatsByTeamID(strconv.Itoa(game.HomeTeamID), gameID)
 	awayPlayers := GetAllNFLPlayersWithGameStatsByTeamID(strconv.Itoa(game.AwayTeamID), gameID)
+	homeStats := GetNFLTeamStatsByGame(htID, gameID)
+	awayStats := GetNFLTeamStatsByGame(atID, gameID)
+	score := structs.ScoreBoard{
+		Q1Home:  homeStats.Score1Q,
+		Q2Home:  homeStats.Score2Q,
+		Q3Home:  homeStats.Score3Q,
+		Q4Home:  homeStats.Score4Q,
+		OT1Home: homeStats.Score5Q,
+		OT2Home: homeStats.Score6Q,
+		OT3Home: homeStats.Score7Q,
+		OT4Home: homeStats.ScoreOT,
+		Q1Away:  awayStats.Score1Q,
+		Q2Away:  awayStats.Score2Q,
+		Q3Away:  awayStats.Score3Q,
+		Q4Away:  awayStats.Score4Q,
+		OT1Away: awayStats.Score5Q,
+		OT2Away: awayStats.Score6Q,
+		OT3Away: awayStats.Score7Q,
+		OT4Away: awayStats.ScoreOT,
+	}
+	participantMap := getGameParticipantMap(homePlayers, awayPlayers)
 
+	playByPlays := GetNFLPlayByPlaysByGameID(gameID)
+	// Generate the Play By Play Response
+	playbyPlayResponseList := GenerateNFLPlayByPlayResponse(playByPlays, participantMap, false, game.HomeTeam, game.AwayTeam)
 	return structs.GameResultsResponse{
 		HomePlayers: homePlayers,
 		AwayPlayers: awayPlayers,
+		PlayByPlays: playbyPlayResponseList,
+		Score:       score,
 	}
 }
 
@@ -795,6 +822,82 @@ func GetNFLPlayByPlaysByGameID(id string) []structs.NFLPlayByPlay {
 }
 
 func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, participantMap map[uint]structs.GameResultsPlayer, isStream bool, ht, at string) []structs.PlayByPlayResponse {
+	playbyPlayResponseList := []structs.PlayByPlayResponse{}
+	// Get Player Information
+	touchDown := false
+	for idx, p := range playByPlays {
+		number := idx + 1
+		playType := util.GetPlayTypeByEnum(p.PlayTypeID)
+		offFormation := util.GetOffensiveFormationByEnum(p.OffFormationID)
+		defFormation := util.GetDefensiveFormationByEnum(p.DefensiveFormationID)
+		defTendency := util.GetDefensiveTendencyByEnum(p.DefensiveTendency)
+		playName := util.GetPlayNameByEnum(p.PlayNameID)
+		poa := util.GetPointOfAttackByEnum(p.OffensivePoA)
+		lb := util.GetCoverageStr(p.LBCoverage)
+		cb := util.GetCoverageStr(p.CBCoverage)
+		s := util.GetCoverageStr(p.SCoverage)
+		poss := ht
+		if !p.HomeHasBall {
+			poss = at
+		}
+
+		los := p.LineOfScrimmage
+		losSide := ht
+		if los > 50 {
+			los = 100 - p.LineOfScrimmage
+			losSide = at
+		}
+		losFull := strconv.Itoa(int(los)) + " " + losSide
+
+		play := structs.PlayByPlayResponse{
+			PlayNumber:         uint(number),
+			HomeTeamID:         p.HomeTeamID,
+			HomeTeamScore:      p.HomeTeamScore,
+			AwayTeamID:         p.AwayTeamID,
+			AwayTeamScore:      p.AwayTeamScore,
+			Quarter:            p.Quarter,
+			TimeRemaining:      p.TimeRemaining,
+			Down:               p.Down,
+			Distance:           p.Distance,
+			LineOfScrimmage:    losFull,
+			PlayType:           playType,
+			PlayName:           playName,
+			PointOfAttack:      poa,
+			OffensiveFormation: offFormation,
+			DefensiveFormation: defFormation,
+			DefensiveTendency:  defTendency,
+			Possession:         poss,
+			QBPlayerID:         p.QBPlayerID,
+			BallCarrierID:      p.BallCarrierID,
+			Tackler1ID:         p.Tackler1ID,
+			Tackler2ID:         p.Tackler2ID,
+			ResultYards:        p.ResultYards,
+			BlitzNumber:        p.BlitzNumber,
+			LBCoverage:         lb,
+			CBCoverage:         cb,
+			SCoverage:          s,
+		}
+		var result []string
+		if isStream {
+			result = generateStreamString(p.PlayByPlay, playType, playName, poa, participantMap, touchDown)
+		} else {
+			result = generateResultsString(p.PlayByPlay, playType, playName, participantMap, touchDown)
+		}
+		play.AddResult(result, isStream)
+
+		if p.IsTouchdown && !touchDown {
+			touchDown = true
+		} else if !p.IsTouchdown && touchDown {
+			touchDown = false
+		}
+
+		playbyPlayResponseList = append(playbyPlayResponseList, play)
+	}
+
+	return playbyPlayResponseList
+}
+
+func GenerateNFLPlayByPlayResponse(playByPlays []structs.NFLPlayByPlay, participantMap map[uint]structs.GameResultsPlayer, isStream bool, ht, at string) []structs.PlayByPlayResponse {
 	playbyPlayResponseList := []structs.PlayByPlayResponse{}
 	// Get Player Information
 	touchDown := false

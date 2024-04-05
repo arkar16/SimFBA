@@ -314,6 +314,9 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 			GamePrecip:          game.Precip,
 			GameWindSpeed:       game.WindSpeed,
 			GameTemp:            game.GameTemp,
+			Stadium:             game.Stadium,
+			City:                game.City,
+			State:               game.State,
 		}
 
 		streams = append(streams, stream)
@@ -400,6 +403,9 @@ func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse 
 			GamePrecip:          game.Precip,
 			GameWindSpeed:       game.WindSpeed,
 			GameTemp:            game.GameTemp,
+			Stadium:             game.Stadium,
+			City:                game.City,
+			State:               game.State,
 		}
 
 		streams = append(streams, stream)

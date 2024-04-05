@@ -91,6 +91,9 @@ type StreamResponse struct {
 	GameWind            string
 	GamePrecip          string
 	GameWindSpeed       float64
+	Stadium             string
+	City                string
+	State               string
 	Streams             []PlayByPlayResponse
 }
 

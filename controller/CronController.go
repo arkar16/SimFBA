@@ -58,7 +58,73 @@ func RunTheGamesViaCron() {
 	}
 }
 
-func ShowGamesViaCron() {
+func ShowCFBThursdayViaCron() {
+	ts := managers.GetTimestamp()
+	timeslot := ""
+	if !ts.ThursdayGames {
+		timeslot = "Thursday Night"
+	}
+	if ts.RunCron {
+		managers.SyncTimeslot(timeslot)
+	}
+}
+
+func ShowNFLThursdayViaCron() {
+	ts := managers.GetTimestamp()
+	timeslot := ""
+	if !ts.NFLThursday {
+		timeslot = "Thursday Night Football"
+	}
+	if ts.RunCron {
+		managers.SyncTimeslot(timeslot)
+	}
+}
+
+func ShowCFBFridayViaCron() {
+	ts := managers.GetTimestamp()
+	timeslot := ""
+	if !ts.FridayGames {
+		timeslot = "Friday Night"
+	}
+	if ts.RunCron {
+		managers.SyncTimeslot(timeslot)
+	}
+}
+
+func ShowCFBSatMornViaCron() {
+	ts := managers.GetTimestamp()
+	timeslot := ""
+	if !ts.SaturdayMorning {
+		timeslot = "Saturday Morning"
+	}
+	if ts.RunCron {
+		managers.SyncTimeslot(timeslot)
+	}
+}
+
+func ShowCFBSatAftViaCron() {
+	ts := managers.GetTimestamp()
+	timeslot := ""
+	if !ts.SaturdayNoon {
+		timeslot = "Saturday Afternoon"
+	}
+	if ts.RunCron {
+		managers.SyncTimeslot(timeslot)
+	}
+}
+
+func ShowCFBSatEveViaCron() {
+	ts := managers.GetTimestamp()
+	timeslot := ""
+	if !ts.SaturdayEvening {
+		timeslot = "Saturday Evening"
+	}
+	if ts.RunCron {
+		managers.SyncTimeslot(timeslot)
+	}
+}
+
+func ShowCFBSatNitViaCron() {
 	ts := managers.GetTimestamp()
 	timeslot := ""
 	if !ts.ThursdayGames {
@@ -80,6 +146,50 @@ func ShowGamesViaCron() {
 	} else if !ts.NFLSundayEvening {
 		timeslot = "Sunday Night Football"
 	} else if !ts.NFLMondayEvening {
+		timeslot = "Monday Night Football"
+	}
+	if ts.RunCron {
+		managers.SyncTimeslot(timeslot)
+	}
+}
+
+func ShowNFLSunNoonViaCron() {
+	ts := managers.GetTimestamp()
+	timeslot := ""
+	if !ts.NFLSundayNoon {
+		timeslot = "Sunday Noon"
+	}
+	if ts.RunCron {
+		managers.SyncTimeslot(timeslot)
+	}
+}
+
+func ShowNFLSunAftViaCron() {
+	ts := managers.GetTimestamp()
+	timeslot := ""
+	if !ts.NFLSundayAfternoon {
+		timeslot = "Sunday Afternoon"
+	}
+	if ts.RunCron {
+		managers.SyncTimeslot(timeslot)
+	}
+}
+
+func ShowNFLSunNitViaCron() {
+	ts := managers.GetTimestamp()
+	timeslot := ""
+	if !ts.NFLSundayEvening {
+		timeslot = "Sunday Night Football"
+	}
+	if ts.RunCron {
+		managers.SyncTimeslot(timeslot)
+	}
+}
+
+func ShowNFLMonNitViaCron() {
+	ts := managers.GetTimestamp()
+	timeslot := ""
+	if !ts.NFLMondayEvening {
 		timeslot = "Monday Night Football"
 	}
 	if ts.RunCron {

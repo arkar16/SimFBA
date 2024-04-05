@@ -304,12 +304,21 @@ func handleCron() {
 		c.AddFunc("0 16 * * 2", controller.SyncFreeAgencyViaCron)
 		// // Sync Extension Offers
 		// // Run the Games
-		// c.AddFunc("0 4 * * 4", controller.RunTheGamesViaCron)
+		c.AddFunc("0 4 * * 4", controller.RunTheGamesViaCron)
 		// // Reveal Timeslot Results
-		c.AddFunc("0 16,18,20 * * 6", controller.ShowGamesViaCron) // Morning, Afternoon, evening
-		// c.AddFunc("0 1 * * 0,1,2,5,6", controller.ShowGamesViaCron)
+		c.AddFunc("0 1 * * 5", controller.ShowCFBThursdayViaCron)  // Thurs Night
+		c.AddFunc("0 23 * * 4", controller.ShowNFLThursdayViaCron) // Thurs NFL
+		c.AddFunc("0 1 * * 6", controller.ShowCFBFridayViaCron)    // Fri Night
+		c.AddFunc("0 16 * * 6", controller.ShowCFBSatMornViaCron)  // Sat. Morning
+		c.AddFunc("0 18 * * 6", controller.ShowCFBSatAftViaCron)   // Sat. Afternoon
+		c.AddFunc("0 20 * * 6", controller.ShowCFBSatEveViaCron)   // Sat. Evening
+		c.AddFunc("0 23 * * 6", controller.ShowCFBSatNitViaCron)   // Sat. Night
+		c.AddFunc("0 16 * * 0", controller.ShowNFLSunNoonViaCron)  // Sun Noon
+		c.AddFunc("0 18 * * 0", controller.ShowNFLSunAftViaCron)   // Sun Aft
+		c.AddFunc("0 20 * * 0", controller.ShowNFLSunNitViaCron)   // Sun Nit
+		c.AddFunc("0 18 * * 1", controller.ShowNFLMonNitViaCron)   // Mon Nit
 		// // Sync Week
-		c.AddFunc("0 7 * * 0", controller.SyncToNextWeekViaCron)
+		c.AddFunc("0 7 * * 2", controller.SyncToNextWeekViaCron)
 		c.Start()
 	}()
 }

@@ -309,6 +309,11 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 			AwayOffensiveScheme: awayGameplan.OffensiveScheme,
 			AwayDefensiveScheme: awayGameplan.DefensiveScheme,
 			Streams:             playbyPlayResponse,
+			GameCloud:           game.Cloud,
+			GameWind:            game.WindCategory,
+			GamePrecip:          game.Precip,
+			GameWindSpeed:       game.WindSpeed,
+			GameTemp:            game.GameTemp,
 		}
 
 		streams = append(streams, stream)
@@ -390,6 +395,11 @@ func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse 
 			AwayOffensiveScheme: awayGameplan.OffensiveScheme,
 			AwayDefensiveScheme: awayGameplan.DefensiveScheme,
 			Streams:             playbyPlayResponse,
+			GameCloud:           game.Cloud,
+			GameWind:            game.WindCategory,
+			GamePrecip:          game.Precip,
+			GameWindSpeed:       game.WindSpeed,
+			GameTemp:            game.GameTemp,
 		}
 
 		streams = append(streams, stream)

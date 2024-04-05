@@ -86,6 +86,11 @@ type StreamResponse struct {
 	AwayTeamRank        uint
 	AwayOffensiveScheme string
 	AwayDefensiveScheme string
+	GameTemp            float64
+	GameCloud           string
+	GameWind            string
+	GamePrecip          string
+	GameWindSpeed       float64
 	Streams             []PlayByPlayResponse
 }
 

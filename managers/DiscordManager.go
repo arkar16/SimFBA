@@ -262,7 +262,7 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 			awayPlayers  []structs.GameResultsPlayer
 		)
 		homeTeamID := strconv.Itoa(game.HomeTeamID)
-		awayTeamID := strconv.Itoa(game.HomeTeamID)
+		awayTeamID := strconv.Itoa(game.AwayTeamID)
 
 		go func() {
 			defer wg.Done()

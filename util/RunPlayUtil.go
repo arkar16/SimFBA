@@ -793,7 +793,7 @@ func getInvertedOptionList(yards int, isleft, touchdown, outOfBounds, twoPtConve
 }
 
 func getTackledVerb() string {
-	list := []string{"brought down", "tackled", "taken down", "sent down", "stopped", "manhandled", "swarmed"}
+	list := []string{"brought down", "tackled", "taken down", "stopped", "manhandled", "swarmed"}
 	return PickFromStringList(list)
 }
 

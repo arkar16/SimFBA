@@ -61,13 +61,13 @@ func getIncompleteThrowText(recLabel string) string {
 	} else {
 		// If there is no open receiver
 		list = append(list, " tries to find an open receiver but faces pressure. Throws it out of bounds. ",
-			" is flushed out of the pocket and has to throw it away. Incomplete. ",
-			" is forced out of the pocket and has to throw it away. Incomplete. ",
-			" is forced out of the pocket and has to throw it to the sideline. Incomplete. ",
-			" is forced out of the pocket and throws it out of bounds. Incomplete. ",
-			" cannot find an open man and chucks it out of bounds to avoid the sack. ",
-			" is in trouble and tosses the ball into the sidelines. Incomplete. ",
-			" feels the heat from the defense and throws the ball to the sideline. Incomplete. ",
+			" He's flushed out of the pocket and has to throw it away. Incomplete. ",
+			" He's forced out of the pocket and has to throw it away. Incomplete. ",
+			" He's forced out of the pocket and has to throw it to the sideline. Incomplete. ",
+			" He's forced out of the pocket and throws it out of bounds. Incomplete. ",
+			" Cannot find an open man and chucks it out of bounds to avoid the sack. ",
+			" He's in trouble and tosses the ball into the sidelines. Incomplete. ",
+			" Feels the heat from the defense and throws the ball to the sideline. Incomplete. ",
 		)
 	}
 	return PickFromStringList(list)

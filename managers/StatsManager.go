@@ -1306,7 +1306,7 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 		kickerLabel := getPlayerLabel(participantMap[qbID])
 		kickDistance := strconv.Itoa(int(play.KickDistance))
 		startingStatement := util.GetFGStartingStatement(true)
-		firstSegment = kickerLabel + "'s " + kickDistance + startingStatement
+		firstSegment = kickerLabel + "'s " + kickDistance + " " + startingStatement
 		if play.IsBlocked {
 			blockerLabel := getPlayerLabel(participantMap[turnID])
 			verb := util.GetBlockedStatement(true)

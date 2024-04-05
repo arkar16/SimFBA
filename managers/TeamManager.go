@@ -21,6 +21,16 @@ func GetAllCollegeTeamsForRosterPage() models.RosterPageResponse {
 	}
 }
 
+func GetCollegeTeamMap() map[uint]structs.CollegeTeam {
+	teams := GetAllCollegeTeams()
+	teamMap := make(map[uint]structs.CollegeTeam)
+	for _, t := range teams {
+		teamMap[t.ID] = t
+	}
+
+	return teamMap
+}
+
 func GetAllCollegeTeams() []structs.CollegeTeam {
 	db := dbprovider.GetInstance().GetDB()
 

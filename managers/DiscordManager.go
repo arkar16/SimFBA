@@ -229,14 +229,14 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 		diff := collegeWeek - weekNum
 		collegeWeekID = ts.CollegeWeekID - diff
 	}
-	teamMap := GetTeamProfileMap()
+	teamMap := GetCollegeTeamMap()
 	games := GetCollegeGamesByTimeslotAndWeekId(strconv.Itoa(collegeWeekID), timeslot)
 
 	streams := []structs.StreamResponse{}
 
 	for _, game := range games {
-		homeTeam := teamMap[strconv.Itoa(game.HomeTeamID)]
-		awayTeam := teamMap[strconv.Itoa(game.AwayTeamID)]
+		homeTeam := teamMap[uint(game.HomeTeamID)]
+		awayTeam := teamMap[uint(game.AwayTeamID)]
 		// If it's a full FCS match up and we're not streaming FCS, skip
 		if !homeTeam.IsFBS && !awayTeam.IsFBS && isFBS {
 			continue
@@ -300,10 +300,12 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 			HomeTeam:            game.HomeTeam,
 			HomeTeamCoach:       game.HomeTeamCoach,
 			HomeTeamRank:        game.HomeTeamRank,
+			HomeLabel:           homeTeam.TeamName + " " + homeTeam.Mascot,
 			AwayTeamID:          uint(game.AwayTeamID),
 			AwayTeam:            game.AwayTeam,
 			AwayTeamCoach:       game.AwayTeam,
 			AwayTeamRank:        game.AwayTeamRank,
+			AwayLabel:           awayTeam.TeamName + " " + awayTeam.Mascot,
 			HomeOffensiveScheme: homeGameplan.OffensiveScheme,
 			HomeDefensiveScheme: homeGameplan.DefensiveScheme,
 			AwayOffensiveScheme: awayGameplan.OffensiveScheme,

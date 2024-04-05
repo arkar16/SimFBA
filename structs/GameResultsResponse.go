@@ -75,12 +75,14 @@ type GameResultsPlayer struct {
 type StreamResponse struct {
 	GameID              uint
 	HomeTeamID          uint
+	HomeLabel           string
 	HomeTeam            string
 	HomeTeamCoach       string
 	HomeTeamRank        uint
 	HomeOffensiveScheme string
 	HomeDefensiveScheme string
 	AwayTeamID          uint
+	AwayLabel           string
 	AwayTeam            string
 	AwayTeamCoach       string
 	AwayTeamRank        uint

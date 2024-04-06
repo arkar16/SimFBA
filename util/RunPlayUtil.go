@@ -47,12 +47,12 @@ func getPowerRunList(yards int, isleft, touchdown, outOfBounds, twoPtConversion,
 	gainStatement := getGainSuffix(yards > 0, yards)
 	// Depending on the yards gained or lost, append appropriate descriptions
 	if touchdown {
-		list = append(list, " bulldozes through the line and powers his way into the end zone for a touchdown! ",
-			" charges forward, pushing defenders back and breaking the plane for a score! ",
-			" showcases sheer strength, fighting off tacklers and plunging into the end zone! ",
-			" demonstrates a powerful run, shedding tackles and reaching paydirt! ",
-			" steamrolls his way through the defense and into the end zone for six! ",
-			" plows over the goal line, dragging defenders with him for the touchdown! ")
+		list = append(list, " bulldozes through the line and powers his way into the end zone for a TOUCHDOWN! ",
+			" charges forward, pushing defenders back and breaking the plane for a score! TOUCHDOWN! ",
+			" showcases sheer strength, fighting off tacklers and plunging into the end zone! TOUCHDOWN! ",
+			" demonstrates a powerful run, shedding tackles and reaching paydirt! TOUCHDOWN! ",
+			" steamrolls his way through the defense and into the end zone for six! TOUCHDOWN! ",
+			" plows over the goal line, dragging defenders with him for the TOUCHDOWN! ")
 	} else if outOfBounds {
 		list = append(list, " makes a dash to the "+direction+" and steps out after"+gainStatement,
 			" stretches the play to the "+direction+" before being forced out,"+gainStatement,
@@ -183,12 +183,12 @@ func getOutsideRunList(yards int, isleft, touchdown, outOfBounds, twoPtConversio
 	gainStatement := getGainSuffix(yards > 0, yards)
 	// Depending on the yards gained or lost, append appropriate descriptions
 	if touchdown {
-		list = append(list, " runs outside the line and bursts into the end zone for a touchdown! ",
-			" dashes around the defense and into the promised land for six! Ran ",
-			" avoids the traffic and dances into the end zone! Ran ",
-			" counters around line and sprints into the end zone untouched! Ran ",
-			" turns on the speed and leaves everyone in his dust – that's a touchdown! Ran ",
-			" breaks an outside tackle, then another, and he's in for the score! Ran ")
+		list = append(list, " runs outside the line and bursts into the end zone for a TOUCHDOWN! ",
+			" dashes around the defense and into the promised land for six! TOUCHDOWN! Ran ",
+			" avoids the traffic and dances into the end zone! TOUCHDOWN! Ran ",
+			" counters around line and sprints into the end zone untouched! TOUCHDOWN! Ran ",
+			" turns on the speed and leaves everyone in his dust – that's a TOUCHDOWN! Ran ",
+			" breaks an outside tackle, then another, and he's in for the score! TOUCHDOWN! Ran ")
 	} else if outOfBounds {
 		list = append(list, " makes a dash to the "+direction+" and steps out after"+gainStatement,
 			" skirts the sideline before stepping out,"+gainStatement,
@@ -323,12 +323,12 @@ func getInsideRunList(yards int, isleft, touchdown, outOfBounds, twoPtConversion
 	gainStatement := getGainSuffix(yards > 0, yards)
 	// Depending on the yards gained or lost, append appropriate descriptions
 	if touchdown {
-		list = append(list, " finds a seam and bursts into the end zone for a touchdown! ",
-			" slices through the defense and into the promised land for six! Ran ",
-			" zigzags his way through the traffic and dances into the end zone! Ran ",
-			" blasts through the line and sprints into the end zone untouched! Ran ",
-			" turns on the speed and leaves everyone in his dust – that's a touchdown! Ran ",
-			" breaks one tackle, then another, and he's in for the score! Ran ")
+		list = append(list, " finds a seam and bursts into the end zone for a TOUCHDOWN! ",
+			" slices through the defense and into the promised land for six! TOUCHDOWN! Ran ",
+			" zigzags his way through the traffic and dances into the end zone! TOUCHDOWN! Ran ",
+			" blasts through the line and sprints into the end zone untouched! TOUCHDOWN! Ran ",
+			" turns on the speed and leaves everyone in his dust – that's a TOUCHDOWN! Ran ",
+			" breaks one tackle, then another, and he's in for the score! TOUCHDOWN! Ran ")
 	} else if outOfBounds {
 		list = append(list, " makes a dash to the "+direction+" and steps out after"+gainStatement,
 			" skirts the sideline before stepping out,"+gainStatement,
@@ -431,9 +431,9 @@ func getDrawRunList(yards int, isleft, touchdown, outOfBounds, twoPtConversion, 
 	gainStatement := getGainSuffix(yards > 0, yards)
 	// Depending on the yards gained or lost, append appropriate descriptions
 	if touchdown {
-		list = append(list, " deceives the defense with a draw and sprints into the end zone for a touchdown! ",
-			" executes the draw play to perfection, finding a path to the end zone for six! ",
-			" capitalizes on the draw, darting through the confused defenders for a touchdown! ")
+		list = append(list, " deceives the defense with a draw and sprints into the end zone for a TOUCHDOWN! ",
+			" executes the draw play to perfection, finding a path to the end zone for six! TOUCHDOWN! ",
+			" capitalizes on the draw, darting through the confused defenders for a TOUCHDOWN! ")
 	} else if outOfBounds {
 		list = append(list, " takes the draw to the "+direction+" and steps out after gaining ",
 			" takes the draw to the "+direction+" and steps out,"+gainStatement,
@@ -498,12 +498,12 @@ func getReadOptionList(yards int, isleft, touchdown, outOfBounds, twoPtConversio
 	gainStatement := getGainSuffix(yards > 0, yards)
 	// Depending on the yards gained or lost, append appropriate descriptions
 	if touchdown {
-		list = append(list, " makes the perfect read and takes it all the way to the house for a touchdown! ",
-			" reads the goalline defense, opts to keep it, and dashes to the end zone for six! ",
-			" deceives the goalline defense with a slick read option, sprinting into the end zone for a score! ",
-			" navigates the read option with precision, blazing his way to the end zone for a spectacular touchdown! ",
-			" outwits the goalline defense with a masterful read, darting to paydirt for the touchdown! ",
-			" showcases his athleticism on the goalline, turning the read option into a thrilling touchdown run! ")
+		list = append(list, " makes the perfect read and takes it all the way to the house for a TOUCHDOWN! ",
+			" reads the goalline defense, opts to keep it, and dashes to the end zone for six! TOUCHDOWN! ",
+			" deceives the goalline defense with a slick read option, sprinting into the end zone for a score! TOUCHDOWN! ",
+			" navigates the read option with precision, blazing his way to the end zone for a spectacular TOUCHDOWN! ",
+			" outwits the goalline defense with a masterful read, darting to paydirt for the TOUCHDOWN! ",
+			" showcases his athleticism on the goalline, turning the read option into a thrilling TOUCHDOWN run! ")
 	} else if outOfBounds {
 		list = append(list, " opts for the "+direction+" and steps out after a decent gain. ",
 			" reads, keeps, and sprints to the "+direction+", going out of bounds after gaining yards. ",
@@ -611,16 +611,16 @@ func getSpeedOptionList(yards int, isleft, touchdown, outOfBounds, twoPtConversi
 	// Depending on the yards gained or lost, append appropriate descriptions
 	if touchdown {
 		list = append(list,
-			" picks up the speed option flawlessly, dashing to the "+direction+" and into the end zone! ",
-			" picks up the speed option flawlessly, dashing "+direction+" into the end zone! ",
-			" takes the option and makes a mad dash to the "+direction+" into the end zone for a touchdown! ",
-			" takes the option and speeds off to the "+direction+" into the end zone for a touchdown! ",
-			" successfully picks up the option to the "+direction+", evades a tackle and makes it to the endzone! ",
-			" sprints off to the "+direction+" on the option and breaks away -- he's heading for the endzone! It's a touchdown! ",
+			" picks up the speed option flawlessly, dashing to the "+direction+" and into the end zone! TOUCHDOWN! ",
+			" picks up the speed option flawlessly, dashing "+direction+" into the end zone! TOUCHDOWN! ",
+			" takes the option and makes a mad dash to the "+direction+" into the end zone for a TOUCHDOWN! ",
+			" takes the option and speeds off to the "+direction+" into the end zone for a TOUCHDOWN! ",
+			" successfully picks up the option to the "+direction+", evades a tackle and makes it to the endzone! TOUCHDOWN! ",
+			" sprints off to the "+direction+" on the option and breaks away -- he's heading for the endzone! It's a TOUCHDOWN! ",
 			" breaks a tackle on the option play and breaks away to the "+direction+" side! He's going... GOING... we've got a TOUCHDOWN! ",
-			" takes the option and speeds off down the "+direction+" sideline for a touchdown! ",
-			" takes the option and runs off down the "+direction+" sideline for a touchdown! ",
-			" takes the option and dashes down the "+direction+" sideline for a touchdown! ",
+			" takes the option and speeds off down the "+direction+" sideline for a TOUCHDOWN! ",
+			" takes the option and runs off down the "+direction+" sideline for a TOUCHDOWN! ",
+			" takes the option and dashes down the "+direction+" sideline for a TOUCHDOWN! ",
 			" takes the option and breaks away down the "+direction+" sideline... TOUCHDOWN! ")
 	} else if outOfBounds {
 		list = append(list,
@@ -730,9 +730,9 @@ func getInvertedOptionList(yards int, isleft, touchdown, outOfBounds, twoPtConve
 	// Depending on the yards gained or lost, append appropriate descriptions
 	if touchdown {
 		list = append(list,
-			" masterfully executes the inverted option, slicing through the defense for a touchdown! ",
-			" takes the inverted path, finds a seam, and bursts into the end zone for a touchdown! ",
-			" orchestrates the veer option beautifully, diving into the end zone for the score! ")
+			" masterfully executes the inverted option, slicing through the defense for a TOUCHDOWN! ",
+			" takes the inverted path, finds a seam, and bursts into the end zone for a TOUCHDOWN! ",
+			" orchestrates the veer option beautifully, diving into the end zone for the score! TOUCHDOWN! ")
 	} else if outOfBounds {
 		list = append(list,
 			" opts for the inverted option, veering to the "+direction+" and stepping out with a gain. ",
@@ -792,34 +792,6 @@ func getInvertedOptionList(yards int, isleft, touchdown, outOfBounds, twoPtConve
 	return list
 }
 
-func getTackledVerb() string {
-	list := []string{"brought down", "tackled", "taken down", "stopped", "manhandled", "swarmed"}
-	return PickFromStringList(list)
-}
-
-func getGainSuffix(isGain bool, yards int) string {
-	if isGain {
-		list := []string{" a gain of ", " gaining ", " a moderate gain of ", " advancing for ", " a positive gain of ", " banking ", " racking up ", " picking up ", " adding "}
-		if yards > 14 {
-			list = append(list, " a massive gain of ", " a fantastic gain of ",
-				" an incredible gain of ", " a massive gain of ", " massively gaining ", " a tremendous run of ", " a fantastic gain of ", " an incredible gain of ", " weaving through traffic for ", " a significant gain of ", " breaking free for ")
-		}
-		if yards > 9 {
-			list = append(list, " a strong gain of ", " a strong gain of ", " strongly gaining ", " a pickup of ", " picking up ", " a solid gain of ", " a solid run of ", " amassing ", " a hard earned ", " powering ahead for ", " powering through for ")
-		} else if yards > 4 {
-			list = append(list, " a moderate gain of ", " moderately gaining ", " churning for ", " weaving through traffic for ",
-				" trucking ahead for ", " a decent advance of ", " a respectable gain of ", " grinding out ", " a healthy gain of ", " bolting for ", " securing ", " notching up ", " bagging ", " collecting ")
-		} else {
-			list = append(list, " a short gain of ", " a short gain of ", " inching for ", " a small gain of ", " a minor gain of ",
-				" a slight gain of ", " every inch fought for ", " adding ", " snagging ", " securing ", " only managing ", " a minimal gain of ", " bagging ", " eking out ", " scraping together ")
-		}
-		return PickFromStringList(list)
-	} else {
-		list := []string{" a loss of ", " getting pushed back for ", " losing ", " a loss of ", " a negative gain of "}
-		return PickFromStringList(list)
-	}
-}
-
 func getTripleOptionList(yards int, isleft, touchdown, outOfBounds, twoPtConversion, fumble, safety bool) []string {
 	list := []string{}
 	direction := "left"
@@ -831,9 +803,9 @@ func getTripleOptionList(yards int, isleft, touchdown, outOfBounds, twoPtConvers
 	// Depending on the yards gained or lost, append appropriate descriptions
 	if touchdown {
 		list = append(list,
-			" executes the triple option to perfection, resulting in a dynamic touchdown run! ",
-			" masterfully handles the triple option, finding the end zone with an impressive dash! ",
-			" navigates the triple option with ease, leading to a sensational touchdown! ")
+			" executes the triple option to perfection, resulting in a dynamic TOUCHDOWN run! ",
+			" masterfully handles the triple option, finding the end zone with an impressive dash! TOUCHDOWN! ",
+			" navigates the triple option with ease, leading to a sensational TOUCHDOWN! ")
 	} else if outOfBounds {
 		list = append(list,
 			" opts to keep it on the triple option, darting to the "+direction+" and out of bounds for"+gainStatement,
@@ -892,4 +864,32 @@ func getTripleOptionList(yards int, isleft, touchdown, outOfBounds, twoPtConvers
 		}
 	}
 	return list
+}
+
+func getTackledVerb() string {
+	list := []string{"brought down", "tackled", "taken down", "stopped", "manhandled", "swarmed"}
+	return PickFromStringList(list)
+}
+
+func getGainSuffix(isGain bool, yards int) string {
+	if isGain {
+		list := []string{" a gain of ", " gaining ", " a moderate gain of ", " advancing for ", " a positive gain of ", " banking ", " racking up ", " picking up ", " adding "}
+		if yards > 14 {
+			list = append(list, " a massive gain of ", " a fantastic gain of ",
+				" an incredible gain of ", " a massive gain of ", " massively gaining ", " a tremendous run of ", " a fantastic gain of ", " an incredible gain of ", " weaving through traffic for ", " a significant gain of ", " breaking free for ")
+		}
+		if yards > 9 {
+			list = append(list, " a strong gain of ", " a strong gain of ", " strongly gaining ", " a pickup of ", " picking up ", " a solid gain of ", " a solid run of ", " amassing ", " a hard earned ", " powering ahead for ", " powering through for ")
+		} else if yards > 4 {
+			list = append(list, " a moderate gain of ", " moderately gaining ", " churning for ", " weaving through traffic for ",
+				" trucking ahead for ", " a decent advance of ", " a respectable gain of ", " grinding out ", " a healthy gain of ", " bolting for ", " securing ", " notching up ", " bagging ", " collecting ")
+		} else {
+			list = append(list, " a short gain of ", " a short gain of ", " inching for ", " a small gain of ", " a minor gain of ",
+				" a slight gain of ", " every inch fought for ", " adding ", " snagging ", " securing ", " only managing ", " a minimal gain of ", " bagging ", " eking out ", " scraping together ")
+		}
+		return PickFromStringList(list)
+	} else {
+		list := []string{" a loss of ", " getting pushed back for ", " losing ", " a loss of ", " a negative gain of "}
+		return PickFromStringList(list)
+	}
 }

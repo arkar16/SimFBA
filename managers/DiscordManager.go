@@ -235,6 +235,9 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 	streams := []structs.StreamResponse{}
 
 	for _, game := range games {
+		if !game.GameComplete {
+			continue
+		}
 		homeTeam := teamMap[uint(game.HomeTeamID)]
 		awayTeam := teamMap[uint(game.AwayTeamID)]
 		// If it's a full FCS match up and we're not streaming FCS, skip
@@ -343,6 +346,9 @@ func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse 
 	streams := []structs.StreamResponse{}
 
 	for _, game := range games {
+		if !game.GameComplete {
+			continue
+		}
 
 		gameID := strconv.Itoa(int(game.ID))
 		var wg sync.WaitGroup
@@ -355,7 +361,7 @@ func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse 
 			awayPlayers  []structs.GameResultsPlayer
 		)
 		homeTeamID := strconv.Itoa(game.HomeTeamID)
-		awayTeamID := strconv.Itoa(game.HomeTeamID)
+		awayTeamID := strconv.Itoa(game.AwayTeamID)
 
 		go func() {
 			defer wg.Done()

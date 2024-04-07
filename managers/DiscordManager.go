@@ -338,7 +338,7 @@ func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse 
 		diff := nflWeek - weekNum
 		nflWeekID = ts.CollegeWeekID - diff
 	}
-	games := GetNFLGamesByTimeslotAndWeekId(timeslot, strconv.Itoa(nflWeekID))
+	games := GetNFLGamesByTimeslotAndWeekId(strconv.Itoa(nflWeekID), timeslot)
 
 	streams := []structs.StreamResponse{}
 
@@ -392,9 +392,11 @@ func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse 
 			HomeTeamID:          uint(game.HomeTeamID),
 			HomeTeam:            game.HomeTeam,
 			HomeTeamCoach:       game.HomeTeamCoach,
+			HomeLabel:           game.HomeTeam,
 			AwayTeamID:          uint(game.AwayTeamID),
 			AwayTeam:            game.AwayTeam,
-			AwayTeamCoach:       game.AwayTeam,
+			AwayTeamCoach:       game.AwayTeamCoach,
+			AwayLabel:           game.AwayTeam,
 			HomeOffensiveScheme: homeGameplan.OffensiveScheme,
 			HomeDefensiveScheme: homeGameplan.DefensiveScheme,
 			AwayOffensiveScheme: awayGameplan.OffensiveScheme,

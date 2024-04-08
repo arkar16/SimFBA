@@ -457,7 +457,6 @@ func ExportNFLPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 			log.Fatal("Error while writing to file ::", err)
 		}
 	}
-
 }
 
 func ExportCFBPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
@@ -526,5 +525,107 @@ func ExportCFBPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 			log.Fatal("Error while writing to file ::", err)
 		}
 	}
+}
 
+func ExportCFBGameResults(w http.ResponseWriter, seasonID, weekID, nflWeekID, timeslot string) {
+	fileName := "slippery_jim_secret_results_list.csv"
+	w.Header().Set("Content-Disposition", "attachment;"+fileName)
+	w.Header().Set("Transfer-Encoding", "chunked")
+	writer := csv.NewWriter(w)
+
+	// Get All needed data
+	matchChn := make(chan []structs.CollegeGame)
+	nflMatchChn := make(chan []structs.NFLGame)
+
+	go func() {
+		matches := GetCollegeGamesByTimeslotAndWeekId(weekID, timeslot)
+		matchChn <- matches
+	}()
+
+	go func() {
+		nbamatches := GetNFLGamesByTimeslotAndWeekId(nflWeekID, timeslot)
+		nflMatchChn <- nbamatches
+	}()
+
+	collegeGames := <-matchChn
+	close(matchChn)
+	nflGames := <-nflMatchChn
+	close(nflMatchChn)
+
+	HeaderRow := []string{
+		"League", "Week", "Game Title", "Timeslot", "Home Team", "Home Coach", "Home Rank", "Home Score",
+		"Away Team", "Away Coach", "Away Rank", "Away Score",
+		"Neutral Site", "Conference", "Timeslot", "Stadium", "City", "State",
+	}
+
+	err := writer.Write(HeaderRow)
+	if err != nil {
+		log.Fatal("Cannot write header row", err)
+	}
+
+	for _, m := range collegeGames {
+		if !m.GameComplete {
+			continue
+		}
+		neutralStr := "N"
+		if m.IsNeutral {
+			neutralStr = "Y"
+		}
+		confStr := "N"
+		if m.IsConference {
+			confStr = "Y"
+		}
+		divStr := "N"
+
+		row := []string{
+			"CFB", strconv.Itoa(int(m.Week)), m.GameTitle, m.HomeTeam, m.AwayTeamCoach,
+			strconv.Itoa(int(m.HomeTeamRank)), strconv.Itoa(int(m.HomeTeamScore)),
+			m.AwayTeam, m.AwayTeamCoach, strconv.Itoa(int(m.AwayTeamRank)), strconv.Itoa(int(m.AwayTeamScore)),
+			neutralStr, confStr, divStr, m.TimeSlot, m.Stadium, m.City, m.State,
+		}
+		err = writer.Write(row)
+		if err != nil {
+			log.Fatal("Cannot write croot row to CSV", err)
+		}
+
+		writer.Flush()
+		err = writer.Error()
+		if err != nil {
+			log.Fatal("Error while writing to file ::", err)
+		}
+	}
+	for _, m := range nflGames {
+		if !m.GameComplete {
+			continue
+		}
+		neutralStr := "N"
+		if m.IsNeutral {
+			neutralStr = "Y"
+		}
+		confStr := "N"
+		if m.IsConference {
+			confStr = "Y"
+		}
+		divStr := "N"
+		if m.IsDivisional {
+			divStr = "Y"
+		}
+
+		row := []string{
+			"NFL", strconv.Itoa(int(m.Week)), m.GameTitle, m.HomeTeam, m.AwayTeamCoach,
+			"N/A", strconv.Itoa(int(m.HomeTeamScore)),
+			m.AwayTeam, m.AwayTeamCoach, "N/A", strconv.Itoa(int(m.AwayTeamScore)),
+			neutralStr, confStr, divStr, m.TimeSlot, m.Stadium, m.City, m.State,
+		}
+		err = writer.Write(row)
+		if err != nil {
+			log.Fatal("Cannot write croot row to CSV", err)
+		}
+
+		writer.Flush()
+		err = writer.Error()
+		if err != nil {
+			log.Fatal("Error while writing to file ::", err)
+		}
+	}
 }

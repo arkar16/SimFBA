@@ -160,3 +160,12 @@ func GetBoxScoreResults(w http.ResponseWriter, r *http.Request) {
 
 	// json.NewEncoder(w).Encode(nflgames)
 }
+
+func ExportCFBGameResults(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	seasonID := vars["seasonID"]
+	weekID := vars["weekID"]
+	nflWeekID := vars["nflWeekID"]
+	timeslot := vars["timeslot"]
+	managers.ExportCFBGameResults(w, seasonID, weekID, nflWeekID, timeslot)
+}

@@ -101,6 +101,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/games/nfl/season/{seasonID}", controller.GetNFLGamesBySeasonID).Methods("GET")
 	myRouter.HandleFunc("/games/result/cfb/{gameID}", controller.GetCollegeGameResultsByGameID).Methods("GET")
 	myRouter.HandleFunc("/games/result/nfl/{gameID}", controller.GetNFLGameResultsByGameID).Methods("GET")
+	myRouter.HandleFunc("/games/export/results/{seasonID}/{weekID}/{nflWeekID}/{timeslot}", controller.ExportCFBGameResults).Methods("GET")
 
 	// Gameplan Controls
 	myRouter.HandleFunc("/gameplan/college/team/{teamID}/", controller.GetTeamGameplanByTeamID).Methods("GET")

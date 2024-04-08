@@ -78,7 +78,7 @@ func ExportNFLPlayByPlayToCSV(w http.ResponseWriter, r *http.Request) {
 	if len(gameID) == 0 {
 		log.Panicln("Missing game ID!")
 	}
-	managers.ExportCFBPlayByPlayToCSV(gameID, w)
+	managers.ExportNFLPlayByPlayToCSV(gameID, w)
 }
 
 func ExportPlayByPlayToCSV(w http.ResponseWriter, r *http.Request) {

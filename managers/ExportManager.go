@@ -391,7 +391,76 @@ func ExportTransferPlayersToCSV(transfers []structs.CollegePlayer, w http.Respon
 	}
 }
 
-func ExportPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
+func ExportNFLPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
+	game := GetNFLGameByGameID(gameID)
+	htID := strconv.Itoa(game.HomeTeamID)
+	atID := strconv.Itoa(game.AwayTeamID)
+
+	homePlayers := GetAllNFLPlayersWithGameStatsByTeamID(htID, gameID)
+	awayPlayers := GetAllNFLPlayersWithGameStatsByTeamID(atID, gameID)
+	participantMap := getGameParticipantMap(homePlayers, awayPlayers)
+
+	playByPlays := GetNFLPlayByPlaysByGameID(gameID)
+	// Generate the Play By Play Response
+	playbyPlayResponseList := GenerateNFLPlayByPlayResponse(playByPlays, participantMap, false, game.HomeTeam, game.AwayTeam)
+
+	// Begin Writing
+	fileName := gameID + "_" + game.HomeTeam + "_vs_" + game.AwayTeam + "_play_by_play"
+	w.Header().Set("Content-Disposition", "attachment;filename="+fileName+".csv")
+	w.Header().Set("Transfer-Encoding", "chunked")
+	// Initialize writer
+	writer := csv.NewWriter(w)
+	HeaderRow := []string{
+		"Play", game.HomeTeam + " Score", game.AwayTeam + " Score", "Quarter", "Time Remaining",
+		"Possession", "Down", "Distance", "Line of Scrimmage", "Type of Play",
+		"Offensive Formation", "Offensive Play", "Offensive PoA", "Defensive Formation",
+		"Defensive Tendency", "# of Blitzers", "LB Coverage", "CB Coverage", "S Coverage",
+		"QB Player ID", "Ballcarrier ID", "Tackler1 ID", "Tackler2 ID", "Yards Gained",
+		"Result",
+	}
+	err := writer.Write(HeaderRow)
+	if err != nil {
+		log.Fatal("Cannot write header row", err)
+	}
+
+	for _, play := range playbyPlayResponseList {
+		num := strconv.Itoa(int(play.PlayNumber))
+		hcs := strconv.Itoa(int(play.HomeTeamScore))
+		acs := strconv.Itoa(int(play.AwayTeamScore))
+		qt := strconv.Itoa(int(play.Quarter))
+		tr := play.TimeRemaining
+		down := strconv.Itoa(int(play.Down))
+		dist := strconv.Itoa(int(play.Distance))
+		qbID := strconv.Itoa(int(play.QBPlayerID))
+		bcID := strconv.Itoa(int(play.BallCarrierID))
+		t1ID := strconv.Itoa(int(play.Tackler1ID))
+		t2ID := strconv.Itoa(int(play.Tackler2ID))
+		yards := strconv.Itoa(int(play.ResultYards))
+		blitzNumber := strconv.Itoa(int(play.BlitzNumber))
+
+		row := []string{
+			num, hcs, acs, qt, tr, play.Possession, down, dist, play.LineOfScrimmage,
+			play.PlayType, play.OffensiveFormation, play.PlayName, play.PointOfAttack, play.DefensiveFormation,
+			play.DefensiveTendency, blitzNumber, play.LBCoverage, play.CBCoverage, play.SCoverage,
+			qbID, bcID, t1ID, t2ID, yards,
+			play.Result,
+		}
+
+		err = writer.Write(row)
+		if err != nil {
+			log.Fatal("Cannot write player row to CSV", err)
+		}
+
+		writer.Flush()
+		err = writer.Error()
+		if err != nil {
+			log.Fatal("Error while writing to file ::", err)
+		}
+	}
+
+}
+
+func ExportCFBPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 	game := GetCollegeGameByGameID(gameID)
 	htID := strconv.Itoa(game.HomeTeamID)
 	atID := strconv.Itoa(game.AwayTeamID)

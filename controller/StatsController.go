@@ -72,13 +72,22 @@ func ExportPlayerStatsToCSV(w http.ResponseWriter, r *http.Request) {
 	managers.ExportPlayerStatsToCSV(collegePlayers, w)
 }
 
+func ExportNFLPlayByPlayToCSV(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	gameID := vars["gameID"]
+	if len(gameID) == 0 {
+		log.Panicln("Missing game ID!")
+	}
+	managers.ExportCFBPlayByPlayToCSV(gameID, w)
+}
+
 func ExportPlayByPlayToCSV(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	gameID := vars["gameID"]
 	if len(gameID) == 0 {
 		log.Panicln("Missing game ID!")
 	}
-	managers.ExportPlayByPlayToCSV(gameID, w)
+	managers.ExportCFBPlayByPlayToCSV(gameID, w)
 }
 
 func GetInjuryReport(w http.ResponseWriter, r *http.Request) {

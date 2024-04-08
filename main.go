@@ -214,6 +214,7 @@ func handleRequests() {
 	// myRouter.HandleFunc("/statistics/export/nfl/", controller.ExportNFLStatisticsFromSim).Methods("POST")
 	myRouter.HandleFunc("/statistics/export/players/", controller.ExportPlayerStatsToCSV).Methods("GET")
 	myRouter.HandleFunc("/statistics/cfb/export/play/by/play/{gameID}", controller.ExportPlayByPlayToCSV).Methods("GET")
+	myRouter.HandleFunc("/statistics/nfl/export/play/by/play/{gameID}", controller.ExportNFLPlayByPlayToCSV).Methods("GET")
 	myRouter.HandleFunc("/statistics/injured/players/", controller.GetInjuryReport).Methods("GET")
 	myRouter.HandleFunc("/statistics/interface/cfb/{seasonID}/{weekID}/{viewType}", controller.GetStatsPageContentForSeason).Methods("GET")
 	myRouter.HandleFunc("/statistics/interface/nfl/{seasonID}/{weekID}/{viewType}", controller.GetNFLStatsPageContent).Methods("GET")

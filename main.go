@@ -105,6 +105,7 @@ func handleRequests() {
 
 	// Gameplan Controls
 	myRouter.HandleFunc("/gameplan/college/team/{teamID}/", controller.GetTeamGameplanByTeamID).Methods("GET")
+	myRouter.HandleFunc("/gameplan/college/ai/update/", controller.DetermineAIGameplan).Methods("GET")
 	myRouter.HandleFunc("/gameplan/college/updategameplan", controller.UpdateGameplan).Methods("POST")
 	myRouter.HandleFunc("/gameplan/college/depthchart/{teamID}/", controller.GetTeamDepthchartByTeamID).Methods("GET")
 	myRouter.HandleFunc("/gameplan/college/depthchart/user/check/", controller.CheckAllUserDepthChartsForInjuredPlayers).Methods("GET")
@@ -263,6 +264,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/ds/college/week/team/{week}/{team}/", controller.GetWeeklyTeamStatsByTeamAbbrAndWeek).Methods("GET")
 	myRouter.HandleFunc("/teams/ds/college/season/team/{season}/{team}/", controller.GetSeasonTeamStatsByTeamAbbrAndSeason).Methods("GET")
 	myRouter.HandleFunc("/ds/cfb/player/{id}", controller.GetCollegePlayer).Methods("GET")
+	myRouter.HandleFunc("/ds/nfl/player/{id}", controller.GetNFLPlayer).Methods("GET")
 	myRouter.HandleFunc("/ds/cfb/croots/class/{teamID}/", controller.GetRecruitingClassByTeamID).Methods("GET")
 	myRouter.HandleFunc("/ds/cfb/croot/{id}", controller.GetRecruitViaDiscord).Methods("GET")
 	myRouter.HandleFunc("/schedule/ds/current/week/{league}/", controller.GetCurrentWeekGamesByLeague).Methods("GET")

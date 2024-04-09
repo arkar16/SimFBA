@@ -588,3 +588,138 @@ func (bg *BaseGameplan) UpdateCollegeGameplanTEST(dto CollegeGameplanTEST) {
 	bg.FocusPlays = dto.FocusPlays
 	bg.DoubleTeam = dto.DoubleTeam
 }
+
+type SchemeCount struct {
+	PowerRun      int
+	Vertical      int
+	WestCoast     int
+	IOption       int
+	RunAndShoot   int
+	AirRaid       int
+	Pistol        int
+	SpreadOption  int
+	WingT         int
+	DoubleWing    int
+	Flexbone      int
+	Wishbone      int
+	OldSchool     int
+	TwoGap        int
+	FourManFront  int
+	ThreeManFront int
+	Speed         int
+	Multiple      int
+}
+
+func (sc *SchemeCount) IncrementScheme(scheme string) {
+	if scheme == "Power Run" {
+		sc.PowerRun += 1
+	}
+	if scheme == "Vertical" {
+		sc.Vertical += 1
+	}
+	if scheme == "West Coast" {
+		sc.WestCoast += 1
+	}
+	if scheme == "I Option" {
+		sc.IOption += 1
+	}
+	if scheme == "Run and Shoot" {
+		sc.RunAndShoot += 1
+	}
+	if scheme == "Air Raid" {
+		sc.AirRaid += 1
+	}
+	if scheme == "Pistol" {
+		sc.Pistol += 1
+	}
+	if scheme == "Spread Option" {
+		sc.SpreadOption += 1
+	}
+	if scheme == "Wing-T" {
+		sc.WingT += 1
+	}
+	if scheme == "Double Wing" {
+		sc.DoubleWing += 1
+	}
+	if scheme == "Flexbone" {
+		sc.Flexbone += 1
+	}
+	if scheme == "Wishbone" {
+		sc.Wishbone += 1
+	}
+	if scheme == "Old School" {
+		sc.OldSchool += 1
+	}
+	if scheme == "2-Gap" {
+		sc.TwoGap += 1
+	}
+	if scheme == "4-Man Front Spread Stopper" {
+		sc.FourManFront += 1
+	}
+	if scheme == "3-Man Front Spread Stopper" {
+		sc.ThreeManFront += 1
+	}
+	if scheme == "Speed" {
+		sc.Speed += 1
+	}
+	if scheme == "Multiple" {
+		sc.Multiple += 1
+	}
+}
+
+func (sc *SchemeCount) DecrementScheme(scheme string) {
+	if scheme == "Power Run" {
+		sc.PowerRun -= 1
+	}
+	if scheme == "Vertical" {
+		sc.Vertical -= 1
+	}
+	if scheme == "West Coast" {
+		sc.WestCoast -= 1
+	}
+	if scheme == "I Option" {
+		sc.IOption -= 1
+	}
+	if scheme == "Run and Shoot" {
+		sc.RunAndShoot -= 1
+	}
+	if scheme == "Air Raid" {
+		sc.AirRaid -= 1
+	}
+	if scheme == "Pistol" {
+		sc.Pistol -= 1
+	}
+	if scheme == "Spread Option" {
+		sc.SpreadOption -= 1
+	}
+	if scheme == "Wing-T" {
+		sc.WingT -= 1
+	}
+	if scheme == "Double Wing" {
+		sc.DoubleWing -= 1
+	}
+	if scheme == "Flexbone" {
+		sc.Flexbone -= 1
+	}
+	if scheme == "Wishbone" {
+		sc.Wishbone -= 1
+	}
+	if scheme == "Old School" {
+		sc.OldSchool -= 1
+	}
+	if scheme == "2-Gap" {
+		sc.TwoGap -= 1
+	}
+	if scheme == "4-Man Front Spread Stopper" {
+		sc.FourManFront -= 1
+	}
+	if scheme == "3-Man Front Spread Stopper" {
+		sc.ThreeManFront -= 1
+	}
+	if scheme == "Speed" {
+		sc.Speed -= 1
+	}
+	if scheme == "Multiple" {
+		sc.Multiple -= 1
+	}
+}

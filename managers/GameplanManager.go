@@ -8,6 +8,7 @@ import (
 	"sync"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 	"gorm.io/gorm"
@@ -516,7 +517,7 @@ func MassUpdateGameplanSchemes(off, def string) {
 		// Autosort Depth Chart
 		ReAlignCollegeDepthChart(db, teamID, gp)
 
-		db.Save(&gp)
+		repository.SaveCFBGameplanRecord(gp, db)
 	}
 }
 
@@ -3051,4 +3052,228 @@ func GetDepthChartPositionPlayersByDepthchartIDTEST(depthChartID string) []struc
 	}
 
 	return positionPlayers
+}
+
+func DetermineAIGameplan() {
+	db := dbprovider.GetInstance().GetDB()
+
+	teams := GetAllCollegeTeams()
+	offensiveSchemes := util.GetOffensiveDefaultSchemes()
+	defensiveSchemes := util.GetDefensiveDefaultSchemes()
+	goodFitsPR := GetFitsByScheme("Power Run", false)
+	badFitsPR := GetFitsByScheme("Power Run", true)
+	goodFitsV := GetFitsByScheme("Vertical", false)
+	badFitsV := GetFitsByScheme("Vertical", true)
+	goodFitsWC := GetFitsByScheme("West Coast", false)
+	badFitsWC := GetFitsByScheme("West Coast", true)
+	goodFitsI := GetFitsByScheme("I Option", false)
+	badFitsI := GetFitsByScheme("I Option", true)
+	goodFitsRS := GetFitsByScheme("Run and Shoot", false)
+	badFitsRS := GetFitsByScheme("Run and Shoot", true)
+	goodFitsAR := GetFitsByScheme("Air Raid", false)
+	badFitsAR := GetFitsByScheme("Air Raid", true)
+	goodFitsPi := GetFitsByScheme("Pistol", false)
+	badFitsPi := GetFitsByScheme("Pistol", true)
+	goodFitsSO := GetFitsByScheme("Spread Option", false)
+	badFitsSO := GetFitsByScheme("Spread Option", true)
+	goodFitsWT := GetFitsByScheme("Wing-T", false)
+	badFitsWT := GetFitsByScheme("Wing-T", true)
+	goodFitsDW := GetFitsByScheme("Double Wing", false)
+	badFitsDW := GetFitsByScheme("Double Wing", true)
+	goodFitsFB := GetFitsByScheme("Flexbone", false)
+	badFitsFB := GetFitsByScheme("Flexbone", true)
+	goodFitsWB := GetFitsByScheme("Wishbone", false)
+	badFitsWB := GetFitsByScheme("Wishbone", true)
+	goodFitsOS := GetFitsByScheme("Old School", false)
+	badFitsOS := GetFitsByScheme("Old School", true)
+	goodFits2G := GetFitsByScheme("2-Gap", false)
+	badFits2G := GetFitsByScheme("2-Gap", true)
+	goodFits4M := GetFitsByScheme("4-Man Front Spread Stopper", false)
+	badFits4M := GetFitsByScheme("4-Man Front Spread Stopper", true)
+	goodFits3M := GetFitsByScheme("3-Man Front Spread Stopper", false)
+	badFits3M := GetFitsByScheme("3-Man Front Spread Stopper", true)
+	goodFitsSP := GetFitsByScheme("Speed", false)
+	badFitsSP := GetFitsByScheme("Speed", true)
+	goodFitsM := GetFitsByScheme("Multiple", false)
+	badFitsM := GetFitsByScheme("Multiple", true)
+
+	for _, t := range teams {
+		if t.Coach != "AI" {
+			continue
+		}
+		id := strconv.Itoa(int(t.ID))
+
+		roster := GetAllCollegePlayersByTeamId(id)
+		gp := GetGameplanByTeamID(id)
+		schemeCounter := structs.SchemeCount{}
+		count := 0
+		positionMap := make(map[string]int)
+		for _, p := range roster {
+			if count == 24 {
+				break
+			}
+			if p.IsRedshirting || positionMap[p.Position] > 2 {
+				continue
+			}
+			positionMap[p.Position] += 1
+			count += 1
+			player := p.Archetype + " " + p.Position
+
+			for scheme, goodFits := range map[string][]string{
+				"Power Run":                  goodFitsPR,
+				"Vertical":                   goodFitsV,
+				"West Coast":                 goodFitsWC,
+				"I Option":                   goodFitsI,
+				"Run and Shoot":              goodFitsRS,
+				"Air Raid":                   goodFitsAR,
+				"Pistol":                     goodFitsPi,
+				"Spread Option":              goodFitsSO,
+				"Wing-T":                     goodFitsWT,
+				"Double Wing":                goodFitsDW,
+				"Flexbone":                   goodFitsFB,
+				"Wishbone":                   goodFitsWB,
+				"Old School":                 goodFitsOS,
+				"2-Gap":                      goodFits2G,
+				"4-Man Front Spread Stopper": goodFits4M,
+				"3-Man Front Spread Stopper": goodFits3M,
+				"Speed":                      goodFitsSP,
+				"Multiple":                   goodFitsM,
+			} {
+				badFits := map[string][]string{
+					"Power Run":                  badFitsPR,
+					"Vertical":                   badFitsV,
+					"West Coast":                 badFitsWC,
+					"I-Option":                   badFitsI,
+					"Run and Shoot":              badFitsRS,
+					"Air Raid":                   badFitsAR,
+					"Pistol":                     badFitsPi,
+					"Spread Option":              badFitsSO,
+					"Wing-T":                     badFitsWT,
+					"Double Wing":                badFitsDW,
+					"Flexbone":                   badFitsFB,
+					"Wishbone":                   badFitsWB,
+					"Old School":                 badFitsOS,
+					"2-Gap":                      badFits2G,
+					"4-Man Front Spread Stopper": badFits4M,
+					"3-Man Front Spread Stopper": badFits3M,
+					"Speed":                      badFitsSP,
+					"Multiple":                   badFitsM,
+				}[scheme]
+
+				isGoodFit := CheckPlayerFits(player, goodFits)
+				isBadFit := CheckPlayerFits(player, badFits)
+				if isGoodFit {
+					schemeCounter.IncrementScheme(scheme)
+				}
+				if isBadFit {
+					schemeCounter.DecrementScheme(scheme)
+				}
+			}
+		}
+
+		highestCount := -1000
+		offScheme := ""
+		defScheme := ""
+		if schemeCounter.PowerRun > highestCount {
+			highestCount = schemeCounter.PowerRun
+			offScheme = "Power Run"
+		}
+		if schemeCounter.Vertical > highestCount {
+			highestCount = schemeCounter.Vertical
+			offScheme = "Vertical"
+		}
+		if schemeCounter.WestCoast > highestCount {
+			highestCount = schemeCounter.WestCoast
+			offScheme = "West Coast"
+		}
+		if schemeCounter.IOption > highestCount {
+			highestCount = schemeCounter.IOption
+			offScheme = "I Option"
+		}
+		if schemeCounter.RunAndShoot > highestCount {
+			highestCount = schemeCounter.RunAndShoot
+			offScheme = "Run and Shoot"
+		}
+		if schemeCounter.AirRaid > highestCount {
+			highestCount = schemeCounter.AirRaid
+			offScheme = "Air Raid"
+		}
+		if schemeCounter.Pistol > highestCount {
+			highestCount = schemeCounter.Pistol
+			offScheme = "Pistol"
+		}
+		if schemeCounter.SpreadOption > highestCount {
+			highestCount = schemeCounter.SpreadOption
+			offScheme = "Spread Option"
+		}
+		if schemeCounter.WingT > highestCount {
+			highestCount = schemeCounter.WingT
+			offScheme = "Wing-T"
+		}
+		if schemeCounter.DoubleWing > highestCount {
+			highestCount = schemeCounter.DoubleWing
+			offScheme = "Double Wing"
+		}
+		if schemeCounter.Flexbone > highestCount {
+			highestCount = schemeCounter.Flexbone
+			offScheme = "Flexbone"
+		}
+		if schemeCounter.Wishbone > highestCount {
+			offScheme = "Wishbone"
+		}
+		highestCount = -1000
+		if schemeCounter.OldSchool > highestCount {
+			highestCount = schemeCounter.OldSchool
+			defScheme = "Old School"
+		}
+		if schemeCounter.TwoGap > highestCount {
+			highestCount = schemeCounter.TwoGap
+			defScheme = "2-Gap"
+		}
+		if schemeCounter.FourManFront > highestCount {
+			highestCount = schemeCounter.FourManFront
+			defScheme = "4-Man Front Spread Stopper"
+		}
+		if schemeCounter.ThreeManFront > highestCount {
+			highestCount = schemeCounter.ThreeManFront
+			defScheme = "3-Man Front Spread Stopper"
+		}
+		if schemeCounter.Speed > highestCount {
+			highestCount = schemeCounter.Speed
+			defScheme = "Speed"
+		}
+		if schemeCounter.Multiple > highestCount {
+			defScheme = "Multiple"
+		}
+
+		gp.UpdateSchemes(offScheme, defScheme)
+		offFormations := offensiveSchemes[offScheme]
+		defFormations := defensiveSchemes[defScheme][offScheme]
+		dto := structs.CollegeGameplan{
+			TeamID: int(t.ID),
+			BaseGameplan: structs.BaseGameplan{
+				OffensiveScheme:    offScheme,
+				DefensiveScheme:    defScheme,
+				OffensiveFormation: offFormations,
+				DefensiveFormation: defFormations,
+				BlitzSafeties:      gp.BlitzSafeties,
+				BlitzCorners:       gp.BlitzCorners,
+				LinebackerCoverage: gp.LinebackerCoverage,
+				MaximumFGDistance:  gp.MaximumFGDistance,
+				GoFor4AndShort:     gp.GoFor4AndShort,
+				GoFor4AndLong:      gp.GoFor4AndLong,
+				DefaultOffense:     gp.DefaultOffense,
+				DefaultDefense:     gp.DefaultDefense,
+				PrimaryHB:          75,
+				PitchFocus:         50,
+				DiveFocus:          50,
+			},
+		}
+
+		gp.UpdateCollegeGameplan(dto)
+
+		// Autosort Depth Chart
+		ReAlignCollegeDepthChart(db, id, gp)
+		repository.SaveCFBGameplanRecord(gp, db)
+	}
 }

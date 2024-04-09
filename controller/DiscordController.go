@@ -148,6 +148,20 @@ func GetRecruitViaDiscord(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(recruit)
 }
 
+// GetNFLPlayer
+func GetNFLPlayer(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	if len(id) == 0 {
+		panic("User did not provide a first name")
+	}
+
+	player := managers.GetCollegePlayerViaDiscord(id)
+
+	json.NewEncoder(w).Encode(player)
+}
+
 // GetCollegeGamesByTeamIDAndSeasonID
 func GetCurrentWeekGamesByLeague(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)

@@ -188,6 +188,16 @@ func SetRedshirtStatusForPlayer(playerId string) structs.CollegePlayer {
 	return player
 }
 
+func GetNFLPlayerViaDiscord(id string) structs.NFLPlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var nflPlayer structs.NFLPlayer
+
+	db.Where("id = ?", id).Find(&nflPlayer)
+
+	return nflPlayer
+}
+
 func GetAllNFLDraftees() []models.NFLDraftee {
 	db := dbprovider.GetInstance().GetDB()
 

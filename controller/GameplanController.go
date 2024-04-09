@@ -196,3 +196,8 @@ func UpdateIndividualGameplanTEST(w http.ResponseWriter, r *http.Request) {
 	managers.UpdateIndividualGameplanSchemeTEST(teamID, off, def)
 	json.NewEncoder(w).Encode("Updated all CFB Depth Charts For Testing")
 }
+
+func DetermineAIGameplan(w http.ResponseWriter, r *http.Request) {
+	managers.DetermineAIGameplan()
+	json.NewEncoder(w).Encode("Updated all AI gameplans")
+}

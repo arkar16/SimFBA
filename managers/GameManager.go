@@ -6,6 +6,7 @@ import (
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 )
 
@@ -301,6 +302,6 @@ func RunTheGames() {
 	close(tsChn)
 
 	ts.ToggleRunGames()
+	repository.SaveTimestamp(ts, db)
 
-	db.Save(&ts)
 }

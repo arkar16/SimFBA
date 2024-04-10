@@ -52,7 +52,7 @@ func SyncToNextWeekViaCron() {
 func RunTheGamesViaCron() {
 	ts := managers.GetTimestamp()
 	if ts.RunCron {
-		if !ts.IsOffSeason {
+		if !ts.IsOffSeason && !ts.RunGames {
 			managers.RunTheGames()
 		}
 	}

@@ -322,6 +322,7 @@ func (bg *BaseGameplan) UpdateNFLGameplan(dto NFLGameplan) {
 	bg.DefaultOffense = dto.DefaultOffense
 	bg.DefaultDefense = dto.DefaultDefense
 	bg.DoubleTeam = dto.DoubleTeam
+	bg.FocusPlays = dto.FocusPlays
 }
 
 func (bg *BaseGameplan) UpdateSchemes(off, def string) {

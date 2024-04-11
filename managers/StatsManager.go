@@ -843,15 +843,18 @@ func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, part
 		cb := util.GetCoverageStr(p.CBCoverage)
 		s := util.GetCoverageStr(p.SCoverage)
 		poss := ht
-		if !p.HomeHasBall {
-			poss = at
-		}
-
 		los := p.LineOfScrimmage
 		losSide := ht
+		if !p.HomeHasBall {
+			poss = at
+			losSide = at
+		}
 		if los > 50 {
 			los = 100 - p.LineOfScrimmage
 			losSide = at
+			if !p.HomeHasBall {
+				losSide = ht
+			}
 		}
 		losFull := strconv.Itoa(int(los)) + " " + losSide
 
@@ -924,10 +927,14 @@ func GenerateNFLPlayByPlayResponse(playByPlays []structs.NFLPlayByPlay, particip
 		losSide := ht
 		if !p.HomeHasBall {
 			poss = at
+			losSide = at
 		}
 		if los > 50 {
 			los = 100 - p.LineOfScrimmage
 			losSide = at
+			if !p.HomeHasBall {
+				losSide = ht
+			}
 		}
 		losFull := strconv.Itoa(int(los)) + " " + losSide
 

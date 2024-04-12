@@ -93,18 +93,18 @@ func getCompleteThrowText(yards int, recLabel, turnoverLabel string, fumble, tou
 	} else if !fumble && touchdown && !twoPtConversion {
 		// Deep throws for a touchdown
 		if yards > 30 {
-			list = append(list, recLabel+" runs it down the sideline, no DB in sight, and brings it the endzone! TOUCHDOWN!",
-				recLabel+" catches it out in the open and takes it straight home! TOUCHDOWN!",
-				recLabel+" catches it one-handed on a dive into the endzone! TOUCHDOWN!",
-				recLabel+" catches the deep ball and shakes off the coverage. He's going for the endzone! TOUCHDOWN!",
+			list = append(list, recLabel+" runs it down the sideline, no DB in sight, and brings it the endzone! TOUCHDOWN! ",
+				recLabel+" catches it out in the open and takes it straight home! TOUCHDOWN! ",
+				recLabel+" catches it one-handed on a dive into the endzone! TOUCHDOWN! ",
+				recLabel+" catches the deep ball and shakes off the coverage. He's going for the endzone! TOUCHDOWN! ",
 			)
 		} else if yards > 10 {
 			// Medium throws for a touchdown
-			list = append(list, recLabel+" evades a safety and runs right into the endzone! TOUCHDOWN!",
-				recLabel+" finds a seam in the defense, grabs the pass, and darts into the endzone! TOUCHDOWN!",
-				"With a quick cut, "+recLabel+" gets open, catches the pass, and zips into the endzone! TOUCHDOWN!",
+			list = append(list, recLabel+" evades a safety and runs right into the endzone! TOUCHDOWN! ",
+				recLabel+" finds a seam in the defense, grabs the pass, and darts into the endzone! TOUCHDOWN! ",
+				"With a quick cut, "+recLabel+" gets open, catches the pass, and zips into the endzone! TOUCHDOWN! ",
 				recLabel+" latches onto the pass in stride and breaks the plane for a touchdown!",
-				"In the red zone, "+recLabel+" secures the pass and sidesteps a defender to score! TOUCHDOWN!")
+				"In the red zone, "+recLabel+" secures the pass and sidesteps a defender to score! TOUCHDOWN! ")
 		} else {
 			// Short throws within the red zone/endzone
 			list = append(list, recLabel+" makes the catch right into the endzone, TOUCHDOWN! ",
@@ -113,13 +113,13 @@ func getCompleteThrowText(yards int, recLabel, turnoverLabel string, fumble, tou
 				recLabel+" makes the catch on a dive into the endzone! TOUCHDOWN! ",
 				recLabel+" makes the catch in traffic and is pushed out of bounds in the endzone. TOUCHDOWN! ",
 				recLabel+" makes the catch out in the open and steps right into the endzone! TOUCHDOWN! ",
-				recLabel+" jukes a defender and makes a mad dash right into the endzone! TOUCHDOWN!",
+				recLabel+" jukes a defender and makes a mad dash right into the endzone! TOUCHDOWN! ",
 				recLabel+" grabs the quick slant and barrels over the line for a touchdown!",
 				"In a crowded endzone, "+recLabel+" snatches the pass for a decisive touchdown!",
-				recLabel+" makes a pivotal catch in the corner of the endzone! TOUCHDOWN!",
-				"Under pressure, "+recLabel+" secures the pass and tumbles into the endzone! TOUCHDOWN!",
-				recLabel+" scoops up the low throw and turns it into six points! TOUCHDOWN!",
-				"Amidst tight coverage, "+recLabel+" reels in the pass and plants his feet in the endzone! TOUCHDOWN!",
+				recLabel+" makes a pivotal catch in the corner of the endzone! TOUCHDOWN! ",
+				"Under pressure, "+recLabel+" secures the pass and tumbles into the endzone! TOUCHDOWN! ",
+				recLabel+" scoops up the low throw and turns it into six points! TOUCHDOWN! ",
+				"Amidst tight coverage, "+recLabel+" reels in the pass and plants his feet in the endzone! TOUCHDOWN! ",
 			)
 		}
 	} else if !fumble && touchdown && twoPtConversion {

@@ -28,6 +28,14 @@ func InitialMigration() {
 
 func handleRequests() {
 	myRouter := mux.NewRouter().StrictSlash(true)
+
+	// Handler & Middleware
+	loadEnvs()
+	origins := os.Getenv("ORIGIN_ALLOWED")
+	originsOk := handlers.AllowedOrigins([]string{origins})
+	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "Accept", "X-Requested-With", "Access-Control-Request-Method", "Access-Control-Request-Headers"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+	handler := handlers.CORS(originsOk, methodsOk, headersOk)(myRouter)
 	myRouter.Use(middleware.GzipMiddleware)
 
 	// Health Controls
@@ -277,14 +285,7 @@ func handleRequests() {
 	// Easter Controls
 	myRouter.HandleFunc("/easter/egg/collude/", controller.CollusionButton).Methods("POST")
 
-	// Handle Controls
-	// handler := cors.AllowAll().Handler(myRouter)
-	loadEnvs()
-	origins := os.Getenv("ORIGIN_ALLOWED")
-	originsOk := handlers.AllowedOrigins([]string{origins})
-	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "Accept", "Access-Control-Request-Method", "Access-Control-Request-Headers"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-	log.Fatal(http.ListenAndServe(":5001", handlers.CORS(originsOk, methodsOk, headersOk)(myRouter)))
+	log.Fatal(http.ListenAndServe(":5001", handler))
 }
 
 func loadEnvs() {

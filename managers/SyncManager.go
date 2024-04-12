@@ -515,14 +515,16 @@ func FillAIRecruitingBoards() {
 	fmt.Println("Loading recruits...")
 	for _, croot := range UnsignedRecruits {
 		info := structs.RecruitInfo{
-			HasAcademicAffinity:    doesCrootHaveAffinity("Academics", croot),
-			HasCloseToHomeAffinity: doesCrootHaveAffinity("Close to Home", croot),
-			HasServiceAffinity:     doesCrootHaveAffinity("Service", croot),
-			HasFrontRunnerAffinity: doesCrootHaveAffinity("Frontrunner", croot),
-			HasReligionAffinity:    doesCrootHaveAffinity("Religion", croot),
-			HasSmallSchoolAffinity: doesCrootHaveAffinity("Small School", croot),
-			HasSmallTownAffinity:   doesCrootHaveAffinity("Small Town", croot),
-			HasBigCityAffinity:     doesCrootHaveAffinity("Big City", croot),
+			HasAcademicAffinity:       doesCrootHaveAffinity("Academics", croot),
+			HasCloseToHomeAffinity:    doesCrootHaveAffinity("Close to Home", croot),
+			HasServiceAffinity:        doesCrootHaveAffinity("Service", croot),
+			HasFrontRunnerAffinity:    doesCrootHaveAffinity("Frontrunner", croot),
+			HasReligionAffinity:       doesCrootHaveAffinity("Religion", croot),
+			HasSmallSchoolAffinity:    doesCrootHaveAffinity("Small School", croot),
+			HasSmallTownAffinity:      doesCrootHaveAffinity("Small Town", croot),
+			HasBigCityAffinity:        doesCrootHaveAffinity("Big City", croot),
+			HasMediaSpotlightAffinity: doesCrootHaveAffinity("Media Spotlight", croot),
+			HasRisingStars:            doesCrootHaveAffinity("Rising Stars", croot),
 		}
 		recruitInfos[croot.ID] = info
 		crootProfiles := GetRecruitPlayerProfilesByRecruitId(strconv.Itoa(int(croot.ID)))
@@ -1189,6 +1191,42 @@ func getRecruitingOdds(ts structs.Timestamp, croot structs.Recruit, team structs
 			}
 
 			if croot.AffinityTwo == "Big City" {
+				affinityTwoApplicable = true
+				affinityMod += 3
+			}
+		}
+
+		if crootInfo.HasMediaSpotlightAffinity && isAffinityApplicable("Media Spotlight", affinity) {
+			if team.IsFBS {
+				odds += 33
+			} else {
+				odds += 17
+			}
+
+			if croot.AffinityOne == "Media Spotlight" {
+				affinityOneApplicable = true
+				affinityMod += 3
+			}
+
+			if croot.AffinityTwo == "Media Spotlight" {
+				affinityTwoApplicable = true
+				affinityMod += 3
+			}
+		}
+
+		if crootInfo.HasRisingStars && isAffinityApplicable("Rising Stars", affinity) {
+			if team.IsFBS {
+				odds += 33
+			} else {
+				odds += 17
+			}
+
+			if croot.AffinityOne == "Rising Stars" {
+				affinityOneApplicable = true
+				affinityMod += 3
+			}
+
+			if croot.AffinityTwo == "Rising Stars" {
 				affinityTwoApplicable = true
 				affinityMod += 3
 			}

@@ -8,9 +8,70 @@ import (
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/CalebRose/SimFBA/util"
 	"gorm.io/gorm"
 )
+
+func RecalibrateCrootProfiles() {
+	// Ensure that affinities are calibrated properly
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+	UnsignedRecruits := GetAllUnsignedRecruits()
+	stateMatcher := util.GetStateMatcher()
+	regionMatcher := util.GetStateRegionMatcher()
+
+	recruitInfos := make(map[uint]structs.RecruitInfo)
+	crootMap := make(map[uint]structs.Recruit)
+	fmt.Println("Loading recruits...")
+	for _, croot := range UnsignedRecruits {
+		info := structs.RecruitInfo{
+			HasAcademicAffinity:       doesCrootHaveAffinity("Academics", croot),
+			HasCloseToHomeAffinity:    doesCrootHaveAffinity("Close to Home", croot),
+			HasServiceAffinity:        doesCrootHaveAffinity("Service", croot),
+			HasFrontRunnerAffinity:    doesCrootHaveAffinity("Frontrunner", croot),
+			HasReligionAffinity:       doesCrootHaveAffinity("Religion", croot),
+			HasSmallSchoolAffinity:    doesCrootHaveAffinity("Small School", croot),
+			HasSmallTownAffinity:      doesCrootHaveAffinity("Small Town", croot),
+			HasBigCityAffinity:        doesCrootHaveAffinity("Big City", croot),
+			HasMediaSpotlightAffinity: doesCrootHaveAffinity("Media Spotlight", croot),
+			HasRisingStars:            doesCrootHaveAffinity("Rising Stars", croot),
+		}
+		recruitInfos[croot.ID] = info
+		crootMap[croot.ID] = croot
+	}
+
+	teamProfiles := GetAllCollegeTeamsWithRecruitingProfileAndCoach()
+
+	for _, t := range teamProfiles {
+		tp := t.RecruitingProfile
+
+		profileID := strconv.Itoa(int(t.ID))
+		profiles := GetOnlyRecruitProfilesByTeamProfileID(profileID)
+
+		for _, p := range profiles {
+			croot := crootMap[uint(p.RecruitID)]
+			closeToHome := util.IsCrootCloseToHome(croot.State, croot.City, t.State, t.TeamAbbr, stateMatcher, regionMatcher)
+			oddsObject := getRecruitingOdds(ts, croot, tp, t.CollegeCoach, closeToHome, recruitInfos)
+
+			triggerSave := false
+			if oddsObject.Af1 && !p.AffinityOneEligible {
+				p.ToggleAffinityOne()
+				triggerSave = true
+			}
+
+			if oddsObject.Af2 && !p.AffinityTwoEligible {
+				p.ToggleAffinityTwo()
+				triggerSave = true
+			}
+
+			if triggerSave {
+				repository.SaveRecruitProfile(p, db)
+			}
+		}
+	}
+}
 
 // GetRecruitingProfileByTeamID
 func GetOnlyRecruitingProfileByTeamID(TeamID string) structs.RecruitingTeamProfile {

@@ -115,12 +115,14 @@ type OddsAndAffinities struct {
 }
 
 type RecruitInfo struct {
-	HasAcademicAffinity    bool
-	HasCloseToHomeAffinity bool
-	HasServiceAffinity     bool
-	HasFrontRunnerAffinity bool
-	HasReligionAffinity    bool
-	HasSmallSchoolAffinity bool
-	HasSmallTownAffinity   bool
-	HasBigCityAffinity     bool
+	HasAcademicAffinity       bool
+	HasCloseToHomeAffinity    bool
+	HasServiceAffinity        bool
+	HasFrontRunnerAffinity    bool
+	HasReligionAffinity       bool
+	HasSmallSchoolAffinity    bool
+	HasSmallTownAffinity      bool
+	HasBigCityAffinity        bool
+	HasMediaSpotlightAffinity bool
+	HasRisingStars            bool
 }

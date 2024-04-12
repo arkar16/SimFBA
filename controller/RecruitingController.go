@@ -209,3 +209,8 @@ func enableCors(w *http.ResponseWriter) {
 	(*w).Header().Set("Vary", "Origin")
 	(*w).Header().Set("Access-Control-Allow-Headers", "Content-Type")
 }
+
+// GetRecruitingProfileByTeamID -- for Overall Dashboard
+func RecalibrateCrootProfiles(w http.ResponseWriter, r *http.Request) {
+	managers.RecalibrateCrootProfiles()
+}

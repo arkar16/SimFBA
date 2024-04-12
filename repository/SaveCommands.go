@@ -78,3 +78,11 @@ func SaveRecruitingTeamProfile(profile structs.RecruitingTeamProfile, db *gorm.D
 		log.Panicln("Could not save team profile")
 	}
 }
+
+func SaveRecruitProfile(profile structs.RecruitPlayerProfile, db *gorm.DB) {
+	profile.Recruit = structs.Recruit{}
+	err := db.Save(&profile).Error
+	if err != nil {
+		log.Panicln("Could not save team profile")
+	}
+}

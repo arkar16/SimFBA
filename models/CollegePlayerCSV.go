@@ -20,6 +20,7 @@ type CollegePlayerCSV struct {
 	HighSchool         string
 	City               string
 	State              string
+	College            string
 	Height             int
 	Weight             int
 	Shotgun            int
@@ -255,6 +256,7 @@ func MapNFLPlayerToCSVModel(player structs.NFLPlayer) CollegePlayerCSV {
 		Age:                player.Age,
 		Stars:              player.Stars,
 		HighSchool:         player.HighSchool,
+		College:            player.College,
 		City:               player.Hometown,
 		State:              player.State,
 		Height:             player.Height,

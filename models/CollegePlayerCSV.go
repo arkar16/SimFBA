@@ -219,7 +219,7 @@ func MapNFLPlayerToCSVModel(player structs.NFLPlayer) CollegePlayerCSV {
 	PuntPowerGrade := strconv.Itoa(player.PuntPower)
 	PuntAccuracyGrade := strconv.Itoa(player.PuntAccuracy)
 
-	if player.Experience < 2 {
+	if player.Experience < 2 || player.ShowLetterGrade {
 		OverallGrade = util.GetOverallGrade(player.Overall, int(player.Experience))
 		StaminaGrade = util.GetLetterGrade(player.Stamina, attributeMeans["Stamina"][player.Position]["mean"], attributeMeans["Stamina"][player.Position]["stddev"], int(player.Experience))
 		InjuryGrade = util.GetLetterGrade(player.Injury, attributeMeans["Injury"][player.Position]["mean"], attributeMeans["Injury"][player.Position]["stddev"], int(player.Experience))

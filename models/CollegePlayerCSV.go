@@ -250,6 +250,7 @@ func MapNFLPlayerToCSVModel(player structs.NFLPlayer) CollegePlayerCSV {
 		LastName:           player.LastName,
 		Position:           player.Position,
 		Archetype:          player.Archetype,
+		Team:               player.TeamAbbr,
 		Year:               Year,
 		Age:                player.Age,
 		Stars:              player.Stars,

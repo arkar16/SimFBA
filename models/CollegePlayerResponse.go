@@ -32,3 +32,9 @@ type NFLPlayerResponse struct {
 	Stats        structs.NFLPlayerStats
 	SeasonStats  structs.NFLPlayerSeasonStats
 }
+
+type DiscordPlayerResponse struct {
+	Player       CollegePlayerCSV
+	CollegeStats structs.CollegePlayerSeasonStats
+	NFLStats     structs.NFLPlayerSeasonStats
+}

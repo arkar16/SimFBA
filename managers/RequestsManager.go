@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 )
 
@@ -226,8 +227,9 @@ func RemoveUserFromTeam(teamId string) {
 	coach.SetAsInactive()
 
 	team.RemoveUserFromTeam()
+	team.AssignDiscordID("")
 
-	db.Save(&team)
+	repository.SaveCollegeTeamRecord(team, db)
 
 	db.Save(&coach)
 
@@ -238,7 +240,7 @@ func RemoveUserFromTeam(teamId string) {
 	for _, game := range seasonalGames {
 		if game.Week >= timestamp.CollegeWeek {
 			game.UpdateCoach(int(team.ID), "AI")
-			db.Save(&game)
+			repository.SaveCFBGameRecord(game, db)
 		}
 
 	}
@@ -253,7 +255,7 @@ func RemoveUserFromTeam(teamId string) {
 		recruitingProfile.ActivateAI()
 	}
 
-	db.Save(&recruitingProfile)
+	repository.SaveRecruitingTeamProfile(recruitingProfile, db)
 
 	newsLog := structs.NewsLog{
 		TeamID:      0,

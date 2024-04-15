@@ -78,6 +78,7 @@ type StreamResponse struct {
 	HomeLabel           string
 	HomeTeam            string
 	HomeTeamCoach       string
+	HomeTeamDiscordID   string
 	HomeTeamRank        uint
 	HomeOffensiveScheme string
 	HomeDefensiveScheme string
@@ -85,6 +86,7 @@ type StreamResponse struct {
 	AwayLabel           string
 	AwayTeam            string
 	AwayTeamCoach       string
+	AwayTeamDiscordID   string
 	AwayTeamRank        uint
 	AwayOffensiveScheme string
 	AwayDefensiveScheme string

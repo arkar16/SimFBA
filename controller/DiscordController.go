@@ -157,7 +157,7 @@ func GetNFLPlayer(w http.ResponseWriter, r *http.Request) {
 		panic("User did not provide a first name")
 	}
 
-	player := managers.GetCollegePlayerViaDiscord(id)
+	player := managers.GetNFLPlayerViaDiscord(id)
 
 	json.NewEncoder(w).Encode(player)
 }
@@ -231,4 +231,28 @@ func GetNFLGameStreams(w http.ResponseWriter, r *http.Request) {
 	}
 	streams := managers.GetNFLPlayByPlayStreamData(timeslot, week)
 	json.NewEncoder(w).Encode(streams)
+}
+
+// GetCollegeGamesByConference
+func AssignDiscordIDtoCollegeTeam(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+	discordID := vars["discordID"]
+	if len(teamID) == 0 {
+		panic("User did not provide conference name")
+	}
+
+	managers.AssignDiscordIDToCollegeTeam(teamID, discordID)
+}
+
+// GetCollegeGamesByConference
+func AssignDiscordIDtoNFLTeam(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+	discordID := vars["discordID"]
+	if len(teamID) == 0 {
+		panic("User did not provide conference name")
+	}
+
+	managers.AssignDiscordIDToNFLTeam(teamID, discordID)
 }

@@ -4,6 +4,8 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 )
@@ -304,10 +306,12 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 			HomeTeamCoach:       game.HomeTeamCoach,
 			HomeTeamRank:        game.HomeTeamRank,
 			HomeLabel:           homeTeam.TeamName + " " + homeTeam.Mascot,
+			HomeTeamDiscordID:   homeTeam.DiscordID,
 			AwayTeamID:          uint(game.AwayTeamID),
 			AwayTeam:            game.AwayTeam,
 			AwayTeamCoach:       game.AwayTeam,
 			AwayTeamRank:        game.AwayTeamRank,
+			AwayTeamDiscordID:   awayTeam.DiscordID,
 			AwayLabel:           awayTeam.TeamName + " " + awayTeam.Mascot,
 			HomeOffensiveScheme: homeGameplan.OffensiveScheme,
 			HomeDefensiveScheme: homeGameplan.DefensiveScheme,
@@ -422,4 +426,24 @@ func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse 
 	}
 
 	return streams
+}
+
+func AssignDiscordIDToCollegeTeam(tID, dID string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	team := GetTeamByTeamID(tID)
+
+	team.AssignDiscordID(dID)
+
+	repository.SaveCollegeTeamRecord(team, db)
+}
+
+func AssignDiscordIDToNFLTeam(tID, dID string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	team := GetNFLTeamByTeamID(tID)
+
+	team.AssignDiscordID(dID)
+
+	repository.SaveNFLTeamRecord(team, db)
 }

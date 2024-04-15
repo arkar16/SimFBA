@@ -17,6 +17,7 @@ type BaseTeam struct {
 	ColorOne         string
 	ColorTwo         string
 	ColorThree       string
+	DiscordID        string
 }
 
 func (bt *BaseTeam) RemoveUserFromTeam() {
@@ -25,4 +26,8 @@ func (bt *BaseTeam) RemoveUserFromTeam() {
 
 func (bt *BaseTeam) AssignUserToTeam(user string) {
 	bt.Coach = user
+}
+
+func (bt *BaseTeam) AssignDiscordID(id string) {
+	bt.DiscordID = id
 }

@@ -110,16 +110,38 @@ func GetCollegePlayerByCollegePlayerId(CollegePlayerId string) structs.CollegePl
 	return CollegePlayer
 }
 
-func GetCollegePlayerViaDiscord(id string) models.CollegePlayerCSV {
+func GetCollegePlayerViaDiscord(id string) models.DiscordPlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
 
-	var CollegePlayer structs.CollegePlayer
+	seasonID := strconv.Itoa(ts.CollegeSeasonID)
+	var collegePlayer structs.CollegePlayer
 
-	db.Where("id = ?", id).Find(&CollegePlayer)
+	db.Preload("SeasonStats", "season_id = ?", seasonID).Where("id = ?", id).Find(&collegePlayer)
 
-	collegePlayerResponse := models.MapPlayerToCSVModel(CollegePlayer)
+	collegePlayerResponse := models.MapPlayerToCSVModel(collegePlayer)
 
-	return collegePlayerResponse
+	return models.DiscordPlayerResponse{
+		Player:       collegePlayerResponse,
+		CollegeStats: collegePlayer.SeasonStats,
+	}
+}
+
+func GetNFLPlayerViaDiscord(id string) models.DiscordPlayerResponse {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+
+	seasonID := strconv.Itoa(ts.NFLSeasonID)
+	var nflPlayer structs.NFLPlayer
+
+	db.Preload("SeasonStats", "season_id = ?", seasonID).Where("id = ?", id).Find(&nflPlayer)
+
+	nflPlayerResponse := models.MapNFLPlayerToCSVModel(nflPlayer)
+
+	return models.DiscordPlayerResponse{
+		Player:   nflPlayerResponse,
+		NFLStats: nflPlayer.SeasonStats,
+	}
 }
 
 func GetCollegePlayerByIdAndWeek(id, week string) models.CollegePlayerCSV {
@@ -186,16 +208,6 @@ func SetRedshirtStatusForPlayer(playerId string) structs.CollegePlayer {
 	UpdateCollegePlayer(player)
 
 	return player
-}
-
-func GetNFLPlayerViaDiscord(id string) structs.NFLPlayer {
-	db := dbprovider.GetInstance().GetDB()
-
-	var nflPlayer structs.NFLPlayer
-
-	db.Where("id = ?", id).Find(&nflPlayer)
-
-	return nflPlayer
 }
 
 func GetAllNFLDraftees() []models.NFLDraftee {

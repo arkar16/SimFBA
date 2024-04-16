@@ -303,10 +303,12 @@ func handleCron() {
 	go func() {
 		c := cron.New()
 		// Fill AI Recruiting Boards
-		// c.AddFunc("0 5 * * 4", controller.FillAIBoardsViaCron)
+		c.AddFunc("0 5 * * 4", controller.FillAIBoardsViaCron)
 		// // Update AI Gameplans and DCs
+		c.AddFunc("0 1 * * 3", controller.RunAISchemeAndDCViaCron)
+		c.AddFunc("0 4 * * 3", controller.RunAIGameplanViaCron)
 		// // Allocate AI Boards
-		// c.AddFunc("0 3 * * 4,6", controller.SyncAIBoardsViaCron)
+		c.AddFunc("0 3 * * 4,6", controller.SyncAIBoardsViaCron)
 		// // Sync Recruiting
 		c.AddFunc("0 16 * * 3", controller.SyncRecruitingViaCron)
 		// // Sync Free Agency

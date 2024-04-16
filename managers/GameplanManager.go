@@ -24,6 +24,18 @@ func GetAllCollegeGameplans() []structs.CollegeGameplan {
 	return gameplans
 }
 
+func GetCollegeGameplanMap() map[uint]structs.CollegeGameplan {
+	gMap := make(map[uint]structs.CollegeGameplan)
+
+	gameplans := GetAllCollegeGameplans()
+
+	for _, g := range gameplans {
+		gMap[g.ID] = g
+	}
+
+	return gMap
+}
+
 func GetAllNFLGameplans() []structs.NFLGameplan {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -3274,6 +3286,69 @@ func DetermineAIGameplan() {
 
 		// Autosort Depth Chart
 		ReAlignCollegeDepthChart(db, id, gp)
+		repository.SaveCFBGameplanRecord(gp, db)
+	}
+}
+
+func SetAIGameplan() {
+	db := dbprovider.GetInstance().GetDB()
+
+	ts := GetTimestamp()
+	seasonID := strconv.Itoa(ts.CollegeSeasonID)
+	teams := GetAllAvailableCollegeTeams()
+	gameplanMap := GetCollegeGameplanMap()
+	offensiveSchemes := util.GetOffensiveDefaultSchemes()
+	defensiveSchemes := util.GetDefensiveDefaultSchemes()
+	for _, t := range teams {
+		if t.Coach != "AI" {
+			continue
+		}
+
+		gp := gameplanMap[t.ID]
+
+		teamID := strconv.Itoa(int(t.ID))
+		games := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID)
+
+		os := ""
+		for _, g := range games {
+			if g.GameComplete {
+				continue
+			}
+			opponentID := 0
+			if t.ID == uint(g.HomeTeamID) {
+				opponentID = g.AwayTeamID
+			} else {
+				opponentID = g.HomeTeamID
+			}
+			opponentGP := gameplanMap[uint(opponentID)]
+			os = opponentGP.OffensiveScheme
+			break
+		}
+
+		offFormations := offensiveSchemes[gp.OffensiveScheme]
+		defFormations := defensiveSchemes[gp.DefensiveScheme][os]
+		dto := structs.CollegeGameplan{
+			TeamID: int(t.ID),
+			BaseGameplan: structs.BaseGameplan{
+				OffensiveScheme:    gp.OffensiveScheme,
+				DefensiveScheme:    gp.DefensiveScheme,
+				OffensiveFormation: offFormations,
+				DefensiveFormation: defFormations,
+				BlitzSafeties:      gp.BlitzSafeties,
+				BlitzCorners:       gp.BlitzCorners,
+				LinebackerCoverage: gp.LinebackerCoverage,
+				MaximumFGDistance:  gp.MaximumFGDistance,
+				GoFor4AndShort:     gp.GoFor4AndShort,
+				GoFor4AndLong:      gp.GoFor4AndLong,
+				DefaultOffense:     gp.DefaultOffense,
+				DefaultDefense:     gp.DefaultDefense,
+				PrimaryHB:          75,
+				PitchFocus:         50,
+				DiveFocus:          50,
+			},
+		}
+
+		gp.UpdateCollegeGameplan(dto)
 		repository.SaveCFBGameplanRecord(gp, db)
 	}
 }

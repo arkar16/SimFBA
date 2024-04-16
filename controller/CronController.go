@@ -12,14 +12,14 @@ func CronTest() {
 
 func FillAIBoardsViaCron() {
 	ts := managers.GetTimestamp()
-	if ts.RunCron && !ts.IsOffSeason {
+	if ts.RunCron && !ts.IsOffSeason && !ts.CollegeSeasonOver {
 		managers.FillAIRecruitingBoards()
 	}
 }
 
 func SyncAIBoardsViaCron() {
 	ts := managers.GetTimestamp()
-	if ts.RunCron && !ts.IsOffSeason {
+	if ts.RunCron && !ts.IsOffSeason && !ts.CollegeSeasonOver {
 		managers.ResetAIBoardsForCompletedTeams()
 		managers.AllocatePointsToAIBoards()
 	}
@@ -46,6 +46,20 @@ func SyncToNextWeekViaCron() {
 		if !ts.IsOffSeason || !ts.IsNFLOffSeason {
 			managers.MoveUpWeek()
 		}
+	}
+}
+
+func RunAISchemeAndDCViaCron() {
+	ts := managers.GetTimestamp()
+	if ts.RunCron && !ts.IsOffSeason && !ts.CollegeSeasonOver {
+		managers.DetermineAIGameplan()
+	}
+}
+
+func RunAIGameplanViaCron() {
+	ts := managers.GetTimestamp()
+	if ts.RunCron && !ts.IsOffSeason && !ts.CollegeSeasonOver {
+		managers.SetAIGameplan()
 	}
 }
 

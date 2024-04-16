@@ -37,6 +37,7 @@ func SyncFreeAgencyViaCron() {
 	if ts.RunCron && !ts.IsDraftTime {
 		managers.SyncFreeAgencyOffers()
 		managers.MoveUpInOffseasonFreeAgency()
+		managers.AllocateCapsheets()
 	}
 }
 

@@ -116,6 +116,15 @@ func (cg *CollegeGame) AssignRank(id, rank uint) {
 	}
 }
 
+func (cg *CollegeGame) AssignByeWeek(id uint) {
+	isHome := id == uint(cg.HomeTeamID)
+	if isHome {
+		cg.HomePreviousBye = true
+	} else {
+		cg.AwayPreviousBye = true
+	}
+}
+
 func (cg *CollegeGame) HideScore() {
 	cg.HomeTeamScore = 0
 	cg.AwayTeamScore = 0

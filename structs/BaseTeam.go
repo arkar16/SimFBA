@@ -18,6 +18,9 @@ type BaseTeam struct {
 	ColorTwo         string
 	ColorThree       string
 	DiscordID        string
+	OverallGrade     string
+	OffenseGrade     string
+	DefenseGrade     string
 }
 
 func (bt *BaseTeam) RemoveUserFromTeam() {

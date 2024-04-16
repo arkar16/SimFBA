@@ -179,3 +179,17 @@ func GetNFLYear(year uint) string {
 	}
 	return strconv.Itoa(int(year))
 }
+
+func GetWinningVerb(score1, score2 int) string {
+	if score2 == 0 {
+		return " shuts out "
+	}
+
+	diff := score1 - score2
+	if diff < 7 {
+		return PickFromStringList([]string{" upsets ", " edges ", " sneaks an upset "})
+	} else if diff < 14 {
+		return PickFromStringList([]string{" upsets ", " outshines ", " knocks out ", " stuns "})
+	}
+	return PickFromStringList([]string{" upsets ", " silences ", " strikes down ", " knocks out "})
+}

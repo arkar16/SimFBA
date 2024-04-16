@@ -305,3 +305,44 @@ func RunTheGames() {
 	repository.SaveTimestamp(ts, db)
 
 }
+
+func FixByeWeekLogic() {
+	// DB
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+	seasonID := strconv.Itoa(ts.CollegeSeasonID)
+	// Teams
+	collegeTeams := GetAllCollegeTeams()
+
+	// Loop through each team and their games
+	for _, t := range collegeTeams {
+		teamID := strconv.Itoa(int(t.ID))
+		games := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID)
+		prevWeek := 0
+		for _, game := range games {
+			diff := game.Week - prevWeek
+			if diff > 1 {
+				game.AssignByeWeek(t.ID)
+				repository.SaveCFBGameRecord(game, db)
+			}
+			prevWeek = game.Week
+		}
+	}
+
+	nflTeams := GetAllNFLTeams()
+
+	// Loop through each team and their games
+	for _, t := range nflTeams {
+		teamID := strconv.Itoa(int(t.ID))
+		games := GetNFLGamesByTeamIdAndSeasonId(teamID, seasonID)
+		prevWeek := 0
+		for _, game := range games {
+			diff := game.Week - prevWeek
+			if diff > 1 {
+				game.AssignByeWeek(t.ID)
+				repository.SaveNFLGameRecord(game, db)
+			}
+			prevWeek = game.Week
+		}
+	}
+}

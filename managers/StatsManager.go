@@ -1248,6 +1248,7 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 		distanceStr := util.GetYardsString(play.KickDistance)
 		verb := util.GetKickoffVerb(1)
 		firstSegment = kickerLabel + verb + strconv.Itoa(int(play.KickDistance)) + distanceStr
+		outside := 0
 		if play.KickDistance > 64 {
 			if play.KickDistance == 65 {
 				verb := util.GetKickoffVerb(2)
@@ -1257,15 +1258,16 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 				firstSegment += verb + recLabel
 			}
 		} else {
-			outside := 65 - play.KickDistance
+			outside = 65 - int(play.KickDistance)
 			firstSegment += " Fielded at the " + strconv.Itoa(int(outside)) + " yardline by " + recLabel + ". "
 		}
 		if play.IsTouchback {
 			firstSegment += util.GetTouchbackStatement()
 		} else {
-			resultYdsStr := strconv.Itoa(int(play.ResultYards))
-			resultYards := util.GetYardsString(play.ResultYards)
-			verb := util.GetReturnVerb(int(play.ResultYards), play.IsTouchdown, play.IsOutOfBounds)
+			netReturnYards := int(play.ResultYards) - outside
+			resultYdsStr := strconv.Itoa(int(netReturnYards))
+			resultYards := util.GetYardsString(int8(netReturnYards))
+			verb := util.GetReturnVerb(netReturnYards, play.IsTouchdown, play.IsOutOfBounds)
 			firstSegment += recLabel + verb + resultYdsStr + resultYards
 		}
 	} else if playType == "Punt" {

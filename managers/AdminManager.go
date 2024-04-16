@@ -8,6 +8,7 @@ import (
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/CalebRose/SimFBA/util"
 )
 
 // Timestamp Funcs
@@ -508,6 +509,49 @@ func SyncTimeslot(timeslot string) {
 				db.Save(&awayTeamSeasonStats)
 				db.Save(&homeTeamStandings)
 				db.Save(&awayTeamStandings)
+			}
+
+			if (game.HomeTeamWin && ((game.HomeTeamRank == 0 && game.AwayTeamRank > 0) || game.HomeTeamRank > 0 && game.HomeTeamRank < game.AwayTeamRank)) ||
+				(game.AwayTeamWin && ((game.AwayTeamRank == 0 && game.HomeTeamRank > 0) || game.AwayTeamRank > 0 && game.AwayTeamRank < game.HomeTeamRank)) {
+				// NEWS LOG
+				messageStart := "UPSET: "
+				messageType := "Upset Alert"
+				winningTeam := ""
+				losingTeam := ""
+				ws := 0
+				ls := 0
+				message := ""
+				htr := ""
+				atr := ""
+				wtr := ""
+				ltr := ""
+				winningVerb := util.GetWinningVerb(ws, ls)
+				if game.HomeTeamRank > 0 {
+					htr = "(" + strconv.Itoa(int(game.HomeTeamRank)) + ") "
+				}
+				if game.AwayTeamRank > 0 {
+					atr = "(" + strconv.Itoa(int(game.AwayTeamRank)) + ") "
+				}
+
+				if game.HomeTeamWin {
+					winningTeam = game.HomeTeam
+					losingTeam = game.AwayTeam
+					ws = game.HomeTeamScore
+					ls = game.AwayTeamScore
+					wtr = htr
+					ltr = atr
+				} else {
+					winningTeam = game.AwayTeam
+					losingTeam = game.HomeTeam
+					ws = game.AwayTeamScore
+					ls = game.HomeTeamScore
+					wtr = atr
+					ltr = htr
+				}
+
+				message = messageStart + wtr + winningTeam + winningVerb + ltr + losingTeam + " " + strconv.Itoa(ws) + "-" + strconv.Itoa(ls) + " at " + game.Stadium + " in " + game.City + ", " + game.State
+
+				CreateNewsLog("CFB", message, messageType, 0, timestamp)
 			}
 		}
 	} else {

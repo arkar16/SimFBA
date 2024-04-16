@@ -169,3 +169,7 @@ func ExportCFBGameResults(w http.ResponseWriter, r *http.Request) {
 	timeslot := vars["timeslot"]
 	managers.ExportCFBGameResults(w, seasonID, weekID, nflWeekID, timeslot)
 }
+
+func FixByeWeekLogic(w http.ResponseWriter, r *http.Request) {
+	managers.FixByeWeekLogic()
+}

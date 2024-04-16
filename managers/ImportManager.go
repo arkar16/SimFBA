@@ -588,7 +588,7 @@ func ImportUDFAs() {
 func ImportCFBGames() {
 	db := dbprovider.GetInstance().GetDB()
 
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024\\2024_test_games.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024\\2024_games_official.csv"
 
 	gamesCSV := util.ReadCSV(path)
 
@@ -611,7 +611,7 @@ func ImportCFBGames() {
 		season := util.ConvertStringToInt(row[1])
 		seasonID := season - 2020
 		week := util.ConvertStringToInt(row[2])
-		weekID := week + 63 // Week 43 is week 0 of the 2023 Season
+		weekID := week + 65 // Week 43 is week 0 of the 2023 Season
 		homeTeamAbbr := row[3]
 		awayTeamAbbr := row[4]
 		ht := teamMap[homeTeamAbbr]

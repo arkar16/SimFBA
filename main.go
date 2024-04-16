@@ -101,6 +101,7 @@ func handleRequests() {
 
 	// Game Controls
 	myRouter.HandleFunc("/games/update/time/", controller.UpdateTimeslot).Methods("POST", "OPTIONS")
+	// myRouter.HandleFunc("/games/byeweek/fix/", controller.FixByeWeekLogic).Methods("GET")
 	myRouter.HandleFunc("/games/college/week/{weekID}/", controller.GetCollegeGamesByTimeslotWeekId).Methods("GET")
 	myRouter.HandleFunc("/games/college/timeslot/{timeSlot}/{weekID}", controller.GetCollegeGamesByTimeslotWeekId).Methods("GET")
 	myRouter.HandleFunc("/games/college/team/{teamID}/{seasonID}", controller.GetCollegeGamesByTeamIDAndSeasonID).Methods("GET")

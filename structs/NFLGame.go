@@ -102,3 +102,12 @@ func (ng *NFLGame) AddLocation(stadiumID int, stadium, city, state string, isDom
 	ng.State = state
 	ng.IsDomed = isDomed
 }
+
+func (ng *NFLGame) AssignByeWeek(id uint) {
+	isHome := id == uint(ng.HomeTeamID)
+	if isHome {
+		ng.HomePreviousBye = true
+	} else {
+		ng.AwayPreviousBye = true
+	}
+}

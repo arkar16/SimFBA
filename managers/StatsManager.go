@@ -62,6 +62,16 @@ func GetAllCollegePlayerStatsByGame(GameID string, TeamID string) []structs.Coll
 	return playerStats
 }
 
+func GetAllCollegePlayerSnapsByGame(GameID string) []structs.CollegePlayerGameSnaps {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerSnaps []structs.CollegePlayerGameSnaps
+
+	db.Where("game_id = ?", GameID).Find(&playerSnaps)
+
+	return playerSnaps
+}
+
 func GetAllNFLPlayerStatsByGame(GameID string, TeamID string) []structs.NFLPlayerStats {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -70,6 +80,16 @@ func GetAllNFLPlayerStatsByGame(GameID string, TeamID string) []structs.NFLPlaye
 	db.Where("game_id = ? and team_id = ?", GameID, TeamID).Find(&playerStats)
 
 	return playerStats
+}
+
+func GetAllNFLPlayerSnapsByGame(GameID string) []structs.NFLPlayerGameSnaps {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerSnaps []structs.NFLPlayerGameSnaps
+
+	db.Where("game_id = ?", GameID).Find(&playerSnaps)
+
+	return playerSnaps
 }
 
 func GetAllPlayerStatsByWeek(WeekID string) []structs.CollegePlayerStats {
@@ -168,6 +188,19 @@ func GetCollegeSeasonStatsByPlayerAndSeason(PlayerID, SeasonID string) structs.C
 	return playerStats
 }
 
+func GetCollegeSeasonSnapsByPlayerAndSeason(PlayerID, SeasonID string) structs.CollegePlayerSeasonSnaps {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats structs.CollegePlayerSeasonSnaps
+
+	err := db.Where("college_player_id = ? AND season_id = ?", PlayerID, SeasonID).Find(&playerStats).Error
+	if err != nil {
+		return structs.CollegePlayerSeasonSnaps{}
+	}
+
+	return playerStats
+}
+
 func GetNFLSeasonStatsByPlayerAndSeason(PlayerID, SeasonID string) structs.NFLPlayerSeasonStats {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -176,6 +209,19 @@ func GetNFLSeasonStatsByPlayerAndSeason(PlayerID, SeasonID string) structs.NFLPl
 	err := db.Where("nfl_player_id = ? AND season_id = ?", PlayerID, SeasonID).Find(&playerStats).Error
 	if err != nil {
 		return structs.NFLPlayerSeasonStats{}
+	}
+
+	return playerStats
+}
+
+func GetNFLSeasonSnapsByPlayerAndSeason(PlayerID, SeasonID string) structs.NFLPlayerSeasonSnaps {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats structs.NFLPlayerSeasonSnaps
+
+	err := db.Where("nfl_player_id = ? AND season_id = ?", PlayerID, SeasonID).Find(&playerStats).Error
+	if err != nil {
+		return structs.NFLPlayerSeasonSnaps{}
 	}
 
 	return playerStats
@@ -504,6 +550,8 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 			continue
 		}
 		var playerStats []structs.CollegePlayerStats
+		snapMap := gameDataDTO.PlayerSnapTracker.PlayerSnapCounts
+		var playerSnaps []structs.CollegePlayerGameSnaps
 
 		homeTeamID := strconv.Itoa(int(gameRecord.HomeTeamID))
 		awayTeamID := strconv.Itoa(int(gameRecord.AwayTeamID))
@@ -565,7 +613,52 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
 				Year:            player.Year,
 			}
+			snaps := snapMap[player.GetPlayerID()]
+			cpSnaps := structs.CollegePlayerGameSnaps{
+				BasePlayerGameSnaps: structs.BasePlayerGameSnaps{
+					SeasonID: uint(gameRecord.SeasonID),
+					PlayerID: uint(player.GetPlayerID()),
+					GameID:   gameRecord.ID,
+					WeekID:   uint(gameRecord.WeekID),
+				},
+			}
+			if snaps["QB"] > 0 {
+				cpSnaps.MapSnapsToPosition("QB", snaps["QB"])
+			} else if snaps["RB"] > 0 {
+				cpSnaps.MapSnapsToPosition("RB", snaps["RB"])
+			} else if snaps["FB"] > 0 {
+				cpSnaps.MapSnapsToPosition("FB", snaps["FB"])
+			} else if snaps["WR"] > 0 {
+				cpSnaps.MapSnapsToPosition("WR", snaps["WR"])
+			} else if snaps["TE"] > 0 {
+				cpSnaps.MapSnapsToPosition("TE", snaps["TE"])
+			} else if snaps["OT"] > 0 {
+				cpSnaps.MapSnapsToPosition("OT", snaps["OT"])
+			} else if snaps["OG"] > 0 {
+				cpSnaps.MapSnapsToPosition("OG", snaps["OG"])
+			} else if snaps["C"] > 0 {
+				cpSnaps.MapSnapsToPosition("C", snaps["C"])
+			} else if snaps["DT"] > 0 {
+				cpSnaps.MapSnapsToPosition("DT", snaps["DT"])
+			} else if snaps["DE"] > 0 {
+				cpSnaps.MapSnapsToPosition("DE", snaps["DE"])
+			} else if snaps["OLB"] > 0 {
+				cpSnaps.MapSnapsToPosition("OLB", snaps["OLB"])
+			} else if snaps["ILB"] > 0 {
+				cpSnaps.MapSnapsToPosition("ILB", snaps["ILB"])
+			} else if snaps["CB"] > 0 {
+				cpSnaps.MapSnapsToPosition("CB", snaps["CB"])
+			} else if snaps["FS"] > 0 {
+				cpSnaps.MapSnapsToPosition("FS", snaps["FS"])
+			} else if snaps["SS"] > 0 {
+				cpSnaps.MapSnapsToPosition("SS", snaps["SS"])
+			} else if snaps["P"] > 0 {
+				cpSnaps.MapSnapsToPosition("P", snaps["P"])
+			} else if snaps["K"] > 0 {
+				cpSnaps.MapSnapsToPosition("K", snaps["K"])
+			}
 			playerStats = append(playerStats, collegePlayerStats)
+			playerSnaps = append(playerSnaps, cpSnaps)
 		}
 
 		// AwayPlayers
@@ -580,6 +673,51 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
 				Year:            player.Year,
 			}
+			snaps := snapMap[player.GetPlayerID()]
+			cpSnaps := structs.CollegePlayerGameSnaps{
+				BasePlayerGameSnaps: structs.BasePlayerGameSnaps{
+					SeasonID: uint(gameRecord.SeasonID),
+					PlayerID: uint(player.GetPlayerID()),
+					GameID:   gameRecord.ID,
+					WeekID:   uint(gameRecord.WeekID),
+				},
+			}
+			if snaps["QB"] > 0 {
+				cpSnaps.MapSnapsToPosition("QB", snaps["QB"])
+			} else if snaps["RB"] > 0 {
+				cpSnaps.MapSnapsToPosition("RB", snaps["RB"])
+			} else if snaps["FB"] > 0 {
+				cpSnaps.MapSnapsToPosition("FB", snaps["FB"])
+			} else if snaps["WR"] > 0 {
+				cpSnaps.MapSnapsToPosition("WR", snaps["WR"])
+			} else if snaps["TE"] > 0 {
+				cpSnaps.MapSnapsToPosition("TE", snaps["TE"])
+			} else if snaps["OT"] > 0 {
+				cpSnaps.MapSnapsToPosition("OT", snaps["OT"])
+			} else if snaps["OG"] > 0 {
+				cpSnaps.MapSnapsToPosition("OG", snaps["OG"])
+			} else if snaps["C"] > 0 {
+				cpSnaps.MapSnapsToPosition("C", snaps["C"])
+			} else if snaps["DT"] > 0 {
+				cpSnaps.MapSnapsToPosition("DT", snaps["DT"])
+			} else if snaps["DE"] > 0 {
+				cpSnaps.MapSnapsToPosition("DE", snaps["DE"])
+			} else if snaps["OLB"] > 0 {
+				cpSnaps.MapSnapsToPosition("OLB", snaps["OLB"])
+			} else if snaps["ILB"] > 0 {
+				cpSnaps.MapSnapsToPosition("ILB", snaps["ILB"])
+			} else if snaps["CB"] > 0 {
+				cpSnaps.MapSnapsToPosition("CB", snaps["CB"])
+			} else if snaps["FS"] > 0 {
+				cpSnaps.MapSnapsToPosition("FS", snaps["FS"])
+			} else if snaps["SS"] > 0 {
+				cpSnaps.MapSnapsToPosition("SS", snaps["SS"])
+			} else if snaps["P"] > 0 {
+				cpSnaps.MapSnapsToPosition("P", snaps["P"])
+			} else if snaps["K"] > 0 {
+				cpSnaps.MapSnapsToPosition("K", snaps["K"])
+			}
+			playerSnaps = append(playerSnaps, cpSnaps)
 			playerStats = append(playerStats, collegePlayerStats)
 		}
 
@@ -598,6 +736,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 			playByPlays = append(playByPlays, play)
 		}
 		repository.CreateCFBPlayByPlaysInBatch(playByPlays, db)
+		repository.CreateCFBSnapsInBatch(playerSnaps, db)
 
 		fmt.Println("Finished Game " + strconv.Itoa(int(gameRecord.ID)) + " Between " + gameRecord.HomeTeam + " and " + gameRecord.AwayTeam)
 	}
@@ -628,6 +767,8 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		homeTeamID := strconv.Itoa(int(gameRecord.HomeTeamID))
 		awayTeamID := strconv.Itoa(int(gameRecord.AwayTeamID))
 
+		snapMap := gameDataDTO.PlayerSnapTracker.PlayerSnapCounts
+		var playerSnaps []structs.NFLPlayerGameSnaps
 		var playerStats []structs.NFLPlayerStats
 
 		// Team Stats Export
@@ -686,6 +827,51 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
 				Year:            player.Year,
 			}
+			snaps := snapMap[player.GetPlayerID()]
+			snap := structs.NFLPlayerGameSnaps{
+				BasePlayerGameSnaps: structs.BasePlayerGameSnaps{
+					SeasonID: uint(gameRecord.SeasonID),
+					PlayerID: uint(player.GetPlayerID()),
+					GameID:   gameRecord.ID,
+					WeekID:   uint(gameRecord.WeekID),
+				},
+			}
+			if snaps["QB"] > 0 {
+				snap.MapSnapsToPosition("QB", snaps["QB"])
+			} else if snaps["RB"] > 0 {
+				snap.MapSnapsToPosition("RB", snaps["RB"])
+			} else if snaps["FB"] > 0 {
+				snap.MapSnapsToPosition("FB", snaps["FB"])
+			} else if snaps["WR"] > 0 {
+				snap.MapSnapsToPosition("WR", snaps["WR"])
+			} else if snaps["TE"] > 0 {
+				snap.MapSnapsToPosition("TE", snaps["TE"])
+			} else if snaps["OT"] > 0 {
+				snap.MapSnapsToPosition("OT", snaps["OT"])
+			} else if snaps["OG"] > 0 {
+				snap.MapSnapsToPosition("OG", snaps["OG"])
+			} else if snaps["C"] > 0 {
+				snap.MapSnapsToPosition("C", snaps["C"])
+			} else if snaps["DT"] > 0 {
+				snap.MapSnapsToPosition("DT", snaps["DT"])
+			} else if snaps["DE"] > 0 {
+				snap.MapSnapsToPosition("DE", snaps["DE"])
+			} else if snaps["OLB"] > 0 {
+				snap.MapSnapsToPosition("OLB", snaps["OLB"])
+			} else if snaps["ILB"] > 0 {
+				snap.MapSnapsToPosition("ILB", snaps["ILB"])
+			} else if snaps["CB"] > 0 {
+				snap.MapSnapsToPosition("CB", snaps["CB"])
+			} else if snaps["FS"] > 0 {
+				snap.MapSnapsToPosition("FS", snaps["FS"])
+			} else if snaps["SS"] > 0 {
+				snap.MapSnapsToPosition("SS", snaps["SS"])
+			} else if snaps["P"] > 0 {
+				snap.MapSnapsToPosition("P", snaps["P"])
+			} else if snaps["K"] > 0 {
+				snap.MapSnapsToPosition("K", snaps["K"])
+			}
+			playerSnaps = append(playerSnaps, snap)
 			playerStats = append(playerStats, nflPlayerStats)
 		}
 
@@ -701,7 +887,51 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
 				Year:            player.Year,
 			}
-
+			snaps := snapMap[player.GetPlayerID()]
+			snap := structs.NFLPlayerGameSnaps{
+				BasePlayerGameSnaps: structs.BasePlayerGameSnaps{
+					SeasonID: uint(gameRecord.SeasonID),
+					PlayerID: uint(player.GetPlayerID()),
+					GameID:   gameRecord.ID,
+					WeekID:   uint(gameRecord.WeekID),
+				},
+			}
+			if snaps["QB"] > 0 {
+				snap.MapSnapsToPosition("QB", snaps["QB"])
+			} else if snaps["RB"] > 0 {
+				snap.MapSnapsToPosition("RB", snaps["RB"])
+			} else if snaps["FB"] > 0 {
+				snap.MapSnapsToPosition("FB", snaps["FB"])
+			} else if snaps["WR"] > 0 {
+				snap.MapSnapsToPosition("WR", snaps["WR"])
+			} else if snaps["TE"] > 0 {
+				snap.MapSnapsToPosition("TE", snaps["TE"])
+			} else if snaps["OT"] > 0 {
+				snap.MapSnapsToPosition("OT", snaps["OT"])
+			} else if snaps["OG"] > 0 {
+				snap.MapSnapsToPosition("OG", snaps["OG"])
+			} else if snaps["C"] > 0 {
+				snap.MapSnapsToPosition("C", snaps["C"])
+			} else if snaps["DT"] > 0 {
+				snap.MapSnapsToPosition("DT", snaps["DT"])
+			} else if snaps["DE"] > 0 {
+				snap.MapSnapsToPosition("DE", snaps["DE"])
+			} else if snaps["OLB"] > 0 {
+				snap.MapSnapsToPosition("OLB", snaps["OLB"])
+			} else if snaps["ILB"] > 0 {
+				snap.MapSnapsToPosition("ILB", snaps["ILB"])
+			} else if snaps["CB"] > 0 {
+				snap.MapSnapsToPosition("CB", snaps["CB"])
+			} else if snaps["FS"] > 0 {
+				snap.MapSnapsToPosition("FS", snaps["FS"])
+			} else if snaps["SS"] > 0 {
+				snap.MapSnapsToPosition("SS", snaps["SS"])
+			} else if snaps["P"] > 0 {
+				snap.MapSnapsToPosition("P", snaps["P"])
+			} else if snaps["K"] > 0 {
+				snap.MapSnapsToPosition("K", snaps["K"])
+			}
+			playerSnaps = append(playerSnaps, snap)
 			playerStats = append(playerStats, nflPlayerStats)
 		}
 
@@ -720,6 +950,7 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 			playByPlays = append(playByPlays, play)
 		}
 		repository.CreateNFLPlayByPlaysInBatch(playByPlays, db)
+		repository.CreateNFLSnapsInBatch(playerSnaps, db)
 
 		fmt.Println("Finished Game " + strconv.Itoa(int(gameRecord.ID)) + " Between " + gameRecord.HomeTeam + " and " + gameRecord.AwayTeam)
 	}

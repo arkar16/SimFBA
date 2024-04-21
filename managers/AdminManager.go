@@ -429,6 +429,23 @@ func SyncTimeslot(timeslot string) {
 				}
 			}
 
+			playerSnaps := GetAllCollegePlayerSnapsByGame(gameID)
+			for _, snap := range playerSnaps {
+				playerID := strconv.Itoa(int(snap.PlayerID))
+				seasonID := strconv.Itoa(int(snap.SeasonID))
+				seasonSnaps := GetCollegeSeasonSnapsByPlayerAndSeason(playerID, seasonID)
+				if seasonSnaps.ID == 0 {
+					seasonSnaps = structs.CollegePlayerSeasonSnaps{
+						BasePlayerSeasonSnaps: structs.BasePlayerSeasonSnaps{
+							PlayerID: snap.PlayerID,
+							SeasonID: snap.SeasonID,
+						},
+					}
+				}
+				seasonSnaps.AddToSeason(snap.BasePlayerGameSnaps)
+				repository.CreateCFBSeasonSnaps(seasonSnaps, db)
+			}
+
 			// Update Standings
 			homeTeamStandings := GetCFBStandingsByTeamIDAndSeasonID(strconv.Itoa(homeTeamID), strconv.Itoa(timestamp.CollegeSeasonID))
 			awayTeamStandings := GetCFBStandingsByTeamIDAndSeasonID(strconv.Itoa(awayTeamID), strconv.Itoa(timestamp.CollegeSeasonID))
@@ -633,6 +650,23 @@ func SyncTimeslot(timeslot string) {
 				seasonStats.MapStats([]structs.NFLPlayerStats{a}, timestamp)
 
 				db.Save(&seasonStats)
+			}
+
+			playerSnaps := GetAllNFLPlayerSnapsByGame(gameID)
+			for _, snap := range playerSnaps {
+				playerID := strconv.Itoa(int(snap.PlayerID))
+				seasonID := strconv.Itoa(int(snap.SeasonID))
+				seasonSnaps := GetNFLSeasonSnapsByPlayerAndSeason(playerID, seasonID)
+				if seasonSnaps.ID == 0 {
+					seasonSnaps = structs.NFLPlayerSeasonSnaps{
+						BasePlayerSeasonSnaps: structs.BasePlayerSeasonSnaps{
+							PlayerID: snap.PlayerID,
+							SeasonID: snap.SeasonID,
+						},
+					}
+				}
+				seasonSnaps.AddToSeason(snap.BasePlayerGameSnaps)
+				repository.CreateNFLSeasonSnaps(seasonSnaps, db)
 			}
 
 			// Update Standings

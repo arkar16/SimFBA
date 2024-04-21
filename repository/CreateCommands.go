@@ -55,3 +55,31 @@ func CreateRecruitProfileRecord(cp structs.RecruitPlayerProfile, db *gorm.DB) {
 		log.Panicln("Could not create recruit profile record!")
 	}
 }
+
+func CreateCFBSnapsInBatch(snaps []structs.CollegePlayerGameSnaps, db *gorm.DB) {
+	err := db.CreateInBatches(&snaps, len(snaps)).Error
+	if err != nil {
+		log.Panicln("Could not save college snaps!")
+	}
+}
+
+func CreateNFLSnapsInBatch(snaps []structs.NFLPlayerGameSnaps, db *gorm.DB) {
+	err := db.CreateInBatches(&snaps, len(snaps)).Error
+	if err != nil {
+		log.Panicln("Could not save college snaps!")
+	}
+}
+
+func CreateCFBSeasonSnaps(snap structs.CollegePlayerSeasonSnaps, db *gorm.DB) {
+	err := db.Create(&snap).Error
+	if err != nil {
+		log.Panicln("Could not create cfb snaps record!")
+	}
+}
+
+func CreateNFLSeasonSnaps(snap structs.NFLPlayerSeasonSnaps, db *gorm.DB) {
+	err := db.Create(&snap).Error
+	if err != nil {
+		log.Panicln("Could not create cfb snaps record!")
+	}
+}

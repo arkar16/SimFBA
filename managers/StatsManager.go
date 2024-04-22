@@ -603,9 +603,6 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		// Player Stat Export
 		// HomePlayers
 		for _, player := range gameDataDTO.HomePlayers {
-			if player.IsRedshirt {
-				fmt.Println("REDSHIRT!")
-			}
 			collegePlayerStats := structs.CollegePlayerStats{
 				CollegePlayerID: player.GetPlayerID(),
 				TeamID:          homeTeam.TeamID,

@@ -1,0 +1,71 @@
+id,stadium_name,team_id,team_abbr,city,state,country,region,capacity,record_attendance,first_season,league_id,league_name,is_domed
+220,Buccaneer Field,195,CHSO,Bules Creek,NC,USA,,4000,4000,2027,2,FCS,0
+221,O'Brien Field,196,EIU,Charleston,IL,USA,,10000,10000,2027,2,FCS,0
+222,Ernest W. Spangler Stadium,197,WEBB,Boiling Springs,NC,USA,,7800,7800,2027,2,FCS,0
+223,Hunter STadium,198,LIN,St. Charles,MO,USA,,7450,7450,2027,2,FCS,0
+224,Houck Stadium,199,SEMO,Cape Girardeau,MO,USA,,11015,11015,2027,2,FCS,0
+225,Hale Stadium,200,TNST,Nashville,TN,USA,,10000,10000,2027,2,FCS,0
+226,Tucker Stadium,201,TNTC,Cookeville,TN,USA,,16500,16500,2027,2,FCS,0
+227,Graham Stadium,202,UTM,Martin,TN,USA,,7500,7500,2027,2,FCS,0
+228,Tom & Mary Casey Stadium,203,ALB,Albany,NY,USA,,8500,8500,2027,2,FCS,0
+229,Beirne Stadium,204,BRY,Smithfield,RI,USA,,5500,5500,2027,2,FCS,0
+230,Barker-Lane Stadium,205,CAMP,Buies Creek,NC,USA,,5500,5500,2027,2,FCS,0
+231,Delaware Stadium,206,DEL,Newark,DE,USA,,18500,18500,2027,2,FCS,0
+232,Rhodes Stadium,207,ELON,Elon,NC,USA,,11250,11250,2027,2,FCS,0
+233,Armstrong Stadium,208,HAMP,Hampton,VA,USA,,10000,10000,2027,2,FCS,0
+234,Harold Alfond Sports Stadium,209,ME,Orono,ME,USA,,8419,8419,2027,2,FCS,0
+235,Kessler Field,210,MONM,West Long Branch,NJ,USA,,4600,4600,2027,2,FCS,0
+236,Wildcat Stadium,211,UNH,Durham,NH,USA,,11015,11015,2027,2,FCS,0
+237,Truist Stadium,212,NCAT,Greensboro,NC,USA,,21500,21500,2027,2,FCS,0
+238,Meade Stadium,213,URI,Kingston,RI,USA,,6580,6580,2027,2,FCS,0
+239,E. Claiborne Robins Stadium,214,RICH,Richmond,VA,USA,,8700,8700,2027,2,FCS,0
+240,Kenneth P. LaValle Stadium,215,STBK,Stony Brook,NY,USA,,12300,12300,2027,2,FCS,0
+241,Johnny Unitas Stadiumn,216,TOW,Towson,MD,USA,,11198,11198,2027,2,FCS,0
+242,Villanova Stadium,217,VILL,Philadelphia,PA,USA,,12500,12500,2027,2,FCS,0
+243,Water J. Zable Stadium,218,W&M,Williamsburg,VA,USA,,12259,12259,2027,2,FCS,0
+244,Duane Stadium,219,MRMK,North Andover,MA,USA,,4000,4000,2027,2,FCS,0
+245,Campus Field,220,SHU,Fairfield,CT,USA,,3334,3334,2027,2,FCS,0
+246,Alumni Stadium,221,DSU,Dover,DE,USA,,7193,7193,2027,2,FCS,0
+247,William H. Greene Stadium,222,HOW,Washington,DC,USA,,10000,10000,2027,2,FCS,0
+248,Hughes Stadium,223,MORG,Baltimore,MD,USA,,10000,10000,2027,2,FCS,0
+249,"William ""Dick"" Price Stadium",224,NORF,Norfolk,VA,USA,,30000,30000,2027,2,FCS,0
+250,O'Kelly-Riddick Stadium,225,NCCU,Durham,NC,USA,,10000,10000,2027,2,FCS,0
+251,Oliver C. Dawson Stadium,226,SCST,Orangeburg,SC,USA,,20000,20000,2027,2,FCS,0
+252,Arute Field,227,CCSU,New Britain,CT,USA,,5500,5500,2027,2,FCS,0
+253,Arthur J. Rooney Athletic Field,228,DUQ,Pittsburgh,PA,USA,,2200,2200,2027,2,FCS,0
+254,Bethpage Federal Credit Union Stadium,229,LIU,Brooklyn,NY,USA,,6000,6000,2027,2,FCS,0
+255,Saxon Stadium,230,MRCY,Erie,PA,USA,,2300,2300,2027,2,FCS,0
+256,Joe Walton Stadium,231,RMU,Moon Township,PA,USA,,3000,3000,2027,2,FCS,0
+257,DeGol Field,232,SFPA,Loretto,PA,USA,,3450,3450,2027,2,FCS,0
+258,W.B. Mason Stadium,233,STNH,Easton,MA,USA,,2400,2400,2027,2,FCS,0
+259,Wagner College Stadium,234,WAG,Staten Island,NY,USA,,3500,3500,2027,2,FCS,0
+260,Bud and Jackie Sellick Bowl,235,BUT,Indianapolis,IN,USA,,7500,7500,2027,2,FCS,0
+261,Richardson Stadium,236,DAV,,,,,4741,4741,2027,2,FCS,0
+262,Welcome Stadium,237,DAY,Dayton,OH,USA,,11000,11000,2027,2,FCS,0
+263,Drake Stadium,238,DRKE,Des Moines,IA,USA,,14557,14557,2027,2,FCS,0
+264,Leonidoff Field,239,MRST,Poughkeepsie,NY,USA,,5000,5000,2027,2,FCS,0
+265,Jayne Stadium,240,MORE,Morehead,KY,USA,,10000,10000,2027,2,FCS,0
+266,Bailey Memorial Stadium,241,PRE,Clinton,SC,USA,,6500,6500,2027,2,FCS,0
+267,Torero Stadium,242,USD,San Diego,CA,USA,,6000,6000,2027,2,FCS,0
+268,O'Shaughnessy Stadium,243,STMN,Saint Paul,MN,USA,,5025,5025,2027,2,FCS,0
+269,Spec Martin Memorial Stadium,244,STET,DeLand,FL,USA,,6000,6000,2027,2,FCS,0
+270,Brown Field,245,VAL,Valparaiso,IN,USA,,5000,5000,2027,2,FCS,0
+271,Husky Stadium,246,HCU,Houston,TX,USA,,5000,5000,2027,2,FCS,0
+272,Gayle and Tom Benson Stadium,247,UIW,San Antonio,TX,USA,,6000,6000,2027,2,FCS,0
+273,Provost Umphrey Stadium,248,LAM,Beaumont,TX,USA,,16000,16000,2027,2,FCS,0
+274,Cowboy Stadium,249,MCN,Lake Charles,LA,USA,,17610,17610,2027,2,FCS,0
+275,Manning Field at John L. Guidry Stadium,250,NICH,Thibodaux,LA,USA,,10500,10500,2027,2,FCS,0
+276,Harry Turpin Stadium,251,NWST,Natchitotches,LA,USA,,15971,15971,2027,2,FCS,0
+277,Strawberry Stadium,252,SELA,Hammond,LA,USA,,7408,7408,2027,2,FCS,0
+278,Ernest Hawkins Field at Memorial Stadium,253,TAMC,Commerce,TX,USA,,11582,11582,2027,2,FCS,0
+279,Robert and Janet Vackar Stadium,254,RGV,Edinburg,TX,USA,,9735,9735,2027,2,FCS,0
+280,Anthony Field at Wildcat Stadium,255,ACU,Abilene,TX,USA,,12000,12000,2027,2,FCS,0
+281,Fortera Stadium,256,APSU,Clarksville,TN,USA,,10100,10100,2027,2,FCS,0
+282,Estes Stadium,257,CARK,Conway,AR,USA,,10000,10000,2027,2,FCS,0
+283,Roy Kidd Stadium,258,EKU,Richmond,KY,USA,,20000,20000,2027,2,FCS,0
+284,Braly Municipal Stadium,259,UNA,Florence,AL,USA,,14215,14215,2027,2,FCS,0
+285,Eccles Coliseum,260,SUU,Cedar City,UT,USA,,8500,8500,2027,2,FCS,0
+286,Homer Bryce Stadium,261,SFA,Nacogdoches,TX,USA,,14575,14575,2027,2,FCS,0
+287,Memorial Stadium,262,TAR,Stephenville,TX,USA,,24000,24000,2027,2,FCS,0
+288,Greater Zion STadium,263,UTU,St. George,UT,USA,,10000,10000,2027,2,FCS,0
+289,University Stadium,264,UWG,Carrollton,GA,USA,,10000,10000,2027,2,FCS,0

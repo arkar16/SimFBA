@@ -125,4 +125,5 @@ type RecruitInfo struct {
 	HasBigCityAffinity        bool
 	HasMediaSpotlightAffinity bool
 	HasRisingStars            bool
+	HasLargeCrowdAffinity     bool
 }

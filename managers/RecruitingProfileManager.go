@@ -32,6 +32,7 @@ func RecalibrateCrootProfiles() {
 			HasServiceAffinity:        doesCrootHaveAffinity("Service", croot),
 			HasFrontRunnerAffinity:    doesCrootHaveAffinity("Frontrunner", croot),
 			HasReligionAffinity:       doesCrootHaveAffinity("Religion", croot),
+			HasLargeCrowdAffinity:     doesCrootHaveAffinity("Large Crowds", croot),
 			HasSmallSchoolAffinity:    doesCrootHaveAffinity("Small School", croot),
 			HasSmallTownAffinity:      doesCrootHaveAffinity("Small Town", croot),
 			HasBigCityAffinity:        doesCrootHaveAffinity("Big City", croot),

@@ -6,6 +6,7 @@ type PlayerStatDTO struct {
 	Position          string
 	PlayerID          int
 	Year              int
+	IsRedshirt        bool
 	Pancakes          int
 	SacksAllowed      int
 	PassAttempts      int

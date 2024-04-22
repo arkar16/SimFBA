@@ -603,6 +603,9 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		// Player Stat Export
 		// HomePlayers
 		for _, player := range gameDataDTO.HomePlayers {
+			if player.IsRedshirt {
+				fmt.Println("REDSHIRT!")
+			}
 			collegePlayerStats := structs.CollegePlayerStats{
 				CollegePlayerID: player.GetPlayerID(),
 				TeamID:          homeTeam.TeamID,
@@ -612,6 +615,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				OpposingTeam:    at.TeamAbbr,
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
 				Year:            player.Year,
+				IsRedshirt:      player.IsRedshirt,
 			}
 			snaps := snapMap[player.GetPlayerID()]
 			cpSnaps := structs.CollegePlayerGameSnaps{
@@ -624,38 +628,66 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 			}
 			if snaps["QB"] > 0 {
 				cpSnaps.MapSnapsToPosition("QB", snaps["QB"])
-			} else if snaps["RB"] > 0 {
+			}
+			if snaps["RB"] > 0 {
 				cpSnaps.MapSnapsToPosition("RB", snaps["RB"])
-			} else if snaps["FB"] > 0 {
+			}
+			if snaps["FB"] > 0 {
 				cpSnaps.MapSnapsToPosition("FB", snaps["FB"])
-			} else if snaps["WR"] > 0 {
+			}
+			if snaps["WR"] > 0 {
 				cpSnaps.MapSnapsToPosition("WR", snaps["WR"])
-			} else if snaps["TE"] > 0 {
+			}
+			if snaps["TE"] > 0 {
 				cpSnaps.MapSnapsToPosition("TE", snaps["TE"])
-			} else if snaps["OT"] > 0 {
+			}
+			if snaps["OT"] > 0 {
 				cpSnaps.MapSnapsToPosition("OT", snaps["OT"])
-			} else if snaps["OG"] > 0 {
+			}
+			if snaps["OG"] > 0 {
 				cpSnaps.MapSnapsToPosition("OG", snaps["OG"])
-			} else if snaps["C"] > 0 {
+			}
+			if snaps["C"] > 0 {
 				cpSnaps.MapSnapsToPosition("C", snaps["C"])
-			} else if snaps["DT"] > 0 {
+			}
+			if snaps["DT"] > 0 {
 				cpSnaps.MapSnapsToPosition("DT", snaps["DT"])
-			} else if snaps["DE"] > 0 {
+			}
+			if snaps["DE"] > 0 {
 				cpSnaps.MapSnapsToPosition("DE", snaps["DE"])
-			} else if snaps["OLB"] > 0 {
+			}
+			if snaps["OLB"] > 0 {
 				cpSnaps.MapSnapsToPosition("OLB", snaps["OLB"])
-			} else if snaps["ILB"] > 0 {
+			}
+			if snaps["ILB"] > 0 {
 				cpSnaps.MapSnapsToPosition("ILB", snaps["ILB"])
-			} else if snaps["CB"] > 0 {
+			}
+			if snaps["CB"] > 0 {
 				cpSnaps.MapSnapsToPosition("CB", snaps["CB"])
-			} else if snaps["FS"] > 0 {
+			}
+			if snaps["FS"] > 0 {
 				cpSnaps.MapSnapsToPosition("FS", snaps["FS"])
-			} else if snaps["SS"] > 0 {
+			}
+			if snaps["SS"] > 0 {
 				cpSnaps.MapSnapsToPosition("SS", snaps["SS"])
-			} else if snaps["P"] > 0 {
+			}
+			if snaps["P"] > 0 {
 				cpSnaps.MapSnapsToPosition("P", snaps["P"])
-			} else if snaps["K"] > 0 {
+			}
+			if snaps["K"] > 0 {
 				cpSnaps.MapSnapsToPosition("K", snaps["K"])
+			}
+			if snaps["KR"] > 0 {
+				cpSnaps.MapSnapsToPosition("KR", snaps["KR"])
+			}
+			if snaps["KOS"] > 0 {
+				cpSnaps.MapSnapsToPosition("KOS", snaps["KOS"])
+			}
+			if snaps["PR"] > 0 {
+				cpSnaps.MapSnapsToPosition("PR", snaps["PR"])
+			}
+			if snaps["ST"] > 0 {
+				cpSnaps.MapSnapsToPosition("ST", snaps["ST"])
 			}
 			playerStats = append(playerStats, collegePlayerStats)
 			playerSnaps = append(playerSnaps, cpSnaps)
@@ -672,6 +704,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				OpposingTeam:    ht.TeamAbbr,
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
 				Year:            player.Year,
+				IsRedshirt:      player.IsRedshirt,
 			}
 			snaps := snapMap[player.GetPlayerID()]
 			cpSnaps := structs.CollegePlayerGameSnaps{
@@ -684,38 +717,66 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 			}
 			if snaps["QB"] > 0 {
 				cpSnaps.MapSnapsToPosition("QB", snaps["QB"])
-			} else if snaps["RB"] > 0 {
+			}
+			if snaps["RB"] > 0 {
 				cpSnaps.MapSnapsToPosition("RB", snaps["RB"])
-			} else if snaps["FB"] > 0 {
+			}
+			if snaps["FB"] > 0 {
 				cpSnaps.MapSnapsToPosition("FB", snaps["FB"])
-			} else if snaps["WR"] > 0 {
+			}
+			if snaps["WR"] > 0 {
 				cpSnaps.MapSnapsToPosition("WR", snaps["WR"])
-			} else if snaps["TE"] > 0 {
+			}
+			if snaps["TE"] > 0 {
 				cpSnaps.MapSnapsToPosition("TE", snaps["TE"])
-			} else if snaps["OT"] > 0 {
+			}
+			if snaps["OT"] > 0 {
 				cpSnaps.MapSnapsToPosition("OT", snaps["OT"])
-			} else if snaps["OG"] > 0 {
+			}
+			if snaps["OG"] > 0 {
 				cpSnaps.MapSnapsToPosition("OG", snaps["OG"])
-			} else if snaps["C"] > 0 {
+			}
+			if snaps["C"] > 0 {
 				cpSnaps.MapSnapsToPosition("C", snaps["C"])
-			} else if snaps["DT"] > 0 {
+			}
+			if snaps["DT"] > 0 {
 				cpSnaps.MapSnapsToPosition("DT", snaps["DT"])
-			} else if snaps["DE"] > 0 {
+			}
+			if snaps["DE"] > 0 {
 				cpSnaps.MapSnapsToPosition("DE", snaps["DE"])
-			} else if snaps["OLB"] > 0 {
+			}
+			if snaps["OLB"] > 0 {
 				cpSnaps.MapSnapsToPosition("OLB", snaps["OLB"])
-			} else if snaps["ILB"] > 0 {
+			}
+			if snaps["ILB"] > 0 {
 				cpSnaps.MapSnapsToPosition("ILB", snaps["ILB"])
-			} else if snaps["CB"] > 0 {
+			}
+			if snaps["CB"] > 0 {
 				cpSnaps.MapSnapsToPosition("CB", snaps["CB"])
-			} else if snaps["FS"] > 0 {
+			}
+			if snaps["FS"] > 0 {
 				cpSnaps.MapSnapsToPosition("FS", snaps["FS"])
-			} else if snaps["SS"] > 0 {
+			}
+			if snaps["SS"] > 0 {
 				cpSnaps.MapSnapsToPosition("SS", snaps["SS"])
-			} else if snaps["P"] > 0 {
+			}
+			if snaps["P"] > 0 {
 				cpSnaps.MapSnapsToPosition("P", snaps["P"])
-			} else if snaps["K"] > 0 {
+			}
+			if snaps["K"] > 0 {
 				cpSnaps.MapSnapsToPosition("K", snaps["K"])
+			}
+			if snaps["KR"] > 0 {
+				cpSnaps.MapSnapsToPosition("KR", snaps["KR"])
+			}
+			if snaps["KOS"] > 0 {
+				cpSnaps.MapSnapsToPosition("KOS", snaps["KOS"])
+			}
+			if snaps["PR"] > 0 {
+				cpSnaps.MapSnapsToPosition("PR", snaps["PR"])
+			}
+			if snaps["ST"] > 0 {
+				cpSnaps.MapSnapsToPosition("ST", snaps["ST"])
 			}
 			playerSnaps = append(playerSnaps, cpSnaps)
 			playerStats = append(playerStats, collegePlayerStats)
@@ -838,38 +899,66 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 			}
 			if snaps["QB"] > 0 {
 				snap.MapSnapsToPosition("QB", snaps["QB"])
-			} else if snaps["RB"] > 0 {
+			}
+			if snaps["RB"] > 0 {
 				snap.MapSnapsToPosition("RB", snaps["RB"])
-			} else if snaps["FB"] > 0 {
+			}
+			if snaps["FB"] > 0 {
 				snap.MapSnapsToPosition("FB", snaps["FB"])
-			} else if snaps["WR"] > 0 {
+			}
+			if snaps["WR"] > 0 {
 				snap.MapSnapsToPosition("WR", snaps["WR"])
-			} else if snaps["TE"] > 0 {
+			}
+			if snaps["TE"] > 0 {
 				snap.MapSnapsToPosition("TE", snaps["TE"])
-			} else if snaps["OT"] > 0 {
+			}
+			if snaps["OT"] > 0 {
 				snap.MapSnapsToPosition("OT", snaps["OT"])
-			} else if snaps["OG"] > 0 {
+			}
+			if snaps["OG"] > 0 {
 				snap.MapSnapsToPosition("OG", snaps["OG"])
-			} else if snaps["C"] > 0 {
+			}
+			if snaps["C"] > 0 {
 				snap.MapSnapsToPosition("C", snaps["C"])
-			} else if snaps["DT"] > 0 {
+			}
+			if snaps["DT"] > 0 {
 				snap.MapSnapsToPosition("DT", snaps["DT"])
-			} else if snaps["DE"] > 0 {
+			}
+			if snaps["DE"] > 0 {
 				snap.MapSnapsToPosition("DE", snaps["DE"])
-			} else if snaps["OLB"] > 0 {
+			}
+			if snaps["OLB"] > 0 {
 				snap.MapSnapsToPosition("OLB", snaps["OLB"])
-			} else if snaps["ILB"] > 0 {
+			}
+			if snaps["ILB"] > 0 {
 				snap.MapSnapsToPosition("ILB", snaps["ILB"])
-			} else if snaps["CB"] > 0 {
+			}
+			if snaps["CB"] > 0 {
 				snap.MapSnapsToPosition("CB", snaps["CB"])
-			} else if snaps["FS"] > 0 {
+			}
+			if snaps["FS"] > 0 {
 				snap.MapSnapsToPosition("FS", snaps["FS"])
-			} else if snaps["SS"] > 0 {
+			}
+			if snaps["SS"] > 0 {
 				snap.MapSnapsToPosition("SS", snaps["SS"])
-			} else if snaps["P"] > 0 {
+			}
+			if snaps["P"] > 0 {
 				snap.MapSnapsToPosition("P", snaps["P"])
-			} else if snaps["K"] > 0 {
+			}
+			if snaps["K"] > 0 {
 				snap.MapSnapsToPosition("K", snaps["K"])
+			}
+			if snaps["KR"] > 0 {
+				snap.MapSnapsToPosition("KR", snaps["KR"])
+			}
+			if snaps["KOS"] > 0 {
+				snap.MapSnapsToPosition("KOS", snaps["KOS"])
+			}
+			if snaps["PR"] > 0 {
+				snap.MapSnapsToPosition("PR", snaps["PR"])
+			}
+			if snaps["ST"] > 0 {
+				snap.MapSnapsToPosition("ST", snaps["ST"])
 			}
 			playerSnaps = append(playerSnaps, snap)
 			playerStats = append(playerStats, nflPlayerStats)
@@ -898,38 +987,66 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 			}
 			if snaps["QB"] > 0 {
 				snap.MapSnapsToPosition("QB", snaps["QB"])
-			} else if snaps["RB"] > 0 {
+			}
+			if snaps["RB"] > 0 {
 				snap.MapSnapsToPosition("RB", snaps["RB"])
-			} else if snaps["FB"] > 0 {
+			}
+			if snaps["FB"] > 0 {
 				snap.MapSnapsToPosition("FB", snaps["FB"])
-			} else if snaps["WR"] > 0 {
+			}
+			if snaps["WR"] > 0 {
 				snap.MapSnapsToPosition("WR", snaps["WR"])
-			} else if snaps["TE"] > 0 {
+			}
+			if snaps["TE"] > 0 {
 				snap.MapSnapsToPosition("TE", snaps["TE"])
-			} else if snaps["OT"] > 0 {
+			}
+			if snaps["OT"] > 0 {
 				snap.MapSnapsToPosition("OT", snaps["OT"])
-			} else if snaps["OG"] > 0 {
+			}
+			if snaps["OG"] > 0 {
 				snap.MapSnapsToPosition("OG", snaps["OG"])
-			} else if snaps["C"] > 0 {
+			}
+			if snaps["C"] > 0 {
 				snap.MapSnapsToPosition("C", snaps["C"])
-			} else if snaps["DT"] > 0 {
+			}
+			if snaps["DT"] > 0 {
 				snap.MapSnapsToPosition("DT", snaps["DT"])
-			} else if snaps["DE"] > 0 {
+			}
+			if snaps["DE"] > 0 {
 				snap.MapSnapsToPosition("DE", snaps["DE"])
-			} else if snaps["OLB"] > 0 {
+			}
+			if snaps["OLB"] > 0 {
 				snap.MapSnapsToPosition("OLB", snaps["OLB"])
-			} else if snaps["ILB"] > 0 {
+			}
+			if snaps["ILB"] > 0 {
 				snap.MapSnapsToPosition("ILB", snaps["ILB"])
-			} else if snaps["CB"] > 0 {
+			}
+			if snaps["CB"] > 0 {
 				snap.MapSnapsToPosition("CB", snaps["CB"])
-			} else if snaps["FS"] > 0 {
+			}
+			if snaps["FS"] > 0 {
 				snap.MapSnapsToPosition("FS", snaps["FS"])
-			} else if snaps["SS"] > 0 {
+			}
+			if snaps["SS"] > 0 {
 				snap.MapSnapsToPosition("SS", snaps["SS"])
-			} else if snaps["P"] > 0 {
+			}
+			if snaps["P"] > 0 {
 				snap.MapSnapsToPosition("P", snaps["P"])
-			} else if snaps["K"] > 0 {
+			}
+			if snaps["K"] > 0 {
 				snap.MapSnapsToPosition("K", snaps["K"])
+			}
+			if snaps["KR"] > 0 {
+				snap.MapSnapsToPosition("KR", snaps["KR"])
+			}
+			if snaps["KOS"] > 0 {
+				snap.MapSnapsToPosition("KOS", snaps["KOS"])
+			}
+			if snaps["PR"] > 0 {
+				snap.MapSnapsToPosition("PR", snaps["PR"])
+			}
+			if snaps["ST"] > 0 {
+				snap.MapSnapsToPosition("ST", snaps["ST"])
 			}
 			playerSnaps = append(playerSnaps, snap)
 			playerStats = append(playerStats, nflPlayerStats)

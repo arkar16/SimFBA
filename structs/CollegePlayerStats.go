@@ -11,6 +11,7 @@ type CollegePlayerStats struct {
 	SeasonID        int
 	OpposingTeam    string
 	Year            int
+	IsRedshirt      bool
 	BasePlayerStats
 }
 

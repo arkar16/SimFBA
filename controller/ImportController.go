@@ -54,6 +54,10 @@ func ImportNFLGames(w http.ResponseWriter, r *http.Request) {
 	managers.ImportNFLGames()
 }
 
+func ImportCFBTeams(w http.ResponseWriter, r *http.Request) {
+	managers.ImportCFBTeams()
+}
+
 func ImportUDFAs(w http.ResponseWriter, r *http.Request) {
 	managers.ImportUDFAs()
 }
@@ -66,16 +70,8 @@ func UpdateDraftPicksForDraft(w http.ResponseWriter, r *http.Request) {
 	managers.UpdateDraftPicks()
 }
 
-func FixBrokenExtensions(w http.ResponseWriter, r *http.Request) {
-	managers.FixBrokenExtensions()
-}
-
 func ImplementRecruitingBiases(w http.ResponseWriter, r *http.Request) {
 	managers.ImplementPrimeAge()
-}
-
-func GenerateDraftWarRooms(w http.ResponseWriter, r *http.Request) {
-	managers.GenerateDraftWarRooms()
 }
 
 func GenerateCoachesForAITeams(w http.ResponseWriter, r *http.Request) {

@@ -5,12 +5,10 @@ import (
 	"fmt"
 	"log"
 	"os"
-	"sort"
 	"strconv"
 	"time"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
-	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 	"github.com/jinzhu/gorm"
@@ -774,153 +772,121 @@ func ImportNFLGames() {
 	}
 }
 
-func FixBrokenExtensions() {
+func ImportCFBTeams() {
 	db := dbprovider.GetInstance().GetDB()
 
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024\\Reworked_NFL_Contracts.csv"
+	teamPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024\\teams.csv"
+	stadiumPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024\\stadia.csv"
+	profilePath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024\\profiles.csv"
 
-	extensions := util.ReadCSV(path)
+	teamCSV := util.ReadCSV(teamPath)
+	stadiumCSV := util.ReadCSV(stadiumPath)
+	profileCSV := util.ReadCSV(profilePath)
 
-	for idx, row := range extensions {
+	for idx, row := range teamCSV {
 		if idx == 0 {
 			continue
 		}
 
-		playerID := row[0]
+		stadiumRecord := stadiumCSV[idx]
+		profileRecord := profileCSV[idx]
 
-		isRejected := util.ConvertStringToBool(row[18])
+		teamID := util.ConvertStringToInt(row[0])
+		stadiumID := util.ConvertStringToInt(stadiumRecord[0])
+		stadiumName := stadiumRecord[1]
+		capacity := util.ConvertStringToInt(stadiumRecord[8])
+		recordAtt := util.ConvertStringToInt(stadiumRecord[9])
+		teamName := row[1]
+		mascot := row[2]
+		abbr := row[3]
+		city := row[4]
+		state := row[5]
+		country := "USA"
+		conferenceID := util.ConvertStringToInt(row[7])
+		conference := row[8]
+		firstSeason := 2027
+		isFBS := false
+		isActive := false
 
-		NFLPlayer := GetNFLPlayerRecord(playerID)
-		// Update Contract
-		contract := GetContractByPlayerID(playerID)
-
-		if isRejected {
-			NFLPlayer.ToggleIsFreeAgent()
-			db.Save(&NFLPlayer)
-			db.Delete(&contract)
-			continue
+		stadium := structs.Stadium{
+			Model: gorm.Model{
+				ID: uint(stadiumID),
+			},
+			StadiumName:      stadiumName,
+			TeamID:           uint(teamID),
+			TeamAbbr:         abbr,
+			City:             city,
+			State:            state,
+			Country:          country,
+			Capacity:         uint(capacity),
+			RecordAttendance: uint(recordAtt),
+			FirstSeason:      uint(firstSeason),
+			LeagueID:         2,
+			LeagueName:       "FCS",
 		}
 
-		// Get Contract Numbers
-		contractLength := util.ConvertStringToInt(row[4])
-		y1S := util.ConvertStringToFloat(row[5])
-		y1B := util.ConvertStringToFloat(row[6])
-		y2S := util.ConvertStringToFloat(row[7])
-		y2B := util.ConvertStringToFloat(row[8])
-		y3S := util.ConvertStringToFloat(row[9])
-		y3B := util.ConvertStringToFloat(row[10])
-		y4S := util.ConvertStringToFloat(row[11])
-		y4B := util.ConvertStringToFloat(row[12])
-		y5S := util.ConvertStringToFloat(row[13])
-		y5B := util.ConvertStringToFloat(row[14])
-		bonus := util.ConvertStringToFloat(row[17])
-
-		contract.FixContract(contractLength, y1S, y1B, y2S, y2B, y3S, y3B, y4S, y4B, y5S, y5B, bonus)
-
-		// Save Contract
-		db.Save(&contract)
-	}
-}
-
-func ImplementNewAttributes() {
-	db := dbprovider.GetInstance().GetDB()
-	// Implement Shotgun, Clutch
-
-	croots := GetAllUnsignedRecruits()
-	collegePlayers := GetAllCollegePlayers()
-
-	biasPreferencesList := []string{
-		"Average",
-		"Legacy",
-		"Open-Minded",
-		"Prefers to be Close to Home",
-		"Prefers to play for a national championship contender",
-		"Prefers to play for a recent national championship winner",
-		"Prefers to play for a specific coach",
-		"Prefers to play for a team where he can start immediately",
-		"Prefers to play for a team with a rich history",
-		"Prefers to play in a different state",
-		"Does not want to be redshirted",
-	}
-
-	affinityList := []string{
-		"Close to Home",
-		"Academics",
-		"Service",
-		"Religion",
-		"Large Crowds",
-		"Small School",
-		"Frontrunner",
-		"Small Town",
-		"Big City",
-		"Rising Stars",
-		"Media Spotlight",
-	}
-
-	for _, croot := range croots {
-		bias := croot.RecruitingBias
-		af1 := croot.AffinityOne
-		af2 := croot.AffinityTwo
-		if len(bias) == 0 {
-			bias = util.PickFromStringList(biasPreferencesList)
+		team := structs.CollegeTeam{
+			Model: gorm.Model{
+				ID: uint(teamID),
+			},
+			BaseTeam: structs.BaseTeam{
+				TeamName:         teamName,
+				Mascot:           mascot,
+				TeamAbbr:         abbr,
+				City:             city,
+				State:            state,
+				Country:          country,
+				StadiumID:        uint(stadiumID),
+				Stadium:          stadiumName,
+				RecordAttendance: recordAtt,
+				Enrollment:       0,
+				FirstPlayed:      firstSeason,
+			},
+			ConferenceID: conferenceID,
+			Conference:   conference,
+			IsFBS:        isFBS,
+			IsActive:     isActive,
 		}
-		// Check affinity fields
-		if len(croot.AffinityOne) == 0 {
-			randomNum := util.GenerateIntFromRange(0, 2)
-			if randomNum == 1 {
-				af1 = util.PickFromStringList(affinityList)
-			} else if randomNum == 2 {
-				af1 = util.PickFromStringList(affinityList)
-				af2 = util.PickFromStringList(affinityList)
-				for af1 == af2 || (af1 == "Small Town" && af2 == "Big City") {
-					af2 = util.PickFromStringList(affinityList)
-				}
-			}
-		} else if len(croot.AffinityTwo) == 0 {
-			randomNum := util.GenerateIntFromRange(0, 2)
-			if randomNum == 2 {
-				af1 = croot.AffinityOne
-				af2 = util.PickFromStringList(affinityList)
-				for af1 == af2 || (af1 == "Small Town" && af2 == "Big City") {
-					af2 = util.PickFromStringList(affinityList)
-				}
-			}
+
+		aiBehavior := profileRecord[10]
+		aiQuality := profileRecord[11]
+		min := util.ConvertStringToInt(profileRecord[12])
+		max := util.ConvertStringToInt(profileRecord[13])
+		off := profileRecord[17]
+		def := profileRecord[18]
+
+		teamProfile := structs.RecruitingTeamProfile{
+			Model: gorm.Model{
+				ID: uint(teamID),
+			},
+			TeamID:                    teamID,
+			Team:                      teamName,
+			TeamAbbreviation:          abbr,
+			State:                     state,
+			ScholarshipsAvailable:     40,
+			WeeklyPoints:              100,
+			SpentPoints:               0,
+			TotalCommitments:          0,
+			RecruitClassSize:          20,
+			PortalReputation:          100,
+			BaseEfficiencyScore:       0.6,
+			RecruitingEfficiencyScore: 0.8,
+			IsFBS:                     false,
+			IsUserTeam:                false,
+			IsAI:                      true,
+			AIBehavior:                aiBehavior,
+			AIQuality:                 aiQuality,
+			AIMinThreshold:            min,
+			AIMaxThreshold:            max,
+			AIStarMin:                 1,
+			AIStarMax:                 2,
+			OffensiveScheme:           off,
+			DefensiveScheme:           def,
 		}
-		croot.AssignNewRecruitingBiases(bias, af1, af2)
-		db.Save(&croot)
-	}
 
-	for _, player := range collegePlayers {
-		bias := player.RecruitingBias
-		if len(bias) > 0 {
-			continue
-		}
-		player.SetRecruitingBias(util.PickFromStringList(biasPreferencesList))
-		db.Save(&player)
-	}
-}
-
-func GenerateDraftWarRooms() {
-	db := dbprovider.GetInstance().GetDB()
-
-	allProfessionalTeams := GetAllNFLTeams()
-
-	sort.Slice(allProfessionalTeams, func(i, j int) bool {
-		return allProfessionalTeams[i].ID < allProfessionalTeams[j].ID
-	})
-
-	for _, n := range allProfessionalTeams {
-		room := GetOnlyNFLWarRoomByTeamID(strconv.Itoa(int(n.ID)))
-		if room.ID > 0 {
-			continue
-		}
-		warRoom := models.NFLWarRoom{
-			TeamID:         n.ID,
-			Team:           n.TeamName + " " + n.Mascot,
-			ScoutingPoints: 400,
-			SpentPoints:    0,
-		}
-		db.Create(&warRoom)
+		db.Create(&team)
+		db.Create(&stadium)
+		db.Create(&teamProfile)
 	}
 }
 

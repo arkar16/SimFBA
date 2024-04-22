@@ -142,6 +142,7 @@ func (t *Timestamp) SyncToNextWeek() {
 	t.NFLMondayEvening = false
 	t.AIDepthchartsSync = false
 	t.AIRecruitingBoardsSynced = false
+	t.RunGames = false
 	// t.ToggleRES()
 	t.ToggleRecruiting()
 	t.ToggleGMActions()

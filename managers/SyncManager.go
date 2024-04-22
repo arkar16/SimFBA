@@ -524,6 +524,7 @@ func FillAIRecruitingBoards() {
 			HasSmallTownAffinity:      doesCrootHaveAffinity("Small Town", croot),
 			HasBigCityAffinity:        doesCrootHaveAffinity("Big City", croot),
 			HasMediaSpotlightAffinity: doesCrootHaveAffinity("Media Spotlight", croot),
+			HasLargeCrowdAffinity:     doesCrootHaveAffinity("Large Crowds", croot),
 			HasRisingStars:            doesCrootHaveAffinity("Rising Stars", croot),
 		}
 		recruitInfos[croot.ID] = info
@@ -1054,6 +1055,9 @@ func getRecruitingOdds(ts structs.Timestamp, croot structs.Recruit, team structs
 
 	// Check for other affinities
 	for _, affinity := range team.Affinities {
+		if !affinity.IsApplicable {
+			continue
+		}
 		if crootInfo.HasAcademicAffinity && isAffinityApplicable("Academics", affinity) {
 			if team.IsFBS {
 				odds += 33
@@ -1209,6 +1213,24 @@ func getRecruitingOdds(ts structs.Timestamp, croot structs.Recruit, team structs
 			}
 
 			if croot.AffinityTwo == "Media Spotlight" {
+				affinityTwoApplicable = true
+				affinityMod += 3
+			}
+		}
+
+		if crootInfo.HasLargeCrowdAffinity && isAffinityApplicable("Large Crowds", affinity) {
+			if team.IsFBS {
+				odds += 33
+			} else {
+				odds += 17
+			}
+
+			if croot.AffinityOne == "Large Crowds" {
+				affinityOneApplicable = true
+				affinityMod += 3
+			}
+
+			if croot.AffinityTwo == "Large Crowds" {
 				affinityTwoApplicable = true
 				affinityMod += 3
 			}

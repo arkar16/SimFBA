@@ -1,0 +1,71 @@
+id,team_id,team,team_abbr,state,scholarships,points,points,size,is_ai,ai_behavior,ai_quality,min,max,offer,starmin,starmax,offensive scheme,defensive scheme
+195,195,Charleston Southern,Buccaneers,NC,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,West Coast,2-Gap
+196,196,Eastern Illinois,Panthers,IL,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Air Raid,Speed
+197,197,Gardner-Webb,Runnin' Bulldogs,NC,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Vertical,Multiple
+198,198,Lindenwood,Lions,MO,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Vertical,3-Man Front Spread Stopper
+199,199,Southeast Missouri State,Redhawks,MO,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Spread Option,Old School
+200,200,Tennessee State,Tigers,TN,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,I Option,Old School
+201,201,Tennessee Tech,Golden Eagles,TN,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Power Run,Speed
+202,202,UT Martin,Skyhawks,TN,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Double Wing,4-Man Front Spread Stopper
+203,203,Albany,Great Danes,NY,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Wing-T,Old School
+204,204,Bryant,Bulldogs,RI,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,West Coast,2-Gap
+205,205,Campbell,Fighting Camels,NC,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,I Option,2-Gap
+206,206,Delaware,Fighting Blue Hens,DE,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Flexbone,Multiple
+207,207,Elon,Phoenix,NC,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Spread Option,3-Man Front Spread Stopper
+208,208,Hampton,Pirates,VA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Flexbone,Old School
+209,209,Maine,Blackbears,ME,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,West Coast,Speed
+210,210,Monmouth,Hawks,NJ,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,West Coast,Multiple
+211,211,New Hampshire,Wildcats,NH,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Power Run,4-Man Front Spread Stopper
+212,212,North Carolina A&T,Aggies,NC,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,West Coast,4-Man Front Spread Stopper
+213,213,Rhode Island,Rams,RI,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Vertical,2-Gap
+214,214,Richmond,Spiders,VA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Air Raid,3-Man Front Spread Stopper
+215,215,Stony Brook,Seawolves,NY,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Pistol,Multiple
+216,216,Towson,Tigers,MD,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Power Run,Multiple
+217,217,Villanova,Wildcats,PA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Run and Shoot,2-Gap
+218,218,William & Mary,Tribe,VA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Wishbone,Old School
+219,219,Merrimack,Warriors,MA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Spread Option,4-Man Front Spread Stopper
+220,220,Sacred Heart,Pioneers,CT,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Double Wing,2-Gap
+221,221,Delaware State,Hornets,DE,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,West Coast,Old School
+222,222,Howard,Bison,DC,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,I Option,3-Man Front Spread Stopper
+223,223,Morgan State,Bears,MD,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Vertical,4-Man Front Spread Stopper
+224,224,Norfolk State,Spartans,VA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Vertical,4-Man Front Spread Stopper
+225,225,North Carolina Central,Eagles,NC,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Air Raid,Old School
+226,226,South Carolina State,Bulldogs,SC,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Double Wing,Multiple
+227,227,Central Connecticut,Blue Devils,CT,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Wishbone,2-Gap
+228,228,Duquesne,Dukes,PA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Vertical,3-Man Front Spread Stopper
+229,229,Long Island University,Sharks,NY,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Double Wing,Old School
+230,230,Mercyhurst,Lakers,PA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Pistol,2-Gap
+231,231,Robert Morris,Colonials,PA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Run and Shoot,2-Gap
+232,232,Saint Francis,Red Flash,PA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Spread Option,Old School
+233,233,Stonehill,Skyhawks,MA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Wing-T,2-Gap
+234,234,Wagner,Seahawks,NY,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Vertical,3-Man Front Spread Stopper
+235,235,Butler,Bulldogs,IN,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Spread Option,4-Man Front Spread Stopper
+236,236,Davidson,Wildcats,NC,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,West Coast,Speed
+237,237,Dayton,Flyers,OH,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Power Run,Old School
+238,238,Drake,Bulldogs,IA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Power Run,4-Man Front Spread Stopper
+239,239,Marist,Red Foxes,NY,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Run and Shoot,Multiple
+240,240,Morehead State,Eagles,KY,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,I Option,Multiple
+241,241,Presbyterian,Blue Hose,SC,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Pistol,Old School
+242,242,San Diego,Torreros,CA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,West Coast,Speed
+243,243,St. Thomas,Tommies,MN,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Air Raid,2-Gap
+244,244,Stetson,Hatters,FL,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Power Run,Speed
+245,245,Valparaiso,Beacons,IN,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,West Coast,3-Man Front Spread Stopper
+246,246,Houston Christian,Huskies,TX,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,I Option,Old School
+247,247,Incarnate Word,Cardinals,TX,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Spread Option,3-Man Front Spread Stopper
+248,248,Lamar,Cardinals,TX,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Run and Shoot,4-Man Front Spread Stopper
+249,249,McNeese,Cowboys,LA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Pistol,2-Gap
+250,250,Nicholls,Colonels,LA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Power Run,Speed
+251,251,Northwestern State,Demons,LA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Wing-T,4-Man Front Spread Stopper
+252,252,SE Louisiana,Lions,LA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Pistol,Speed
+253,253,Texas A&M-Commerce,Lions,TX,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Flexbone,Multiple
+254,254,UT Rio Grande Valley,Vaqueros,TX,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Vertical,2-Gap
+255,255,Abilene Christian,Wildcats,TX,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Vertical,Old School
+256,256,Austin Peay,Governors,TN,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Pistol,3-Man Front Spread Stopper
+257,257,Central Arkansas,Bears,AR,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,I Option,Speed
+258,258,Eastern Kentucky,Colonels,KY,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Power Run,4-Man Front Spread Stopper
+259,259,North Alabama,Lions,AL,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Pistol,Speed
+260,260,Southern Utah,Thunderbirds,UT,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Run and Shoot,Old School
+261,261,Stephen F. Austin,Lumberjacks,TX,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Vertical,3-Man Front Spread Stopper
+262,262,Tarleton State,Texans,TX,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,I Option,2-Gap
+263,263,Utah Tech,Trailblazers,UT,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Double Wing,Multiple
+264,264,West Georgia,Wolves,GA,40,100,0,20,1,Normal,Doormat,4,7,1,1,2,Spread Option,4-Man Front Spread Stopper

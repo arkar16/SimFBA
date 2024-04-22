@@ -136,6 +136,7 @@ func handleRequests() {
 	// myRouter.HandleFunc("/admin/import/cfb/standings", controller.ImportCFBStandings).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/cfb/coaches", controller.GenerateCoachesForAITeams).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
+	// myRouter.HandleFunc("/admin/import/cfb/teams", controller.ImportCFBTeams).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/games", controller.ImportNFLGames).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/warroom", controller.GenerateDraftWarRooms).Methods("GET")
 	// myRouter.HandleFunc("/admin/import/nfl/udfas", controller.ImportUDFAs).Methods("GET")
@@ -304,19 +305,19 @@ func handleCron() {
 		c := cron.New()
 		// Fill AI Recruiting Boards
 		c.AddFunc("0 5 * * 4", controller.FillAIBoardsViaCron)
-		// // Update AI Gameplans and DCs
+		// Update AI Gameplans and DCs
 		c.AddFunc("0 1 * * 3", controller.RunAISchemeAndDCViaCron)
 		c.AddFunc("0 4 * * 3", controller.RunAIGameplanViaCron)
-		// // Allocate AI Boards
+		// Allocate AI Boards
 		c.AddFunc("0 3 * * 4,6", controller.SyncAIBoardsViaCron)
-		// // Sync Recruiting
+		// Sync Recruiting
 		c.AddFunc("0 16 * * 3", controller.SyncRecruitingViaCron)
-		// // Sync Free Agency
+		// Sync Free Agency
 		c.AddFunc("0 16 * * 2", controller.SyncFreeAgencyViaCron)
-		// // Sync Extension Offers
-		// // Run the Games
+		// Sync Extension Offers
+		// Run the Games
 		c.AddFunc("0 4 * * 4", controller.RunTheGamesViaCron)
-		// // Reveal Timeslot Results
+		// Reveal Timeslot Results
 		c.AddFunc("0 21 * * 4", controller.ShowCFBThursdayViaCron) // Thurs Night
 		c.AddFunc("0 20 * * 4", controller.ShowNFLThursdayViaCron) // Thurs NFL
 		c.AddFunc("0 21 * * 5", controller.ShowCFBFridayViaCron)   // Fri Night
@@ -328,7 +329,7 @@ func handleCron() {
 		c.AddFunc("0 17 * * 0", controller.ShowNFLSunAftViaCron)   // Sun Aft
 		c.AddFunc("0 19 * * 0", controller.ShowNFLSunNitViaCron)   // Sun Nit
 		c.AddFunc("0 17 * * 1", controller.ShowNFLMonNitViaCron)   // Mon Nit
-		// // Sync Week
+		// Sync Week
 		c.AddFunc("0 18 * * 1", controller.SyncToNextWeekViaCron)
 		c.Start()
 	}()

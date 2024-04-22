@@ -23,6 +23,10 @@ type BasePlayerGameSnaps struct {
 	SSSnaps  uint8
 	KSnaps   uint8
 	PSnaps   uint8
+	STSnaps  uint8
+	KRSnaps  uint8
+	PRSnaps  uint8
+	KOSSnaps uint8
 }
 
 func (g *BasePlayerGameSnaps) MapSnapsToPosition(pos string, snaps int) {
@@ -60,6 +64,14 @@ func (g *BasePlayerGameSnaps) MapSnapsToPosition(pos string, snaps int) {
 		g.PSnaps += uint8(snaps)
 	} else if pos == "K" {
 		g.KSnaps += uint8(snaps)
+	} else if pos == "ST" {
+		g.STSnaps += uint8(snaps)
+	} else if pos == "KR" {
+		g.KRSnaps += uint8(snaps)
+	} else if pos == "PR" {
+		g.PRSnaps += uint8(snaps)
+	} else if pos == "KOS" {
+		g.KOSSnaps += uint8(snaps)
 	}
 }
 
@@ -84,6 +96,10 @@ type BasePlayerSeasonSnaps struct {
 	SSSnaps  uint16
 	KSnaps   uint16
 	PSnaps   uint16
+	STSnaps  uint16
+	KRSnaps  uint16
+	PRSnaps  uint16
+	KOSSnaps uint16
 }
 
 func (s *BasePlayerSeasonSnaps) AddToSeason(g BasePlayerGameSnaps) {
@@ -104,6 +120,10 @@ func (s *BasePlayerSeasonSnaps) AddToSeason(g BasePlayerGameSnaps) {
 	s.SSSnaps += uint16(g.SSSnaps)
 	s.PSnaps += uint16(g.PSnaps)
 	s.KSnaps += uint16(g.KSnaps)
+	s.STSnaps += uint16(g.STSnaps)
+	s.PRSnaps += uint16(g.PRSnaps)
+	s.KRSnaps += uint16(g.KRSnaps)
+	s.KOSSnaps += uint16(g.KOSSnaps)
 }
 
 type CollegePlayerSeasonSnaps struct {

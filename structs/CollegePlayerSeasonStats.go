@@ -8,6 +8,7 @@ type CollegePlayerSeasonStats struct {
 	TeamID          uint
 	SeasonID        uint
 	Year            uint
+	IsRedshirt      bool
 	BasePlayerStats
 	GamesPlayed  int
 	QBRating     float64

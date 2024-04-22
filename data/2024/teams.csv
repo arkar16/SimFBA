@@ -1,0 +1,71 @@
+id,team_name,mascot,abbr,city,state,country,conference_id,conference,division_id,division,first_season,coach,is_fbs,is_active,program_prestige,academic_prestige,facilities,color_one,color_two,color_three,players_progressed,recruits_added,stadium_id,discord_id,overall_grade,offense_grade,defense_grade
+195,Charleston Southern,Buccaneers,CHSO,Bules Creek,NC,USA,20,Big South-OVC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+196,Eastern Illinois,Panthers,EIU,Charleston,IL,USA,20,Big South-OVC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+197,Gardner-Webb,Runnin' Bulldogs,WEBB,Boiling Springs,NC,USA,20,Big South-OVC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+198,Lindenwood,Lions,LIN,St. Charles,MO,USA,20,Big South-OVC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+199,Southeast Missouri State,Redhawks,SEMO,Cape Girardeau,MO,USA,20,Big South-OVC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+200,Tennessee State,Tigers,TNST,Nashville,TN,USA,20,Big South-OVC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+201,Tennessee Tech,Golden Eagles,TNTC,Cookeville,TN,USA,20,Big South-OVC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+202,UT Martin,Skyhawks,UTM,Martin,TN,USA,20,Big South-OVC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+203,Albany,Great Danes,ALB,Albany,NY,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+204,Bryant,Bulldogs,BRY,Smithfield,RI,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+205,Campbell,Fighting Camels,CAMP,Buies Creek,NC,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+206,Delaware,Fighting Blue Hens,DEL,Newark,DE,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+207,Elon,Phoenix,ELON,Elon,NC,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+208,Hampton,Pirates,HAMP,Hampton,VA,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+209,Maine,Blackbears,ME,Orono,ME,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+210,Monmouth,Hawks,MONM,West Long Branch,NJ,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+211,New Hampshire,Wildcats,UNH,Durham,NH,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+212,North Carolina A&T,Aggies,NCAT,Greensboro,NC,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+213,Rhode Island,Rams,URI,Kingston,RI,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+214,Richmond,Spiders,RICH,Richmond,VA,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+215,Stony Brook,Seawolves,STBK,Stony Brook,NY,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+216,Towson,Tigers,TOW,Towson,MD,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+217,Villanova,Wildcats,VILL,Philadelphia,PA,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+218,William & Mary,Tribe,W&M,Williamsburg,VA,USA,21,CAA,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+219,Merrimack,Warriors,MRMK,North Andover,MA,USA,22,Independent,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+220,Sacred Heart,Pioneers,SHU,Fairfield,CT,USA,22,Independent,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+221,Delaware State,Hornets,DSU,Dover,DE,USA,23,MEAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+222,Howard,Bison,HOW,Washington,DC,USA,23,MEAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+223,Morgan State,Bears,MORG,Baltimore,MD,USA,23,MEAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+224,Norfolk State,Spartans,NORF,Norfolk,VA,USA,23,MEAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+225,North Carolina Central,Eagles,NCCU,Durham,NC,USA,23,MEAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+226,South Carolina State,Bulldogs,SCST,Orangeburg,SC,USA,23,MEAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+227,Central Connecticut,Blue Devils,CCSU,New Britain,CT,USA,24,NEC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+228,Duquesne,Dukes,DUQ,Pittsburgh,PA,USA,24,NEC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+229,Long Island University,Sharks,LIU,Brooklyn,NY,USA,24,NEC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+230,Mercyhurst,Lakers,MRCY,Erie,PA,USA,24,NEC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+231,Robert Morris,Colonials,RMU,Moon Township,PA,USA,24,NEC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+232,Saint Francis,Red Flash,SFPA,Loretto,PA,USA,24,NEC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+233,Stonehill,Skyhawks,STNH,Easton,MA,USA,24,NEC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+234,Wagner,Seahawks,WAG,Staten Island,NY,USA,24,NEC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+235,Butler,Bulldogs,BUT,Indianapolis,IN,USA,25,Pioneer,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+236,Davidson,Wildcats,DAV,Davidson,NC,USA,25,Pioneer,,,2027,,0,0,0,0,0,,,,0,0,0,,,,
+237,Dayton,Flyers,DAY,Dayton,OH,USA,25,Pioneer,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+238,Drake,Bulldogs,DRKE,Des Moines,IA,USA,25,Pioneer,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+239,Marist,Red Foxes,MRST,Poughkeepsie,NY,USA,25,Pioneer,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+240,Morehead State,Eagles,MORE,Morehead,KY,USA,25,Pioneer,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+241,Presbyterian,Blue Hose,PRE,Clinton,SC,USA,25,Pioneer,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+242,San Diego,Torreros,USD,San Diego,CA,USA,25,Pioneer,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+243,St. Thomas,Tommies,STMN,Saint Paul,MN,USA,25,Pioneer,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+244,Stetson,Hatters,STET,DeLand,FL,USA,25,Pioneer,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+245,Valparaiso,Beacons,VAL,Valparaiso,IN,USA,25,Pioneer,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+246,Houston Christian,Huskies,HCU,Houston,TX,USA,26,Southland,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+247,Incarnate Word,Cardinals,UIW,San Antonio,TX,USA,26,Southland,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+248,Lamar,Cardinals,LAM,Beaumont,TX,USA,26,Southland,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+249,McNeese,Cowboys,MCN,Lake Charles,LA,USA,26,Southland,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+250,Nicholls,Colonels,NICH,Thibodaux,LA,USA,26,Southland,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+251,Northwestern State,Demons,NWST,Natchitotches,LA,USA,26,Southland,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+252,SE Louisiana,Lions,SELA,Hammond,LA,USA,26,Southland,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+253,Texas A&M-Commerce,Lions,TAMC,Commerce,TX,USA,26,Southland,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+254,UT Rio Grande Valley,Vaqueros,RGV,Edinburg,TX,USA,26,Southland,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+255,Abilene Christian,Wildcats,ACU,Abilene,TX,USA,27,UAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+256,Austin Peay,Governors,APSU,Clarksville,TN,USA,27,UAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+257,Central Arkansas,Bears,CARK,Conway,AR,USA,27,UAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+258,Eastern Kentucky,Colonels,EKU,Richmond,KY,USA,27,UAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+259,North Alabama,Lions,UNA,Florence,AL,USA,27,UAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+260,Southern Utah,Thunderbirds,SUU,Cedar City,UT,USA,27,UAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+261,Stephen F. Austin,Lumberjacks,SFA,Nacogdoches,TX,USA,27,UAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+262,Tarleton State,Texans,TAR,Stephenville,TX,USA,27,UAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+263,Utah Tech,Trailblazers,UTU,St. George,UT,USA,27,UAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F
+264,West Georgia,Wolves,UWG,Carrollton,GA,USA,27,UAC,,,2027,,0,0,0,0,0,,,,0,0,0,,F,F,F

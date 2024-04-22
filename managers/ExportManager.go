@@ -553,8 +553,8 @@ func ExportCFBGameResults(w http.ResponseWriter, seasonID, weekID, nflWeekID, ti
 	close(nflMatchChn)
 
 	HeaderRow := []string{
-		"League", "Week", "Game Title", "Timeslot", "Home Team", "Home Coach", "Home Rank", "Home Score",
-		"Away Team", "Away Coach", "Away Rank", "Away Score",
+		"League", "Week", "Home Team", "Home Score",
+		"Away Team", "Away Score", "Home Coach", "Home Rank", "Away Coach", "Away Rank", "Game Title",
 		"Neutral Site", "Conference", "Timeslot", "Stadium", "City", "State",
 	}
 
@@ -575,13 +575,12 @@ func ExportCFBGameResults(w http.ResponseWriter, seasonID, weekID, nflWeekID, ti
 		if m.IsConference {
 			confStr = "Y"
 		}
-		divStr := "N"
 
 		row := []string{
-			"CFB", strconv.Itoa(int(m.Week)), m.GameTitle, m.HomeTeam, m.AwayTeamCoach,
-			strconv.Itoa(int(m.HomeTeamRank)), strconv.Itoa(int(m.HomeTeamScore)),
-			m.AwayTeam, m.AwayTeamCoach, strconv.Itoa(int(m.AwayTeamRank)), strconv.Itoa(int(m.AwayTeamScore)),
-			neutralStr, confStr, divStr, m.TimeSlot, m.Stadium, m.City, m.State,
+			"CFB", strconv.Itoa(int(m.Week)), m.HomeTeam, strconv.Itoa(int(m.HomeTeamScore)),
+			m.AwayTeam, strconv.Itoa(int(m.AwayTeamScore)), m.HomeTeamCoach,
+			strconv.Itoa(int(m.HomeTeamRank)), m.AwayTeamCoach, strconv.Itoa(int(m.AwayTeamRank)), m.GameTitle,
+			neutralStr, confStr, m.TimeSlot, m.Stadium, m.City, m.State,
 		}
 		err = writer.Write(row)
 		if err != nil {

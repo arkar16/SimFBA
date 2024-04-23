@@ -338,7 +338,7 @@ func UpdateNFLGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 	ts := GetTimestamp()
 	if currentGameplan.OffensiveScheme != UpdatedGameplan.OffensiveScheme && !ts.IsNFLOffSeason && !ts.NFLPreseason {
 
-		if ts.NFLWeek != 0 {
+		if ts.NFLWeek != 1 {
 			currentGameplan.ApplySchemePenalty(true)
 		}
 
@@ -348,7 +348,7 @@ func UpdateNFLGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 
 	if currentGameplan.DefensiveScheme != UpdatedGameplan.DefensiveScheme && !ts.IsNFLOffSeason && !ts.NFLPreseason {
 
-		if ts.NFLWeek != 0 {
+		if ts.NFLWeek != 1 {
 			currentGameplan.ApplySchemePenalty(false)
 		}
 		schemeChange = true
@@ -3174,11 +3174,18 @@ func DetermineAIGameplan() {
 
 				isGoodFit := CheckPlayerFits(player, goodFits)
 				isBadFit := CheckPlayerFits(player, badFits)
+				value := 1
+				if p.Position == "ILB" {
+					value = 3
+				}
+				if p.Position == "QB" {
+					value = 5
+				}
 				if isGoodFit {
-					schemeCounter.IncrementScheme(scheme)
+					schemeCounter.IncrementScheme(scheme, value)
 				}
 				if isBadFit {
-					schemeCounter.DecrementScheme(scheme)
+					schemeCounter.DecrementScheme(scheme, value)
 				}
 			}
 		}

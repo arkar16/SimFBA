@@ -611,116 +611,116 @@ type SchemeCount struct {
 	Multiple      int
 }
 
-func (sc *SchemeCount) IncrementScheme(scheme string) {
+func (sc *SchemeCount) IncrementScheme(scheme string, val int) {
 	if scheme == "Power Run" {
-		sc.PowerRun += 1
+		sc.PowerRun += val
 	}
 	if scheme == "Vertical" {
-		sc.Vertical += 1
+		sc.Vertical += val
 	}
 	if scheme == "West Coast" {
-		sc.WestCoast += 1
+		sc.WestCoast += val
 	}
 	if scheme == "I Option" {
-		sc.IOption += 1
+		sc.IOption += val
 	}
 	if scheme == "Run and Shoot" {
-		sc.RunAndShoot += 1
+		sc.RunAndShoot += val
 	}
 	if scheme == "Air Raid" {
-		sc.AirRaid += 1
+		sc.AirRaid += val
 	}
 	if scheme == "Pistol" {
-		sc.Pistol += 1
+		sc.Pistol += val
 	}
 	if scheme == "Spread Option" {
-		sc.SpreadOption += 1
+		sc.SpreadOption += val
 	}
 	if scheme == "Wing-T" {
-		sc.WingT += 1
+		sc.WingT += val
 	}
 	if scheme == "Double Wing" {
-		sc.DoubleWing += 1
+		sc.DoubleWing += val
 	}
 	if scheme == "Flexbone" {
-		sc.Flexbone += 1
+		sc.Flexbone += val
 	}
 	if scheme == "Wishbone" {
-		sc.Wishbone += 1
+		sc.Wishbone += val
 	}
 	if scheme == "Old School" {
-		sc.OldSchool += 1
+		sc.OldSchool += val
 	}
 	if scheme == "2-Gap" {
-		sc.TwoGap += 1
+		sc.TwoGap += val
 	}
 	if scheme == "4-Man Front Spread Stopper" {
-		sc.FourManFront += 1
+		sc.FourManFront += val
 	}
 	if scheme == "3-Man Front Spread Stopper" {
-		sc.ThreeManFront += 1
+		sc.ThreeManFront += val
 	}
 	if scheme == "Speed" {
-		sc.Speed += 1
+		sc.Speed += val
 	}
 	if scheme == "Multiple" {
-		sc.Multiple += 1
+		sc.Multiple += val
 	}
 }
 
-func (sc *SchemeCount) DecrementScheme(scheme string) {
+func (sc *SchemeCount) DecrementScheme(scheme string, val int) {
 	if scheme == "Power Run" {
-		sc.PowerRun -= 1
+		sc.PowerRun -= val
 	}
 	if scheme == "Vertical" {
-		sc.Vertical -= 1
+		sc.Vertical -= val
 	}
 	if scheme == "West Coast" {
-		sc.WestCoast -= 1
+		sc.WestCoast -= val
 	}
 	if scheme == "I Option" {
-		sc.IOption -= 1
+		sc.IOption -= val
 	}
 	if scheme == "Run and Shoot" {
-		sc.RunAndShoot -= 1
+		sc.RunAndShoot -= val
 	}
 	if scheme == "Air Raid" {
-		sc.AirRaid -= 1
+		sc.AirRaid -= val
 	}
 	if scheme == "Pistol" {
-		sc.Pistol -= 1
+		sc.Pistol -= val
 	}
 	if scheme == "Spread Option" {
-		sc.SpreadOption -= 1
+		sc.SpreadOption -= val
 	}
 	if scheme == "Wing-T" {
-		sc.WingT -= 1
+		sc.WingT -= val
 	}
 	if scheme == "Double Wing" {
-		sc.DoubleWing -= 1
+		sc.DoubleWing -= val
 	}
 	if scheme == "Flexbone" {
-		sc.Flexbone -= 1
+		sc.Flexbone -= val
 	}
 	if scheme == "Wishbone" {
-		sc.Wishbone -= 1
+		sc.Wishbone -= val
 	}
 	if scheme == "Old School" {
-		sc.OldSchool -= 1
+		sc.OldSchool -= val
 	}
 	if scheme == "2-Gap" {
-		sc.TwoGap -= 1
+		sc.TwoGap -= val
 	}
 	if scheme == "4-Man Front Spread Stopper" {
-		sc.FourManFront -= 1
+		sc.FourManFront -= val
 	}
 	if scheme == "3-Man Front Spread Stopper" {
-		sc.ThreeManFront -= 1
+		sc.ThreeManFront -= val
 	}
 	if scheme == "Speed" {
-		sc.Speed -= 1
+		sc.Speed -= val
 	}
 	if scheme == "Multiple" {
-		sc.Multiple -= 1
+		sc.Multiple -= val
 	}
 }

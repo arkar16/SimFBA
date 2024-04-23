@@ -45,8 +45,10 @@ func MoveUpWeek() structs.Timestamp {
 	RecoverPlayers()
 	CheckNFLRookiesForLetterGrade(strconv.Itoa(int(ts.NFLSeasonID)))
 	ts.SyncToNextWeek()
+
 	if ts.CollegeWeek < 21 && !ts.CollegeSeasonOver && !ts.IsOffSeason && !ts.CFBSpringGames {
-		SyncCollegePollSubmissionForCurrentWeek()
+		SyncCollegePollSubmissionForCurrentWeek(uint(ts.CollegeWeek), uint(ts.CollegeWeekID), uint(ts.CollegeSeasonID))
+		ts.TogglePollRan()
 	}
 	if ts.NFLWeek > 15 {
 		SyncExtensionOffers()

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/managers"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/gorilla/mux"
@@ -48,7 +49,11 @@ func GetPollSubmission(w http.ResponseWriter, r *http.Request) {
 }
 
 func SyncCollegePoll(w http.ResponseWriter, r *http.Request) {
-	managers.SyncCollegePollSubmissionForCurrentWeek()
+	db := dbprovider.GetInstance().GetDB()
+	ts := managers.GetTimestamp()
+	managers.SyncCollegePollSubmissionForCurrentWeek(uint(ts.CollegeWeek), uint(ts.CollegeWeekID), uint(ts.CollegeSeasonID))
+	ts.TogglePollRan()
+	db.Save(&ts)
 }
 
 func GetOfficialPollsBySeasonID(w http.ResponseWriter, r *http.Request) {

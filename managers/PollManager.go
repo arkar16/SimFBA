@@ -50,15 +50,13 @@ func GetPollSubmissionByUsernameWeekAndSeason(username string) structs.CollegePo
 	return submission
 }
 
-func SyncCollegePollSubmissionForCurrentWeek() {
+func SyncCollegePollSubmissionForCurrentWeek(week, weekID, seasonID uint) {
 	db := dbprovider.GetInstance().GetDB()
 
-	ts := GetTimestamp()
+	weekIDStr := strconv.Itoa(int(weekID))
+	seasonIDStr := strconv.Itoa(int(seasonID))
 
-	weekID := strconv.Itoa(int(ts.CollegeWeekID))
-	seasonID := strconv.Itoa(int(ts.CollegeSeasonID))
-
-	submissions := GetAllCollegePollsByWeekIDAndSeasonID(weekID, seasonID)
+	submissions := GetAllCollegePollsByWeekIDAndSeasonID(weekIDStr, seasonIDStr)
 
 	allCollegeTeams := GetAllCollegeTeams()
 
@@ -113,9 +111,9 @@ func SyncCollegePollSubmissionForCurrentWeek() {
 	})
 
 	officialPoll := structs.CollegePollOfficial{
-		WeekID:   uint(ts.CollegeWeekID),
-		Week:     uint(ts.CollegeWeek),
-		SeasonID: uint(ts.CollegeSeasonID),
+		WeekID:   weekID,
+		Week:     week,
+		SeasonID: seasonID,
 	}
 	for idx, v := range allVotes {
 		if idx > 24 {
@@ -124,26 +122,24 @@ func SyncCollegePollSubmissionForCurrentWeek() {
 		officialPoll.AssignRank(idx, v)
 		// Get Standings
 		teamID := strconv.Itoa(int(v.TeamID))
-		teamStandings := GetCollegeStandingsRecordByTeamID(teamID, seasonID)
+		teamStandings := GetCollegeStandingsRecordByTeamID(teamID, seasonIDStr)
 		rank := idx + 1
 		teamStandings.AssignRank(rank)
 		db.Save(&teamStandings)
 
-		matches := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID)
+		matches := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonIDStr)
 
 		for _, m := range matches {
-			if m.Week < ts.CollegeWeek {
+			if m.Week < int(week) {
 				continue
 			}
-			if m.Week > ts.CollegeWeek {
+			if m.Week > int(week) {
 				break
 			}
 			m.AssignRank(v.TeamID, uint(rank))
 			db.Save(&m)
 		}
 	}
-	ts.TogglePollRan()
-	db.Save(&ts)
 
 	db.Create(&officialPoll)
 }

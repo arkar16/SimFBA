@@ -35,6 +35,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 	if !timestamp.IsRecruitingLocked {
 		timestamp.ToggleLockRecruiting()
+		db.Save(&timestamp)
 	}
 
 	if timestamp.RecruitingSynced {
@@ -219,6 +220,11 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 	}
 
 	updateTeamRankings(teamRecruitingProfiles, teamMap, recruitProfilePointsMap, db)
+
+	if timestamp.IsRecruitingLocked {
+		timestamp.ToggleLockRecruiting()
+		db.Save(&timestamp)
+	}
 
 }
 

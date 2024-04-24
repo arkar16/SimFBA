@@ -33,6 +33,10 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 	fmt.Println(time.Now().UnixNano())
 	//GetCurrentWeek
 
+	if !timestamp.IsRecruitingLocked {
+		timestamp.ToggleLockRecruiting()
+	}
+
 	if timestamp.RecruitingSynced {
 		log.Fatalln("Recruiting already ran for this week. Please wait until next week to sync recruiting again.")
 	}

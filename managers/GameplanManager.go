@@ -585,12 +585,12 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 		if pos == "QB" || pos == "RB" || pos == "FB" || pos == "ATH" {
 			score := 0
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
-				score -= 50
+				score -= 35
 			}
 			if pos == "QB" {
-				score += 100
+				score += 75
 			} else if pos == "ATH" && (arch == "Triple-Threat" || arch == "Field General") {
 				score += 50
 			}
@@ -616,9 +616,9 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 				score += 50
 			}
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
-				score -= 50
+				score -= 40
 			}
 
 			score += ((cp.Speed + cp.Agility + cp.Strength + cp.Carrying) / 4)
@@ -642,7 +642,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
 				score -= 50
 			}
@@ -667,7 +667,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
 				score -= 50
 			}
@@ -692,7 +692,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
 				score -= 50
 			}
@@ -724,7 +724,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
 				score -= 50
 			}
@@ -760,9 +760,9 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 30
+				score += 25
 			} else if isBadFit && !isGoodFit {
-				score -= 30
+				score -= 50
 			}
 
 			score += int(float64(cp.Overall)*0.7) +
@@ -795,7 +795,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
 				score -= 50
 			}
@@ -828,7 +828,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
 				score -= 50
 			}
@@ -868,7 +868,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
 				score -= 50
 			}
@@ -905,7 +905,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
 				score -= 50
 			}
@@ -949,7 +949,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
 				score -= 50
 			}
@@ -986,7 +986,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
 				score -= 50
 			}
@@ -1022,7 +1022,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			}
 
 			if isGoodFit && !isBadFit {
-				score += 50
+				score += 25
 			} else if isBadFit && !isGoodFit {
 				score -= 50
 			}

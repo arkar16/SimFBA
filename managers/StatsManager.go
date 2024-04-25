@@ -1434,7 +1434,7 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 			los = 100 - los
 		}
 		outside := los + play.KickDistance
-		netReturnYards := play.ResultYards - outside
+		netReturnYards := outside - play.ResultYards
 		resultYdsStr := strconv.Itoa(int(netReturnYards))
 		resultYards := util.GetYardsString(netReturnYards)
 		if !play.IsTouchback {
@@ -1644,8 +1644,8 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 		}
 		outside := los + play.KickDistance
 		// Line of Scrimmage + kick distance = ball spot  // Result yards - ball spot = actual yards ran // Ball spot - yards ran = next line of scrimmage
-		resultYards := util.GetYardsString(play.ResultYards)
-		netReturnYards := play.ResultYards - outside
+		netReturnYards := outside - play.ResultYards
+		resultYards := util.GetYardsString(netReturnYards)
 		resultYdsStr := strconv.Itoa(int(netReturnYards))
 		if !play.IsTouchback {
 			resultYdsStr = strconv.Itoa(int(netReturnYards))

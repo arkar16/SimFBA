@@ -10,7 +10,6 @@ import (
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
-	"github.com/CalebRose/SimFBA/util"
 	"gorm.io/gorm"
 )
 
@@ -491,8 +490,8 @@ func CheckAllUserDepthChartsForInjuredPlayers() {
 func MassUpdateGameplanSchemes(off, def string) {
 	db := dbprovider.GetInstance().GetDB()
 	teams := GetAllCollegeTeams()
-	offensiveSchemes := util.GetOffensiveDefaultSchemes()
-	defensiveSchemes := util.GetDefensiveDefaultSchemes()
+	offensiveSchemes := GetOffensiveDefaultSchemes()
+	defensiveSchemes := GetDefensiveDefaultSchemes()
 	for _, team := range teams {
 		teamID := strconv.Itoa(int(team.ID))
 		gp := GetGameplanByTeamID(teamID)
@@ -2228,8 +2227,8 @@ func GetTestDefensiveSchemesByTeamID(id uint) string {
 func MassUpdateGameplanSchemesTEST(off, def string) {
 	db := dbprovider.GetInstance().GetDB()
 	teams := GetAllCollegeTeams()
-	offensiveSchemes := util.GetOffensiveDefaultSchemes()
-	defensiveSchemes := util.GetDefensiveDefaultSchemes()
+	offensiveSchemes := GetOffensiveDefaultSchemes()
+	defensiveSchemes := GetDefensiveDefaultSchemes()
 	for _, team := range teams {
 		teamID := strconv.Itoa(int(team.ID))
 		gp := GetGameplanTESTByTeamID(teamID)
@@ -2272,8 +2271,8 @@ func MassUpdateGameplanSchemesTEST(off, def string) {
 
 func UpdateIndividualGameplanSchemeTEST(teamID, off, def string) {
 	db := dbprovider.GetInstance().GetDB()
-	offensiveSchemes := util.GetOffensiveDefaultSchemes()
-	defensiveSchemes := util.GetDefensiveDefaultSchemes()
+	offensiveSchemes := GetOffensiveDefaultSchemes()
+	defensiveSchemes := GetDefensiveDefaultSchemes()
 
 	gp := GetGameplanTESTByTeamID(teamID)
 	gp.UpdateSchemes(off, def)
@@ -3070,8 +3069,8 @@ func DetermineAIGameplan() {
 	db := dbprovider.GetInstance().GetDB()
 
 	teams := GetAllCollegeTeams()
-	offensiveSchemes := util.GetOffensiveDefaultSchemes()
-	defensiveSchemes := util.GetDefensiveDefaultSchemes()
+	offensiveSchemes := GetOffensiveDefaultSchemes()
+	defensiveSchemes := GetDefensiveDefaultSchemes()
 	goodFitsPR := GetFitsByScheme("Power Run", false)
 	badFitsPR := GetFitsByScheme("Power Run", true)
 	goodFitsV := GetFitsByScheme("Vertical", false)
@@ -3304,8 +3303,8 @@ func SetAIGameplan() {
 	seasonID := strconv.Itoa(ts.CollegeSeasonID)
 	teams := GetAllAvailableCollegeTeams()
 	gameplanMap := GetCollegeGameplanMap()
-	offensiveSchemes := util.GetOffensiveDefaultSchemes()
-	defensiveSchemes := util.GetDefensiveDefaultSchemes()
+	offensiveSchemes := GetOffensiveDefaultSchemes()
+	defensiveSchemes := GetDefensiveDefaultSchemes()
 	for _, t := range teams {
 		if t.Coach != "AI" {
 			continue

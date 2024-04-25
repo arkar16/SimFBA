@@ -178,40 +178,6 @@ func ImportRecruitAICSV() {
 	}
 }
 
-func GetMissingRecruitingClasses() {
-	db := dbprovider.GetInstance().GetDB()
-
-	teams := GetAllCollegeTeams()
-	for _, team := range teams {
-		if team.ID < 131 || team.ID > 134 {
-			continue
-		}
-
-		count := 0
-		limit := 20
-
-		positionMap := make(map[string]int)
-
-		unsignedPlayers := GetLeftoverRecruits()
-
-		for _, croot := range unsignedPlayers {
-			if count == limit {
-				break
-			}
-			if (croot.Position != "K" && croot.Position != "P") && positionMap[croot.Position] > 1 || (croot.Position == "K" || croot.Position == "P" && positionMap[croot.Position] > 0) {
-				continue
-			}
-			positionMap[croot.Position] += 1
-			count++
-			collegePlayer := (structs.CollegePlayer)(croot)
-			collegePlayer.AssignTeamValues(team)
-
-			db.Create(&collegePlayer)
-			db.Delete(&croot)
-		}
-	}
-}
-
 func GetLeftoverRecruits() []structs.UnsignedPlayer {
 	db := dbprovider.GetInstance().GetDB()
 	var unsignedPlayers []structs.UnsignedPlayer

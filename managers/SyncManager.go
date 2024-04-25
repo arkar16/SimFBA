@@ -189,7 +189,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 						}
 
 					} else {
-						recruitProfilesWithScholarship = util.FilterOutRecruitingProfile(recruitProfilesWithScholarship, winningTeamID)
+						recruitProfilesWithScholarship = FilterOutRecruitingProfile(recruitProfilesWithScholarship, winningTeamID)
 						winningTeamID = 0
 						if len(recruitProfilesWithScholarship) == 0 {
 							break
@@ -253,14 +253,14 @@ func SyncRecruitingEfficiency(timestamp structs.Timestamp) {
 		currentSeasonGames := GetCollegeGamesByTeamIdAndSeasonId(
 			strconv.Itoa(teamProfile.TeamID), strconv.Itoa(timestamp.CollegeSeasonID))
 
-		currentSeasonWins, currentSeasonLosses := util.GetWinsAndLossesForCollegeGames(currentSeasonGames, teamProfile.TeamID, false)
-		currentConferenceWins, currentConferenceLosses := util.GetWinsAndLossesForCollegeGames(currentSeasonGames, teamProfile.TeamID, true)
+		currentSeasonWins, currentSeasonLosses := GetWinsAndLossesForCollegeGames(currentSeasonGames, teamProfile.TeamID, false)
+		currentConferenceWins, currentConferenceLosses := GetWinsAndLossesForCollegeGames(currentSeasonGames, teamProfile.TeamID, true)
 
 		previousSeasonGames := GetCollegeGamesByTeamIdAndSeasonId(
 			strconv.Itoa(teamProfile.TeamID), strconv.Itoa(timestamp.CollegeSeasonID-1))
 
-		previousSeasonWins, previousSeasonLosses := util.GetWinsAndLossesForCollegeGames(previousSeasonGames, teamProfile.TeamID, false)
-		previousConferenceWins, previousConferenceLosses := util.GetWinsAndLossesForCollegeGames(previousSeasonGames, teamProfile.TeamID, true)
+		previousSeasonWins, previousSeasonLosses := GetWinsAndLossesForCollegeGames(previousSeasonGames, teamProfile.TeamID, false)
+		previousConferenceWins, previousConferenceLosses := GetWinsAndLossesForCollegeGames(previousSeasonGames, teamProfile.TeamID, true)
 		// Do calculation for current season losses
 
 		// Current Season Win Percentage
@@ -280,11 +280,11 @@ func SyncRecruitingEfficiency(timestamp structs.Timestamp) {
 		var postseasonweight float64 = 0.025
 
 		if timestamp.CollegeWeek < 15 {
-			postSeasonVal = util.GetPostSeasonWeight(previousSeasonGames, teamProfile.TeamID)
-			conferenceChampionshipVal = util.GetConferenceChampionshipWeight(previousSeasonGames, teamProfile.TeamID)
+			postSeasonVal = GetPostSeasonWeight(previousSeasonGames, teamProfile.TeamID)
+			conferenceChampionshipVal = GetConferenceChampionshipWeight(previousSeasonGames, teamProfile.TeamID)
 		} else {
-			postSeasonVal = util.GetPostSeasonWeight(currentSeasonGames, teamProfile.TeamID)
-			conferenceChampionshipVal = util.GetConferenceChampionshipWeight(currentSeasonGames, teamProfile.TeamID)
+			postSeasonVal = GetPostSeasonWeight(currentSeasonGames, teamProfile.TeamID)
+			conferenceChampionshipVal = GetConferenceChampionshipWeight(currentSeasonGames, teamProfile.TeamID)
 		}
 
 		if currentSeasonWins+currentSeasonLosses > 0 {
@@ -603,7 +603,7 @@ func FillAIRecruitingBoards() {
 				teamCount++
 			}
 
-			leadingVal := util.IsAITeamContendingForCroot(crootProfiles)
+			leadingVal := IsAITeamContendingForCroot(crootProfiles)
 			if leadingVal > 15 {
 				continue
 			}
@@ -701,7 +701,7 @@ func AllocatePointsToAIBoards() {
 				profiles := GetRecruitPlayerProfilesByRecruitId(recruitID)
 
 				if croot.PreviousWeekPoints > 0 {
-					leadingTeamVal := util.IsAITeamContendingForCroot(profiles)
+					leadingTeamVal := IsAITeamContendingForCroot(profiles)
 
 					if croot.PreviousWeekPoints+croot.TotalPoints >= leadingTeamVal*0.66 || leadingTeamVal < 15 {
 						num = croot.PreviousWeekPoints
@@ -729,7 +729,7 @@ func AllocatePointsToAIBoards() {
 						num = pointsRemaining
 					}
 
-					leadingTeamVal := util.IsAITeamContendingForCroot(profiles)
+					leadingTeamVal := IsAITeamContendingForCroot(profiles)
 
 					if float64(num)+croot.TotalPoints < leadingTeamVal*0.66 {
 						removeCrootFromBoard = true

@@ -8,12 +8,11 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
-	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
 	"gorm.io/gorm"
 )
 
-func GetAllRecruits() []models.Croot {
+func GetAllRecruits() []structs.Croot {
 	db := dbprovider.GetInstance().GetDB()
 
 	var recruits []structs.Recruit
@@ -22,15 +21,15 @@ func GetAllRecruits() []models.Croot {
 		return db.Order("total_points DESC")
 	}).Find(&recruits)
 
-	var croots []models.Croot
+	var croots []structs.Croot
 	for _, recruit := range recruits {
-		var croot models.Croot
+		var croot structs.Croot
 		croot.Map(recruit)
 
 		croots = append(croots, croot)
 	}
 
-	sort.Sort(models.ByCrootRank(croots))
+	sort.Sort(structs.ByCrootRank(croots))
 
 	return croots
 }
@@ -58,7 +57,7 @@ func GetCollegeRecruitByRecruitID(recruitID string) structs.Recruit {
 	return recruit
 }
 
-func GetCollegeRecruitViaDiscord(id string) models.Croot {
+func GetCollegeRecruitViaDiscord(id string) structs.Croot {
 	db := dbprovider.GetInstance().GetDB()
 
 	var recruit structs.Recruit
@@ -68,7 +67,7 @@ func GetCollegeRecruitViaDiscord(id string) models.Croot {
 		log.Fatalln(err)
 	}
 
-	var croot models.Croot
+	var croot structs.Croot
 
 	croot.Map(recruit)
 

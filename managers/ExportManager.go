@@ -7,7 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 )
@@ -39,7 +38,7 @@ func ExportAllRostersToCSV(w http.ResponseWriter) {
 	players := GetAllCollegePlayers()
 
 	for _, player := range players {
-		csvModel := models.MapPlayerToCSVModel(player)
+		csvModel := structs.MapPlayerToCSVModel(player)
 		idStr := strconv.Itoa(int(player.ID))
 		playerRow := []string{
 			player.TeamAbbr, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
@@ -97,7 +96,7 @@ func ExportTeamToCSV(TeamID string, w http.ResponseWriter) {
 	}
 
 	for _, player := range players {
-		csvModel := models.MapPlayerToCSVModel(player)
+		csvModel := structs.MapPlayerToCSVModel(player)
 		idStr := strconv.Itoa(int(player.ID))
 		playerRow := []string{
 			team.TeamName, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
@@ -155,7 +154,7 @@ func ExportNFLTeamToCSV(TeamID string, w http.ResponseWriter) {
 	}
 
 	for _, player := range players {
-		csvModel := models.MapNFLPlayerToCSVModel(player)
+		csvModel := structs.MapNFLPlayerToCSVModel(player)
 		playerRow := []string{
 			team.TeamName, csvModel.FirstName, csvModel.LastName, csvModel.Position,
 			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age),
@@ -289,7 +288,7 @@ func ExportDrafteesToCSV(w http.ResponseWriter) {
 	}
 }
 
-func ExportPlayerStatsToCSV(cp []models.CollegePlayerResponse, w http.ResponseWriter) {
+func ExportPlayerStatsToCSV(cp []structs.CollegePlayerResponse, w http.ResponseWriter) {
 	w.Header().Set("Content-Disposition", "attachment;filename=special_season_stats.csv")
 	w.Header().Set("Transfer-Encoding", "chunked")
 	// Initialize writer
@@ -370,7 +369,7 @@ func ExportTransferPlayersToCSV(transfers []structs.CollegePlayer, w http.Respon
 	}
 
 	for _, player := range transfers {
-		csvModel := models.MapPlayerToCSVModel(player)
+		csvModel := structs.MapPlayerToCSVModel(player)
 		playerRow := []string{
 			player.TeamAbbr, csvModel.FirstName, csvModel.LastName, strconv.Itoa(player.Stars),
 			csvModel.Archetype, csvModel.Position,

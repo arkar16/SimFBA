@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/managers"
-	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/gorilla/mux"
 )
@@ -60,7 +59,7 @@ func ExportPlayerStatsToCSV(w http.ResponseWriter, r *http.Request) {
 		conferenceNameMap[int(team.ID)] = team.Conference
 	}
 
-	playersChan := make(chan []models.CollegePlayerResponse)
+	playersChan := make(chan []structs.CollegePlayerResponse)
 	go func() {
 		cp := managers.GetAllCollegePlayersWithStatsBySeasonID(conferenceMap, conferenceNameMap, strconv.Itoa(ts.CollegeSeasonID), "", "SEASON")
 		playersChan <- cp
@@ -120,7 +119,7 @@ func GetStatsPageContentForSeason(w http.ResponseWriter, r *http.Request) {
 		panic("User did not provide TeamID")
 	}
 
-	teamsChan := make(chan []models.CollegeTeamResponse)
+	teamsChan := make(chan []structs.CollegeTeamResponse)
 
 	go func() {
 		ct := managers.GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType)
@@ -138,7 +137,7 @@ func GetStatsPageContentForSeason(w http.ResponseWriter, r *http.Request) {
 		conferenceNameMap[int(team.ID)] = team.Conference
 	}
 
-	playersChan := make(chan []models.CollegePlayerResponse)
+	playersChan := make(chan []structs.CollegePlayerResponse)
 	go func() {
 		cp := managers.GetAllCollegePlayersWithStatsBySeasonID(conferenceMap, conferenceNameMap, seasonID, weekID, viewType)
 		playersChan <- cp
@@ -156,7 +155,7 @@ func GetStatsPageContentForSeason(w http.ResponseWriter, r *http.Request) {
 	collegeConferences := <-confChan
 	close(confChan)
 
-	response := models.SimCFBStatsResponse{
+	response := structs.SimCFBStatsResponse{
 		CollegePlayers:     collegePlayers,
 		CollegeTeams:       collegeTeams,
 		CollegeConferences: collegeConferences,
@@ -180,7 +179,7 @@ func GetNFLStatsPageContent(w http.ResponseWriter, r *http.Request) {
 		panic("User did not provide TeamID")
 	}
 
-	teamsChan := make(chan []models.NFLTeamResponse)
+	teamsChan := make(chan []structs.NFLTeamResponse)
 
 	go func() {
 		ct := managers.GetAllNFLTeamsWithStatsBySeasonID(seasonID, weekID, viewType)
@@ -201,7 +200,7 @@ func GetNFLStatsPageContent(w http.ResponseWriter, r *http.Request) {
 		divisionNameMap[int(team.ID)] = team.Division
 	}
 
-	playersChan := make(chan []models.NFLPlayerResponse)
+	playersChan := make(chan []structs.NFLPlayerResponse)
 	go func() {
 		cp := managers.GetAllNFLPlayersWithStatsBySeasonID(conferenceMap, divisionMap, conferenceNameMap, divisionNameMap, seasonID, weekID, viewType)
 		playersChan <- cp
@@ -210,7 +209,7 @@ func GetNFLStatsPageContent(w http.ResponseWriter, r *http.Request) {
 	nflPlayers := <-playersChan
 	close(playersChan)
 
-	response := models.SimNFLStatsResponse{
+	response := structs.SimNFLStatsResponse{
 		NFLPlayers: nflPlayers,
 		NFLTeams:   nflTeams,
 	}

@@ -116,3 +116,24 @@ func SaveNFLTeamRecord(team structs.NFLTeam, db *gorm.DB) {
 		log.Panicln("Could not save team profile")
 	}
 }
+
+func SaveTransferPortalProfile(profile structs.TransferPortalProfile, db *gorm.DB) {
+	profile.CollegePlayer = structs.CollegePlayer{}
+	profile.Promise = structs.CollegePromise{}
+
+	err := db.Save(&profile).Error
+	if err != nil {
+		log.Panicln("Could not save player record")
+	}
+}
+
+func SaveCollegePlayerRecord(player structs.CollegePlayer, db *gorm.DB) {
+	player.Stats = nil
+	player.SeasonStats = structs.CollegePlayerSeasonStats{}
+	player.Profiles = nil
+
+	err := db.Save(&player).Error
+	if err != nil {
+		log.Panicln("Could not save player record")
+	}
+}

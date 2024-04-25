@@ -32,6 +32,16 @@ func GetCareerCollegePlayerStatsByPlayerID(PlayerID string) []structs.CollegePla
 	return playerStats
 }
 
+func GetCollegePlayerSeasonStatsByPlayerIDAndSeason(PlayerID string, SeasonID string) structs.CollegePlayerSeasonStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats structs.CollegePlayerSeasonStats
+
+	db.Where("college_player_id = ? and season_id = ?", PlayerID, SeasonID).Find(&playerStats)
+
+	return playerStats
+}
+
 func GetCollegePlayerStatsByPlayerIDAndSeason(PlayerID string, SeasonID string) []structs.CollegePlayerStats {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -337,7 +347,7 @@ func GetNFLHistoricalTeamStats(TeamID string, SeasonID string) []structs.NFLTeam
 	return teamStats
 }
 
-func GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []models.CollegeTeamResponse {
+func GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []structs.CollegeTeamResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	var teams []structs.CollegeTeam
@@ -352,7 +362,7 @@ func GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []
 		}).Find(&teams)
 	}
 
-	var ctResponse []models.CollegeTeamResponse
+	var ctResponse []structs.CollegeTeamResponse
 
 	for _, team := range teams {
 		if len(team.TeamStats) == 0 && viewType == "WEEK" {
@@ -362,7 +372,7 @@ func GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []
 		if viewType == "WEEK" {
 			teamstat = team.TeamStats[0]
 		}
-		ct := models.CollegeTeamResponse{
+		ct := structs.CollegeTeamResponse{
 			ID:           int(team.ID),
 			BaseTeam:     team.BaseTeam,
 			ConferenceID: team.ConferenceID,
@@ -379,7 +389,7 @@ func GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []
 	return ctResponse
 }
 
-func GetAllNFLTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []models.NFLTeamResponse {
+func GetAllNFLTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []structs.NFLTeamResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	var teams []structs.NFLTeam
@@ -394,7 +404,7 @@ func GetAllNFLTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []mode
 		}).Find(&teams)
 	}
 
-	var ctResponse []models.NFLTeamResponse
+	var ctResponse []structs.NFLTeamResponse
 
 	for _, team := range teams {
 		if len(team.TeamStats) == 0 && viewType == "WEEK" {
@@ -407,7 +417,7 @@ func GetAllNFLTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []mode
 		} else if len(team.TeamSeasonStats) > 0 {
 			seasonstat = team.TeamSeasonStats[0]
 		}
-		ct := models.NFLTeamResponse{
+		ct := structs.NFLTeamResponse{
 			ID:           int(team.ID),
 			BaseTeam:     team.BaseTeam,
 			ConferenceID: int(team.ConferenceID),
@@ -1343,7 +1353,6 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 	firstSegment := ""
 	secondSegment := ""
 	thirdSegment := ""
-
 	// First Segment
 	if playType == "Pass" {
 		qbLabel := getPlayerLabel(participantMap[qbID])
@@ -1420,10 +1429,16 @@ func generateResultsString(play structs.PlayByPlay, playType, playName string, p
 		distanceStr := util.GetYardsString(play.KickDistance)
 		verb := " punts for "
 		firstSegment = kickerLabel + verb + strconv.Itoa(int(play.KickDistance)) + distanceStr
-		resultYdsStr := strconv.Itoa(int(play.ResultYards + 20))
-		resultYards := util.GetYardsString(play.ResultYards)
+		los := play.LineOfScrimmage
+		if los > 50 {
+			los = 100 - los
+		}
+		outside := los + play.KickDistance
+		netReturnYards := play.ResultYards - outside
+		resultYdsStr := strconv.Itoa(int(netReturnYards))
+		resultYards := util.GetYardsString(netReturnYards)
 		if !play.IsTouchback {
-			resultYdsStr = strconv.Itoa(int(play.ResultYards))
+			resultYdsStr = strconv.Itoa(int(netReturnYards))
 		}
 
 		if play.IsBlocked {
@@ -1623,10 +1638,17 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 		distanceStr := util.GetYardsString(play.KickDistance)
 		verb := util.GetPuntVerb()
 		firstSegment = kickerLabel + verb + strconv.Itoa(int(play.KickDistance)) + distanceStr
-		resultYdsStr := strconv.Itoa(int(play.ResultYards + 20))
+		los := play.LineOfScrimmage
+		if los > 50 {
+			los = 100 - los
+		}
+		outside := los + play.KickDistance
+		// Line of Scrimmage + kick distance = ball spot  // Result yards - ball spot = actual yards ran // Ball spot - yards ran = next line of scrimmage
 		resultYards := util.GetYardsString(play.ResultYards)
+		netReturnYards := play.ResultYards - outside
+		resultYdsStr := strconv.Itoa(int(netReturnYards))
 		if !play.IsTouchback {
-			resultYdsStr = strconv.Itoa(int(play.ResultYards))
+			resultYdsStr = strconv.Itoa(int(netReturnYards))
 		}
 		if play.IsBlocked {
 			blockerLabel := getPlayerLabel(participantMap[turnID])
@@ -1639,7 +1661,7 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 			tb := util.GetTouchbackStatement()
 			firstSegment += tb
 		} else {
-			verb := util.GetReturnVerb(int(play.ResultYards), play.IsTouchdown, play.IsOutOfBounds)
+			verb := util.GetReturnVerb(int(netReturnYards), play.IsTouchdown, play.IsOutOfBounds)
 			firstSegment += recLabel + verb + resultYdsStr + resultYards
 		}
 	} else if playType == "XP" {

@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
-	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
@@ -104,7 +103,7 @@ func GetRecruitingProfileForDashboardByTeamID(TeamID string) structs.RecruitingT
 	return profile
 }
 
-func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) models.SimTeamBoardResponse {
+func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) structs.SimTeamBoardResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	var profile structs.RecruitingTeamProfile
@@ -116,13 +115,13 @@ func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) models.SimTeamBoard
 		log.Panicln(err)
 	}
 
-	var teamProfileResponse models.SimTeamBoardResponse
-	var crootProfiles []models.CrootProfile
+	var teamProfileResponse structs.SimTeamBoardResponse
+	var crootProfiles []structs.CrootProfile
 
 	// iterate through player recruit profiles --> get recruit with preload to player profiles
 	for i := 0; i < len(profile.Recruits); i++ {
-		var crootProfile models.CrootProfile
-		var croot models.Croot
+		var crootProfile structs.CrootProfile
+		var croot structs.Croot
 
 		croot.Map(profile.Recruits[i].Recruit)
 
@@ -131,7 +130,7 @@ func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) models.SimTeamBoard
 		crootProfiles = append(crootProfiles, crootProfile)
 	}
 
-	sort.Sort(models.ByCrootProfileTotal(crootProfiles))
+	sort.Sort(structs.ByCrootProfileTotal(crootProfiles))
 
 	teamProfileResponse.Map(profile, crootProfiles)
 
@@ -151,7 +150,7 @@ func GetOnlyAITeamRecruitingProfiles() []structs.RecruitingTeamProfile {
 	return profiles
 }
 
-func GetRecruitingClassByTeamID(TeamID string) models.SimTeamBoardResponse {
+func GetRecruitingClassByTeamID(TeamID string) structs.SimTeamBoardResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	var profile structs.RecruitingTeamProfile
@@ -163,15 +162,15 @@ func GetRecruitingClassByTeamID(TeamID string) models.SimTeamBoardResponse {
 		log.Panicln(err)
 	}
 
-	var teamProfileResponse models.SimTeamBoardResponse
-	var crootProfiles []models.CrootProfile
+	var teamProfileResponse structs.SimTeamBoardResponse
+	var crootProfiles []structs.CrootProfile
 
 	// iterate through player recruit profiles --> get recruit with preload to player profiles
 	for i := 0; i < len(profile.Recruits); i++ {
 		if profile.Recruits[i].IsSigned && profile.Recruits[i].Recruit.College == profile.TeamAbbreviation {
-			var crootProfile models.CrootProfile
+			var crootProfile structs.CrootProfile
 
-			var croot models.Croot
+			var croot structs.Croot
 
 			croot.Map(profile.Recruits[i].Recruit)
 
@@ -182,7 +181,7 @@ func GetRecruitingClassByTeamID(TeamID string) models.SimTeamBoardResponse {
 
 	}
 
-	sort.Sort(models.ByCrootProfileTotal(crootProfiles))
+	sort.Sort(structs.ByCrootProfileTotal(crootProfiles))
 
 	teamProfileResponse.Map(profile, crootProfiles)
 

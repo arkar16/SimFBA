@@ -9,71 +9,7 @@ import (
 	"os"
 	"path/filepath"
 	"strconv"
-
-	"github.com/CalebRose/SimFBA/structs"
 )
-
-func GetWinsAndLossesForCollegeGames(games []structs.CollegeGame, TeamID int, ConferenceCheck bool) (int, int) {
-	wins := 0
-	losses := 0
-
-	for _, game := range games {
-		if !game.GameComplete {
-			continue
-		}
-		if ConferenceCheck && !game.IsConference {
-			continue
-		}
-		if (game.HomeTeamID == TeamID && game.HomeTeamWin) ||
-			(game.AwayTeamID == TeamID && game.AwayTeamWin) {
-			wins += 1
-		} else {
-			losses += 1
-		}
-	}
-
-	return wins, losses
-}
-
-func GetConferenceChampionshipWeight(games []structs.CollegeGame, TeamID int) float64 {
-	var weight float64 = 0
-
-	for _, game := range games {
-		if !game.IsConference {
-			continue
-		}
-		if (game.HomeTeamID == TeamID && game.HomeTeamScore > game.AwayTeamScore) ||
-			(game.AwayTeamID == TeamID && game.AwayTeamScore > game.HomeTeamScore) {
-			weight = 1
-		} else {
-			weight = 0.5
-		}
-	}
-
-	return weight
-}
-
-func GetPostSeasonWeight(games []structs.CollegeGame, TeamID int) float64 {
-	for _, game := range games {
-		if !game.IsPlayoffGame || !game.IsBowlGame {
-			continue
-		}
-		return 1
-	}
-	return 0
-}
-
-func FilterOutRecruitingProfile(profiles []structs.RecruitPlayerProfile, ID int) []structs.RecruitPlayerProfile {
-	var rp []structs.RecruitPlayerProfile
-
-	for _, profile := range profiles {
-		if profile.ProfileID != ID {
-			rp = append(rp, profile)
-		}
-	}
-
-	return rp
-}
 
 func GetTeamPointsMap() map[string]float64 {
 	return map[string]float64{
@@ -234,20 +170,6 @@ func ConvertStringToBool(str string) bool {
 		return false
 	}
 	return true
-}
-
-func IsAITeamContendingForCroot(profiles []structs.RecruitPlayerProfile) float64 {
-	if len(profiles) == 0 {
-		return 0
-	}
-	var leadingVal float64 = 0
-	for _, profile := range profiles {
-		if profile.TotalPoints != 0 && profile.TotalPoints > float64(leadingVal) {
-			leadingVal = profile.TotalPoints
-		}
-	}
-
-	return leadingVal
 }
 
 func ReadJson(path string) []byte {

@@ -83,3 +83,11 @@ func CreateNFLSeasonSnaps(snap structs.NFLPlayerSeasonSnaps, db *gorm.DB) {
 		log.Panicln("Could not create cfb snaps record!")
 	}
 }
+
+func CreateCollegePromiseRecord(promise structs.CollegePromise, db *gorm.DB) {
+	// Save College Player Record
+	err := db.Create(&promise).Error
+	if err != nil {
+		log.Panicln("Could not save new college recruit record")
+	}
+}

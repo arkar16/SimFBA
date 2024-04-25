@@ -62,10 +62,6 @@ func ImportUDFAs(w http.ResponseWriter, r *http.Request) {
 	managers.ImportUDFAs()
 }
 
-func GetMissingRecruitingClasses(w http.ResponseWriter, r *http.Request) {
-	managers.GetMissingRecruitingClasses()
-}
-
 func UpdateDraftPicksForDraft(w http.ResponseWriter, r *http.Request) {
 	managers.UpdateDraftPicks()
 }

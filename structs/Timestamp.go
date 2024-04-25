@@ -196,3 +196,36 @@ func (t *Timestamp) ToggleDraftTime() {
 func (t *Timestamp) TogglePollRan() {
 	t.CollegePollRan = !t.CollegePollRan
 }
+
+func (t *Timestamp) EndTheCollegeSeason() {
+	t.IsOffSeason = true
+	t.TransferPortalPhase = 1
+	t.CollegeSeasonOver = true
+}
+
+func (t *Timestamp) ClosePortal() {
+	t.TransferPortalPhase = 0
+}
+
+func (t *Timestamp) EnactPromisePhase() {
+	t.TransferPortalPhase = 2
+}
+
+func (t *Timestamp) EnactPortalPhase() {
+	t.TransferPortalPhase = 3
+}
+
+func (t *Timestamp) IncrementTransferPortalRound() {
+	t.IsRecruitingLocked = false
+	if t.TransferPortalRound < 10 {
+		t.TransferPortalRound += 1
+	}
+}
+
+func (t *Timestamp) EndTheProfessionalSeason() {
+	t.IsNFLOffSeason = true
+	t.FreeAgencyRound = 1
+	t.IsDraftTime = false
+	t.IsFreeAgencyLocked = true
+	t.NFLSeasonOver = true
+}

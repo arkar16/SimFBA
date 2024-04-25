@@ -74,3 +74,18 @@ func GetAllAICollegeCoaches() []structs.CollegeCoach {
 
 	return coaches
 }
+
+func GetActiveCollegeCoachMap() map[uint]structs.CollegeCoach {
+	coachMap := make(map[uint]structs.CollegeCoach)
+
+	coaches := GetAllCollegeCoaches()
+
+	for _, coach := range coaches {
+		if coach.IsRetired || coach.TeamID == 0 {
+			continue
+		}
+		coachMap[coach.TeamID] = coach
+	}
+
+	return coachMap
+}

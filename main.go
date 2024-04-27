@@ -161,7 +161,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/collegeplayers/team/{teamID}/", controller.AllCollegePlayersByTeamID).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/nors/{teamID}/", controller.AllCollegePlayersByTeamIDWithoutRedshirts).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/export/{teamID}/", controller.ExportRosterToCSV).Methods("GET")
-	myRouter.HandleFunc("/collegeplayers/assign/redshirt/", controller.ToggleRedshirtStatusForPlayer).Methods("POST")
+	myRouter.HandleFunc("/collegeplayers/assign/redshirt/{PlayerID}", controller.ToggleRedshirtStatusForPlayer).Methods("GET")
 	myRouter.HandleFunc("/nflplayers/team/{teamID}/", controller.AllNFLPlayersByTeamIDForDC).Methods("GET")
 	myRouter.HandleFunc("/nflplayers/freeagency/available/{teamID}", controller.FreeAgencyAvailablePlayers).Methods("GET")
 	myRouter.HandleFunc("/nflplayers/team/export/{teamID}/", controller.ExportNFLRosterToCSV).Methods("GET")

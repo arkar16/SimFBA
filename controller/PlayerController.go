@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/CalebRose/SimFBA/managers"
 	"github.com/CalebRose/SimFBA/structs"
@@ -92,14 +91,10 @@ func UpdateCollegePlayer(w http.ResponseWriter, r *http.Request) {
 // ToggleRedshirtStatusForPlayer
 func ToggleRedshirtStatusForPlayer(w http.ResponseWriter, r *http.Request) {
 	// Update DTO for College Player
-	var redshirtDTO structs.RedshirtDTO
-	err := json.NewDecoder(r.Body).Decode(&redshirtDTO)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
+	vars := mux.Vars(r)
+	PlayerID := vars["PlayerID"]
 
-	managers.SetRedshirtStatusForPlayer(strconv.Itoa(redshirtDTO.PlayerID))
+	managers.SetRedshirtStatusForPlayer(PlayerID)
 
 	fmt.Println(w, "College Player successfully redshirted.")
 }

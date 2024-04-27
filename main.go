@@ -34,7 +34,7 @@ func handleRequests() {
 	origins := os.Getenv("ORIGIN_ALLOWED")
 	originsOk := handlers.AllowedOrigins([]string{origins})
 	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "Accept", "X-Requested-With"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "PUT", "OPTIONS"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "PUT"})
 	handler := handlers.CORS(originsOk, headersOk, methodsOk)(myRouter)
 	myRouter.Use(middleware.GzipMiddleware)
 
@@ -161,7 +161,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/collegeplayers/team/{teamID}/", controller.AllCollegePlayersByTeamID).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/nors/{teamID}/", controller.AllCollegePlayersByTeamIDWithoutRedshirts).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/team/export/{teamID}/", controller.ExportRosterToCSV).Methods("GET")
-	myRouter.HandleFunc("/collegeplayers/assign/redshirt/{PlayerID}", controller.ToggleRedshirtStatusForPlayer).Methods("GET")
+	myRouter.HandleFunc("/collegeplayers/assign/redshirt/{PlayerID}", controller.ToggleRedshirtStatusForPlayer).Methods("GET", "OPTIONS")
 	myRouter.HandleFunc("/nflplayers/team/{teamID}/", controller.AllNFLPlayersByTeamIDForDC).Methods("GET")
 	myRouter.HandleFunc("/nflplayers/freeagency/available/{teamID}", controller.FreeAgencyAvailablePlayers).Methods("GET")
 	myRouter.HandleFunc("/nflplayers/team/export/{teamID}/", controller.ExportNFLRosterToCSV).Methods("GET")

@@ -544,7 +544,6 @@ func SyncTimeslot(timeslot string) {
 				atr := ""
 				wtr := ""
 				ltr := ""
-				winningVerb := util.GetWinningVerb(ws, ls)
 				if game.HomeTeamRank > 0 {
 					htr = "(" + strconv.Itoa(int(game.HomeTeamRank)) + ") "
 				}
@@ -567,6 +566,7 @@ func SyncTimeslot(timeslot string) {
 					wtr = atr
 					ltr = htr
 				}
+				winningVerb := util.GetWinningVerb(ws, ls)
 
 				message = messageStart + wtr + winningTeam + winningVerb + ltr + losingTeam + " " + strconv.Itoa(ws) + "-" + strconv.Itoa(ls) + " at " + game.Stadium + " in " + game.City + ", " + game.State
 

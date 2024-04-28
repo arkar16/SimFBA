@@ -530,8 +530,8 @@ func SyncTimeslot(timeslot string) {
 				db.Save(&awayTeamStandings)
 			}
 
-			if (game.HomeTeamWin && ((game.HomeTeamRank == 0 && game.AwayTeamRank > 0) || (game.HomeTeamRank > 0 && game.HomeTeamRank < game.AwayTeamRank))) ||
-				(game.AwayTeamWin && ((game.AwayTeamRank == 0 && game.HomeTeamRank > 0) || (game.AwayTeamRank > 0 && game.AwayTeamRank < game.HomeTeamRank))) {
+			if (game.HomeTeamWin && ((game.HomeTeamRank == 0 && game.AwayTeamRank > 0) || (game.HomeTeamRank > 0 && game.AwayTeamRank > 0 && game.HomeTeamRank > game.AwayTeamRank))) ||
+				(game.AwayTeamWin && ((game.AwayTeamRank == 0 && game.HomeTeamRank > 0) || (game.AwayTeamRank > 0 && game.HomeTeamRank > 0 && game.AwayTeamRank > game.HomeTeamRank))) {
 				// NEWS LOG
 				messageStart := "UPSET: "
 				messageType := "Upset Alert"

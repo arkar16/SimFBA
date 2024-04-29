@@ -33,8 +33,8 @@ func handleRequests() {
 	loadEnvs()
 	origins := os.Getenv("ORIGIN_ALLOWED")
 	originsOk := handlers.AllowedOrigins([]string{origins})
-	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "Accept", "X-Requested-With"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "PUT"})
+	headersOk := handlers.AllowedHeaders([]string{"Content-Type", "Authorization", "Accept", "X-Requested-With", "Access-Control-Request-Method", "Access-Control-Request-Headers", "Access-Control-Allow-Origin"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS", "PUT", "HEAD"})
 	handler := handlers.CORS(originsOk, headersOk, methodsOk)(myRouter)
 	myRouter.Use(middleware.GzipMiddleware)
 

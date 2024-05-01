@@ -795,7 +795,6 @@ func UpdateTimestamp(updateTimestampDto structs.UpdateTimestampDto) structs.Time
 
 	if updateTimestampDto.RecruitingSynced && !timestamp.RecruitingSynced && timestamp.IsRecruitingLocked {
 		SyncRecruiting(timestamp)
-		timestamp.ToggleRecruiting()
 	}
 
 	err := db.Save(&timestamp).Error

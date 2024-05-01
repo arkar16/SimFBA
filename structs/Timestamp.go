@@ -109,7 +109,7 @@ func (t *Timestamp) ToggleRES() {
 }
 
 func (t *Timestamp) ToggleRecruiting() {
-	t.RecruitingSynced = !t.RecruitingSynced
+	t.RecruitingSynced = false
 	t.IsRecruitingLocked = false
 }
 

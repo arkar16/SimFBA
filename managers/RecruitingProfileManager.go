@@ -205,6 +205,28 @@ func GetRecruitingNeeds(TeamID string) map[string]int {
 	needsMap := make(map[string]int)
 
 	teamRoster := GetAllCollegePlayersByTeamId(TeamID)
+	// The roster is in dire shape, just open up the team needs
+	if len(teamRoster) <= 50 {
+		needsMap["QB"] = 2
+		needsMap["RB"] = 2
+		needsMap["FB"] = 1
+		needsMap["TE"] = 2
+		needsMap["WR"] = 3
+		needsMap["OT"] = 2
+		needsMap["OG"] = 2
+		needsMap["C"] = 1
+		needsMap["DE"] = 2
+		needsMap["DT"] = 2
+		needsMap["OLB"] = 2
+		needsMap["ILB"] = 2
+		needsMap["CB"] = 2
+		needsMap["FS"] = 1
+		needsMap["SS"] = 1
+		needsMap["P"] = 1
+		needsMap["K"] = 1
+		needsMap["ATH"] = 3
+		return needsMap
+	}
 
 	for _, player := range teamRoster {
 		if player.IsRedshirting {

@@ -830,12 +830,13 @@ func allocatePointsToRecruit(recruit structs.Recruit, recruitProfiles *[]structs
 	}
 	jobs := make(chan int, len(*recruitProfiles))
 	results := make(chan error, len(*recruitProfiles))
+	var m sync.Mutex
 
 	// This starts up numWorkers number of workers, initially blocked because there are no jobs yet.
 	for w := 1; w <= numWorkers; w++ {
 		go func(jobs <-chan int, results chan<- error, w int) {
 			for i := range jobs {
-				err := processRecruitProfile(i, recruit, recruitProfiles, pointLimit, spendingCountAdjusted, pointsPlaced, timestamp, recruitProfilePointsMap, db)
+				err := processRecruitProfile(i, recruit, recruitProfiles, pointLimit, spendingCountAdjusted, pointsPlaced, timestamp, recruitProfilePointsMap, db, &m)
 				results <- err
 			}
 		}(jobs, results, w)
@@ -858,8 +859,7 @@ func allocatePointsToRecruit(recruit structs.Recruit, recruitProfiles *[]structs
 	}
 }
 
-func processRecruitProfile(i int, recruit structs.Recruit, recruitProfiles *[]structs.RecruitPlayerProfile, pointLimit float64, spendingCountAdjusted *bool, pointsPlaced *bool, timestamp structs.Timestamp, recruitProfilePointsMap *map[string]float64, db *gorm.DB) error {
-	m := &sync.Mutex{}
+func processRecruitProfile(i int, recruit structs.Recruit, recruitProfiles *[]structs.RecruitPlayerProfile, pointLimit float64, spendingCountAdjusted *bool, pointsPlaced *bool, timestamp structs.Timestamp, recruitProfilePointsMap *map[string]float64, db *gorm.DB, m *sync.Mutex) error {
 	affinityBonus := 0.1
 
 	if (*recruitProfiles)[i].CurrentWeeksPoints == 0 {

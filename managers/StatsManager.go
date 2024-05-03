@@ -1568,7 +1568,7 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 
 	if play.IsSacked || play.IsTouchdown || play.IsINT || play.IsFumble || play.IsSafety ||
 		(play.ResultYards > 39 && playType != "Kickoff" && playType != "Punt" && playType != "XP" && playType != "FG") {
-		firstSegment = "REDZONE ALERT: <1235669913478365244>\n"
+		firstSegment = "REDZONE ALERT: <@&1235669913478365244>\n"
 	}
 
 	// First Segment

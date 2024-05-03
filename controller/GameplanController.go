@@ -33,8 +33,14 @@ func GetTeamDepthchartByTeamID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	depthchart := managers.GetDepthchartByTeamID(teamID)
+	gameplan := managers.GetGameplanByGameplanID(teamID)
 
-	json.NewEncoder(w).Encode(depthchart)
+	dcResponse := structs.DepthChartResponse{
+		CFBDepthChart: depthchart,
+		CFBGameplan:   gameplan,
+	}
+
+	json.NewEncoder(w).Encode(dcResponse)
 }
 
 // GetDepthChartByTeamID

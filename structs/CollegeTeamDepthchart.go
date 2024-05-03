@@ -2,6 +2,13 @@ package structs
 
 import "github.com/jinzhu/gorm"
 
+type DepthChartResponse struct {
+	CFBDepthChart CollegeTeamDepthChart
+	CFBGameplan   CollegeGameplan
+	NFLDepthChart NFLDepthChart
+	NFLGP         NFLGameplan
+}
+
 type CollegeTeamDepthChart struct {
 	gorm.Model
 	TeamID            int

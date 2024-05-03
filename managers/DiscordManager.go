@@ -309,7 +309,7 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 			HomeTeamDiscordID:   homeTeam.DiscordID,
 			AwayTeamID:          uint(game.AwayTeamID),
 			AwayTeam:            game.AwayTeam,
-			AwayTeamCoach:       game.AwayTeam,
+			AwayTeamCoach:       game.AwayTeamCoach,
 			AwayTeamRank:        game.AwayTeamRank,
 			AwayTeamDiscordID:   awayTeam.DiscordID,
 			AwayLabel:           awayTeam.TeamName + " " + awayTeam.Mascot,

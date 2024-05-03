@@ -1566,6 +1566,11 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 	thirdSegment := ""
 	list := []string{}
 
+	if play.IsSacked || play.IsTouchdown || play.IsINT || play.IsFumble || play.IsSafety ||
+		(play.ResultYards > 39 && playType != "Kickoff" && playType != "Punt" && playType != "XP" && playType != "FG") {
+		firstSegment = "REDZONE ALERT: <1235669913478365244>\n"
+	}
+
 	// First Segment
 	if playType == "Pass" {
 		qbLabel := getPlayerLabel(participantMap[qbID])
@@ -1578,7 +1583,7 @@ func generateStreamString(play structs.PlayByPlay, playType, playName, poa strin
 			turnoverLabel = getPlayerLabel(participantMap[turnID])
 		}
 		yards := util.GetYardsString(play.ResultYards)
-		firstSegment = qbLabel
+		firstSegment += qbLabel
 		offForm := util.GetOffensiveFormationByEnum(play.OffFormationID)
 		passStatement := util.GetPassStatement(int(play.ResultYards), offForm, playName, poa, recLabel, play.IsTouchdown, play.IsOutOfBounds, twoPtCheck, play.IsFumble, play.IsSafety, play.IsScramble, play.IsSacked, play.IsComplete, play.IsINT, turnoverLabel)
 

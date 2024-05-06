@@ -55,6 +55,7 @@ func SyncCollegePollSubmissionForCurrentWeek(week, weekID, seasonID uint) {
 
 	weekIDStr := strconv.Itoa(int(weekID))
 	seasonIDStr := strconv.Itoa(int(seasonID))
+	standingsMap := GetCollegeStandingsMap(seasonIDStr)
 
 	submissions := GetAllCollegePollsByWeekIDAndSeasonID(weekIDStr, seasonIDStr)
 
@@ -67,6 +68,109 @@ func SyncCollegePollSubmissionForCurrentWeek(week, weekID, seasonID uint) {
 	}
 
 	for _, s := range submissions {
+		if week > 3 {
+			// Invalid check
+			s1standings := standingsMap[s.Rank1ID]
+			if s1standings.TotalWins == 0 || !s1standings.IsFBS {
+				continue
+			}
+			s2standings := standingsMap[s.Rank2ID]
+			if s2standings.TotalWins == 0 || !s2standings.IsFBS {
+				continue
+			}
+			s3standings := standingsMap[s.Rank3ID]
+			if s3standings.TotalWins == 0 || !s3standings.IsFBS {
+				continue
+			}
+			s4standings := standingsMap[s.Rank4ID]
+			if s4standings.TotalWins == 0 || !s4standings.IsFBS {
+				continue
+			}
+			s5standings := standingsMap[s.Rank5ID]
+			if s5standings.TotalWins == 0 || !s5standings.IsFBS {
+				continue
+			}
+			s6standings := standingsMap[s.Rank6ID]
+			if s6standings.TotalWins == 0 || !s6standings.IsFBS {
+				continue
+			}
+			s7standings := standingsMap[s.Rank7ID]
+			if s7standings.TotalWins == 0 || !s7standings.IsFBS {
+				continue
+			}
+			s8standings := standingsMap[s.Rank8ID]
+			if s8standings.TotalWins == 0 || !s8standings.IsFBS {
+				continue
+			}
+			s9standings := standingsMap[s.Rank9ID]
+			if s9standings.TotalWins == 0 || !s9standings.IsFBS {
+				continue
+			}
+			s10standings := standingsMap[s.Rank10ID]
+			if s10standings.TotalWins == 0 || !s10standings.IsFBS {
+				continue
+			}
+			s11standings := standingsMap[s.Rank11ID]
+			if s11standings.TotalWins == 0 || !s11standings.IsFBS {
+				continue
+			}
+			s12standings := standingsMap[s.Rank12ID]
+			if s12standings.TotalWins == 0 || !s12standings.IsFBS {
+				continue
+			}
+			s13standings := standingsMap[s.Rank13ID]
+			if s13standings.TotalWins == 0 || !s13standings.IsFBS {
+				continue
+			}
+			s14standings := standingsMap[s.Rank14ID]
+			if s14standings.TotalWins == 0 || !s14standings.IsFBS {
+				continue
+			}
+			s15standings := standingsMap[s.Rank15ID]
+			if s15standings.TotalWins == 0 || !s15standings.IsFBS {
+				continue
+			}
+			s16standings := standingsMap[s.Rank16ID]
+			if s16standings.TotalWins == 0 || !s16standings.IsFBS {
+				continue
+			}
+			s17standings := standingsMap[s.Rank17ID]
+			if s17standings.TotalWins == 0 || !s17standings.IsFBS {
+				continue
+			}
+			s18standings := standingsMap[s.Rank18ID]
+			if s18standings.TotalWins == 0 || !s18standings.IsFBS {
+				continue
+			}
+			s19standings := standingsMap[s.Rank19ID]
+			if s19standings.TotalWins == 0 || !s19standings.IsFBS {
+				continue
+			}
+			s20standings := standingsMap[s.Rank20ID]
+			if s20standings.TotalWins == 0 || !s20standings.IsFBS {
+				continue
+			}
+			s21standings := standingsMap[s.Rank21ID]
+			if s21standings.TotalWins == 0 || !s21standings.IsFBS {
+				continue
+			}
+			s22standings := standingsMap[s.Rank22ID]
+			if s22standings.TotalWins == 0 || !s22standings.IsFBS {
+				continue
+			}
+			s23standings := standingsMap[s.Rank23ID]
+			if s23standings.TotalWins == 0 || !s23standings.IsFBS {
+				continue
+			}
+			s24standings := standingsMap[s.Rank24ID]
+			if s24standings.TotalWins == 0 || !s24standings.IsFBS {
+				continue
+			}
+			s25standings := standingsMap[s.Rank25ID]
+			if s25standings.TotalWins == 0 || !s25standings.IsFBS {
+				continue
+			}
+		}
 		voteMap[s.Rank1ID].AddVotes(1)
 		voteMap[s.Rank2ID].AddVotes(2)
 		voteMap[s.Rank3ID].AddVotes(3)
@@ -115,10 +219,13 @@ func SyncCollegePollSubmissionForCurrentWeek(week, weekID, seasonID uint) {
 		Week:     week,
 		SeasonID: seasonID,
 	}
+	count := 0
 	for idx, v := range allVotes {
-		if idx > 24 {
+		if count > 24 {
 			break
 		}
+
+		count += 1
 		officialPoll.AssignRank(idx, v)
 		// Get Standings
 		teamID := strconv.Itoa(int(v.TeamID))

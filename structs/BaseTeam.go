@@ -21,6 +21,7 @@ type BaseTeam struct {
 	OverallGrade     string
 	OffenseGrade     string
 	DefenseGrade     string
+	PenaltyMarks     uint8
 }
 
 func (bt *BaseTeam) RemoveUserFromTeam() {
@@ -33,4 +34,12 @@ func (bt *BaseTeam) AssignUserToTeam(user string) {
 
 func (bt *BaseTeam) AssignDiscordID(id string) {
 	bt.DiscordID = id
+}
+
+func (bt *BaseTeam) MarkTeamForPenalty() {
+	bt.PenaltyMarks += 1
+}
+
+func (bt *BaseTeam) ResetMarks() {
+	bt.PenaltyMarks = 0
 }

@@ -35,8 +35,8 @@ func GetHeismanScore(cp structs.CollegePlayer, weightMap map[string]float64, hom
 			statScore += (float64(stat.RushingYards) * 0.1)
 			statScore += (float64(stat.RushingTDs) * 6)
 		} else {
-			statScore += (float64(stat.RushingYards) * 0.0775)
-			statScore += (float64(stat.RushingTDs) * 4.75)
+			statScore += (float64(stat.RushingYards) * 0.1)
+			statScore += (float64(stat.RushingTDs) * 5)
 		}
 
 		drops := stat.Targets - stat.Catches

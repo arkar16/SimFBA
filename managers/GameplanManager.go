@@ -788,7 +788,7 @@ func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGame
 			if pos == "C" {
 				score += 100
 			} else if pos == "OG" {
-				score += 25
+				score += 15
 			} else if pos == "ATH" && (arch == "Lineman") {
 				score += 50
 			}
@@ -1312,13 +1312,15 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 	positionMap := make(map[string][]structs.DepthChartPositionDTO)
 	starterMap := make(map[uint]bool)
 	backupMap := make(map[uint]bool)
-
+	stuMap := make(map[uint]bool)
 	offScheme := gp.OffensiveScheme
 	defScheme := gp.DefensiveScheme
 	isLT := true
 	isLG := true
 	isLE := true
 	isLOLB := true
+	goodFits := GetFitsByScheme(offScheme, false)
+	badFits := GetFitsByScheme(defScheme, false)
 
 	// Allocate the Position Map
 	for _, cp := range roster {
@@ -1327,67 +1329,24 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		}
 		pos := cp.Position
 		arch := cp.Archetype
+		player := arch + " " + pos
+		isGoodFit := CheckPlayerFits(player, goodFits)
+		isBadFit := CheckPlayerFits(player, badFits)
 
 		if pos == "QB" || pos == "WR" || pos == "TE" || pos == "RB" || pos == "FB" || pos == "K" || pos == "P" {
-			// Add to QB List
 			score := 0
-			if offScheme == "Pro" {
-				if pos == "QB" {
-					score += 25
-					if arch == "Field General" {
-						score += 20
-					} else if arch == "Pocket" {
-						score += 15
-					} else if arch == "Balanced" {
-						score += 10
-					} else if arch == "Scrambler" {
-						score += 5
-					}
-				}
-				score += cp.ThrowAccuracy
-			} else if offScheme == "Air Raid" {
-				if pos == "QB" {
-					score += 25
-					if arch == "Field General" {
-						score += 15
-					} else if arch == "Pocket" {
-						score += 20
-					} else if arch == "Balanced" {
-						score += 10
-					} else if arch == "Scrambler" {
-						score += 5
-					}
-				}
-				score += cp.ThrowPower
-			} else if offScheme == "Spread Option" {
-				if pos == "QB" {
-					score += 25
-					if arch == "Field General" {
-						score += 10
-					} else if arch == "Pocket" {
-						score += 5
-					} else if arch == "Balanced" {
-						score += 20
-					} else if arch == "Scrambler" {
-						score += 15
-					}
-				}
-				score += cp.ThrowAccuracy
-			} else if offScheme == "Double Wing Option" {
-				if pos == "QB" {
-					score += 20
-					if arch == "Field General" {
-						score += 10
-					} else if arch == "Pocket" {
-						score += 5
-					} else if arch == "Balanced" {
-						score += 15
-					} else if arch == "Scrambler" {
-						score += 20
-					}
-				}
-				score += cp.Speed
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 35
 			}
+			if pos == "QB" {
+				score += 75
+			} else if pos == "ATH" && (arch == "Triple-Threat" || arch == "Field General") {
+				score += 50
+			}
+			score += cp.Overall
+
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
 				Archetype: arch,
@@ -1399,51 +1358,20 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// Add to RB List
 		if pos == "RB" || pos == "FB" || pos == "WR" || pos == "TE" {
 			score := 0
-			if offScheme == "Pro" {
-				if pos == "RB" {
-					score += 45
-				} else if pos == "WR" {
-					score += 25
-				} else if pos == "FB" {
-					score += 15
-				}
-				score += cp.Overall
-			} else if offScheme == "Air Raid" {
-				if pos == "RB" {
-					score += 25
-					if arch == "Receiving" {
-						score += 20
-					} else {
-						score += 10
-
-					}
-				} else {
-					score += 20
-				}
-				score += cp.Catching
-			} else if offScheme == "Spread Option" {
-				if pos == "RB" {
-					score += 45
-				} else if pos == "WR" {
-					score += 25
-				} else if pos == "FB" {
-					score += 15
-				}
-				score += cp.Overall
-			} else if offScheme == "Double Wing Option" {
-				if pos == "RB" {
-					score += 25
-					if arch == "Balanced" {
-						score += 20
-					} else {
-						score += 10
-					}
-				} else {
-					score += 20
-				}
-				score += cp.Overall
+			if pos == "RB" {
+				score += 100
+			} else if pos == "FB" {
+				score += 25
+			} else if pos == "ATH" && (arch == "Wingback" || arch == "Soccer Player" || arch == "Triple-Threat") {
+				score += 50
+			}
+			if isGoodFit && !isBadFit {
+				score += 15
+			} else if isBadFit && !isGoodFit {
+				score -= 40
 			}
 
+			score += ((cp.Speed + cp.Agility + cp.Strength + cp.Carrying) / 4)
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
 				Archetype: arch,
@@ -1456,59 +1384,18 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// Add to FB List
 		if pos == "FB" || pos == "TE" || pos == "RB" || pos == "ILB" || pos == "OLB" {
 			score := 0
-			if offScheme == "Pro" {
-				if pos == "FB" {
-					score += 25
-					if arch == "Blocking" {
-						score += 20
-					} else if arch == "Receiving" {
-						score += 15
-					} else {
-						score += 10
-					}
-				} else {
-					score += 15
-				}
-				score += cp.RunBlock
-			} else if offScheme == "Air Raid" {
-				if pos == "FB" {
-					score += 25
-					if arch == "Receiving" {
-						score += 20
-					} else {
-						score += 10
-					}
-				} else {
-					score += 15
-				}
-				score += cp.Catching
-			} else if offScheme == "Spread Option" {
-				if pos == "FB" {
-					score += 25
-					if arch == "Receiving" {
-						score += 20
-					} else if arch == "Rushing" {
-						score += 15
-					} else {
-						score += 10
-					}
-				} else {
-					score += 15
-				}
-				score += cp.Catching
-			} else if offScheme == "Double Wing Option" {
-				if pos == "FB" {
-					score += 25
-					if arch == "Rushing" {
-						score += 20
-					} else {
-						score += 15
-					}
-				} else {
-					score += 10
-				}
-				score += cp.Strength
+			if pos == "FB" {
+				score += 100
+			} else if pos == "ATH" && (arch == "Wingback") {
+				score += 50
 			}
+
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+			score += ((cp.Strength + cp.Carrying + cp.PassBlock + cp.RunBlock) / 4)
 
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
@@ -1522,57 +1409,20 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// Add to TE List
 		if pos == "FB" || pos == "TE" || pos == "WR" {
 			score := 0
-			if offScheme == "Pro" {
-				if pos == "TE" {
-					score += 25
-					if arch == "Receiving" {
-						score += 20
-					} else {
-						score += 15
-					}
-				} else {
-					score += 10
-				}
-				score += cp.Overall
-			} else if offScheme == "Air Raid" {
-				if pos == "TE" {
-					score += 25
-					if arch == "Vertical Threat" {
-						score += 20
-					} else if arch == "Receiving" {
-						score += 15
-					} else {
-						score += 5
-					}
-				} else {
-					score += 10
-				}
-				score += cp.Catching
-			} else if offScheme == "Spread Option" {
-				if pos == "TE" {
-					score += 25
-					if arch == "Receiving" {
-						score += 15
-					} else {
-						score += 5
-					}
-				} else {
-					score += 15
-				}
-				score += cp.Overall
-			} else if offScheme == "Double Wing Option" {
-				if pos == "TE" {
-					score += 25
-					if arch == "Blocking" {
-						score += 15
-					} else {
-						score += 5
-					}
-				} else {
-					score += 15
-				}
-				score += cp.RunBlock
+			if pos == "TE" {
+				score += 100
+			} else if pos == "ATH" && (arch == "Slotback") {
+				score += 50
 			}
+
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.5) + int(float64(cp.RunBlock)*0.125) + int(float64(cp.PassBlock)*0.125) + int(float64(cp.Catching)*0.125) + int(float64(cp.Strength)*0.125)
+
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
 				Archetype: arch,
@@ -1584,41 +1434,25 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// Add to WR List
 		if pos == "WR" || pos == "TE" || pos == "RB" || pos == "CB" {
 			score := 0
-			if offScheme == "Pro" {
-				if pos == "WR" {
-					score += 10
-					if arch == "Possession" {
-						score += 5
-					}
-				}
-				score += cp.Catching
-			} else if offScheme == "Air Raid" {
-				if pos == "WR" {
-					score += 10
-					if arch == "Speed" {
-						score += 5
-					}
-				} else if pos == "TE" && arch == "Vertical Threat" {
-					score += 10
-				}
-				score += cp.Speed
-			} else if offScheme == "Spread Option" {
-				if pos == "WR" {
-					score += 10
-					if arch == "Route Running" {
-						score += 5
-					}
-				}
-				score += cp.RouteRunning
-			} else if offScheme == "Double Wing Option" {
-				if pos == "WR" {
-					score += 10
-					if arch == "Red Zone Threat" {
-						score += 5
-					}
-				}
-				score += cp.RunBlock
+			if pos == "WR" {
+				score += 100
+			} else if pos == "ATH" && (arch == "Wingback" || arch == "Slotback") {
+				score += 50
 			}
+
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.4) +
+				int(float64(cp.Speed)*0.12) +
+				int(float64(cp.Agility)*0.12) +
+				int(float64(cp.Catching)*0.12) +
+				int(float64(cp.Strength)*0.12) +
+				int(float64(cp.RouteRunning)*0.12)
+
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
 				Archetype: arch,
@@ -1630,39 +1464,26 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// Add to LT and RT List
 		if pos == "OT" || pos == "OG" || pos == "C" {
 			score := 0
-			if offScheme == "Pro" {
-				if pos == "OT" {
-					score += 20
-				} else if pos == "OG" {
-					score += 5
-				}
-				score += cp.Overall
-			} else if offScheme == "Air Raid" {
-				if (pos == "OT" || pos == "OG") && arch == "Pass Blocking" {
-					score += 20
-				} else if pos == "C" && arch == "Pass Blocking" {
-					score += 5
-				} else if (pos == "OT" || pos == "OG") && arch != "Pass Blocking" {
-					score += 2
-				}
-				score += cp.PassBlock
-			} else if offScheme == "Spread Option" {
-				if pos == "OT" {
-					score += 20
-				} else if pos == "OG" {
-					score += 5
-				}
-				score += cp.Overall
-			} else if offScheme == "Double Wing Option" {
-				if (pos == "OT" || pos == "OG") && arch == "Run Blocking" {
-					score += 20
-				} else if pos == "C" && arch == "Run Blocking" {
-					score += 5
-				} else if (pos == "OT" || pos == "OG") && arch != "Run Blocking" {
-					score += 2
-				}
-				score += cp.RunBlock
+			if pos == "OT" {
+				score += 100
+			} else if pos == "OG" {
+				score += 15
+			} else if pos == "ATH" && (arch == "Lineman") {
+				score += 50
 			}
+
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.7) +
+				int(float64(cp.Strength)*0.10) +
+				int(float64(cp.RunBlock)*0.75) +
+				int(float64(cp.PassBlock)*0.75) +
+				int(float64(cp.Agility)*0.05)
+
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
 				Archetype: arch,
@@ -1679,33 +1500,25 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// Add to LG and RG List
 		if pos == "OT" || pos == "OG" || pos == "C" {
 			score := 0
-			if offScheme == "Pro" {
-				if pos == "OG" {
-					score += 15
-				}
-				score += cp.Overall
-			} else if offScheme == "Air Raid" {
-				if pos == "OG" {
-					score += 10
-				}
-				if arch == "Pass Blocking" {
-					score += 10
-				}
-				score += cp.PassBlock
-			} else if offScheme == "Spread Option" {
-				if pos == "OG" {
-					score += 15
-				}
-				score += cp.Overall
-			} else if offScheme == "Double Wing Option" {
-				if pos == "OG" {
-					score += 10
-				}
-				if arch == "Run Blocking" {
-					score += 10
-				}
-				score += cp.RunBlock
+			if pos == "OG" {
+				score += 100
+			} else if pos == "C" {
+				score += 25
+			} else if pos == "ATH" && (arch == "Lineman") {
+				score += 50
 			}
+
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.7) +
+				int(float64(cp.Strength)*0.10) +
+				int(float64(cp.RunBlock)*0.75) +
+				int(float64(cp.PassBlock)*0.75) +
+				int(float64(cp.Agility)*0.05)
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
 				Archetype: arch,
@@ -1722,37 +1535,26 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// Add to C List
 		if pos == "OT" || pos == "OG" || pos == "C" {
 			score := 0
-			if offScheme == "Pro" {
-				if pos == "C" {
-					score += 15
-				}
-				score += cp.Overall
-			} else if offScheme == "Air Raid" {
-				if pos == "C" {
-					score += 15
-					if arch == "Pass Blocking" {
-						score += 10
-					} else {
-						score += 5
-					}
-
-				}
-				score += cp.PassBlock
-			} else if offScheme == "Spread Option" {
-				if pos == "C" {
-					score += 15
-				}
-				score += cp.Overall
-			} else if offScheme == "Double Wing Option" {
-				if pos == "C" {
-					score += 15
-					if arch == "Run Blocking" {
-						score += 10
-					}
-
-				}
-				score += cp.RunBlock
+			if pos == "C" {
+				score += 100
+			} else if pos == "OG" {
+				score += 15
+			} else if pos == "ATH" && (arch == "Lineman") {
+				score += 50
 			}
+
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.7) +
+				int(float64(cp.Strength)*0.10) +
+				int(float64(cp.RunBlock)*0.75) +
+				int(float64(cp.PassBlock)*0.75) +
+				int(float64(cp.Agility)*0.05)
+
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
 				Archetype: arch,
@@ -1764,33 +1566,29 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// Add to LE List
 		if pos == "DE" || pos == "DT" || pos == "OLB" {
 			score := 0
-			if defScheme == "4-3" {
-				if pos == "DE" {
-					score += 20
-					if arch == "Speed Rusher" || arch == "Balanced" {
-						score += 10
-					} else {
-						score += 5
-					}
-				} else if (pos == "DT" && arch == "Pass Rusher") || (pos == "OLB" && (arch == "Pass Rusher" || arch == "Run Stopper")) {
-					score += 10
-				}
-				score += cp.Overall
-			} else if defScheme == "3-4" {
-				if pos == "DE" {
-					score += 20
-					if arch == "Run Stopper" || arch == "Balanced" {
-						score += 10
-					} else {
-						score += 5
-					}
-				} else if pos == "DT" && (arch == "Pass Rusher" || arch == "Balanced") {
-					score += 15
-				} else {
-					score += 5
-				}
-				score += cp.Overall
+			if pos == "DE" {
+				score += 100
+			} else if pos == "OLB" {
+				score += 25
+			} else if pos == "DT" {
+				score += 3
+			} else if pos == "ATH" && (arch == "Lineman" || arch == "Strongside") {
+				score += 50
 			}
+
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.7) +
+				int(float64(cp.Strength)*0.05) +
+				int(float64(cp.Tackle)*0.05) +
+				int(float64(cp.PassRush)*0.75) +
+				int(float64(cp.RunDefense)*0.75) +
+				int(float64(cp.Agility)*0.05)
+
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
 				Archetype: arch,
@@ -1808,29 +1606,29 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// Add to DT list
 		if pos == "DE" || pos == "DT" || pos == "OLB" {
 			score := 0
-			if defScheme == "4-3" {
-				if pos == "DT" {
-					score += 20
-					if arch == "Pass Rusher" || arch == "Balanced" {
-						score += 10
-					} else {
-						score += 5
-					}
-				} else if pos == "DE" && (arch == "Balanced" || arch == "Run Stopper") {
-					score += 15
-				}
-				score += cp.Overall
-			} else if defScheme == "3-4" {
-				if pos == "DT" {
-					score += 20
-					if arch == "Nose Tackle" {
-						score += 10
-					}
-				} else if pos == "DE" && arch == "Run Stopper" {
-					score += 15
-				}
-				score += cp.RunDefense
+			if pos == "DT" {
+				score += 100
+			} else if pos == "DE" {
+				score += 25
+			} else if pos == "OLB" {
+				score += 12
+			} else if pos == "ATH" && (arch == "Lineman" || arch == "Strongside") {
+				score += 50
 			}
+
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.7) +
+				int(float64(cp.Strength)*0.05) +
+				int(float64(cp.Tackle)*0.05) +
+				int(float64(cp.PassRush)*0.75) +
+				int(float64(cp.RunDefense)*0.75) +
+				int(float64(cp.Agility)*0.05)
+
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
 				Archetype: arch,
@@ -1843,31 +1641,33 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// Add to OLB list
 		if pos == "OLB" || pos == "DE" || pos == "ILB" || pos == "SS" || pos == "FS" {
 			score := 0
-			if defScheme == "4-3" {
-				if pos == "OLB" && (arch == "Coverage" || arch == "Speed") {
-					score += 20
-				} else if pos == "ILB" && (arch == "Coverage" || arch == "Speed") {
-					score += 15
-				} else if pos == "OLB" && arch == "Run Stopper" {
-					score += 12
-				} else if pos == "ILB" && arch == "Field General" {
-					score += 10
-				} else if (pos == "SS" || pos == "FS") && arch == "Run Stopper" {
-					score += 8
-				} else if pos == "OLB" && arch == "Pass Rush" {
-					score += 5
-				}
-				score += cp.Speed
-			} else if defScheme == "3-4" {
-				if pos == "OLB" && (arch == "Pass Rush" || arch == "Run Stopper") {
-					score += 10
-				} else if pos == "DE" && arch == "Speed Rush" {
-					score += 8
-				} else if pos == "ILB" && arch == "Run Stopper" {
-					score += 5
-				}
-				score += cp.PassRush
+			if pos == "OLB" {
+				score += 100
+			} else if pos == "DE" {
+				score += 10
+			} else if pos == "ILB" {
+				score += 25
+			} else if pos == "SS" {
+				score += 3
+			} else if pos == "ATH" && (arch == "Weakside" || arch == "Strongside" || arch == "Bandit") {
+				score += 50
 			}
+
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.6) +
+				int(float64(cp.Strength)*0.025) +
+				int(float64(cp.Tackle)*0.055) +
+				int(float64(cp.PassRush)*0.0755) +
+				int(float64(cp.RunDefense)*0.0755) +
+				int(float64(cp.ManCoverage)*0.075) +
+				int(float64(cp.ZoneCoverage)*0.075) +
+				int(float64(cp.Agility)*0.025)
+
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
 				Archetype: arch,
@@ -1885,25 +1685,33 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// Add to ILB list
 		if pos == "OLB" || pos == "DE" || pos == "ILB" || pos == "SS" || pos == "FS" {
 			score := 0
-			if defScheme == "4-3" {
-				if pos == "ILB" {
-					score += 15
-				} else if pos == "OLB" && (arch == "Speed" || arch == "Coverage" || arch == "Run Stopper") {
-					score += 12
-				} else if (pos == "SS" || pos == "FS") && arch == "Run Stopper" {
-					score += 8
-				}
-				score += cp.RunDefense
-			} else if defScheme == "3-4" {
-				if pos == "ILB" {
-					score += 15
-				} else if pos == "OLB" && (arch == "Speed" || arch == "Coverage") {
-					score += 12
-				} else if (pos == "SS" || pos == "FS") && arch == "Run Stopper" {
-					score += 8
-				}
-				score += cp.PassRush
+			if pos == "ILB" {
+				score += 100
+			} else if pos == "OLB" {
+				score += 25
+			} else if pos == "SS" {
+				score += 8
+			} else if pos == "DE" {
+				score += 3
+			} else if pos == "ATH" && (arch == "Weakside" || arch == "Bandit" || arch == "Field General") {
+				score += 50
 			}
+
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.6) +
+				int(float64(cp.Strength)*0.025) +
+				int(float64(cp.Tackle)*0.055) +
+				int(float64(cp.PassRush)*0.0755) +
+				int(float64(cp.RunDefense)*0.0755) +
+				int(float64(cp.ManCoverage)*0.075) +
+				int(float64(cp.ZoneCoverage)*0.075) +
+				int(float64(cp.Agility)*0.025)
+
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
 				Archetype: arch,
@@ -1917,11 +1725,28 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		if pos == "CB" || pos == "FS" || pos == "SS" {
 			score := 0
 			if pos == "CB" {
+				score += 100
+			} else if pos == "FS" {
 				score += 10
-			} else if pos == "SS" || pos == "FS" {
-				score += 5
+			} else if pos == "SS" {
+				score += 8
+			} else if pos == "ATH" && (arch == "Triple-Threat" || arch == "Bandit" || arch == "Weakside") {
+				score += 50
 			}
-			score += cp.Overall
+
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.5) +
+				int(float64(cp.Tackle)*0.05) +
+				int(float64(cp.Agility)*0.1) +
+				int(float64(cp.Catching)*0.1) +
+				int(float64(cp.ManCoverage)*0.01) +
+				int(float64(cp.ZoneCoverage)*0.01) +
+				int(float64(cp.Speed)*0.05)
 
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
@@ -1936,11 +1761,28 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		if pos == "CB" || pos == "FS" || pos == "SS" {
 			score := 0
 			if pos == "FS" {
-				score += 10
-			} else if pos == "SS" || pos == "CB" {
-				score += 5
+				score += 100
+			} else if pos == "CB" {
+				score += 25
+			} else if pos == "SS" {
+				score += 12
+			} else if pos == "ATH" && (arch == "Bandit" || arch == "Weakside") {
+				score += 50
 			}
-			score += cp.Overall
+
+			if isGoodFit && !isBadFit {
+				score += 25
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.5) +
+				int(float64(cp.Tackle)*0.05) +
+				int(float64(cp.Agility)*0.1) +
+				int(float64(cp.Catching)*0.1) +
+				int(float64(cp.ManCoverage)*0.01) +
+				int(float64(cp.ZoneCoverage)*0.01) +
+				int(float64(cp.Speed)*0.05)
 
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
@@ -1955,11 +1797,28 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		if pos == "CB" || pos == "FS" || pos == "SS" {
 			score := 0
 			if pos == "SS" {
-				score += 10
-			} else if pos == "FS" || pos == "CB" {
-				score += 5
+				score += 100
+			} else if pos == "FS" {
+				score += 25
+			} else if pos == "CB" {
+				score += 12
+			} else if pos == "ATH" && (arch == "Bandit" || arch == "Weakside") {
+				score += 50
 			}
-			score += cp.Overall
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += int(float64(cp.Overall)*0.5) +
+				int(float64(cp.Tackle)*0.05) +
+				int(float64(cp.Agility)*0.1) +
+				int(float64(cp.Catching)*0.1) +
+				int(float64(cp.ManCoverage)*0.01) +
+				int(float64(cp.ZoneCoverage)*0.01) +
+				int(float64(cp.Speed)*0.05)
 
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
@@ -1973,11 +1832,20 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		if pos == "K" || pos == "P" || pos == "QB" {
 			score := 0
 			if pos == "P" {
-				score += 15
+				score += 100
 			} else if pos == "K" {
-				score += 5
+				score += 25
+			} else if pos == "ATH" && (arch == "Soccer Player") {
+				score += 50
 			}
-			score += cp.Overall
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += cp.PuntAccuracy + cp.PuntPower
 
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
@@ -1991,11 +1859,19 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		if pos == "K" || pos == "P" || pos == "QB" {
 			score := 0
 			if pos == "K" {
-				score += 15
+				score += 100
 			} else if pos == "P" {
-				score += 5
+				score += 25
+			} else if pos == "ATH" && (arch == "Soccer Player") {
+				score += 50
 			}
-			score += cp.Overall
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+			score += cp.KickAccuracy + cp.KickPower
 
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
@@ -2009,11 +1885,20 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		if pos == "K" || pos == "P" || pos == "QB" {
 			score := 0
 			if pos == "K" {
-				score += 15
+				score += 100
 			} else if pos == "P" {
-				score += 5
+				score += 25
+			} else if pos == "ATH" && (arch == "Soccer Player") {
+				score += 50
 			}
-			score += cp.Overall
+
+			if isGoodFit && !isBadFit {
+				score += 50
+			} else if isBadFit && !isGoodFit {
+				score -= 50
+			}
+
+			score += cp.KickAccuracy + cp.KickPower
 
 			dcpObj := structs.DepthChartPositionDTO{
 				Position:  pos,
@@ -2027,8 +1912,10 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// PR
 		if pos == "WR" || pos == "RB" || pos == "FS" || pos == "SS" || pos == "CB" {
 			score := 0
-			if pos == "WR" || pos == "RB" {
-				score += 7
+			if pos == "ATH" && arch == "Return Specialist" {
+				score += 50
+			} else if pos == "WR" || pos == "RB" {
+				score += 25
 			}
 			score += cp.Agility
 
@@ -2043,8 +1930,10 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		// KR
 		if pos == "WR" || pos == "RB" || pos == "FS" || pos == "SS" || pos == "CB" {
 			score := 0
-			if pos == "WR" || pos == "RB" {
-				score += 7
+			if pos == "ATH" && arch == "Return Specialist" {
+				score += 50
+			} else if pos == "WR" || pos == "RB" {
+				score += 25
 			}
 			score += cp.Speed
 
@@ -2060,11 +1949,11 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 		if pos == "FB" || pos == "TE" || pos == "ILB" || pos == "OLB" || pos == "RB" || pos == "CB" || pos == "FS" || pos == "SS" {
 			score := 0
 			if cp.Experience == 2 {
-				score += 15
+				score += 50
 			} else if cp.Experience == 1 {
-				score += 10
+				score += 45
 			} else if cp.Experience == 3 {
-				score += 5
+				score += 15
 			}
 
 			score += cp.Tackle
@@ -2114,7 +2003,21 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 			if backupMap[pos.NFLPlayer.ID] && dcp.PositionLevel != "1" {
 				continue
 			}
-			if dcp.PositionLevel == "1" && !starterMap[pos.NFLPlayer.ID] {
+			if dcp.Position == "STU" && stuMap[pos.NFLPlayer.ID] {
+				continue
+			}
+
+			if dcp.Position == "WR" {
+				runnerDistPostition := gp.RunnerDistributionWRPosition
+				positionLabel := dcp.Position + "" + dcp.PositionLevel
+				if runnerDistPostition == positionLabel {
+					gp.AssignRunnerWRID(dcp.NFLPlayer.ID)
+				}
+			}
+
+			if dcp.Position == "STU" {
+				stuMap[pos.CollegePlayer.ID] = true
+			} else if dcp.PositionLevel == "1" && !starterMap[pos.NFLPlayer.ID] {
 				starterMap[pos.NFLPlayer.ID] = true
 			} else {
 				backupMap[pos.NFLPlayer.ID] = true
@@ -2132,6 +2035,8 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 			break
 		}
 	}
+
+	db.Save(&gp)
 }
 
 func GetDepthChartMap() map[uint]structs.CollegeTeamDepthChart {
@@ -3356,5 +3261,71 @@ func SetAIGameplan() {
 
 		gp.UpdateCollegeGameplan(dto)
 		repository.SaveCFBGameplanRecord(gp, db)
+	}
+}
+
+func FixBrokenGameplans() {
+	db := dbprovider.GetInstance().GetDB()
+
+	collegeTeams := GetAllCollegeTeams()
+	gameplanMap := GetCollegeGameplanMap()
+	recruitingProfileMap := GetTeamProfileMap()
+
+	for _, t := range collegeTeams {
+		id := strconv.Itoa(int(t.ID))
+		gp := gameplanMap[t.ID]
+		rtp := *recruitingProfileMap[id]
+
+		dc := GetDepthchartByTeamID(id)
+
+		isBroken := false
+
+		players := dc.DepthChartPlayers
+		for _, dcp := range players {
+			p := dcp.CollegePlayer
+			if p.IsRedshirting || (p.IsInjured && p.WeeksOfRecovery > 0) {
+				isBroken = true
+				break
+			}
+		}
+
+		if isBroken {
+			// Penalize CFB Team
+			rtp.SubtractScholarshipsAvailable()
+			repository.SaveRecruitingTeamProfile(rtp, db)
+			t.MarkTeamForPenalty()
+			repository.SaveCFBTeam(t, db)
+
+			// Autosort Depth Chart
+			ReAlignCollegeDepthChart(db, id, gp)
+		}
+	}
+
+	nflTeams := GetAllNFLTeams()
+
+	for _, n := range nflTeams {
+		id := strconv.Itoa(int(n.ID))
+
+		gp := GetNFLGameplanByTeamID(id)
+		dc := GetNFLDepthchartByTeamID(id)
+
+		isBroken := false
+
+		players := dc.DepthChartPlayers
+		for _, dcp := range players {
+			p := dcp.NFLPlayer
+			if p.IsPracticeSquad || (p.TeamID != int(n.ID)) || (p.IsInjured && p.WeeksOfRecovery > 0) {
+				isBroken = true
+				break
+			}
+		}
+
+		if isBroken {
+			n.MarkTeamForPenalty()
+			repository.SaveNFLTeam(n, db)
+
+			// Autosort Depth Chart
+			ReAlignNFLDepthChart(db, id, gp, players)
+		}
 	}
 }

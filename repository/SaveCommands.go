@@ -45,6 +45,36 @@ func SaveCFBPlayer(player structs.CollegePlayer, db *gorm.DB) {
 	}
 }
 
+func SaveCFBTeam(team structs.CollegeTeam, db *gorm.DB) {
+	team.TeamSeasonStats = structs.CollegeTeamSeasonStats{}
+	team.CollegeCoach = structs.CollegeCoach{}
+	team.RecruitingProfile = structs.RecruitingTeamProfile{}
+	team.TeamRecord = structs.CollegeTeamRecords{}
+	team.TeamGameplan = structs.CollegeGameplan{}
+	team.TeamDepthChart = structs.CollegeTeamDepthChart{}
+	team.TeamStandings = nil
+	team.TeamStats = nil
+	err := db.Save(&team).Error
+	if err != nil {
+		log.Panicln("Could not save player record")
+	}
+}
+
+func SaveNFLTeam(team structs.NFLTeam, db *gorm.DB) {
+	team.TeamSeasonStats = nil
+	team.Capsheet = structs.NFLCapsheet{}
+	team.Contracts = nil
+	team.DraftPicks = nil
+	team.TeamGameplan = structs.NFLGameplan{}
+	team.TeamDepthChart = structs.NFLDepthChart{}
+	team.Standings = nil
+	team.TeamStats = nil
+	err := db.Save(&team).Error
+	if err != nil {
+		log.Panicln("Could not save player record")
+	}
+}
+
 func SaveNFLPlayer(player structs.NFLPlayer, db *gorm.DB) {
 	player.SeasonStats = structs.NFLPlayerSeasonStats{}
 	player.Stats = nil

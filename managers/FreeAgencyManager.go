@@ -388,11 +388,6 @@ func SyncFreeAgencyOffers() {
 			continue
 		}
 
-		// Check if still negotiation
-		if ts.IsNFLOffSeason && FA.IsNegotiating && ts.FreeAgencyRound < FA.SigningRound {
-			continue
-		}
-
 		// Is Ready to Sign
 		Offers := GetFreeAgentOffersByPlayerID(strconv.Itoa(int(FA.ID)))
 
@@ -494,7 +489,7 @@ func SyncFreeAgencyOffers() {
 
 	for _, p := range practiceSquad {
 		Offers := GetFreeAgentOffersByPlayerID(strconv.Itoa(int(p.ID)))
-		contract := GetContractByPlayerID(strconv.Itoa(int(p.ID)))
+		// contract := GetContractByPlayerID(strconv.Itoa(int(p.ID)))
 		if len(Offers) == 0 {
 			continue
 		}
@@ -522,11 +517,11 @@ func SyncFreeAgencyOffers() {
 					// Invalid!!
 					continue
 				}
-				y1CapSpace := ts.Y1Capspace - capsheet.Y1Bonus - capsheet.Y1Salary - capsheet.Y1CapHit
-				y1Remaining := y1CapSpace - contract.Y1BaseSalary - contract.Y1Bonus
-				if y1CapSpace < 0 || y1Remaining < 0 {
-					continue
-				}
+				// y1CapSpace := ts.Y1Capspace - capsheet.Y1Bonus - capsheet.Y1Salary - capsheet.Y1CapHit
+				// y1Remaining := y1CapSpace - contract.Y1BaseSalary - contract.Y1Bonus
+				// if y1CapSpace < 0 || y1Remaining < 0 {
+				// 	continue
+				// }
 				// Get the Contract with the best value for the FA
 				if Offer.IsActive && WinningOffer.ID == 0 {
 					WinningOffer = Offer

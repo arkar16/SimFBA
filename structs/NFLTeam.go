@@ -53,19 +53,19 @@ func (t *NFLTeam) AssignNFLUserToTeam(r NFLRequest, u NFLUser) {
 }
 
 func (t *NFLTeam) RemoveNFLUserFromTeam(r NFLRequest, u NFLUser) {
-	if r.IsOwner && t.NFLOwnerName == u.Username {
+	if t.NFLOwnerName == u.Username {
 		t.NFLOwnerID = 0
 		t.NFLOwnerName = ""
 	}
-	if r.IsManager && t.NFLGMName == u.Username {
+	if t.NFLGMName == u.Username {
 		t.NFLGMID = 0
 		t.NFLGMName = ""
 	}
-	if r.IsCoach && t.NFLCoachName == u.Username {
+	if t.NFLCoachName == u.Username {
 		t.NFLCoachID = 0
 		t.NFLCoachName = ""
 	}
-	if r.IsAssistant && t.NFLAssistantName == u.Username {
+	if t.NFLAssistantName == u.Username {
 		t.NFLAssistantID = 0
 		t.NFLAssistantName = ""
 	}

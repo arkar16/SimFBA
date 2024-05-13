@@ -67,7 +67,7 @@ func (u *NFLUser) RemoveCoachPosition() {
 }
 
 func (u *NFLUser) RemoveAssistantPosition() {
-	u.IsHeadCoach = false
+	u.IsAssistant = false
 
 	if !u.IsManager && !u.IsOwner && !u.IsHeadCoach {
 		u.TeamID = 0

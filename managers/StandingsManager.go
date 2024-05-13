@@ -199,7 +199,7 @@ func GetCollegeStandingsMap(seasonID string) map[uint]structs.CollegeStandings {
 
 	standings := GetAllConferenceStandingsBySeasonID(seasonID)
 	for _, stat := range standings {
-		standingsMap[stat.ID] = stat
+		standingsMap[uint(stat.TeamID)] = stat
 	}
 
 	return standingsMap

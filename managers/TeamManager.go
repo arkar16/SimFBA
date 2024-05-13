@@ -76,7 +76,7 @@ func GetTeamByTeamID(teamId string) structs.CollegeTeam {
 func GetAllNFLTeams() []structs.NFLTeam {
 	var teams []structs.NFLTeam
 	db := dbprovider.GetInstance().GetDB()
-	err := db.Order("team_name asc").Find(&teams).Error
+	err := db.Preload("Capsheet").Order("team_name asc").Find(&teams).Error
 	if err != nil {
 		log.Fatal(err)
 	}

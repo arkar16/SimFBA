@@ -339,9 +339,8 @@ func UpdateNFLGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 
 		if ts.NFLWeek != 1 {
 			currentGameplan.ApplySchemePenalty(true)
+			schemeChange = true
 		}
-
-		schemeChange = true
 
 	}
 

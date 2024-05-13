@@ -54,6 +54,9 @@ func (cg *BaseGameplan) LowerPenalty() {
 	if cg.DefenseSchemePenalty > 0 {
 		cg.DefenseSchemePenalty--
 	}
+	if cg.OffenseSchemePenalty == 0 && cg.DefenseSchemePenalty == 0 {
+		cg.HasSchemePenalty = false
+	}
 }
 
 func (bg *BaseGameplan) UpdateCollegeGameplan(dto CollegeGameplan) {

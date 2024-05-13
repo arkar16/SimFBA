@@ -73,4 +73,5 @@ type BaseTeamStats struct {
 	ScoreOT                       int
 	OffensiveScheme               string
 	DefensiveScheme               string
+	RevealResults                 bool
 }

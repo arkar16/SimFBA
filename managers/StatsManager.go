@@ -358,7 +358,7 @@ func GetAllCollegeTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []
 		}).Find(&teams)
 	} else {
 		db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
-			return db.Where("season_id = ? AND week_id = ?", seasonID, weekID)
+			return db.Where("season_id = ? AND week_id = ? AND reveal_results = ?", seasonID, weekID, true)
 		}).Find(&teams)
 	}
 
@@ -400,7 +400,7 @@ func GetAllNFLTeamsWithStatsBySeasonID(seasonID, weekID, viewType string) []stru
 		}).Find(&teams)
 	} else {
 		db.Preload("TeamStats", func(db *gorm.DB) *gorm.DB {
-			return db.Where("season_id = ? AND week_id = ?", seasonID, weekID)
+			return db.Where("season_id = ? AND week_id = ? AND reveal_results = ?", seasonID, weekID, true)
 		}).Find(&teams)
 	}
 

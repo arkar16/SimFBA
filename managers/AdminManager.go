@@ -336,6 +336,7 @@ func SyncTimeslot(timeslot string) {
 
 	if isCFB {
 		// Get Games
+		gameIDs := []string{}
 		games := GetCollegeGamesByTimeslotAndWeekId(strconv.Itoa(timestamp.CollegeWeekID), timeslot)
 		seasonStats := GetCollegeSeasonStatsBySeason(strconv.Itoa(timestamp.CollegeSeasonID))
 		seasonStatsMap := make(map[int]*structs.CollegeTeamSeasonStats)
@@ -346,6 +347,7 @@ func SyncTimeslot(timeslot string) {
 		for _, game := range games {
 			// Get team stats
 			gameID := strconv.Itoa(int(game.ID))
+			gameIDs = append(gameIDs, gameID)
 			homeTeamID := game.HomeTeamID
 			awayTeamID := game.AwayTeamID
 
@@ -573,6 +575,9 @@ func SyncTimeslot(timeslot string) {
 				CreateNewsLog("CFB", message, messageType, 0, timestamp)
 			}
 		}
+
+		db.Model(&structs.CollegePlayerStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
+		db.Model(&structs.CollegeTeamStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
 	} else {
 		// Get Games
 		games := GetNFLGamesByTimeslotAndWeekId(strconv.Itoa(timestamp.NFLWeekID), timeslot)
@@ -581,10 +586,12 @@ func SyncTimeslot(timeslot string) {
 		// for _, s := range seasonStats {
 		// 	seasonStatsMap[int(s.TeamID)] = s
 		// }
+		gameIDs := []string{}
 
 		for _, game := range games {
 			// Get team stats
 			gameID := strconv.Itoa(int(game.ID))
+			gameIDs = append(gameIDs, gameID)
 			homeTeamID := game.HomeTeamID
 			awayTeamID := game.AwayTeamID
 
@@ -749,8 +756,10 @@ func SyncTimeslot(timeslot string) {
 				db.Save(&homeTeamStandings)
 				db.Save(&awayTeamStandings)
 			}
-
 		}
+
+		db.Model(&structs.NFLPlayerStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
+		db.Model(&structs.NFLTeamStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
 	}
 
 	db.Save(&timestamp)

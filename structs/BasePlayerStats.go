@@ -57,4 +57,5 @@ type BasePlayerStats struct {
 	WasInjured           bool
 	WeeksOfRecovery      uint
 	InjuryType           string
+	RevealResults        bool
 }

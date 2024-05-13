@@ -281,22 +281,22 @@ func RemoveUserFromNFLTeam(request structs.NFLRequest) {
 
 	message := ""
 
-	if request.IsOwner {
+	if team.NFLOwnerName == request.Username {
 		user.RemoveOwnership()
 		message = request.Username + " has decided to step down as Owner of the " + team.TeamName + " " + team.Mascot + "!"
 	}
 
-	if request.IsManager {
+	if team.NFLGMName == request.Username {
 		user.RemoveManagerPosition()
 		message = request.Username + " has decided to step down as Manager of the " + team.TeamName + " " + team.Mascot + "!"
 	}
 
-	if request.IsCoach {
+	if team.NFLCoachName == request.Username {
 		user.RemoveCoachPosition()
 		message = request.Username + " has decided to step down as Head Coach of the " + team.TeamName + " " + team.Mascot + "!"
 	}
 
-	if request.IsAssistant {
+	if team.NFLAssistantName == request.Username {
 		user.RemoveAssistantPosition()
 		message = request.Username + " has decided to step down as an Assistant of the " + team.TeamName + " " + team.Mascot + "!"
 	}

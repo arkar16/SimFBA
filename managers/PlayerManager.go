@@ -258,7 +258,7 @@ func GetAllCollegePlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]str
 		}).Where("id in ?", distinctCollegePlayerIDs).Find(&collegePlayers)
 	} else {
 		db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-			return db.Where("season_id = ? AND week_id = ? and snaps > 0", seasonID, weekID)
+			return db.Where("season_id = ? AND week_id = ? and snaps > 0 AND reveal_results = ?", seasonID, weekID, true)
 		}).Where("id in ?", distinctCollegePlayerIDs).Find(&collegePlayers)
 	}
 
@@ -358,7 +358,7 @@ func GetAllNFLPlayersWithStatsBySeasonID(cMap, dMap map[int]int, cNMap, dNMap ma
 		}).Where("id in ?", distinctCollegePlayerIDs).Find(&nflPlayers)
 	} else {
 		db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-			return db.Where("season_id = ? AND week_id = ? and snaps > 0", seasonID, weekID)
+			return db.Where("season_id = ? AND week_id = ? and snaps > 0 AND reveal_results = ?", seasonID, weekID, true)
 		}).Where("id in ?", distinctCollegePlayerIDs).Find(&nflPlayers)
 	}
 

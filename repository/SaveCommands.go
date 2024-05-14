@@ -22,6 +22,13 @@ func SaveCFBGameplanRecord(gameRecord structs.CollegeGameplan, db *gorm.DB) {
 	}
 }
 
+func SaveNFLGameplanRecord(gameRecord structs.NFLGameplan, db *gorm.DB) {
+	err := db.Save(&gameRecord).Error
+	if err != nil {
+		log.Panicln("Could not save Gameplan " + strconv.Itoa(int(gameRecord.ID)))
+	}
+}
+
 func SaveCFBGameRecord(gameRecord structs.CollegeGame, db *gorm.DB) {
 	err := db.Save(&gameRecord).Error
 	if err != nil {

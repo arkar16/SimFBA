@@ -68,8 +68,8 @@ func RunTheGamesViaCron() {
 	ts := managers.GetTimestamp()
 	if ts.RunCron {
 		if !ts.IsOffSeason && !ts.RunGames {
-			// Adjust depth charts that are broken
 			managers.FixBrokenGameplans()
+			managers.CheckForSchemePenalties()
 			managers.RunTheGames()
 		}
 	}

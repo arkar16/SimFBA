@@ -53,7 +53,7 @@ func UpdateGameplanPenalties() {
 	for _, gp := range collegeGPs {
 		if gp.HasSchemePenalty {
 			gp.LowerPenalty()
-			db.Save(&gp)
+			repository.SaveCFBGameplanRecord(gp, db)
 		}
 	}
 
@@ -62,7 +62,7 @@ func UpdateGameplanPenalties() {
 	for _, gp := range nflGPs {
 		if gp.HasSchemePenalty {
 			gp.LowerPenalty()
-			db.Save(&gp)
+			repository.SaveNFLGameplanRecord(gp, db)
 		}
 	}
 }
@@ -286,44 +286,7 @@ func UpdateGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 	db := dbprovider.GetInstance().GetDB()
 
 	gameplanID := updateGameplanDto.GameplanID
-
 	currentGameplan := GetGameplanByGameplanID(gameplanID)
-
-	ts := GetTimestamp()
-
-	schemePenalty := false
-
-	if currentGameplan.OffensiveScheme != updateGameplanDto.UpdatedGameplan.OffensiveScheme && !ts.CFBSpringGames {
-
-		if ts.CollegeWeek != 0 {
-			currentGameplan.ApplySchemePenalty(true)
-		}
-		schemePenalty = true
-	}
-
-	if currentGameplan.DefensiveScheme != updateGameplanDto.UpdatedGameplan.DefensiveScheme && !ts.CFBSpringGames {
-
-		if ts.CollegeWeek != 0 {
-			currentGameplan.ApplySchemePenalty(false)
-		}
-		schemePenalty = true
-	}
-
-	if schemePenalty {
-
-		newsLog := structs.NewsLog{
-			TeamID:      updateGameplanDto.UpdatedGameplan.TeamID,
-			WeekID:      ts.CollegeWeekID,
-			Week:        ts.CollegeWeek,
-			SeasonID:    ts.CollegeSeasonID,
-			MessageType: "Gameplan",
-			League:      "CFB",
-			Message:     "Coach " + updateGameplanDto.Username + " has updated " + updateGameplanDto.TeamName + "'s offensive scheme from " + currentGameplan.OffensiveScheme + " to " + updateGameplanDto.UpdatedGameplan.OffensiveScheme,
-		}
-
-		db.Create(&newsLog)
-	}
-
 	currentGameplan.UpdateCollegeGameplan(updateGameplanDto.UpdatedGameplan)
 
 	db.Save(&currentGameplan)
@@ -336,41 +299,6 @@ func UpdateNFLGameplan(updateGameplanDto structs.UpdateGameplanDTO) {
 
 	currentGameplan := GetNFLGameplanByTeamID(gameplanID)
 	UpdatedGameplan := updateGameplanDto.UpdatedNFLGameplan
-
-	schemeChange := false
-	ts := GetTimestamp()
-	if currentGameplan.OffensiveScheme != UpdatedGameplan.OffensiveScheme && !ts.IsNFLOffSeason && !ts.NFLPreseason {
-
-		if ts.NFLWeek != 1 {
-			currentGameplan.ApplySchemePenalty(true)
-			schemeChange = true
-		}
-
-	}
-
-	if currentGameplan.DefensiveScheme != UpdatedGameplan.DefensiveScheme && !ts.IsNFLOffSeason && !ts.NFLPreseason {
-
-		if ts.NFLWeek != 1 {
-			currentGameplan.ApplySchemePenalty(false)
-		}
-		schemeChange = true
-	}
-
-	if schemeChange {
-
-		newsLog := structs.NewsLog{
-			TeamID:      updateGameplanDto.UpdatedGameplan.TeamID,
-			WeekID:      ts.NFLWeekID,
-			Week:        ts.NFLWeek,
-			SeasonID:    ts.NFLSeasonID,
-			League:      "NFL",
-			MessageType: "Gameplan",
-			Message:     "Coach " + updateGameplanDto.Username + " has updated " + updateGameplanDto.TeamName + "'s offensive scheme from " + currentGameplan.OffensiveScheme + " to " + updateGameplanDto.UpdatedNFLGameplan.OffensiveScheme,
-		}
-
-		db.Create(&newsLog)
-	}
-
 	currentGameplan.UpdateNFLGameplan(UpdatedGameplan)
 
 	db.Save(&currentGameplan)
@@ -3329,6 +3257,74 @@ func FixBrokenGameplans() {
 
 			// Autosort Depth Chart
 			ReAlignNFLDepthChart(db, id, gp, players)
+		}
+	}
+}
+
+func CheckForSchemePenalties() {
+	db := dbprovider.GetInstance().GetDB()
+
+	collegeTeams := GetAllCollegeTeams()
+	gameplanMap := GetCollegeGameplanMap()
+	ts := GetTimestamp()
+	seasonID := strconv.Itoa(ts.CollegeSeasonID)
+	for _, t := range collegeTeams {
+		gameplan := gameplanMap[t.ID]
+		if gameplan.ID == 0 {
+			continue
+		}
+		teamID := strconv.Itoa(int(t.ID))
+		teamStats := GetHistoricalTeamStats(teamID, seasonID)
+		lastStatsIdx := len(teamStats) - 1
+		offScheme := teamStats[lastStatsIdx].OffensiveScheme
+		defScheme := teamStats[lastStatsIdx].DefensiveScheme
+		diff := ts.CollegeWeekID - teamStats[lastStatsIdx].WeekID
+		schemePenalty := false
+		if offScheme != gameplan.OffensiveScheme && !ts.IsOffSeason && !ts.CFBSpringGames {
+			if ts.CollegeWeek > 1 {
+				gameplan.ApplySchemePenalty(true, diff)
+				schemePenalty = true
+			}
+		}
+
+		if defScheme != gameplan.DefensiveScheme && !ts.IsOffSeason && !ts.CFBSpringGames {
+			if ts.CollegeWeek > 1 {
+				gameplan.ApplySchemePenalty(false, diff)
+				schemePenalty = true
+			}
+		}
+
+		if schemePenalty {
+			repository.SaveCFBGameplanRecord(gameplan, db)
+		}
+	}
+
+	nflTeams := GetAllNFLTeams()
+	for _, t := range nflTeams {
+		teamID := strconv.Itoa(int(t.ID))
+		gameplan := GetNFLGameplanByTeamID(teamID)
+		teamStats := GetNFLHistoricalTeamStats(teamID, seasonID)
+		lastStatsIdx := len(teamStats) - 1
+		offScheme := teamStats[lastStatsIdx].OffensiveScheme
+		defScheme := teamStats[lastStatsIdx].DefensiveScheme
+		diff := ts.CollegeWeekID - int(teamStats[lastStatsIdx].WeekID)
+		schemePenalty := false
+		if offScheme != gameplan.OffensiveScheme && !ts.IsNFLOffSeason && !ts.NFLPreseason {
+			if ts.NFLWeek > 1 {
+				gameplan.ApplySchemePenalty(true, diff)
+				schemePenalty = true
+			}
+		}
+
+		if defScheme != gameplan.DefensiveScheme && !ts.IsNFLOffSeason && !ts.NFLPreseason {
+			if ts.NFLWeek > 1 {
+				gameplan.ApplySchemePenalty(false, diff)
+				schemePenalty = true
+			}
+		}
+
+		if schemePenalty {
+			repository.SaveNFLGameplanRecord(gameplan, db)
 		}
 	}
 }

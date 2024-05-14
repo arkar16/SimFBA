@@ -5,8 +5,7 @@ type GamePlanResponse struct {
 	NFLGP             NFLGameplan
 	CollegeDC         CollegeTeamDepthChart
 	NFLDC             NFLDepthChart
-	CollegeOpponent   CollegeGameplan
-	NFLOpponent       NFLGameplan
+	OpponentScheme    string
 	CollegeOppPlayers []CollegePlayer
 	NFLOppPlayers     []NFLPlayer
 }

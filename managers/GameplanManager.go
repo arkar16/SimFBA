@@ -90,7 +90,9 @@ func GetGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 		break
 	}
 
-	opponentGameplan := GetGameplanByTeamID(opponentID)
+	opponentStats := GetHistoricalTeamStats(opponentID, seasonID)
+	lastGameIdx := len(opponentStats) - 1
+	oppScheme := opponentStats[lastGameIdx].OffensiveScheme
 
 	opponentRoster := GetDepthchartByTeamID(opponentID)
 
@@ -106,7 +108,7 @@ func GetGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 	return structs.GamePlanResponse{
 		CollegeGP:         gamePlan,
 		CollegeDC:         depthChart,
-		CollegeOpponent:   opponentGameplan,
+		OpponentScheme:    oppScheme,
 		CollegeOppPlayers: oppDepthChartPlayers,
 	}
 }
@@ -174,7 +176,9 @@ func GetNFLGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 		break
 	}
 
-	opponentGameplan := GetNFLGameplanByTeamID(opponentID)
+	opponentStats := GetNFLHistoricalTeamStats(opponentID, seasonID)
+	lastGameIdx := len(opponentStats) - 1
+	oppScheme := opponentStats[lastGameIdx].OffensiveScheme
 
 	opponentRoster := GetNFLDepthchartByTeamID(opponentID)
 
@@ -188,10 +192,10 @@ func GetNFLGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 	}
 
 	return structs.GamePlanResponse{
-		NFLGP:         gamePlan,
-		NFLDC:         depthChart,
-		NFLOpponent:   opponentGameplan,
-		NFLOppPlayers: oppDepthChartPlayers,
+		NFLGP:          gamePlan,
+		NFLDC:          depthChart,
+		OpponentScheme: oppScheme,
+		NFLOppPlayers:  oppDepthChartPlayers,
 	}
 }
 

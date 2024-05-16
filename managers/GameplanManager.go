@@ -1255,7 +1255,7 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 
 	// Allocate the Position Map
 	for _, cp := range roster {
-		if cp.IsInjured || cp.IsPracticeSquad {
+		if cp.IsInjured || cp.IsPracticeSquad || cp.WeeksOfRecovery > 0 {
 			continue
 		}
 		pos := cp.Position
@@ -1962,7 +1962,7 @@ func ReAlignNFLDepthChart(db *gorm.DB, teamID string, gp structs.NFLGameplan, dc
 			}
 			dto.AssignID(dcp.ID)
 			dcp.UpdateDepthChartPosition(dto)
-			db.Save(&dcp)
+			repository.SaveNFLDepthChartPosition(dcp, db)
 			break
 		}
 	}
@@ -3198,39 +3198,39 @@ func SetAIGameplan() {
 func FixBrokenGameplans() {
 	db := dbprovider.GetInstance().GetDB()
 
-	collegeTeams := GetAllCollegeTeams()
-	gameplanMap := GetCollegeGameplanMap()
-	recruitingProfileMap := GetTeamProfileMap()
+	// collegeTeams := GetAllCollegeTeams()
+	// gameplanMap := GetCollegeGameplanMap()
+	// recruitingProfileMap := GetTeamProfileMap()
 
-	for _, t := range collegeTeams {
-		id := strconv.Itoa(int(t.ID))
-		gp := gameplanMap[t.ID]
-		rtp := *recruitingProfileMap[id]
+	// for _, t := range collegeTeams {
+	// 	id := strconv.Itoa(int(t.ID))
+	// 	gp := gameplanMap[t.ID]
+	// 	rtp := *recruitingProfileMap[id]
 
-		dc := GetDepthchartByTeamID(id)
+	// 	dc := GetDepthchartByTeamID(id)
 
-		isBroken := false
+	// 	isBroken := false
 
-		players := dc.DepthChartPlayers
-		for _, dcp := range players {
-			p := dcp.CollegePlayer
-			if p.IsRedshirting || (p.IsInjured && p.WeeksOfRecovery > 0) {
-				isBroken = true
-				break
-			}
-		}
+	// 	players := dc.DepthChartPlayers
+	// 	for _, dcp := range players {
+	// 		p := dcp.CollegePlayer
+	// 		if p.IsRedshirting || (p.IsInjured && p.WeeksOfRecovery > 0) {
+	// 			isBroken = true
+	// 			break
+	// 		}
+	// 	}
 
-		if isBroken {
-			// Penalize CFB Team
-			rtp.SubtractScholarshipsAvailable()
-			repository.SaveRecruitingTeamProfile(rtp, db)
-			t.MarkTeamForPenalty()
-			repository.SaveCFBTeam(t, db)
+	// 	if isBroken {
+	// 		// Penalize CFB Team
+	// 		rtp.SubtractScholarshipsAvailable()
+	// 		repository.SaveRecruitingTeamProfile(rtp, db)
+	// 		t.MarkTeamForPenalty()
+	// 		repository.SaveCFBTeam(t, db)
 
-			// Autosort Depth Chart
-			ReAlignCollegeDepthChart(db, id, gp)
-		}
-	}
+	// 		// Autosort Depth Chart
+	// 		ReAlignCollegeDepthChart(db, id, gp)
+	// 	}
+	// }
 
 	nflTeams := GetAllNFLTeams()
 

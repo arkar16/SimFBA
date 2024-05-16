@@ -174,3 +174,11 @@ func SaveCollegePlayerRecord(player structs.CollegePlayer, db *gorm.DB) {
 		log.Panicln("Could not save player record")
 	}
 }
+
+func SaveNFLDepthChartPosition(dcp structs.NFLDepthChartPosition, db *gorm.DB) {
+	dcp.NFLPlayer = structs.NFLPlayer{}
+	err := db.Save(&dcp).Error
+	if err != nil {
+		log.Panicln("Could not save player record")
+	}
+}

@@ -3276,6 +3276,9 @@ func CheckForSchemePenalties() {
 		teamID := strconv.Itoa(int(t.ID))
 		teamStats := GetHistoricalTeamStats(teamID, seasonID)
 		lastStatsIdx := len(teamStats) - 1
+		if lastStatsIdx < 0 || t.ID > 194 {
+			continue
+		}
 		offScheme := teamStats[lastStatsIdx].OffensiveScheme
 		defScheme := teamStats[lastStatsIdx].DefensiveScheme
 		diff := ts.CollegeWeekID - teamStats[lastStatsIdx].WeekID

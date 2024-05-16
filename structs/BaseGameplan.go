@@ -41,8 +41,14 @@ func (cg *BaseGameplan) ApplySchemePenalty(IsOffense bool, diff int) {
 	cg.HasSchemePenalty = true
 	if IsOffense {
 		cg.OffenseSchemePenalty = 4 - uint(diff)
+		if cg.OffenseSchemePenalty > 3 {
+			cg.OffenseSchemePenalty = 3
+		}
 	} else {
 		cg.DefenseSchemePenalty = 4 - uint(diff)
+		if cg.DefenseSchemePenalty > 3 {
+			cg.DefenseSchemePenalty = 3
+		}
 	}
 }
 

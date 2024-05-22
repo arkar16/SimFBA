@@ -657,69 +657,26 @@ func AICoachFillBoardsPhase() {
 		teamID := strconv.Itoa(int(teamProfile.ID))
 		coach := coachMap[teamProfile.ID]
 		portalProfileMap := getTransferPortalProfileMapByTeamID(teamID)
-
 		roster := GetAllCollegePlayersByTeamId(teamID)
 		rosterSize := len(roster)
-		// Roster sizes of 12 or higher should be ignored
-		if rosterSize > 11 {
+		teamCap := 105
+		if !teamProfile.IsFBS {
+			teamCap = 80
+		}
+		if rosterSize >= teamCap {
 			continue
 		}
-		teamNeedsMap := make(map[string]bool)
-		positionCount := make(map[string]int)
+		teamNeedsMap := GetRecruitingNeeds(teamID)
 
-		if _, ok := teamNeedsMap["PG"]; !ok {
-			teamNeedsMap["PG"] = true
-		}
-		if _, ok := teamNeedsMap["SG"]; !ok {
-			teamNeedsMap["SG"] = true
-		}
-		if _, ok := teamNeedsMap["SF"]; !ok {
-			teamNeedsMap["SF"] = true
-		}
-		if _, ok := teamNeedsMap["PF"]; !ok {
-			teamNeedsMap["PF"] = true
-		}
-		if _, ok := teamNeedsMap["C"]; !ok {
-			teamNeedsMap["C"] = true
-		}
-
-		if _, ok := positionCount["PG"]; !ok {
-			positionCount["PG"] = 0
-		}
-		if _, ok := positionCount["SG"]; !ok {
-			positionCount["SG"] = 0
-		}
-		if _, ok := positionCount["SF"]; !ok {
-			positionCount["SF"] = 0
-		}
-		if _, ok := positionCount["PF"]; !ok {
-			positionCount["PF"] = 0
-		}
-		if _, ok := positionCount["C"]; !ok {
-			positionCount["C"] = 0
-		}
-
-		//
 		for _, r := range roster {
-			if r.WillDeclare {
-				continue
+			if r.Year == 1 && !r.IsRedshirt {
+				teamNeedsMap[r.Position] -= 1
 			}
-			positionCount[r.Position] += 1
 		}
 
-		if positionCount["PG"] >= 3 {
-			teamNeedsMap["PG"] = false
-		} else if positionCount["SG"] >= 4 {
-			teamNeedsMap["SG"] = false
-		} else if positionCount["SF"] >= 4 {
-			teamNeedsMap["SF"] = false
-		} else if positionCount["PF"] >= 4 {
-			teamNeedsMap["PF"] = false
-		} else if positionCount["C"] >= 3 {
-			teamNeedsMap["C"] = false
-		}
 		for _, tp := range transferPortalPlayers {
-			if !teamNeedsMap[tp.Position] || tp.PreviousTeamID == team.ID || portalProfileMap[tp.ID].CollegePlayerID == tp.ID || portalProfileMap[tp.ID].ID > 0 {
+			isBadFit := IsBadSchemeFit(teamProfile.OffensiveScheme, teamProfile.DefensiveScheme, tp.Archetype, tp.Position)
+			if isBadFit || teamNeedsMap[tp.Position] <= 0 || tp.PreviousTeamID == team.ID || portalProfileMap[tp.ID].CollegePlayerID == tp.ID || portalProfileMap[tp.ID].ID > 0 {
 				continue
 			}
 
@@ -740,9 +697,9 @@ func AICoachFillBoardsPhase() {
 					biasMod += 20
 				}
 			} else if bias == nationalChampionshipContender {
-				if postSeasonStatus == "Sweet 16" || postSeasonStatus == "Elite 8" {
+				if postSeasonStatus == "Bowl Game" {
 					biasMod += 10
-				} else if postSeasonStatus == "Final Four" {
+				} else if postSeasonStatus == "Playoffs" {
 					biasMod += 15
 				} else if postSeasonStatus == "National Championship Participant" {
 					biasMod += 20
@@ -750,8 +707,8 @@ func AICoachFillBoardsPhase() {
 					biasMod += 25
 				}
 			} else if bias == upcomingTeam {
-				biasMod += teamStandings.TotalWins
-				if teamProfile.AIQuality == "Mid-Major" || teamProfile.AIQuality == "Cinderella" {
+				biasMod += (teamStandings.TotalWins * 2)
+				if teamProfile.AIQuality == "Playoff Buster" {
 					biasMod += 15
 				}
 			} else if bias == differentState && tp.State != team.State {
@@ -764,8 +721,6 @@ func AICoachFillBoardsPhase() {
 
 			diceRoll := util.GenerateIntFromRange(1, 50)
 			if diceRoll < biasMod {
-				// Add Player to Board
-
 				portalProfile := structs.TransferPortalProfile{
 					ProfileID:        teamProfile.ID,
 					CollegePlayerID:  tp.ID,
@@ -798,62 +753,20 @@ func AICoachAllocateAndPromisePhase() {
 
 		teamID := strconv.Itoa(int(teamProfile.ID))
 		roster := GetAllCollegePlayersByTeamId(teamID)
-		if len(roster) >= 12 {
+		teamCap := 105
+		if !teamProfile.IsFBS {
+			teamCap = 80
+		}
+		if len(roster) >= teamCap {
 			continue
 		}
 
-		teamNeedsMap := make(map[string]bool)
-		positionCount := make(map[string]int)
-
-		if _, ok := teamNeedsMap["PG"]; !ok {
-			teamNeedsMap["PG"] = true
-		}
-		if _, ok := teamNeedsMap["SG"]; !ok {
-			teamNeedsMap["SG"] = true
-		}
-		if _, ok := teamNeedsMap["SF"]; !ok {
-			teamNeedsMap["SF"] = true
-		}
-		if _, ok := teamNeedsMap["PF"]; !ok {
-			teamNeedsMap["PF"] = true
-		}
-		if _, ok := teamNeedsMap["C"]; !ok {
-			teamNeedsMap["C"] = true
-		}
-
-		if _, ok := positionCount["PG"]; !ok {
-			positionCount["PG"] = 0
-		}
-		if _, ok := positionCount["SG"]; !ok {
-			positionCount["SG"] = 0
-		}
-		if _, ok := positionCount["SF"]; !ok {
-			positionCount["SF"] = 0
-		}
-		if _, ok := positionCount["PF"]; !ok {
-			positionCount["PF"] = 0
-		}
-		if _, ok := positionCount["C"]; !ok {
-			positionCount["C"] = 0
-		}
+		teamNeedsMap := GetRecruitingNeeds(teamID)
 
 		for _, r := range roster {
-			if r.WillDeclare {
-				continue
+			if r.Year == 1 && !r.IsRedshirt {
+				teamNeedsMap[r.Position] -= 1
 			}
-			positionCount[r.Position] += 1
-		}
-
-		if positionCount["PG"] >= 3 {
-			teamNeedsMap["PG"] = false
-		} else if positionCount["SG"] >= 4 {
-			teamNeedsMap["SG"] = false
-		} else if positionCount["SF"] >= 4 {
-			teamNeedsMap["SF"] = false
-		} else if positionCount["PF"] >= 4 {
-			teamNeedsMap["PF"] = false
-		} else if positionCount["C"] >= 3 {
-			teamNeedsMap["C"] = false
 		}
 
 		portalProfiles := GetTransferPortalProfilesByTeamID(teamID)
@@ -863,7 +776,8 @@ func AICoachAllocateAndPromisePhase() {
 			}
 			tp := transferPortalPlayerMap[profile.CollegePlayerID]
 			// If player has already signed or if the position has been fulfilled
-			if tp.TeamID > 0 || tp.TransferStatus == 0 || tp.ID == 0 || !teamNeedsMap[tp.Position] {
+			isBadFit := IsBadSchemeFit(teamProfile.OffensiveScheme, teamProfile.DefensiveScheme, tp.Archetype, tp.Position)
+			if isBadFit || tp.TeamID > 0 || tp.TransferStatus == 0 || tp.ID == 0 || teamNeedsMap[tp.Position] <= 0 {
 				profile.Deactivate()
 				repository.SaveTransferPortalProfile(profile, db)
 				continue
@@ -940,8 +854,8 @@ func AICoachAllocateAndPromisePhase() {
 					if bias == closeToHome && (teamProfile.State == tp.State) {
 						promiseType = "Home State Game"
 						benchmarkStr = tp.State
-					} else if bias == immediateStart && tp.Overall > 48 {
-						promiseType = "Minutes"
+					} else if bias == immediateStart && tp.Overall > 40 {
+						promiseType = "Snaps"
 						// Rewrite
 						if promiseLevel == 1 {
 							promiseBenchmark += 5
@@ -955,7 +869,7 @@ func AICoachAllocateAndPromisePhase() {
 						promiseWeight = getPromiseWeightByMinutesOrWins(promiseBenchmark)
 					} else if bias == nationalChampionshipContender || bias == richHistory {
 						// Promise based on wins
-						promiseBenchmark = 20
+						promiseBenchmark = 5
 						promiseType = "Wins"
 						if promiseLevel == 1 {
 							promiseBenchmark += 5
@@ -1009,10 +923,6 @@ func SyncTransferPortal() {
 	}
 
 	for _, portalPlayer := range transferPortalPlayers {
-		if portalPlayer.ID == 28 {
-			continue
-		}
-
 		// Skip over players that have already transferred
 		if portalPlayer.TransferStatus != 2 || portalPlayer.TeamID > 0 {
 			continue
@@ -1074,7 +984,7 @@ func SyncTransferPortal() {
 
 		}
 
-		if (teamCount == 1 && minSpendingCount == 2) || (teamCount > 1 && minSpendingCount > 3 || ts.TransferPortalRound == 10) {
+		if (teamCount == 1 && minSpendingCount >= 2) || (teamCount > 1 && minSpendingCount > 3 || ts.TransferPortalRound == 10) {
 			// threshold met
 			readyToSign = true
 		}
@@ -1105,16 +1015,25 @@ func SyncTransferPortal() {
 
 					teamProfile := teamProfileMap[winningTeamIDSTR]
 					currentRoster := rosterMap[teamProfile.ID]
-					if len(currentRoster) <= 13 {
+					teamCap := 105
+					if !teamProfile.IsFBS {
+						teamCap = 80
+					}
+					if len(currentRoster) < teamCap {
 						portalPlayer.SignWithNewTeam(teamProfile.TeamID, teamProfile.TeamAbbreviation)
 						message := portalPlayer.FirstName + " " + portalPlayer.LastName + ", " + strconv.Itoa(portalPlayer.Stars) + " star " + portalPlayer.Position + " from " + portalPlayer.PreviousTeam + " has signed with " + portalPlayer.TeamAbbr + " with " + strconv.Itoa(int(odds)) + " percent odds."
-						CreateNewsLog("CBB", message, "Transfer Portal", int(winningTeamID), ts)
+						CreateNewsLog("CFB", message, "Transfer Portal", int(winningTeamID), ts)
 						fmt.Println("Created new log!")
 						// Add player to existing roster map
 						rosterMap[teamProfile.ID] = append(rosterMap[teamProfile.ID], portalPlayer)
 						for i := range portalProfiles {
 							if portalProfiles[i].ID == winningTeamID {
 								portalProfiles[i].SignPlayer()
+							} else {
+								promise := GetCollegePromiseByCollegePlayerID(strconv.Itoa(int(portalPlayer.ID)), strconv.Itoa(int(portalProfiles[i].ProfileID)))
+								if promise.ID > 0 {
+									repository.DeleteCollegePromise(promise, db)
+								}
 							}
 							portalProfiles[i].Lock()
 						}
@@ -1137,9 +1056,6 @@ func SyncTransferPortal() {
 
 		}
 		for _, p := range portalProfiles {
-			if p.CollegePlayerID == 28 {
-				continue
-			}
 			repository.SaveTransferPortalProfile(p, db)
 			fmt.Println("Save transfer portal profile from " + portalPlayer.TeamAbbr + " towards " + portalPlayer.FirstName + " " + portalPlayer.LastName)
 		}

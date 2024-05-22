@@ -206,7 +206,7 @@ func GetRecruitingNeeds(TeamID string) map[string]int {
 
 	teamRoster := GetAllCollegePlayersByTeamId(TeamID)
 	// The roster is in dire shape, just open up the team needs
-	if len(teamRoster) <= 50 {
+	if len(teamRoster) <= 60 {
 		needsMap["QB"] = 2
 		needsMap["RB"] = 2
 		needsMap["FB"] = 1

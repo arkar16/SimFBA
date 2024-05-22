@@ -268,6 +268,20 @@ func handleRequests() {
 	// Transfer Intentions
 	myRouter.HandleFunc("/simfba/sync/transfer/intention", controller.ProcessTransferIntention).Methods("GET")
 
+	// Transfer Intentions
+	myRouter.HandleFunc("/portal/transfer/intention", controller.ProcessTransferIntention).Methods("GET")
+	// myRouter.HandleFunc("/portal/transfer/sync", controller.SyncTransferPortal).Methods("GET")
+	myRouter.HandleFunc("/portal/ai/generate/profiles", controller.FillUpTransferBoardsAI).Methods("GET")
+	myRouter.HandleFunc("/portal/ai/allocate/profiles", controller.AllocateAndPromisePlayersAI).Methods("GET")
+	myRouter.HandleFunc("/portal/page/data/{teamID}", controller.GetTransferPortalPageData).Methods("GET")
+	myRouter.HandleFunc("/portal/profile/create", controller.AddTransferPlayerToBoard).Methods("POST")
+	myRouter.HandleFunc("/portal/profile/remove/{profileID}", controller.RemovePlayerFromTransferPortalBoard).Methods("GET")
+	myRouter.HandleFunc("/portal/saveboard", controller.SaveTransferBoard).Methods("POST")
+	myRouter.HandleFunc("/portal/promise/create", controller.CreatePromise).Methods("POST")
+	myRouter.HandleFunc("/portal/promise/cancel/{promiseID}", controller.CancelPromise).Methods("GET")
+	myRouter.HandleFunc("/portal/promise/player/{playerID}/{teamID}", controller.GetPromiseByPlayerID).Methods("GET")
+	myRouter.HandleFunc("/portal/player/scout/{id}", controller.GetScoutingDataByTransfer).Methods("GET")
+
 	// Discord Controls
 	myRouter.HandleFunc("/ds/cfb/team/{teamID}/", controller.GetTeamByTeamIDForDiscord).Methods("GET")
 	myRouter.HandleFunc("/ds/college/player/indstats/{id}/{week}/", controller.GetCollegePlayerStatsByNameTeamAndWeek).Methods("GET")

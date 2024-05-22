@@ -52,13 +52,16 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.Stadium{})
 
 	// College
+
 	// db.AutoMigrate(&structs.CollegePlayer{})
 	// db.AutoMigrate(&structs.HistoricCollegePlayer{})
+	// db.AutoMigrate(&structs.TransferPortalProfile{})
 	// db.AutoMigrate(&structs.Player{})
 	// db.AutoMigrate(&structs.CollegePlayerSeasonStats{})
 	// db.AutoMigrate(&structs.CollegePlayerStats{})
 	// db.AutoMigrate(&structs.CollegePlayerGameSnaps{})
 	// db.AutoMigrate(&structs.CollegePlayerSeasonSnaps{})
+	// db.AutoMigrate(&structs.CollegePromise{})
 	// db.AutoMigrate(&structs.UnsignedPlayer{})
 	// db.AutoMigrate(&structs.CollegeTeam{})
 	// db.AutoMigrate(&structs.CollegeRival{})

@@ -159,6 +159,7 @@ func (c *TransferPlayerResponse) Map(r CollegePlayer, ovr string) {
 	c.FirstName = r.FirstName
 	c.LastName = r.LastName
 	c.Position = r.Position
+	c.Archetype = r.Archetype
 	c.Height = r.Height
 	c.Weight = r.Weight
 	c.Stars = r.Stars

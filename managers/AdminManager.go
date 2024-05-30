@@ -374,8 +374,8 @@ func SyncTimeslot(timeslot string) {
 			homeTeamStats := GetCollegeTeamStatsByGame(strconv.Itoa(homeTeamID), gameID)
 			awayTeamStats := GetCollegeTeamStatsByGame(strconv.Itoa(awayTeamID), gameID)
 
-			homeTeamSeasonStats.MapStats([]structs.CollegeTeamStats{homeTeamStats})
-			awayTeamSeasonStats.MapStats([]structs.CollegeTeamStats{awayTeamStats})
+			homeTeamSeasonStats.MapStats([]structs.CollegeTeamStats{homeTeamStats}, timestamp.CollegeSeasonID)
+			awayTeamSeasonStats.MapStats([]structs.CollegeTeamStats{awayTeamStats}, timestamp.CollegeSeasonID)
 			// Get Player Stats
 			homePlayerStats := GetAllCollegePlayerStatsByGame(gameID, strconv.Itoa(homeTeamID))
 			awayPlayerStats := GetAllCollegePlayerStatsByGame(gameID, strconv.Itoa(awayTeamID))
@@ -603,8 +603,8 @@ func SyncTimeslot(timeslot string) {
 			homeTeamStats := GetNFLTeamStatsByGame(strconv.Itoa(homeTeamID), gameID)
 			awayTeamStats := GetNFLTeamStatsByGame(strconv.Itoa(awayTeamID), gameID)
 
-			homeTeamSeasonStats.MapStats([]structs.NFLTeamStats{homeTeamStats})
-			awayTeamSeasonStats.MapStats([]structs.NFLTeamStats{awayTeamStats})
+			homeTeamSeasonStats.MapStats([]structs.NFLTeamStats{homeTeamStats}, timestamp.Season, timestamp.CollegeSeasonID)
+			awayTeamSeasonStats.MapStats([]structs.NFLTeamStats{awayTeamStats}, timestamp.Season, timestamp.CollegeSeasonID)
 			// Get Player Stats
 			homePlayerStats := GetAllNFLPlayerStatsByGame(gameID, strconv.Itoa(homeTeamID))
 			awayPlayerStats := GetAllNFLPlayerStatsByGame(gameID, strconv.Itoa(awayTeamID))

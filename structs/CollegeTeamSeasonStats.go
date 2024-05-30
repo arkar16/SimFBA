@@ -74,7 +74,8 @@ func (ss *CollegeTeamSeasonStats) ResetStats() {
 	ss.QBRating = 0
 }
 
-func (ss *CollegeTeamSeasonStats) MapStats(stats []CollegeTeamStats) {
+func (ss *CollegeTeamSeasonStats) MapStats(stats []CollegeTeamStats, seasonID int) {
+	ss.SeasonID = uint(seasonID)
 	for _, stat := range stats {
 		ss.GamesPlayed++
 		ss.PassingYards = ss.PassingYards + stat.PassingYards

@@ -445,7 +445,7 @@ func ResetCFBSeasonalStats() {
 		teamStats := GetHistoricalTeamStats(teamID, seasonID)
 		seasonStats := GetCollegeTeamSeasonStatsBySeason(teamID, seasonID)
 		seasonStats.ResetStats()
-		seasonStats.MapStats(teamStats)
+		seasonStats.MapStats(teamStats, ts.CollegeSeasonID)
 		db.Save(&seasonStats)
 		fmt.Println("Reset Season Stats for " + team.TeamName)
 	}
@@ -489,7 +489,7 @@ func ResetCFBSeasonalStats() {
 func ResetNFLSeasonalStats() {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
-	seasonID := strconv.Itoa(int(ts.NFLSeasonID))
+	seasonID := strconv.Itoa(int(ts.CollegeSeasonID))
 	teams := GetAllNFLTeams()
 
 	for _, team := range teams {
@@ -497,7 +497,7 @@ func ResetNFLSeasonalStats() {
 		teamStats := GetNFLHistoricalTeamStats(teamID, seasonID)
 		seasonStats := GetNFLTeamSeasonStatsByTeamANDSeason(teamID, seasonID)
 		seasonStats.ResetStats()
-		seasonStats.MapStats(teamStats)
+		seasonStats.MapStats(teamStats, ts.Season, ts.CollegeSeasonID)
 		db.Save(&seasonStats)
 		fmt.Println("Reset Season Stats for " + team.TeamName)
 	}
@@ -527,7 +527,7 @@ func ResetNFLSeasonalStats() {
 		games := GetNFLGamesByTeamIdAndSeasonId(strconv.Itoa(int(standing.TeamID)), seasonID)
 
 		for _, game := range games {
-			if !game.GameComplete {
+			if !game.GameComplete || game.IsPreseasonGame {
 				continue
 			}
 			standing.UpdateNFLStandings(game)

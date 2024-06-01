@@ -127,6 +127,23 @@ func GetCollegePlayerViaDiscord(id string) structs.DiscordPlayerResponse {
 	}
 }
 
+func GetCollegePlayerByNameViaDiscord(firstName, lastName, teamID string) structs.DiscordPlayerResponse {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+
+	seasonID := strconv.Itoa(ts.CollegeSeasonID)
+	var collegePlayer structs.CollegePlayer
+
+	db.Preload("SeasonStats", "season_id = ?", seasonID).Where("first_name = ? AND last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&collegePlayer)
+
+	collegePlayerResponse := structs.MapPlayerToCSVModel(collegePlayer)
+
+	return structs.DiscordPlayerResponse{
+		Player:       collegePlayerResponse,
+		CollegeStats: collegePlayer.SeasonStats,
+	}
+}
+
 func GetNFLPlayerViaDiscord(id string) structs.DiscordPlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
@@ -135,6 +152,23 @@ func GetNFLPlayerViaDiscord(id string) structs.DiscordPlayerResponse {
 	var nflPlayer structs.NFLPlayer
 
 	db.Preload("SeasonStats", "season_id = ?", seasonID).Where("id = ?", id).Find(&nflPlayer)
+
+	nflPlayerResponse := structs.MapNFLPlayerToCSVModel(nflPlayer)
+
+	return structs.DiscordPlayerResponse{
+		Player:   nflPlayerResponse,
+		NFLStats: nflPlayer.SeasonStats,
+	}
+}
+
+func GetNFLPlayerByNameViaDiscord(firstName, lastName, teamID string) structs.DiscordPlayerResponse {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+
+	seasonID := strconv.Itoa(ts.NFLSeasonID)
+	var nflPlayer structs.NFLPlayer
+
+	db.Preload("SeasonStats", "season_id = ?", seasonID).Where("first_name = ? AND last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&nflPlayer)
 
 	nflPlayerResponse := structs.MapNFLPlayerToCSVModel(nflPlayer)
 

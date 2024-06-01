@@ -122,6 +122,21 @@ func GetCollegePlayer(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(player)
 }
 
+func GetCollegePlayerByName(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	firstName := vars["firstName"]
+	lastName := vars["lastName"]
+	teamID := vars["abbr"]
+
+	if len(firstName) == 0 {
+		panic("User did not provide a first name")
+	}
+
+	player := managers.GetCollegePlayerByNameViaDiscord(firstName, lastName, teamID)
+
+	json.NewEncoder(w).Encode(player)
+}
+
 func GetRecruitingClassByTeamID(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamID := vars["teamID"]
@@ -158,6 +173,21 @@ func GetNFLPlayer(w http.ResponseWriter, r *http.Request) {
 	}
 
 	player := managers.GetNFLPlayerViaDiscord(id)
+
+	json.NewEncoder(w).Encode(player)
+}
+
+func GetNFLPlayerByName(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	firstName := vars["firstName"]
+	lastName := vars["lastName"]
+	teamID := vars["abbr"]
+
+	if len(firstName) == 0 {
+		panic("User did not provide a first name")
+	}
+
+	player := managers.GetNFLPlayerByNameViaDiscord(firstName, lastName, teamID)
 
 	json.NewEncoder(w).Encode(player)
 }

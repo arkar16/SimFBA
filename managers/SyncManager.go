@@ -95,7 +95,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 		for i := 0; i < len(recruitProfiles) && pointsPlaced; i++ {
 			recruitTeamProfile := teamMap[strconv.Itoa(recruitProfiles[i].ProfileID)]
-			if recruitTeamProfile.TotalCommitments >= recruitTeamProfile.RecruitClassSize {
+			if recruitTeamProfile.TotalCommitments >= recruitTeamProfile.RecruitClassSize || (recruitProfiles[i].RemovedFromBoard && recruitProfiles[i].ScholarshipRevoked) {
 				continue
 			}
 			if eligiblePointThreshold == 0 && recruitProfiles[i].Scholarship {

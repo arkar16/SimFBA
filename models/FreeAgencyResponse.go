@@ -41,6 +41,8 @@ type FreeAgentResponse struct {
 	KickPower         int
 	PuntAccuracy      int
 	PuntPower         int
+	InjuryRating      int
+	Stamina           int
 	PotentialGrade    string
 	FreeAgency        string
 	Personality       string

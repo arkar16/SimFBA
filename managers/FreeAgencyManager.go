@@ -155,6 +155,8 @@ func GetAllFreeAgentsWithOffers() []models.FreeAgentResponse {
 			KickPower:         fa.KickPower,
 			PuntAccuracy:      fa.PuntAccuracy,
 			PuntPower:         fa.PuntPower,
+			InjuryRating:      fa.Injury,
+			Stamina:           fa.Stamina,
 			PotentialGrade:    fa.PotentialGrade,
 			FreeAgency:        fa.FreeAgency,
 			Personality:       fa.Personality,

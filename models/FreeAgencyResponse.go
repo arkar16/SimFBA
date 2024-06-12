@@ -21,6 +21,26 @@ type FreeAgentResponse struct {
 	Weight            int
 	Age               int
 	Overall           int
+	FootballIQ        int
+	Speed             int
+	Carrying          int
+	Agility           int
+	Catching          int
+	RouteRunning      int
+	ZoneCoverage      int
+	ManCoverage       int
+	Strength          int
+	Tackle            int
+	PassBlock         int
+	RunBlock          int
+	PassRush          int
+	RunDefense        int
+	ThrowPower        int
+	ThrowAccuracy     int
+	KickAccuracy      int
+	KickPower         int
+	PuntAccuracy      int
+	PuntPower         int
 	PotentialGrade    string
 	FreeAgency        string
 	Personality       string

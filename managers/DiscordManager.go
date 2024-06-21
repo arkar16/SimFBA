@@ -258,16 +258,32 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 		}
 		gameID := strconv.Itoa(int(game.ID))
 		var wg sync.WaitGroup
-		wg.Add(5)
 		var (
 			homeGameplan structs.CollegeGameplan
 			awayGameplan structs.CollegeGameplan
 			playByPlays  []structs.CollegePlayByPlay
 			homePlayers  []structs.GameResultsPlayer
 			awayPlayers  []structs.GameResultsPlayer
+			homeStats    []structs.CollegePlayerStats
+			awayStats    []structs.CollegePlayerStats
 		)
 		homeTeamID := strconv.Itoa(game.HomeTeamID)
 		awayTeamID := strconv.Itoa(game.AwayTeamID)
+		wg.Add(2)
+
+		go func() {
+			defer wg.Done()
+			homeStats = GetAllCollegePlayerStatsByGame(gameID, homeTeamID)
+		}()
+
+		go func() {
+			defer wg.Done()
+			awayStats = GetAllCollegePlayerStatsByGame(gameID, awayTeamID)
+		}()
+
+		wg.Wait()
+
+		wg.Add(5)
 
 		go func() {
 			defer wg.Done()
@@ -286,12 +302,12 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 
 		go func() {
 			defer wg.Done()
-			homePlayers = GetAllCollegePlayersWithGameStatsByTeamID(homeTeamID, gameID)
+			homePlayers = GetAllCollegePlayersWithGameStatsByTeamID(gameID, homeStats)
 		}()
 
 		go func() {
 			defer wg.Done()
-			awayPlayers = GetAllCollegePlayersWithGameStatsByTeamID(awayTeamID, gameID)
+			awayPlayers = GetAllCollegePlayersWithGameStatsByTeamID(gameID, awayStats)
 		}()
 
 		wg.Wait()
@@ -356,16 +372,32 @@ func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse 
 
 		gameID := strconv.Itoa(int(game.ID))
 		var wg sync.WaitGroup
-		wg.Add(5)
 		var (
 			homeGameplan structs.NFLGameplan
 			awayGameplan structs.NFLGameplan
 			playByPlays  []structs.NFLPlayByPlay
 			homePlayers  []structs.GameResultsPlayer
 			awayPlayers  []structs.GameResultsPlayer
+			homeStats    []structs.NFLPlayerStats
+			awayStats    []structs.NFLPlayerStats
 		)
 		homeTeamID := strconv.Itoa(game.HomeTeamID)
 		awayTeamID := strconv.Itoa(game.AwayTeamID)
+
+		wg.Add(2)
+
+		go func() {
+			defer wg.Done()
+			homeStats = GetAllNFLPlayerStatsByGame(gameID, homeTeamID)
+		}()
+
+		go func() {
+			defer wg.Done()
+			awayStats = GetAllNFLPlayerStatsByGame(gameID, awayTeamID)
+		}()
+
+		wg.Wait()
+		wg.Add(5)
 
 		go func() {
 			defer wg.Done()
@@ -384,12 +416,12 @@ func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse 
 
 		go func() {
 			defer wg.Done()
-			homePlayers = GetAllNFLPlayersWithGameStatsByTeamID(homeTeamID, gameID)
+			homePlayers = GetAllNFLPlayersWithGameStatsByTeamID(gameID, homeStats)
 		}()
 
 		go func() {
 			defer wg.Done()
-			awayPlayers = GetAllNFLPlayersWithGameStatsByTeamID(awayTeamID, gameID)
+			awayPlayers = GetAllNFLPlayersWithGameStatsByTeamID(gameID, awayStats)
 		}()
 
 		wg.Wait()

@@ -203,7 +203,7 @@ func GetCollegeSeasonSnapsByPlayerAndSeason(PlayerID, SeasonID string) structs.C
 
 	var playerStats structs.CollegePlayerSeasonSnaps
 
-	err := db.Where("college_player_id = ? AND season_id = ?", PlayerID, SeasonID).Find(&playerStats).Error
+	err := db.Where("player_id = ? AND season_id = ?", PlayerID, SeasonID).Find(&playerStats).Error
 	if err != nil {
 		return structs.CollegePlayerSeasonSnaps{}
 	}
@@ -229,12 +229,22 @@ func GetNFLSeasonSnapsByPlayerAndSeason(PlayerID, SeasonID string) structs.NFLPl
 
 	var playerStats structs.NFLPlayerSeasonSnaps
 
-	err := db.Where("nfl_player_id = ? AND season_id = ?", PlayerID, SeasonID).Find(&playerStats).Error
+	err := db.Where("player_id = ? AND season_id = ?", PlayerID, SeasonID).Find(&playerStats).Error
 	if err != nil {
 		return structs.NFLPlayerSeasonSnaps{}
 	}
 
 	return playerStats
+}
+
+func GetCollegeSeasonSnapsBySeason(SeasonID string) []structs.CollegePlayerSeasonSnaps {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerSnaps []structs.CollegePlayerSeasonSnaps
+
+	db.Where("season_id = ?", SeasonID).Find(&playerSnaps)
+
+	return playerSnaps
 }
 
 func GetCollegeSeasonStatsBySeason(SeasonID string) []structs.CollegeTeamSeasonStats {
@@ -1086,28 +1096,29 @@ func GetCFBGameResultsByGameID(gameID string) structs.GameResultsResponse {
 	game := GetCollegeGameByGameID(gameID)
 	htID := strconv.Itoa(game.HomeTeamID)
 	atID := strconv.Itoa(game.AwayTeamID)
-
-	homePlayers := GetAllCollegePlayersWithGameStatsByTeamID(htID, gameID)
-	awayPlayers := GetAllCollegePlayersWithGameStatsByTeamID(atID, gameID)
-	homeStats := GetCollegeTeamStatsByGame(htID, gameID)
-	awayStats := GetCollegeTeamStatsByGame(atID, gameID)
+	homeStats := GetAllCollegePlayerStatsByGame(gameID, htID)
+	awayStats := GetAllCollegePlayerStatsByGame(gameID, atID)
+	homePlayers := GetAllCollegePlayersWithGameStatsByTeamID(gameID, homeStats)
+	awayPlayers := GetAllCollegePlayersWithGameStatsByTeamID(gameID, awayStats)
+	homeTeamStats := GetCollegeTeamStatsByGame(htID, gameID)
+	awayTeamStats := GetCollegeTeamStatsByGame(atID, gameID)
 	score := structs.ScoreBoard{
-		Q1Home:  homeStats.Score1Q,
-		Q2Home:  homeStats.Score2Q,
-		Q3Home:  homeStats.Score3Q,
-		Q4Home:  homeStats.Score4Q,
-		OT1Home: homeStats.Score5Q,
-		OT2Home: homeStats.Score6Q,
-		OT3Home: homeStats.Score7Q,
-		OT4Home: homeStats.ScoreOT,
-		Q1Away:  awayStats.Score1Q,
-		Q2Away:  awayStats.Score2Q,
-		Q3Away:  awayStats.Score3Q,
-		Q4Away:  awayStats.Score4Q,
-		OT1Away: awayStats.Score5Q,
-		OT2Away: awayStats.Score6Q,
-		OT3Away: awayStats.Score7Q,
-		OT4Away: awayStats.ScoreOT,
+		Q1Home:  homeTeamStats.Score1Q,
+		Q2Home:  homeTeamStats.Score2Q,
+		Q3Home:  homeTeamStats.Score3Q,
+		Q4Home:  homeTeamStats.Score4Q,
+		OT1Home: homeTeamStats.Score5Q,
+		OT2Home: homeTeamStats.Score6Q,
+		OT3Home: homeTeamStats.Score7Q,
+		OT4Home: homeTeamStats.ScoreOT,
+		Q1Away:  awayTeamStats.Score1Q,
+		Q2Away:  awayTeamStats.Score2Q,
+		Q3Away:  awayTeamStats.Score3Q,
+		Q4Away:  awayTeamStats.Score4Q,
+		OT1Away: awayTeamStats.Score5Q,
+		OT2Away: awayTeamStats.Score6Q,
+		OT3Away: awayTeamStats.Score7Q,
+		OT4Away: awayTeamStats.ScoreOT,
 	}
 	participantMap := getGameParticipantMap(homePlayers, awayPlayers)
 
@@ -1127,8 +1138,10 @@ func GetNFLGameResultsByGameID(gameID string) structs.GameResultsResponse {
 	game := GetNFLGameByGameID(gameID)
 	htID := strconv.Itoa(game.HomeTeamID)
 	atID := strconv.Itoa(game.AwayTeamID)
-	homePlayers := GetAllNFLPlayersWithGameStatsByTeamID(strconv.Itoa(game.HomeTeamID), gameID)
-	awayPlayers := GetAllNFLPlayersWithGameStatsByTeamID(strconv.Itoa(game.AwayTeamID), gameID)
+	homePlayerStats := GetAllNFLPlayerStatsByGame(gameID, htID)
+	awayPlayerStats := GetAllNFLPlayerStatsByGame(gameID, atID)
+	homePlayers := GetAllNFLPlayersWithGameStatsByTeamID(gameID, homePlayerStats)
+	awayPlayers := GetAllNFLPlayersWithGameStatsByTeamID(gameID, awayPlayerStats)
 	homeStats := GetNFLTeamStatsByGame(htID, gameID)
 	awayStats := GetNFLTeamStatsByGame(atID, gameID)
 	score := structs.ScoreBoard{

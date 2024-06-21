@@ -35,9 +35,9 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 	// Initialize writer
 	writer := csv.NewWriter(w)
 	ts := GetTimestamp()
-	seasonID := strconv.Itoa(ts.CollegeSeasonID - 1)
+	seasonID := strconv.Itoa(ts.CollegeSeasonID)
 	allCollegePlayers := GetAllCollegePlayers()
-	seasonStatMap := GetCollegePlayerSeasonStatMap(seasonID)
+	seasonSnapMap := GetCollegePlayerSeasonSnapMap(seasonID)
 	fullRosterMap := GetFullTeamRosterWithCrootsMap()
 	teamProfileMap := GetTeamProfileMap()
 	transferCount := 0
@@ -63,7 +63,7 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 	HeaderRow := []string{
 		"Team", "First Name", "Last Name", "Stars",
 		"Archetype", "Position", "Year", "Age", "Redshirt Status",
-		"Overall", "Transfer Weight", "Dice Roll",
+		"Overall", "Transfer Bias", "Transfer Status", "Transfer Weight", "Dice Roll",
 	}
 
 	err := writer.Write(HeaderRow)
@@ -82,15 +82,15 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 
 		// Modifiers on reasons why they would transfer
 		snapMod := 0.0
-		ageMod := 0.0
+		ageMod := 1.125
 		starMod := 0.0
 		depthChartCompetitionMod := 0.0
 		schemeMod := 0.0
 		// closeToHomeMod := 0.0
 
 		// Check Snaps
-		seasonStats := seasonStatMap[p.ID]
-		totalSnaps := seasonStats.Snaps
+		seasonStats := seasonSnapMap[p.ID]
+		totalSnaps := seasonStats.GetTotalSnaps()
 		snapsPerGame := totalSnaps / 12
 
 		if p.Position == "P" || p.Position == "K" {
@@ -246,7 +246,12 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 		// Check for scheme based on Team Recruiting Profile.
 		// If it is not a good fit for the player, they will want to transfer
 		// Will Need to Lock Scheme Dropdown by halfway through the season or by end of season
-		teamIdStr := strconv.Itoa(p.TeamID)
+
+		teamID := p.TeamID
+		if teamID == 0 {
+			teamID = int(p.PreviousTeamID)
+		}
+		teamIdStr := strconv.Itoa(teamID)
 		teamProfile := teamProfileMap[teamIdStr]
 		schemeMod = getSchemeMod(teamProfile, p, smallDrop, smallGain)
 
@@ -300,7 +305,7 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 			p.TeamAbbr, csvModel.FirstName, csvModel.LastName, strconv.Itoa(p.Stars),
 			csvModel.Archetype, csvModel.Position,
 			csvModel.Year, strconv.Itoa(p.Age), csvModel.RedshirtStatus,
-			csvModel.OverallGrade, strconv.Itoa(transferInt), strconv.Itoa(diceRoll),
+			csvModel.OverallGrade, p.RecruitingBias, p.TransferLikeliness, strconv.Itoa(transferInt), strconv.Itoa(diceRoll),
 		}
 
 		err = writer.Write(playerRow)
@@ -1250,6 +1255,17 @@ func GetTransferPortalPlayersForPage() []structs.TransferPlayerResponse {
 	}
 
 	return playerList
+}
+
+func GetCollegePlayerSeasonSnapMap(seasonID string) map[uint]structs.CollegePlayerSeasonSnaps {
+	seasonStatMap := make(map[uint]structs.CollegePlayerSeasonSnaps)
+
+	seasonStats := GetCollegeSeasonSnapsBySeason(seasonID)
+	for _, stat := range seasonStats {
+		seasonStatMap[stat.PlayerID] = stat
+	}
+
+	return seasonStatMap
 }
 
 func GetCollegePlayerSeasonStatMap(seasonID string) map[uint]structs.CollegePlayerSeasonStats {

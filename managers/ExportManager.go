@@ -394,9 +394,10 @@ func ExportNFLPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 	game := GetNFLGameByGameID(gameID)
 	htID := strconv.Itoa(game.HomeTeamID)
 	atID := strconv.Itoa(game.AwayTeamID)
-
-	homePlayers := GetAllNFLPlayersWithGameStatsByTeamID(htID, gameID)
-	awayPlayers := GetAllNFLPlayersWithGameStatsByTeamID(atID, gameID)
+	homePlayerStats := GetAllNFLPlayerStatsByGame(gameID, htID)
+	awayPlayerStats := GetAllNFLPlayerStatsByGame(gameID, atID)
+	homePlayers := GetAllNFLPlayersWithGameStatsByTeamID(gameID, homePlayerStats)
+	awayPlayers := GetAllNFLPlayersWithGameStatsByTeamID(gameID, awayPlayerStats)
 	participantMap := getGameParticipantMap(homePlayers, awayPlayers)
 
 	playByPlays := GetNFLPlayByPlaysByGameID(gameID)
@@ -463,8 +464,11 @@ func ExportCFBPlayByPlayToCSV(gameID string, w http.ResponseWriter) {
 	htID := strconv.Itoa(game.HomeTeamID)
 	atID := strconv.Itoa(game.AwayTeamID)
 
-	homePlayers := GetAllCollegePlayersWithGameStatsByTeamID(htID, gameID)
-	awayPlayers := GetAllCollegePlayersWithGameStatsByTeamID(atID, gameID)
+	homeStats := GetAllCollegePlayerStatsByGame(gameID, htID)
+	awayStats := GetAllCollegePlayerStatsByGame(gameID, atID)
+
+	homePlayers := GetAllCollegePlayersWithGameStatsByTeamID(gameID, homeStats)
+	awayPlayers := GetAllCollegePlayersWithGameStatsByTeamID(gameID, awayStats)
 	participantMap := getGameParticipantMap(homePlayers, awayPlayers)
 
 	playByPlays := GetCFBPlayByPlaysByGameID(gameID)

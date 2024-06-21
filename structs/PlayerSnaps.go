@@ -6,72 +6,72 @@ type BasePlayerGameSnaps struct {
 	PlayerID uint
 	GameID   uint
 	WeekID   uint
-	QBSnaps  uint8
-	RBSnaps  uint8
-	FBSnaps  uint8
-	WRSnaps  uint8
-	TESnaps  uint8
-	OTSnaps  uint8
-	OGSnaps  uint8
-	CSnaps   uint8
-	DTSnaps  uint8
-	DESnaps  uint8
-	OLBSnaps uint8
-	ILBSnaps uint8
-	CBSnaps  uint8
-	FSSnaps  uint8
-	SSSnaps  uint8
-	KSnaps   uint8
-	PSnaps   uint8
-	STSnaps  uint8
-	KRSnaps  uint8
-	PRSnaps  uint8
-	KOSSnaps uint8
+	QBSnaps  uint16
+	RBSnaps  uint16
+	FBSnaps  uint16
+	WRSnaps  uint16
+	TESnaps  uint16
+	OTSnaps  uint16
+	OGSnaps  uint16
+	CSnaps   uint16
+	DTSnaps  uint16
+	DESnaps  uint16
+	OLBSnaps uint16
+	ILBSnaps uint16
+	CBSnaps  uint16
+	FSSnaps  uint16
+	SSSnaps  uint16
+	KSnaps   uint16
+	PSnaps   uint16
+	STSnaps  uint16
+	KRSnaps  uint16
+	PRSnaps  uint16
+	KOSSnaps uint16
 }
 
 func (g *BasePlayerGameSnaps) MapSnapsToPosition(pos string, snaps int) {
 	if pos == "QB" {
-		g.QBSnaps += uint8(snaps)
+		g.QBSnaps += uint16(snaps)
 	} else if pos == "RB" {
-		g.RBSnaps += uint8(snaps)
+		g.RBSnaps += uint16(snaps)
 	} else if pos == "FB" {
-		g.FBSnaps += uint8(snaps)
+		g.FBSnaps += uint16(snaps)
 	} else if pos == "WR" {
-		g.WRSnaps += uint8(snaps)
+		g.WRSnaps += uint16(snaps)
 	} else if pos == "TE" {
-		g.TESnaps += uint8(snaps)
+		g.TESnaps += uint16(snaps)
 	} else if pos == "OT" {
-		g.OTSnaps += uint8(snaps)
+		g.OTSnaps += uint16(snaps)
 	} else if pos == "OG" {
-		g.OGSnaps += uint8(snaps)
+		g.OGSnaps += uint16(snaps)
 	} else if pos == "C" {
-		g.CSnaps += uint8(snaps)
+		g.CSnaps += uint16(snaps)
 	} else if pos == "DE" {
-		g.DESnaps += uint8(snaps)
+		g.DESnaps += uint16(snaps)
 	} else if pos == "DT" {
-		g.DTSnaps += uint8(snaps)
+		g.DTSnaps += uint16(snaps)
 	} else if pos == "OLB" {
-		g.OLBSnaps += uint8(snaps)
+		g.OLBSnaps += uint16(snaps)
 	} else if pos == "ILB" {
-		g.ILBSnaps += uint8(snaps)
+		g.ILBSnaps += uint16(snaps)
 	} else if pos == "CB" {
-		g.CBSnaps += uint8(snaps)
+		g.CBSnaps += uint16(snaps)
 	} else if pos == "FS" {
-		g.FSSnaps += uint8(snaps)
+		g.FSSnaps += uint16(snaps)
 	} else if pos == "SS" {
-		g.SSSnaps += uint8(snaps)
+		g.SSSnaps += uint16(snaps)
 	} else if pos == "P" {
-		g.PSnaps += uint8(snaps)
+		g.PSnaps += uint16(snaps)
 	} else if pos == "K" {
-		g.KSnaps += uint8(snaps)
+		g.KSnaps += uint16(snaps)
 	} else if pos == "ST" {
-		g.STSnaps += uint8(snaps)
+		g.STSnaps += uint16(snaps)
 	} else if pos == "KR" {
-		g.KRSnaps += uint8(snaps)
+		g.KRSnaps += uint16(snaps)
 	} else if pos == "PR" {
-		g.PRSnaps += uint8(snaps)
+		g.PRSnaps += uint16(snaps)
 	} else if pos == "KOS" {
-		g.KOSSnaps += uint8(snaps)
+		g.KOSSnaps += uint16(snaps)
 	}
 }
 
@@ -103,27 +103,35 @@ type BasePlayerSeasonSnaps struct {
 }
 
 func (s *BasePlayerSeasonSnaps) AddToSeason(g BasePlayerGameSnaps) {
-	s.QBSnaps += uint16(g.QBSnaps)
-	s.RBSnaps += uint16(g.RBSnaps)
-	s.FBSnaps += uint16(g.FBSnaps)
-	s.WRSnaps += uint16(g.WRSnaps)
-	s.TESnaps += uint16(g.TESnaps)
-	s.OTSnaps += uint16(g.OTSnaps)
-	s.OGSnaps += uint16(g.OGSnaps)
-	s.CSnaps += uint16(g.CSnaps)
-	s.DTSnaps += uint16(g.DTSnaps)
-	s.DESnaps += uint16(g.DESnaps)
-	s.OLBSnaps += uint16(g.OLBSnaps)
-	s.ILBSnaps += uint16(g.ILBSnaps)
-	s.CBSnaps += uint16(g.CBSnaps)
-	s.FSSnaps += uint16(g.FSSnaps)
-	s.SSSnaps += uint16(g.SSSnaps)
-	s.PSnaps += uint16(g.PSnaps)
-	s.KSnaps += uint16(g.KSnaps)
-	s.STSnaps += uint16(g.STSnaps)
-	s.PRSnaps += uint16(g.PRSnaps)
-	s.KRSnaps += uint16(g.KRSnaps)
-	s.KOSSnaps += uint16(g.KOSSnaps)
+	s.QBSnaps += g.QBSnaps
+	s.RBSnaps += g.RBSnaps
+	s.FBSnaps += g.FBSnaps
+	s.WRSnaps += g.WRSnaps
+	s.TESnaps += g.TESnaps
+	s.OTSnaps += g.OTSnaps
+	s.OGSnaps += g.OGSnaps
+	s.CSnaps += g.CSnaps
+	s.DTSnaps += g.DTSnaps
+	s.DESnaps += g.DESnaps
+	s.OLBSnaps += g.OLBSnaps
+	s.ILBSnaps += g.ILBSnaps
+	s.CBSnaps += g.CBSnaps
+	s.FSSnaps += g.FSSnaps
+	s.SSSnaps += g.SSSnaps
+	s.PSnaps += g.PSnaps
+	s.KSnaps += g.KSnaps
+	s.STSnaps += g.STSnaps
+	s.PRSnaps += g.PRSnaps
+	s.KRSnaps += g.KRSnaps
+	s.KOSSnaps += g.KOSSnaps
+}
+
+func (s *BasePlayerSeasonSnaps) GetTotalSnaps() int {
+	return int(s.QBSnaps + s.RBSnaps + s.FBSnaps + s.WRSnaps +
+		s.TESnaps + s.OTSnaps + s.OGSnaps + s.CSnaps + s.DTSnaps +
+		s.DESnaps + s.OLBSnaps + s.ILBSnaps + s.CBSnaps + s.FSSnaps +
+		s.SSSnaps + s.PSnaps + s.KSnaps + s.STSnaps + s.PRSnaps +
+		s.KRSnaps + s.KOSSnaps)
 }
 
 type CollegePlayerSeasonSnaps struct {

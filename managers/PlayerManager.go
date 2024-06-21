@@ -480,23 +480,24 @@ func GetAllCollegePlayersWithStatsByTeamID(TeamID string, SeasonID string) []str
 	return collegePlayers
 }
 
-func GetAllCollegePlayersWithGameStatsByTeamID(TeamID string, GameID string) []structs.GameResultsPlayer {
+func GetAllCollegePlayersWithGameStatsByTeamID(GameID string, stats []structs.CollegePlayerStats) []structs.GameResultsPlayer {
 	db := dbprovider.GetInstance().GetDB()
+	ids := []string{}
+	statMap := make(map[uint]structs.CollegePlayerStats)
+	for _, s := range stats {
+		playerID := strconv.Itoa(s.CollegePlayerID)
+		ids = append(ids, playerID)
+		statMap[uint(s.CollegePlayerID)] = s
+	}
 
 	var collegePlayers []structs.CollegePlayer
 	var matchRows []structs.GameResultsPlayer
 
-	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("game_id = ? and team_id = ? and snaps > 0", GameID, TeamID)
-	}).Where("team_id = ?", TeamID).Find(&collegePlayers)
+	db.Where("id in (?)", ids).Find(&collegePlayers)
 
 	for _, p := range collegePlayers {
-		if len(p.Stats) == 0 {
-			continue
-		}
-
-		s := p.Stats[0]
-		if s.Snaps == 0 {
+		s := statMap[p.ID]
+		if s.ID == 0 || s.Snaps == 0 {
 			continue
 		}
 
@@ -569,17 +570,11 @@ func GetAllCollegePlayersWithGameStatsByTeamID(TeamID string, GameID string) []s
 	}
 
 	historicPlayers := []structs.HistoricCollegePlayer{}
-	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("game_id = ? and team_id = ? and snaps > 0", GameID, TeamID)
-	}).Where("team_id = ?", TeamID).Find(&historicPlayers)
+	db.Where("id in (?)", ids).Find(&historicPlayers)
 
 	for _, p := range historicPlayers {
-		if len(p.Stats) == 0 {
-			continue
-		}
-
-		s := p.Stats[0]
-		if s.Snaps == 0 {
+		s := statMap[p.ID]
+		if s.ID == 0 || s.Snaps == 0 {
 			continue
 		}
 
@@ -654,23 +649,25 @@ func GetAllCollegePlayersWithGameStatsByTeamID(TeamID string, GameID string) []s
 	return matchRows
 }
 
-func GetAllNFLPlayersWithGameStatsByTeamID(TeamID string, GameID string) []structs.GameResultsPlayer {
+func GetAllNFLPlayersWithGameStatsByTeamID(GameID string, stats []structs.NFLPlayerStats) []structs.GameResultsPlayer {
 	db := dbprovider.GetInstance().GetDB()
+
+	ids := []string{}
+	statMap := make(map[uint]structs.NFLPlayerStats)
+	for _, s := range stats {
+		playerID := strconv.Itoa(s.NFLPlayerID)
+		ids = append(ids, playerID)
+		statMap[uint(s.NFLPlayerID)] = s
+	}
 
 	var nflPlayers []structs.NFLPlayer
 	var matchRows []structs.GameResultsPlayer
 
-	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("game_id = ? and team_id = ? and snaps > 0", GameID, TeamID)
-	}).Where("team_id = ?", TeamID).Find(&nflPlayers)
+	db.Where("id in (?)", ids).Find(&nflPlayers)
 
 	for _, p := range nflPlayers {
-		if len(p.Stats) == 0 {
-			continue
-		}
-
-		s := p.Stats[0]
-		if s.Snaps == 0 {
+		s := statMap[p.ID]
+		if s.ID == 0 || s.Snaps == 0 {
 			continue
 		}
 
@@ -742,20 +739,13 @@ func GetAllNFLPlayersWithGameStatsByTeamID(TeamID string, GameID string) []struc
 	}
 
 	historicPlayers := []structs.NFLRetiredPlayer{}
-	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("game_id = ? and team_id = ? and snaps > 0", GameID, TeamID)
-	}).Where("team_id = ?", TeamID).Find(&historicPlayers)
+	db.Where("id in (?)", ids).Find(&historicPlayers)
 
 	for _, p := range historicPlayers {
-		if len(p.Stats) == 0 {
+		s := statMap[p.ID]
+		if s.ID == 0 || s.Snaps == 0 {
 			continue
 		}
-
-		s := p.Stats[0]
-		if s.Snaps == 0 {
-			continue
-		}
-
 		row := structs.GameResultsPlayer{
 			ID:                   p.ID,
 			FirstName:            p.FirstName,

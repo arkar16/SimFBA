@@ -52,12 +52,32 @@ func GetCollegePlayerStatsByPlayerIDAndSeason(PlayerID string, SeasonID string) 
 	return playerStats
 }
 
+func GetCollegePlayerSnapsByPlayerIDAndSeason(PlayerID string, SeasonID string) []structs.CollegePlayerGameSnaps {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats []structs.CollegePlayerGameSnaps
+
+	db.Where("player_id = ? and season_id = ?", PlayerID, SeasonID).Find(&playerStats)
+
+	return playerStats
+}
+
 func GetNFLPlayerStatsByPlayerIDAndSeason(PlayerID string, SeasonID string) []structs.NFLPlayerStats {
 	db := dbprovider.GetInstance().GetDB()
 
 	var playerStats []structs.NFLPlayerStats
 
 	db.Where("nfl_player_id = ? and season_id = ?", PlayerID, SeasonID).Find(&playerStats)
+
+	return playerStats
+}
+
+func GetNFLPlayerSnapsByPlayerIDAndSeason(PlayerID string, SeasonID string) []structs.NFLPlayerGameSnaps {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats []structs.NFLPlayerGameSnaps
+
+	db.Where("player_id = ? and season_id = ?", PlayerID, SeasonID).Find(&playerStats)
 
 	return playerStats
 }
@@ -471,6 +491,17 @@ func ResetCFBSeasonalStats() {
 			seasonStats.MapStats(playerStats)
 			db.Save(&seasonStats)
 		}
+
+		playerSnaps := GetCollegePlayerSnapsByPlayerIDAndSeason(playerID, seasonID)
+		if len(playerSnaps) > 0 {
+			seasonSnaps := GetCollegeSeasonSnapsByPlayerAndSeason(playerID, seasonID)
+			seasonSnaps.Reset()
+			for _, s := range playerSnaps {
+				seasonSnaps.AddToSeason(s.BasePlayerGameSnaps)
+			}
+			repository.SaveCFBSeasonSnaps(seasonSnaps, db)
+		}
+
 		fmt.Println("Reset Season Stats for " + player.FirstName + " " + player.LastName + " " + player.Position)
 	}
 
@@ -523,6 +554,17 @@ func ResetNFLSeasonalStats() {
 			seasonStats.MapStats(playerStats, ts)
 			db.Save(&seasonStats)
 		}
+
+		playerSnaps := GetNFLPlayerSnapsByPlayerIDAndSeason(playerID, seasonID)
+		if len(playerSnaps) > 0 {
+			seasonSnaps := GetNFLSeasonSnapsByPlayerAndSeason(playerID, seasonID)
+			seasonSnaps.Reset()
+			for _, s := range playerSnaps {
+				seasonSnaps.AddToSeason(s.BasePlayerGameSnaps)
+			}
+			repository.SaveNFLSeasonSnaps(seasonSnaps, db)
+		}
+
 		fmt.Println("Reset Season Stats for " + player.FirstName + " " + player.LastName + " " + player.Position)
 	}
 

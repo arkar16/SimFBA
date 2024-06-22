@@ -447,7 +447,7 @@ func SyncTimeslot(timeslot string) {
 					}
 				}
 				seasonSnaps.AddToSeason(snap.BasePlayerGameSnaps)
-				repository.CreateCFBSeasonSnaps(seasonSnaps, db)
+				repository.SaveCFBSeasonSnaps(seasonSnaps, db)
 			}
 
 			// Update Standings
@@ -675,7 +675,7 @@ func SyncTimeslot(timeslot string) {
 					}
 				}
 				seasonSnaps.AddToSeason(snap.BasePlayerGameSnaps)
-				repository.CreateNFLSeasonSnaps(seasonSnaps, db)
+				repository.SaveNFLSeasonSnaps(seasonSnaps, db)
 			}
 
 			// Update Standings

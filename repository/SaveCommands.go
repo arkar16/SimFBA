@@ -182,3 +182,17 @@ func SaveNFLDepthChartPosition(dcp structs.NFLDepthChartPosition, db *gorm.DB) {
 		log.Panicln("Could not save player record")
 	}
 }
+
+func SaveCFBSeasonSnaps(snap structs.CollegePlayerSeasonSnaps, db *gorm.DB) {
+	err := db.Save(&snap).Error
+	if err != nil {
+		log.Panicln("Could not create cfb snaps record!")
+	}
+}
+
+func SaveNFLSeasonSnaps(snap structs.NFLPlayerSeasonSnaps, db *gorm.DB) {
+	err := db.Save(&snap).Error
+	if err != nil {
+		log.Panicln("Could not create cfb snaps record!")
+	}
+}

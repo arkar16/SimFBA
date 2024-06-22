@@ -102,6 +102,30 @@ type BasePlayerSeasonSnaps struct {
 	KOSSnaps uint16
 }
 
+func (s *BasePlayerSeasonSnaps) Reset() {
+	s.QBSnaps = 0
+	s.RBSnaps = 0
+	s.FBSnaps = 0
+	s.WRSnaps = 0
+	s.TESnaps = 0
+	s.OTSnaps = 0
+	s.OGSnaps = 0
+	s.CSnaps = 0
+	s.DTSnaps = 0
+	s.DESnaps = 0
+	s.OLBSnaps = 0
+	s.ILBSnaps = 0
+	s.CBSnaps = 0
+	s.FSSnaps = 0
+	s.SSSnaps = 0
+	s.PSnaps = 0
+	s.KSnaps = 0
+	s.STSnaps = 0
+	s.PRSnaps = 0
+	s.KRSnaps = 0
+	s.KOSSnaps = 0
+}
+
 func (s *BasePlayerSeasonSnaps) AddToSeason(g BasePlayerGameSnaps) {
 	s.QBSnaps += g.QBSnaps
 	s.RBSnaps += g.RBSnaps

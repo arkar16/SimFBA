@@ -82,6 +82,9 @@ func (ss *CollegePlayerSeasonStats) ResetStats() {
 
 func (ss *CollegePlayerSeasonStats) MapStats(stats []CollegePlayerStats) {
 	for _, stat := range stats {
+		if !stat.BasePlayerStats.RevealResults {
+			continue
+		}
 		ss.GamesPlayed++
 		ss.PassingYards = ss.PassingYards + stat.PassingYards
 		ss.PassAttempts = ss.PassAttempts + stat.PassAttempts

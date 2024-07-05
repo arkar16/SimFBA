@@ -198,7 +198,7 @@ func GetNFLPlayerCareer(w http.ResponseWriter, r *http.Request) {
 		panic("User did not provide a first name")
 	}
 
-	player := managers.GetNFLPlayerViaDiscord(id)
+	player := managers.GetCareerNFLPlayerViaDiscord(id)
 
 	json.NewEncoder(w).Encode(player)
 }

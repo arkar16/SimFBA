@@ -102,20 +102,24 @@ type StreamResponse struct {
 }
 
 type ScoreBoard struct {
-	Q1Home  int
-	Q2Home  int
-	Q3Home  int
-	Q4Home  int
-	OT1Home int
-	OT2Home int
-	OT3Home int
-	OT4Home int
-	Q1Away  int
-	Q2Away  int
-	Q3Away  int
-	Q4Away  int
-	OT1Away int
-	OT2Away int
-	OT3Away int
-	OT4Away int
+	Q1Home              int
+	Q2Home              int
+	Q3Home              int
+	Q4Home              int
+	OT1Home             int
+	OT2Home             int
+	OT3Home             int
+	OT4Home             int
+	Q1Away              int
+	Q2Away              int
+	Q3Away              int
+	Q4Away              int
+	OT1Away             int
+	OT2Away             int
+	OT3Away             int
+	OT4Away             int
+	HomeOffensiveScheme string
+	HomeDefensiveScheme string
+	AwayOffensiveScheme string
+	AwayDefensiveScheme string
 }

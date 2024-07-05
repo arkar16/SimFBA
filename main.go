@@ -286,6 +286,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/ds/cfb/team/{teamID}/", controller.GetTeamByTeamIDForDiscord).Methods("GET")
 	myRouter.HandleFunc("/ds/college/player/indstats/{id}/{week}/", controller.GetCollegePlayerStatsByNameTeamAndWeek).Methods("GET")
 	myRouter.HandleFunc("/ds/college/player/seasonstats/{id}/", controller.GetCurrentSeasonCollegePlayerStatsByNameTeam).Methods("GET")
+	myRouter.HandleFunc("/ds/college/player/careerstats/{id}/", controller.GetCareerCollegePlayerStatsByID).Methods("GET")
 	myRouter.HandleFunc("/teams/ds/college/week/team/{week}/{team}/", controller.GetWeeklyTeamStatsByTeamAbbrAndWeek).Methods("GET")
 	myRouter.HandleFunc("/teams/ds/college/season/team/{season}/{team}/", controller.GetSeasonTeamStatsByTeamAbbrAndSeason).Methods("GET")
 	myRouter.HandleFunc("/ds/cfb/assign/discord/{teamID}/{discordID}", controller.AssignDiscordIDtoCollegeTeam).Methods("GET")
@@ -293,6 +294,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/ds/cfb/player/name/{firstName}/{lastName}/{abbr}", controller.GetCollegePlayerByName).Methods("GET")
 	myRouter.HandleFunc("/ds/nfl/player/id/{id}", controller.GetNFLPlayer).Methods("GET")
 	myRouter.HandleFunc("/ds/nfl/player/name/{firstName}/{lastName}/{abbr}", controller.GetNFLPlayerByName).Methods("GET")
+	myRouter.HandleFunc("/ds/nfl/player/careerstats/{id}", controller.GetNFLPlayerCareer).Methods("GET")
 	myRouter.HandleFunc("/ds/nfl/assign/discord/{teamID}/{discordID}", controller.AssignDiscordIDtoNFLTeam).Methods("GET")
 	myRouter.HandleFunc("/ds/cfb/croots/class/{teamID}/", controller.GetRecruitingClassByTeamID).Methods("GET")
 	myRouter.HandleFunc("/ds/cfb/croot/{id}", controller.GetRecruitViaDiscord).Methods("GET")
@@ -357,7 +359,7 @@ func main() {
 	fmt.Println("Football Server Initialized.")
 
 	fmt.Println("Loading cron...")
-	handleCron()
+	// handleCron()
 	fmt.Println("Loading Handler Requests.")
 	handleRequests()
 }

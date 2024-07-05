@@ -80,6 +80,19 @@ func GetCurrentSeasonCollegePlayerStatsByNameTeam(w http.ResponseWriter, r *http
 	json.NewEncoder(w).Encode(player)
 }
 
+func GetCareerCollegePlayerStatsByID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	if len(id) == 0 {
+		panic("User did not provide a first name")
+	}
+
+	player := managers.GetCareerCollegePlayerByNameTeam(id)
+
+	json.NewEncoder(w).Encode(player)
+}
+
 func GetWeeklyTeamStatsByTeamAbbrAndWeek(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamID := vars["team"]
@@ -165,6 +178,19 @@ func GetRecruitViaDiscord(w http.ResponseWriter, r *http.Request) {
 
 // GetNFLPlayer
 func GetNFLPlayer(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id := vars["id"]
+
+	if len(id) == 0 {
+		panic("User did not provide a first name")
+	}
+
+	player := managers.GetNFLPlayerViaDiscord(id)
+
+	json.NewEncoder(w).Encode(player)
+}
+
+func GetNFLPlayerCareer(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
 

@@ -161,6 +161,28 @@ func GetNFLPlayerViaDiscord(id string) structs.DiscordPlayerResponse {
 	}
 }
 
+func GetCareerNFLPlayerViaDiscord(id string) structs.DiscordPlayerResponse {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+	var nflPlayer structs.NFLPlayer
+
+	db.Where("id = ?", id).Find(&nflPlayer)
+
+	indStats := []structs.NFLPlayerStats{}
+
+	db.Where("nfl_player_id = ?", strconv.Itoa(int(nflPlayer.ID))).Find(&indStats)
+
+	seasonStats := structs.NFLPlayerSeasonStats{}
+	seasonStats.MapStats(indStats, ts)
+
+	nflPlayerResponse := structs.MapNFLPlayerToCSVModel(nflPlayer)
+
+	return structs.DiscordPlayerResponse{
+		Player:   nflPlayerResponse,
+		NFLStats: seasonStats,
+	}
+}
+
 func GetNFLPlayerByNameViaDiscord(firstName, lastName, teamID string) structs.DiscordPlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
@@ -198,6 +220,35 @@ func GetCollegePlayerByIdAndWeek(id, week string) structs.CollegePlayerCSV {
 
 		return collegePlayerResponse
 	}
+}
+
+func GetCareerCollegePlayerByNameTeam(id string) structs.CollegePlayerResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	var CollegePlayer structs.CollegePlayer
+
+	db.Where("id = ?", id).Find(&CollegePlayer)
+
+	indStats := []structs.CollegePlayerStats{}
+
+	db.Where("college_player_id = ?", strconv.Itoa(int(CollegePlayer.ID))).Find(&indStats)
+
+	seasonStats := structs.CollegePlayerSeasonStats{}
+	seasonStats.MapStats(indStats)
+
+	collegePlayerResponse := structs.CollegePlayerResponse{
+		ID:          int(CollegePlayer.ID),
+		BasePlayer:  CollegePlayer.BasePlayer,
+		TeamID:      CollegePlayer.TeamID,
+		TeamAbbr:    CollegePlayer.TeamAbbr,
+		City:        CollegePlayer.City,
+		State:       CollegePlayer.State,
+		Year:        CollegePlayer.Year,
+		IsRedshirt:  CollegePlayer.IsRedshirt,
+		SeasonStats: seasonStats,
+	}
+
+	return collegePlayerResponse
 }
 
 func GetSeasonalCollegePlayerByNameTeam(id string) structs.CollegePlayerResponse {

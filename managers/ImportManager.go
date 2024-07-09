@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 	"github.com/jinzhu/gorm"
@@ -272,7 +273,7 @@ func ImportNFLDraftPicks() {
 
 func ImportMinimumFAValues() {
 	db := dbprovider.GetInstance().GetDB()
-	playerPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2023_simnfl_extensions.csv"
+	playerPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024_Free_Agency_Expected_Values.csv"
 
 	nflCSV := util.ReadCSV(playerPath)
 
@@ -282,7 +283,7 @@ func ImportMinimumFAValues() {
 		}
 
 		playerID := row[0]
-		value := util.ConvertStringToFloat(row[6])
+		value := util.ConvertStringToFloat(row[5])
 
 		NFLPlayerRecord := GetNFLPlayerRecord(playerID)
 		if NFLPlayerRecord.ID == 0 {
@@ -291,7 +292,7 @@ func ImportMinimumFAValues() {
 
 		NFLPlayerRecord.AssignMinimumValue(value)
 
-		db.Save(&NFLPlayerRecord)
+		repository.SaveNFLPlayer(NFLPlayerRecord, db)
 	}
 }
 

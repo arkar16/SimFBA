@@ -164,6 +164,50 @@ func GetStatsPageContentForSeason(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+func ExportStatsPageContentForSeason(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	seasonID := vars["seasonID"]
+	viewType := vars["viewType"]
+	weekID := vars["weekID"]
+
+	if len(viewType) == 0 {
+		panic("User did not provide view type")
+	}
+
+	if len(seasonID) == 0 {
+		panic("User did not provide TeamID")
+	}
+
+	teamsChan := make(chan []structs.CollegeTeam)
+
+	go func() {
+		ct := managers.GetAllCollegeTeams()
+		teamsChan <- ct
+	}()
+
+	collegeTeams := <-teamsChan
+	close(teamsChan)
+
+	var conferenceMap = make(map[int]int)
+	var conferenceNameMap = make(map[int]string)
+
+	for _, team := range collegeTeams {
+		conferenceMap[int(team.ID)] = team.ConferenceID
+		conferenceNameMap[int(team.ID)] = team.Conference
+	}
+
+	playersChan := make(chan []structs.CollegePlayerResponse)
+	go func() {
+		cp := managers.GetAllCollegePlayersWithStatsBySeasonID(conferenceMap, conferenceNameMap, seasonID, weekID, viewType)
+		playersChan <- cp
+	}()
+
+	collegePlayers := <-playersChan
+	close(playersChan)
+
+	managers.ExportCollegePlayerStatsToCSV(collegePlayers, viewType, w)
+}
+
 func GetNFLStatsPageContent(w http.ResponseWriter, r *http.Request) {
 	enableCors(&w)
 	vars := mux.Vars(r)
@@ -215,6 +259,54 @@ func GetNFLStatsPageContent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(response)
+}
+
+func ExportNFLStatsPageContent(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	vars := mux.Vars(r)
+	seasonID := vars["seasonID"]
+	viewType := vars["viewType"]
+	weekID := vars["weekID"]
+
+	if len(viewType) == 0 {
+		panic("User did not provide view type")
+	}
+
+	if len(seasonID) == 0 {
+		panic("User did not provide TeamID")
+	}
+
+	teamsChan := make(chan []structs.NFLTeamResponse)
+
+	go func() {
+		ct := managers.GetAllNFLTeamsWithStatsBySeasonID(seasonID, weekID, viewType)
+		teamsChan <- ct
+	}()
+
+	nflTeams := <-teamsChan
+	close(teamsChan)
+
+	var conferenceMap = make(map[int]int)
+	var conferenceNameMap = make(map[int]string)
+	var divisionMap = make(map[int]int)
+	var divisionNameMap = make(map[int]string)
+	for _, team := range nflTeams {
+		conferenceMap[int(team.ID)] = team.ConferenceID
+		conferenceNameMap[int(team.ID)] = team.Conference
+		divisionMap[int(team.ID)] = team.DivisionID
+		divisionNameMap[int(team.ID)] = team.Division
+	}
+
+	playersChan := make(chan []structs.NFLPlayerResponse)
+	go func() {
+		cp := managers.GetAllNFLPlayersWithStatsBySeasonID(conferenceMap, divisionMap, conferenceNameMap, divisionNameMap, seasonID, weekID, viewType)
+		playersChan <- cp
+	}()
+
+	nflPlayers := <-playersChan
+	close(playersChan)
+
+	managers.ExportNFLPlayerStatsToCSV(nflPlayers, viewType, w)
 }
 
 func ResetCFBSeasonalStats(w http.ResponseWriter, r *http.Request) {

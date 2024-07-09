@@ -631,3 +631,153 @@ func ExportCFBGameResults(w http.ResponseWriter, seasonID, weekID, nflWeekID, ti
 		}
 	}
 }
+
+func ExportCollegePlayerStatsToCSV(cp []structs.CollegePlayerResponse, viewType string, w http.ResponseWriter) {
+	ts := GetTimestamp()
+	seasonStr := strconv.Itoa(ts.Season)
+	weekStr := ""
+	if viewType != "SEASON" {
+		weekStr = "WEEK_" + strconv.Itoa(ts.CollegeWeek) + "_"
+	}
+	fileName := "toucans_secret_" + seasonStr + "_" + weekStr + "stats"
+	w.Header().Set("Content-Disposition", "attachment;filename="+fileName+".csv")
+	w.Header().Set("Transfer-Encoding", "chunked")
+	// Initialize writer
+	writer := csv.NewWriter(w)
+
+	// Get Players
+
+	HeaderRow := []string{
+		"First Name", "Last Name", "Position",
+		"Archetype", "Year", "Is Redshirt?", "Team", "Conference", "Age", "Stars",
+		"Passing Yards", "Pass Attempts", "Pass Completions", "Passing Avg",
+		"Passing TDs", "Interceptions", "Longest Pass", "QB Sacks",
+		"QB Rating", "Rush Attempts", "Rushing Yards", "Rushing Avg",
+		"Rushing TDs", "Fumbles", "Longest Rush", "Targets",
+		"Catches", "Receiving Yards", "Receiving Avg", "Receiving TDs",
+		"Longest Reception", "Solo Tackles", "Assisted Tackles", "Tackles For Loss",
+		"Defensive Sacks", "Forced Fumbles", "Pass Deflections", "Interceptions Caught",
+		"Safeties", "Defensive TDs", "FG Made", "FG Attempts",
+		"Longest FG", "Extra Points Made", "Extra Point Attempts", "Kickoff TBs",
+		"Punts", "Punt Touchbacks", "Punts Inside 20", "Kick Returns",
+		"Kick Return TDs", "Kick Return Yards", "Punt Returns", "Punt Return TDs",
+		"Punt Return Yards", "ST Solo Tackles", "ST Assisted Tackles", "Punts Blocked",
+		"FG Blocked", "Snaps", "Pancakes", "Likely to transfer to Guam?",
+	}
+
+	err := writer.Write(HeaderRow)
+	if err != nil {
+		log.Fatal("Cannot write header row", err)
+	}
+
+	for _, p := range cp {
+		Year, RedshirtStatus := util.GetYearAndRedshirtStatus(p.Year, p.IsRedshirt)
+		seasonStats := p.SeasonStats
+		if viewType != "SEASON" {
+			seasonStats = structs.CollegePlayerSeasonStats{}
+			seasonStats.MapStats([]structs.CollegePlayerStats{p.Stats})
+		}
+
+		pr := []string{p.FirstName, p.LastName, p.Position,
+			p.Archetype, Year, RedshirtStatus, p.TeamAbbr, p.Conference, strconv.Itoa(p.Age), strconv.Itoa(p.Stars),
+			strconv.Itoa(seasonStats.PassingYards), strconv.Itoa(seasonStats.PassAttempts), strconv.Itoa(seasonStats.PassCompletions), strconv.Itoa(int(seasonStats.PassingAvg)),
+			strconv.Itoa(seasonStats.PassingTDs), strconv.Itoa(seasonStats.Interceptions), strconv.Itoa(seasonStats.LongestPass), strconv.Itoa(seasonStats.Sacks),
+			strconv.Itoa(int(seasonStats.QBRating)), strconv.Itoa(seasonStats.RushAttempts), strconv.Itoa(seasonStats.RushingYards), strconv.Itoa(int(seasonStats.RushingAvg)),
+			strconv.Itoa(seasonStats.RushingTDs), strconv.Itoa(seasonStats.Fumbles), strconv.Itoa(seasonStats.LongestRush), strconv.Itoa(seasonStats.Targets),
+			strconv.Itoa(seasonStats.Catches), strconv.Itoa(seasonStats.ReceivingYards), strconv.Itoa(int(seasonStats.ReceivingAvg)), strconv.Itoa(seasonStats.ReceivingTDs),
+			strconv.Itoa(seasonStats.LongestReception), strconv.Itoa(int(seasonStats.SoloTackles)), strconv.Itoa(int(seasonStats.AssistedTackles)), strconv.Itoa(int(seasonStats.TacklesForLoss)),
+			strconv.Itoa(int(seasonStats.SacksMade)), strconv.Itoa(seasonStats.ForcedFumbles), strconv.Itoa(seasonStats.PassDeflections), strconv.Itoa(seasonStats.InterceptionsCaught),
+			strconv.Itoa(seasonStats.Safeties), strconv.Itoa(seasonStats.DefensiveTDs), strconv.Itoa(seasonStats.FGMade), strconv.Itoa(seasonStats.FGAttempts),
+			strconv.Itoa(seasonStats.LongestFG), strconv.Itoa(seasonStats.ExtraPointsMade), strconv.Itoa(seasonStats.ExtraPointsAttempted), strconv.Itoa(seasonStats.KickoffTouchbacks),
+			strconv.Itoa(seasonStats.Punts), strconv.Itoa(seasonStats.PuntTouchbacks), strconv.Itoa(seasonStats.PuntsInside20), strconv.Itoa(seasonStats.KickReturns),
+			strconv.Itoa(seasonStats.KickReturnTDs), strconv.Itoa(seasonStats.KickReturnYards), strconv.Itoa(seasonStats.PuntReturns), strconv.Itoa(seasonStats.PuntReturnTDs),
+			strconv.Itoa(seasonStats.PuntReturnYards), strconv.Itoa(int(seasonStats.STSoloTackles)), strconv.Itoa(int(seasonStats.STAssistedTackles)), strconv.Itoa(seasonStats.PuntsBlocked),
+			strconv.Itoa(seasonStats.FGBlocked), strconv.Itoa(seasonStats.Snaps), strconv.Itoa(seasonStats.Pancakes), "No.",
+		}
+		err = writer.Write(pr)
+		if err != nil {
+			log.Fatal("Cannot write player row to CSV", err)
+		}
+
+		writer.Flush()
+		err = writer.Error()
+		if err != nil {
+			log.Fatal("Error while writing to file ::", err)
+		}
+	}
+}
+
+func ExportNFLPlayerStatsToCSV(cp []structs.NFLPlayerResponse, viewType string, w http.ResponseWriter) {
+	ts := GetTimestamp()
+	seasonStr := strconv.Itoa(ts.Season)
+	weekStr := ""
+	if viewType != "SEASON" {
+		weekStr = "WEEK_" + strconv.Itoa(ts.NFLWeek) + "_"
+	}
+	fileName := "toucans_other_secret_" + seasonStr + "_" + weekStr + "stats"
+	w.Header().Set("Content-Disposition", "attachment;filename="+fileName+".csv")
+	w.Header().Set("Transfer-Encoding", "chunked")
+	// Initialize writer
+	writer := csv.NewWriter(w)
+
+	// Get Players
+
+	HeaderRow := []string{
+		"First Name", "Last Name", "Position",
+		"Archetype", "Year", "Team", "Conference", "Division", "Age", "Stars",
+		"Passing Yards", "Pass Attempts", "Pass Completions", "Passing Avg",
+		"Passing TDs", "Interceptions", "Longest Pass", "QB Sacks",
+		"QB Rating", "Rush Attempts", "Rushing Yards", "Rushing Avg",
+		"Rushing TDs", "Fumbles", "Longest Rush", "Targets",
+		"Catches", "Receiving Yards", "Receiving Avg", "Receiving TDs",
+		"Longest Reception", "Solo Tackles", "Assisted Tackles", "Tackles For Loss",
+		"Defensive Sacks", "Forced Fumbles", "Pass Deflections", "Interceptions Caught",
+		"Safeties", "Defensive TDs", "FG Made", "FG Attempts",
+		"Longest FG", "Extra Points Made", "Extra Point Attempts", "Kickoff TBs",
+		"Punts", "Punt Touchbacks", "Punts Inside 20", "Kick Returns",
+		"Kick Return TDs", "Kick Return Yards", "Punt Returns", "Punt Return TDs",
+		"Punt Return Yards", "ST Solo Tackles", "ST Assisted Tackles", "Punts Blocked",
+		"FG Blocked", "Snaps", "Pancakes", "Likelihood to be traded to WAS?",
+	}
+
+	err := writer.Write(HeaderRow)
+	if err != nil {
+		log.Fatal("Cannot write header row", err)
+	}
+
+	for _, p := range cp {
+		Year := strconv.Itoa(p.Year)
+		seasonStats := p.SeasonStats
+		if viewType != "SEASON" {
+			seasonStats = structs.NFLPlayerSeasonStats{}
+			seasonStats.MapStats([]structs.NFLPlayerStats{p.Stats}, ts)
+		}
+
+		pr := []string{p.FirstName, p.LastName, p.Position,
+			p.Archetype, Year, p.TeamAbbr, p.Conference, p.Division, strconv.Itoa(p.Age), strconv.Itoa(p.Stars),
+			strconv.Itoa(seasonStats.PassingYards), strconv.Itoa(seasonStats.PassAttempts), strconv.Itoa(seasonStats.PassCompletions), strconv.Itoa(int(seasonStats.PassingAvg)),
+			strconv.Itoa(seasonStats.PassingTDs), strconv.Itoa(seasonStats.Interceptions), strconv.Itoa(seasonStats.LongestPass), strconv.Itoa(seasonStats.Sacks),
+			strconv.Itoa(int(seasonStats.QBRating)), strconv.Itoa(seasonStats.RushAttempts), strconv.Itoa(seasonStats.RushingYards), strconv.Itoa(int(seasonStats.RushingAvg)),
+			strconv.Itoa(seasonStats.RushingTDs), strconv.Itoa(seasonStats.Fumbles), strconv.Itoa(seasonStats.LongestRush), strconv.Itoa(seasonStats.Targets),
+			strconv.Itoa(seasonStats.Catches), strconv.Itoa(seasonStats.ReceivingYards), strconv.Itoa(int(seasonStats.ReceivingAvg)), strconv.Itoa(seasonStats.ReceivingTDs),
+			strconv.Itoa(seasonStats.LongestReception), strconv.Itoa(int(seasonStats.SoloTackles)), strconv.Itoa(int(seasonStats.AssistedTackles)), strconv.Itoa(int(seasonStats.TacklesForLoss)),
+			strconv.Itoa(int(seasonStats.SacksMade)), strconv.Itoa(seasonStats.ForcedFumbles), strconv.Itoa(seasonStats.PassDeflections), strconv.Itoa(seasonStats.InterceptionsCaught),
+			strconv.Itoa(seasonStats.Safeties), strconv.Itoa(seasonStats.DefensiveTDs), strconv.Itoa(seasonStats.FGMade), strconv.Itoa(seasonStats.FGAttempts),
+			strconv.Itoa(seasonStats.LongestFG), strconv.Itoa(seasonStats.ExtraPointsMade), strconv.Itoa(seasonStats.ExtraPointsAttempted), strconv.Itoa(seasonStats.KickoffTouchbacks),
+			strconv.Itoa(seasonStats.Punts), strconv.Itoa(seasonStats.PuntTouchbacks), strconv.Itoa(seasonStats.PuntsInside20), strconv.Itoa(seasonStats.KickReturns),
+			strconv.Itoa(seasonStats.KickReturnTDs), strconv.Itoa(seasonStats.KickReturnYards), strconv.Itoa(seasonStats.PuntReturns), strconv.Itoa(seasonStats.PuntReturnTDs),
+			strconv.Itoa(seasonStats.PuntReturnYards), strconv.Itoa(int(seasonStats.STSoloTackles)), strconv.Itoa(int(seasonStats.STAssistedTackles)), strconv.Itoa(seasonStats.PuntsBlocked),
+			strconv.Itoa(seasonStats.FGBlocked), strconv.Itoa(seasonStats.Snaps), strconv.Itoa(seasonStats.Pancakes), "No.",
+		}
+		err = writer.Write(pr)
+		if err != nil {
+			log.Fatal("Cannot write player row to CSV", err)
+		}
+
+		writer.Flush()
+		err = writer.Error()
+		if err != nil {
+			log.Fatal("Error while writing to file ::", err)
+		}
+	}
+}

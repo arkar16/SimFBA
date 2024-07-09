@@ -678,6 +678,12 @@ func ExportCollegePlayerStatsToCSV(cp []structs.CollegePlayerResponse, viewType 
 			seasonStats.MapStats([]structs.CollegePlayerStats{p.Stats})
 		}
 
+		answer := "No."
+		diceRoll := util.GenerateIntFromRange(1, 1000)
+		if diceRoll == 1000 {
+			answer = "Yes."
+		}
+
 		pr := []string{p.FirstName, p.LastName, p.Position,
 			p.Archetype, Year, RedshirtStatus, p.TeamAbbr, p.Conference, strconv.Itoa(p.Age), strconv.Itoa(p.Stars),
 			strconv.Itoa(seasonStats.PassingYards), strconv.Itoa(seasonStats.PassAttempts), strconv.Itoa(seasonStats.PassCompletions), strconv.Itoa(int(seasonStats.PassingAvg)),
@@ -692,7 +698,7 @@ func ExportCollegePlayerStatsToCSV(cp []structs.CollegePlayerResponse, viewType 
 			strconv.Itoa(seasonStats.Punts), strconv.Itoa(seasonStats.PuntTouchbacks), strconv.Itoa(seasonStats.PuntsInside20), strconv.Itoa(seasonStats.KickReturns),
 			strconv.Itoa(seasonStats.KickReturnTDs), strconv.Itoa(seasonStats.KickReturnYards), strconv.Itoa(seasonStats.PuntReturns), strconv.Itoa(seasonStats.PuntReturnTDs),
 			strconv.Itoa(seasonStats.PuntReturnYards), strconv.Itoa(int(seasonStats.STSoloTackles)), strconv.Itoa(int(seasonStats.STAssistedTackles)), strconv.Itoa(seasonStats.PuntsBlocked),
-			strconv.Itoa(seasonStats.FGBlocked), strconv.Itoa(seasonStats.Snaps), strconv.Itoa(seasonStats.Pancakes), "No.",
+			strconv.Itoa(seasonStats.FGBlocked), strconv.Itoa(seasonStats.Snaps), strconv.Itoa(seasonStats.Pancakes), answer,
 		}
 		err = writer.Write(pr)
 		if err != nil {

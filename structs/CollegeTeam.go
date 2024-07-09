@@ -40,3 +40,13 @@ type CollegeTeamResponseData struct {
 	TeamStandings   CollegeStandings
 	UpcomingMatches []CollegeGame
 }
+
+type DashboardResponseData struct {
+	CollegeStandings []CollegeStandings
+	NewsLogs         []NewsLog
+	CollegeGames     []CollegeGame
+	NFLStandings     []NFLStandings
+	NFLGames         []NFLGame
+	TopCFBPlayers    []CollegePlayerResponse
+	TopNFLPlayers    []NFLPlayerResponse
+}

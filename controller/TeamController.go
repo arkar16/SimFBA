@@ -105,3 +105,25 @@ func GetRecruitingClassSizeForTeams(w http.ResponseWriter, r *http.Request) {
 	managers.GetRecruitingClassSizeForTeams()
 	json.NewEncoder(w).Encode("Sync for Class Size complete")
 }
+
+func GetCFBDashboardByTeamID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+	if len(teamID) == 0 {
+		panic("User did not provide teamID")
+	}
+	// Schedule, Standings, News Logs, top players by stats
+	dashboard := managers.GetDashboardByTeamID(true, teamID)
+	json.NewEncoder(w).Encode(dashboard)
+}
+
+func GetNFLDashboardByTeamID(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+	if len(teamID) == 0 {
+		panic("User did not provide teamID")
+	}
+	// Schedule, Standings, News Logs, top players by stats
+	dashboard := managers.GetDashboardByTeamID(false, teamID)
+	json.NewEncoder(w).Encode(dashboard)
+}

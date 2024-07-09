@@ -3,6 +3,7 @@ package managers
 import (
 	"log"
 	"strconv"
+	"sync"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
@@ -260,4 +261,92 @@ func GetCollegeTeamsByConference(conf string) []structs.CollegeTeam {
 	db.Where("conference = ?", conf).Find(&teams)
 
 	return teams
+}
+
+func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseData {
+	ts := GetTimestamp()
+	seasonID := strconv.Itoa(ts.CollegeSeasonID)
+	collegeTeam := structs.CollegeTeam{}
+	nflTeam := structs.NFLTeam{}
+	if isCFB {
+		collegeTeam = GetTeamByTeamID(teamID)
+	} else {
+		nflTeam = GetNFLTeamByTeamID(teamID)
+	}
+	cStandings := make(chan []structs.CollegeStandings)
+	nStandings := make(chan []structs.NFLStandings)
+	cGames := make(chan []structs.CollegeGame)
+	nGames := make(chan []structs.NFLGame)
+	newsChan := make(chan []structs.NewsLog)
+
+	var waitGroup sync.WaitGroup
+	waitGroup.Add(5)
+	go func() {
+		waitGroup.Wait()
+		close(cStandings)
+		close(nStandings)
+		close(cGames)
+		close(nGames)
+		close(newsChan)
+	}()
+
+	go func() {
+		defer waitGroup.Done()
+		cSt := []structs.CollegeStandings{}
+		if isCFB {
+			cSt = GetStandingsByConferenceIDAndSeasonID(strconv.Itoa(collegeTeam.ConferenceID), seasonID)
+		}
+		cStandings <- cSt
+	}()
+
+	go func() {
+		defer waitGroup.Done()
+		nSt := []structs.NFLStandings{}
+		if !isCFB {
+			nSt = GetNFLStandingsByDivisionIDAndSeasonID(strconv.Itoa(int(nflTeam.DivisionID)), seasonID)
+		}
+		nStandings <- nSt
+	}()
+
+	go func() {
+		defer waitGroup.Done()
+		cG := []structs.CollegeGame{}
+		if isCFB {
+			cG = GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID)
+		}
+		cGames <- cG
+	}()
+
+	go func() {
+		defer waitGroup.Done()
+		nG := []structs.NFLGame{}
+		if !isCFB {
+			nG = GetNFLGamesByTeamIdAndSeasonId(teamID, seasonID)
+		}
+		nGames <- nG
+	}()
+	go func() {
+		defer waitGroup.Done()
+		nL := []structs.NewsLog{}
+		if isCFB {
+			nL = GetCFBRelatedNews(teamID)
+		} else {
+			nL = GetNFLRelatedNews(teamID)
+		}
+		newsChan <- nL
+	}()
+
+	collegeStandings := <-cStandings
+	nflStandings := <-nStandings
+	collegeGames := <-cGames
+	nflGames := <-nGames
+	newsLogs := <-newsChan
+
+	return structs.DashboardResponseData{
+		CollegeStandings: collegeStandings,
+		NFLStandings:     nflStandings,
+		CollegeGames:     collegeGames,
+		NFLGames:         nflGames,
+		NewsLogs:         newsLogs,
+	}
 }

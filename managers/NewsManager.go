@@ -22,13 +22,13 @@ func GetNFLRelatedNews(TeamID string) []structs.NewsLog {
 	recentEventsCount := 0
 	personalizedNewsCount := 0
 	for _, news := range newsLogs {
-		if recentEventsCount == 5 && personalizedNewsCount == 5 {
+		if recentEventsCount == 10 && personalizedNewsCount == 10 {
 			break
 		}
 		if news.SeasonID != ts.NFLSeasonID && news.League != "NFL" {
 			continue
 		}
-		if recentEventsCount < 5 {
+		if recentEventsCount < 10 {
 			newsFeed = append(newsFeed, news)
 			recentEventsCount += 1
 		} else if news.TeamID > 0 && strconv.Itoa(news.TeamID) == TeamID && personalizedNewsCount < 5 {
@@ -54,13 +54,13 @@ func GetCFBRelatedNews(TeamID string) []structs.NewsLog {
 	recentEventsCount := 0
 	personalizedNewsCount := 0
 	for _, news := range newsLogs {
-		if recentEventsCount == 5 && personalizedNewsCount == 5 {
+		if recentEventsCount == 10 && personalizedNewsCount == 10 {
 			break
 		}
 		if news.SeasonID != ts.CollegeSeasonID && news.League != "CFB" {
 			continue
 		}
-		if news.TeamID == 0 && recentEventsCount < 5 {
+		if news.TeamID == 0 && recentEventsCount < 10 {
 			newsFeed = append(newsFeed, news)
 			recentEventsCount += 1
 		} else if news.TeamID > 0 && strconv.Itoa(news.TeamID) == TeamID && personalizedNewsCount < 5 {

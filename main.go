@@ -240,6 +240,8 @@ func handleRequests() {
 	myRouter.HandleFunc("/teams/college/all/", controller.GetAllCollegeTeams).Methods("GET")
 	myRouter.HandleFunc("/teams/college/data/all/", controller.GetAllCollegeTeamsForRosterPage).Methods("GET")
 	myRouter.HandleFunc("/teams/nfl/all/", controller.GetAllNFLTeams).Methods("GET")
+	myRouter.HandleFunc("/teams/cfb/dashboard/{teamID}/", controller.GetCFBDashboardByTeamID).Methods("GET")
+	myRouter.HandleFunc("/teams/nfl/dashboard/{teamID}/", controller.GetNFLDashboardByTeamID).Methods("GET")
 	myRouter.HandleFunc("/teams/nfl/roster/{teamID}/", controller.GetNFLRecordsForRosterPage).Methods("GET")
 	myRouter.HandleFunc("/teams/college/active/", controller.GetAllActiveCollegeTeams).Methods("GET")
 	myRouter.HandleFunc("/teams/college/available/", controller.GetAllAvailableCollegeTeams).Methods("GET")

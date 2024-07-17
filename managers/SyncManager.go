@@ -148,6 +148,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 							recruitTeamProfile.AddBattleWon()
 						}
 						teamAbbreviation := recruitTeamProfile.TeamAbbreviation
+						recruitTeamProfile.AddStarPlayer(recruit.Stars)
 						recruit.AssignCollege(teamAbbreviation)
 
 						newsLog := structs.NewsLog{
@@ -933,6 +934,11 @@ func updateTeamRankings(teamRecruitingProfiles []structs.RecruitingTeamProfile, 
 		signedRecruits := GetSignedRecruitsByTeamProfileID(strconv.Itoa(teamRecruitingProfiles[i].TeamID))
 
 		teamRecruitingProfiles[i].UpdateTotalSignedRecruits(len(signedRecruits))
+		teamRecruitingProfiles[i].ResetStarCount()
+
+		for _, r := range signedRecruits {
+			teamRecruitingProfiles[i].AddStarPlayer(r.Stars)
+		}
 
 		team247Rank := Get247TeamRanking(teamRecruitingProfiles[i], signedRecruits)
 		teamESPNRank := GetESPNTeamRanking(teamRecruitingProfiles[i], signedRecruits)

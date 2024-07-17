@@ -25,6 +25,9 @@ type RecruitingTeamProfile struct {
 	RivalsScore               float64
 	Rank247Score              float64
 	CompositeScore            float64
+	ThreeStars                uint8
+	FourStars                 uint8
+	FiveStars                 uint8
 	RecruitingClassRank       int
 	CaughtCheating            bool
 	IsFBS                     bool
@@ -169,6 +172,22 @@ func (r *RecruitingTeamProfile) AddBattleWon() {
 
 func (r *RecruitingTeamProfile) AddBattleLost() {
 	r.BattlesLost += 1
+}
+
+func (r *RecruitingTeamProfile) ResetStarCount() {
+	r.ThreeStars = 0
+	r.FourStars = 0
+	r.FiveStars = 0
+}
+
+func (r *RecruitingTeamProfile) AddStarPlayer(stars int) {
+	if stars == 3 {
+		r.ThreeStars += 1
+	} else if stars == 4 {
+		r.FourStars += 1
+	} else if stars == 5 {
+		r.FiveStars += 1
+	}
 }
 
 func (r *RecruitingTeamProfile) AssignRecruiter(name string) {

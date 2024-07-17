@@ -19,11 +19,12 @@ type NFLTeamSeasonStats struct {
 
 type NFLTeamStats struct {
 	gorm.Model
-	TeamID       uint
-	GameID       uint
-	WeekID       uint
-	SeasonID     uint
-	OpposingTeam string
+	TeamID          uint
+	GameID          uint
+	WeekID          uint
+	SeasonID        uint
+	OpposingTeam    string
+	IsPreseasonGame bool
 	BaseTeamStats
 }
 
@@ -91,6 +92,9 @@ func (ss *NFLTeamSeasonStats) MapStats(stats []NFLTeamStats, season int, seasonI
 		ss.Year = season
 	}
 	for _, stat := range stats {
+		if stat.IsPreseasonGame {
+			continue
+		}
 		ss.GamesPlayed++
 		ss.PassingYards = ss.PassingYards + stat.PassingYards
 		ss.PassingAttempts = ss.PassingAttempts + stat.PassingAttempts

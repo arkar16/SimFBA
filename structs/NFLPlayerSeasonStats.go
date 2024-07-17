@@ -21,14 +21,15 @@ type NFLPlayerSeasonStats struct {
 
 type NFLPlayerStats struct {
 	gorm.Model
-	NFLPlayerID  int
-	TeamID       int
-	Team         string
-	GameID       int
-	WeekID       int
-	SeasonID     int
-	OpposingTeam string
-	Year         int
+	IsPreseasonGame bool
+	NFLPlayerID     int
+	TeamID          int
+	Team            string
+	GameID          int
+	WeekID          int
+	SeasonID        int
+	OpposingTeam    string
+	Year            int
 	BasePlayerStats
 }
 

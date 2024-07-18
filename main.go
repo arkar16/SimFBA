@@ -155,7 +155,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/news/feed/{league}/{teamID}/", controller.GetNewsFeed).Methods("GET")
 
 	// Notification Controls
-	myRouter.HandleFunc("/inbox/get/{cfbID}/{nflID}/", controller.GetAllNewsLogsForASeason).Methods("GET")
+	myRouter.HandleFunc("/fba/inbox/get/{cfbID}/{nflID}/", controller.GetAllNewsLogsForASeason).Methods("GET")
 	myRouter.HandleFunc("/notification/toggle/{notiID}", controller.ToggleNotificationAsRead).Methods("GET")
 
 	// Player Controls

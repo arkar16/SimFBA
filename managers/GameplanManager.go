@@ -176,19 +176,21 @@ func GetNFLGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 		break
 	}
 
-	opponentStats := GetNFLHistoricalTeamStats(opponentID, seasonID)
-	lastGameIdx := len(opponentStats) - 1
-	oppScheme := opponentStats[lastGameIdx].OffensiveScheme
-
-	opponentRoster := GetNFLDepthchartByTeamID(opponentID)
-
 	oppDepthChartPlayers := []structs.NFLPlayer{}
+	opponentRoster := structs.NFLDepthChart{}
+	oppScheme := "None"
+	if opponentID != "" {
+		opponentStats := GetNFLHistoricalTeamStats(opponentID, seasonID)
+		lastGameIdx := len(opponentStats) - 1
+		oppScheme = opponentStats[lastGameIdx].OffensiveScheme
 
-	for _, p := range opponentRoster.DepthChartPlayers {
-		if p.Position != "WR" && p.Position != "TE" && p.Position != "RB" && p.Position != "FB" {
-			continue
+		opponentRoster = GetNFLDepthchartByTeamID(opponentID)
+		for _, p := range opponentRoster.DepthChartPlayers {
+			if p.Position != "WR" && p.Position != "TE" && p.Position != "RB" && p.Position != "FB" {
+				continue
+			}
+			oppDepthChartPlayers = append(oppDepthChartPlayers, p.NFLPlayer)
 		}
-		oppDepthChartPlayers = append(oppDepthChartPlayers, p.NFLPlayer)
 	}
 
 	return structs.GamePlanResponse{

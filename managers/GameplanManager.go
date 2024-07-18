@@ -97,13 +97,12 @@ func GetGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 		lastGameIdx := len(opponentStats) - 1
 		oppScheme = opponentStats[lastGameIdx].OffensiveScheme
 		opponentRoster = GetDepthchartByTeamID(opponentID)
-	}
-
-	for _, p := range opponentRoster.DepthChartPlayers {
-		if p.Position != "WR" && p.Position != "TE" && p.Position != "RB" && p.Position != "FB" {
-			continue
+		for _, p := range opponentRoster.DepthChartPlayers {
+			if p.Position != "WR" && p.Position != "TE" && p.Position != "RB" && p.Position != "FB" {
+				continue
+			}
+			oppDepthChartPlayers = append(oppDepthChartPlayers, p.CollegePlayer)
 		}
-		oppDepthChartPlayers = append(oppDepthChartPlayers, p.CollegePlayer)
 	}
 
 	return structs.GamePlanResponse{

@@ -312,6 +312,9 @@ func CreateFAOffer(offer structs.FreeAgencyOfferDTO) structs.FreeAgencyOffer {
 	}
 
 	if player.IsPracticeSquad && player.TeamID != int(offer.TeamID) {
+		// Notify team
+		notificationMessage := offer.Team + " have placed an offer on " + player.Position + " " + player.FirstName + " " + player.LastName + " to pick up from the practice squad."
+		CreateNotification("NFL", notificationMessage, "Practice Squad Offer", uint(player.TeamID))
 		message := offer.Team + " have placed an offer on " + player.TeamAbbr + " " + player.Position + " " + player.FirstName + " " + player.LastName + " to pick up from the practice squad."
 		CreateNewsLog("NFL", message, "Free Agency", player.TeamID, ts)
 	}

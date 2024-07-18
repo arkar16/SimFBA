@@ -934,11 +934,6 @@ func updateTeamRankings(teamRecruitingProfiles []structs.RecruitingTeamProfile, 
 		signedRecruits := GetSignedRecruitsByTeamProfileID(strconv.Itoa(teamRecruitingProfiles[i].TeamID))
 
 		teamRecruitingProfiles[i].UpdateTotalSignedRecruits(len(signedRecruits))
-		teamRecruitingProfiles[i].ResetStarCount()
-
-		for _, r := range signedRecruits {
-			teamRecruitingProfiles[i].AddStarPlayer(r.Stars)
-		}
 
 		team247Rank := Get247TeamRanking(teamRecruitingProfiles[i], signedRecruits)
 		teamESPNRank := GetESPNTeamRanking(teamRecruitingProfiles[i], signedRecruits)
@@ -985,6 +980,15 @@ func updateTeamRankings(teamRecruitingProfiles []structs.RecruitingTeamProfile, 
 			avg = (distributionESPN + distribution247 + distributionRivals)
 
 			rp.AssignCompositeRank(avg)
+		}
+		if rp.SpentPoints == 0 {
+			notificationMessage := "You have missed recruiting this past week. You have missed recruiting a total of " + strconv.Itoa(rp.WeeksMissed) + " times."
+			if rp.WeeksMissed == 3 {
+				notificationMessage += " If you miss another week of recruiting, you will lose your team."
+			} else if rp.WeeksMissed >= 4 {
+				notificationMessage += " Because you have missed more than 4 weeks, you will lose your team. Please reach out to Tuscan on how you can keep your team."
+			}
+			CreateNotification("CFB", notificationMessage, "Recruiting Sync", rp.ID)
 		}
 		rp.ResetSpentPoints()
 

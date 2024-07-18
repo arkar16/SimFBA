@@ -59,28 +59,28 @@ func CreateRecruitProfileRecord(cp structs.RecruitPlayerProfile, db *gorm.DB) {
 func CreateCFBSnapsInBatch(snaps []structs.CollegePlayerGameSnaps, db *gorm.DB) {
 	err := db.CreateInBatches(&snaps, len(snaps)).Error
 	if err != nil {
-		log.Panicln("Could not save college snaps!")
+		log.Panicln("Could not create college snaps in batch!")
 	}
 }
 
 func CreateNFLSnapsInBatch(snaps []structs.NFLPlayerGameSnaps, db *gorm.DB) {
 	err := db.CreateInBatches(&snaps, len(snaps)).Error
 	if err != nil {
-		log.Panicln("Could not save college snaps!")
+		log.Panicln("Could not create nfl snaps in batch!")
 	}
 }
 
 func CreateCFBSeasonSnaps(snap structs.CollegePlayerSeasonSnaps, db *gorm.DB) {
 	err := db.Create(&snap).Error
 	if err != nil {
-		log.Panicln("Could not create cfb snaps record!")
+		log.Panicln("Could not create cfb season snaps record!")
 	}
 }
 
 func CreateNFLSeasonSnaps(snap structs.NFLPlayerSeasonSnaps, db *gorm.DB) {
 	err := db.Create(&snap).Error
 	if err != nil {
-		log.Panicln("Could not create cfb snaps record!")
+		log.Panicln("Could not create nfl season snaps record!")
 	}
 }
 
@@ -89,5 +89,12 @@ func CreateCollegePromiseRecord(promise structs.CollegePromise, db *gorm.DB) {
 	err := db.Create(&promise).Error
 	if err != nil {
 		log.Panicln("Could not save new college recruit record")
+	}
+}
+
+func CreateNotification(noti structs.Notification, db *gorm.DB) {
+	err := db.Create(&noti).Error
+	if err != nil {
+		log.Panicln("Could not create notification record!")
 	}
 }

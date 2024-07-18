@@ -154,6 +154,10 @@ func handleRequests() {
 	myRouter.HandleFunc("/nfl/news/all/", controller.GetAllNFLNewsBySeason).Methods("GET")
 	myRouter.HandleFunc("/news/feed/{league}/{teamID}/", controller.GetNewsFeed).Methods("GET")
 
+	// Notification Controls
+	myRouter.HandleFunc("/inbox/get/{cfbID}/{nflID}/", controller.GetAllNewsLogsForASeason).Methods("GET")
+	myRouter.HandleFunc("/notification/toggle/{notiID}", controller.ToggleNotificationAsRead).Methods("GET")
+
 	// Player Controls
 	myRouter.HandleFunc("/players/all/", controller.AllPlayers).Methods("GET")
 	myRouter.HandleFunc("/collegeplayers/cut/player/{PlayerID}/", controller.CutCFBPlayerFromRoster).Methods("GET")
@@ -363,7 +367,7 @@ func main() {
 	fmt.Println("Football Server Initialized.")
 
 	fmt.Println("Loading cron...")
-	// handleCron()
+	handleCron()
 	fmt.Println("Loading Handler Requests.")
 	handleRequests()
 }

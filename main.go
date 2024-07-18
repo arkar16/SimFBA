@@ -363,7 +363,7 @@ func main() {
 	fmt.Println("Football Server Initialized.")
 
 	fmt.Println("Loading cron...")
-	handleCron()
+	// handleCron()
 	fmt.Println("Loading Handler Requests.")
 	handleRequests()
 }

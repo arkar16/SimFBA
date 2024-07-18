@@ -27,12 +27,12 @@ func GetHeismanScore(cp structs.CollegePlayer, weightMap map[string]float64, hom
 		var statScore float64 = 0
 
 		opposingTeam := stat.OpposingTeam
-		statScore += (float64(stat.PassingYards) * 0.069)
+		statScore += (float64(stat.PassingYards) * 0.068)
 		statScore += (float64(stat.PassingTDs) * 4)
 		statScore -= (float64(stat.Interceptions) * 2.25)
 		statScore -= (float64(stat.Sacks) * 2.25)
 		if cp.Position == "RB" || cp.Position == "FB" {
-			statScore += (float64(stat.RushingYards) * 0.1)
+			statScore += (float64(stat.RushingYards) * 0.1125)
 			statScore += (float64(stat.RushingTDs) * 6)
 		} else {
 			statScore += (float64(stat.RushingYards) * 0.1)
@@ -51,7 +51,7 @@ func GetHeismanScore(cp structs.CollegePlayer, weightMap map[string]float64, hom
 			statScore += (float64(stat.ReceivingTDs) * 4)
 			statScore -= float64(drops) * 0.75
 		}
-		statScore -= (float64(stat.Fumbles) * 6)
+		statScore -= (float64(stat.Fumbles) * 5.75)
 
 		statScore += (float64(stat.SoloTackles) * 1)
 		statScore += (float64(stat.STSoloTackles) * 1)

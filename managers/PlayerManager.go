@@ -881,6 +881,7 @@ func GetHeismanList() []models.HeismanWatchModel {
 	var teamWeight = make(map[string]float64)
 
 	var homeTeamMapper = make(map[int]string)
+	teamCountMap := make(map[int]int)
 	var teamGameMapper = make(map[int][]structs.CollegeGame)
 
 	for _, team := range teamWithStandings {
@@ -931,6 +932,7 @@ func GetHeismanList() []models.HeismanWatchModel {
 		score := GetHeismanScore(cp, teamWeight, homeTeamMapper, teamGameMapper[cp.TeamID])
 
 		h := models.HeismanWatchModel{
+			TeamID:    cp.TeamID,
 			FirstName: cp.FirstName,
 			LastName:  cp.LastName,
 			Position:  cp.Position,
@@ -946,7 +948,23 @@ func GetHeismanList() []models.HeismanWatchModel {
 
 	sort.Sort(models.ByScore(heismanCandidates))
 
-	return heismanCandidates
+	officialList := []models.HeismanWatchModel{}
+	count := 0
+
+	for _, h := range heismanCandidates {
+		if count == 25 {
+			break
+		}
+		teamCount := teamCountMap[h.TeamID]
+		if teamCount > 1 {
+			continue
+		}
+		count += 1
+		teamCountMap[h.TeamID] += 1
+		officialList = append(officialList, h)
+	}
+
+	return officialList
 }
 
 func GetGlobalPlayerRecord(playerID string) structs.Player {

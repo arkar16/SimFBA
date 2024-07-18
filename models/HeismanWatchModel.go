@@ -1,6 +1,7 @@
 package models
 
 type HeismanWatchModel struct {
+	TeamID    int
 	FirstName string
 	LastName  string
 	Position  string

@@ -108,49 +108,60 @@ func (p *TransferPortalProfile) ToggleRolledOnPromise() {
 }
 
 type TransferPlayerResponse struct {
-	FirstName            string
-	LastName             string
-	Archetype            string
-	Position             string
-	Age                  int
-	Year                 int
-	State                string
-	Country              string
-	Stars                int
-	Height               int
-	Weight               int
-	PotentialGrade       string
-	Overall              string
-	Shooting2            string
-	Shooting3            string
-	FreeThrow            string
-	Finishing            string
-	Ballwork             string
-	Rebounding           string
-	InteriorDefense      string
-	PerimeterDefense     string
-	Stamina              int
-	PlaytimeExpectations int
-	Minutes              int
-	OverallGrade         string
-	Personality          string
-	RecruitingBias       string
-	RecruitingBiasValue  string
-	WorkEthic            string
-	AcademicBias         string
-	PlayerID             uint
-	TeamID               uint
-	TeamAbbr             string
-	IsRedshirting        bool
-	IsRedshirt           bool
-	PreviousTeamID       uint
-	PreviousTeam         string
-	TransferStatus       int    // 1 == Intends, 2 == Is Transferring
-	TransferLikeliness   string // Low, Medium, High
-	LegacyID             uint   // Either a legacy school or a legacy coach
-	SeasonStats          CollegePlayerSeasonStats
-	Stats                CollegePlayerStats
-	LeadingTeams         []LeadingTeams
+	FirstName           string
+	LastName            string
+	Archetype           string
+	Position            string
+	Age                 int
+	Year                int
+	State               string
+	Country             string
+	Stars               int
+	Height              int
+	Weight              int
+	PotentialGrade      string
+	Overall             int
+	Stamina             int
+	Injury              int
+	FootballIQ          int
+	Speed               int
+	Carrying            int
+	Agility             int
+	Catching            int
+	RouteRunning        int
+	ZoneCoverage        int
+	ManCoverage         int
+	Strength            int
+	Tackle              int
+	PassBlock           int
+	RunBlock            int
+	PassRush            int
+	RunDefense          int
+	ThrowPower          int
+	ThrowAccuracy       int
+	KickAccuracy        int
+	KickPower           int
+	PuntAccuracy        int
+	PuntPower           int
+	OverallGrade        string
+	Personality         string
+	RecruitingBias      string
+	RecruitingBiasValue string
+	WorkEthic           string
+	AcademicBias        string
+	PlayerID            uint
+	TeamID              uint
+	TeamAbbr            string
+	IsRedshirting       bool
+	IsRedshirt          bool
+	PreviousTeamID      uint
+	PreviousTeam        string
+	TransferStatus      int    // 1 == Intends, 2 == Is Transferring
+	TransferLikeliness  string // Low, Medium, High
+	LegacyID            uint   // Either a legacy school or a legacy coach
+	SeasonStats         CollegePlayerSeasonStats
+	Stats               CollegePlayerStats
+	LeadingTeams        []LeadingTeams
 }
 
 func (c *TransferPlayerResponse) Map(r CollegePlayer, ovr string) {
@@ -165,6 +176,28 @@ func (c *TransferPlayerResponse) Map(r CollegePlayer, ovr string) {
 	c.Stars = r.Stars
 	c.Stamina = r.Stamina
 	c.OverallGrade = ovr
+	c.Stamina = r.Stamina
+	c.Injury = r.Injury
+	c.FootballIQ = r.FootballIQ
+	c.Speed = r.Speed
+	c.Carrying = r.Carrying
+	c.Agility = r.Agility
+	c.Catching = r.Catching
+	c.RouteRunning = r.RouteRunning
+	c.ZoneCoverage = r.ZoneCoverage
+	c.ManCoverage = r.ManCoverage
+	c.Strength = r.Strength
+	c.Tackle = r.Tackle
+	c.PassBlock = r.PassBlock
+	c.RunBlock = r.RunBlock
+	c.PassRush = r.PassRush
+	c.RunDefense = r.RunDefense
+	c.ThrowPower = r.ThrowPower
+	c.ThrowAccuracy = r.ThrowAccuracy
+	c.KickAccuracy = r.KickAccuracy
+	c.KickPower = r.KickPower
+	c.PuntAccuracy = r.PuntAccuracy
+	c.PuntPower = r.PuntPower
 	c.PotentialGrade = r.PotentialGrade
 	c.Personality = r.Personality
 	c.RecruitingBias = r.RecruitingBias

@@ -694,7 +694,7 @@ func AllocatePointsToAIBoards() {
 			var num float64 = 0
 			recruitID := strconv.Itoa(int(croot.RecruitID))
 
-			if (croot.IsLocked && croot.TeamAbbreviation != croot.Recruit.College) || teamNeedsMap[croot.Recruit.Position] <= 0 {
+			if (croot.IsLocked && croot.TeamAbbreviation != croot.Recruit.College) || teamNeedsMap[croot.Recruit.Position] <= 0 || croot.RemovedFromBoard {
 				removeCrootFromBoard = true
 			}
 

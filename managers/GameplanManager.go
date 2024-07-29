@@ -3213,12 +3213,14 @@ func FixBrokenGameplans() {
 		dc := GetDepthchartByTeamID(id)
 
 		isBroken := false
+		playerLabel := ""
 
 		players := dc.DepthChartPlayers
 		for _, dcp := range players {
 			p := dcp.CollegePlayer
 			if p.IsRedshirting || (p.IsInjured && p.WeeksOfRecovery > 0) {
 				isBroken = true
+				playerLabel = p.Position + " " + p.FirstName + " " + p.LastName
 				break
 			}
 		}
@@ -3232,7 +3234,7 @@ func FixBrokenGameplans() {
 			repository.SaveCFBTeam(t, db)
 
 			// Notify team
-			message := rtp.TeamAbbreviation + " has lost a scholarship due to having an injured player on their depthchart. This is penalty number " + strconv.Itoa(int(t.PenaltyMarks)) + "."
+			message := rtp.TeamAbbreviation + " has lost a scholarship due to having an injured player (" + playerLabel + ") on their depthchart. This is penalty number " + strconv.Itoa(int(t.PenaltyMarks)) + "."
 			CreateNotification("CFB", message, "Invalid Depth Chart", t.ID)
 
 			// Autosort Depth Chart
@@ -3249,12 +3251,14 @@ func FixBrokenGameplans() {
 		dc := GetNFLDepthchartByTeamID(id)
 
 		isBroken := false
+		playerLabel := ""
 
 		players := dc.DepthChartPlayers
 		for _, dcp := range players {
 			p := dcp.NFLPlayer
 			if p.IsPracticeSquad || (p.TeamID != int(n.ID)) || (p.IsInjured && p.WeeksOfRecovery > 0) {
 				isBroken = true
+				playerLabel = p.Position + " " + p.FirstName + " " + p.LastName
 				break
 			}
 		}
@@ -3263,7 +3267,7 @@ func FixBrokenGameplans() {
 			n.MarkTeamForPenalty()
 
 			// Notify team
-			message := n.TeamName + " has been marked for having an injured player on their depthchart. This is penalty number " + strconv.Itoa(int(n.PenaltyMarks)) + "."
+			message := n.TeamName + " has been marked for having an injured player (" + playerLabel + ") on their depthchart. This is penalty number " + strconv.Itoa(int(n.PenaltyMarks)) + "."
 			CreateNotification("NFL", message, "Invalid Depth Chart", n.ID)
 
 			repository.SaveNFLTeam(n, db)

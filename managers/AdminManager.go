@@ -348,6 +348,11 @@ func SyncTimeslot(timeslot string) {
 			// Get team stats
 			gameID := strconv.Itoa(int(game.ID))
 			gameIDs = append(gameIDs, gameID)
+
+			// Reveal Stats
+			db.Model(&structs.CollegePlayerStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
+			db.Model(&structs.CollegeTeamStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
+
 			homeTeamID := game.HomeTeamID
 			awayTeamID := game.AwayTeamID
 
@@ -575,9 +580,6 @@ func SyncTimeslot(timeslot string) {
 				CreateNewsLog("CFB", message, messageType, 0, timestamp)
 			}
 		}
-
-		db.Model(&structs.CollegePlayerStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
-		db.Model(&structs.CollegeTeamStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
 	} else {
 		// Get Games
 		games := GetNFLGamesByTimeslotAndWeekId(strconv.Itoa(timestamp.NFLWeekID), timeslot)
@@ -587,6 +589,10 @@ func SyncTimeslot(timeslot string) {
 		// 	seasonStatsMap[int(s.TeamID)] = s
 		// }
 		gameIDs := []string{}
+
+		// Reveal Results
+		db.Model(&structs.NFLPlayerStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
+		db.Model(&structs.NFLTeamStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
 
 		for _, game := range games {
 			// Get team stats
@@ -757,12 +763,9 @@ func SyncTimeslot(timeslot string) {
 				db.Save(&awayTeamStandings)
 			}
 		}
-
-		db.Model(&structs.NFLPlayerStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
-		db.Model(&structs.NFLTeamStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
 	}
 
-	db.Save(&timestamp)
+	repository.SaveTimestamp(timestamp, db)
 }
 
 // UpdateTimestamp - Update the timestamp

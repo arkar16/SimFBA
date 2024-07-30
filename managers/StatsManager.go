@@ -487,9 +487,11 @@ func ResetCFBSeasonalStats() {
 		playerStats := GetCollegePlayerStatsByPlayerIDAndSeason(playerID, seasonID)
 		if len(playerStats) > 0 {
 			seasonStats := GetCollegeSeasonStatsByPlayerAndSeason(playerID, seasonID)
-			seasonStats.ResetStats()
-			seasonStats.MapStats(playerStats)
-			db.Save(&seasonStats)
+			if len(playerStats) < seasonStats.GamesPlayed {
+				seasonStats.ResetStats()
+				seasonStats.MapStats(playerStats)
+				db.Save(&seasonStats)
+			}
 		}
 
 		playerSnaps := GetCollegePlayerSnapsByPlayerIDAndSeason(playerID, seasonID)
@@ -550,9 +552,12 @@ func ResetNFLSeasonalStats() {
 		playerStats := GetNFLPlayerStatsByPlayerIDAndSeason(playerID, seasonID)
 		if len(playerStats) > 0 {
 			seasonStats := GetNFLSeasonStatsByPlayerAndSeason(playerID, seasonID)
-			seasonStats.ResetStats()
-			seasonStats.MapStats(playerStats, ts)
-			db.Save(&seasonStats)
+			if len(playerStats) < seasonStats.GamesPlayed {
+				seasonStats.ResetStats()
+				seasonStats.MapStats(playerStats, ts)
+				db.Save(&seasonStats)
+			}
+
 		}
 
 		playerSnaps := GetNFLPlayerSnapsByPlayerIDAndSeason(playerID, seasonID)

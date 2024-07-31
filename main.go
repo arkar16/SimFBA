@@ -169,7 +169,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/nflplayers/team/{teamID}/", controller.AllNFLPlayersByTeamIDForDC).Methods("GET")
 	myRouter.HandleFunc("/nflplayers/freeagency/available/{teamID}", controller.FreeAgencyAvailablePlayers).Methods("GET")
 	myRouter.HandleFunc("/nflplayers/team/export/{teamID}/", controller.ExportNFLRosterToCSV).Methods("GET")
-	myRouter.HandleFunc("/nflplayers/tag/player/", controller.TagPlayer).Methods("GET")
+	myRouter.HandleFunc("/nflplayers/tag/player/", controller.TagPlayer).Methods("POST")
 	myRouter.HandleFunc("/nflplayers/cut/player/{PlayerID}/", controller.CutNFLPlayerFromRoster).Methods("GET")
 	myRouter.HandleFunc("/nflplayers/place/player/squad/{PlayerID}/", controller.PlaceNFLPlayerOnPracticeSquad).Methods("GET")
 	myRouter.HandleFunc("/nflplayers/injury/reserve/player/{PlayerID}/", controller.PlaceNFLPlayerOnInjuryReserve).Methods("GET")

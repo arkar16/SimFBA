@@ -1024,7 +1024,7 @@ func GetNFLPlayersForRosterPage(TeamID string) []structs.NFLPlayer {
 
 	db.Preload("Contract", func(db *gorm.DB) *gorm.DB {
 		return db.Where("is_active = true")
-	}).Preload("Extensions").Where("team_id = ?", TeamID).Find(&players)
+	}).Preload("SeasonStats").Preload("Extensions").Where("team_id = ?", TeamID).Find(&players)
 
 	return players
 }

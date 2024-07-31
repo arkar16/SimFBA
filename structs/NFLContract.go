@@ -30,6 +30,8 @@ type NFLContract struct {
 	IsExtended      bool
 	HasProgressed   bool
 	PlayerRetired   bool
+	TagType         uint8
+	IsTagged        bool
 }
 
 func (c *NFLContract) DeactivateContract() {
@@ -147,4 +149,19 @@ func (c *NFLContract) FixContract(length int, y1s, y1b, y2s, y2b, y3s, y3b, y4s,
 
 func (c *NFLContract) ToggleRetirement() {
 	c.PlayerRetired = true
+}
+
+func (c *NFLContract) TagContract(tagType uint8, salary, bonus float64) {
+	if c.ContractLength == 1 {
+		c.IsTagged = true
+		c.ContractLength += 1
+		c.Y2BaseSalary = salary
+		c.Y2Bonus = bonus
+	}
+}
+
+type NFLTagDTO struct {
+	PlayerID uint
+	TagType  uint8
+	Position string
 }

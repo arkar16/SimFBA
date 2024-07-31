@@ -33,6 +33,8 @@ type NFLRetiredPlayer struct {
 	HasProgressed     bool
 	Rejections        int
 	PrimeAge          uint
+	ProBowls          uint8
+	TagType           uint8                // 0 == Basic, 1 == Franchise, 2 == Transition, 3 == Playtime
 	Stats             []NFLPlayerStats     `gorm:"foreignKey:NFLPlayerID"`
 	SeasonStats       NFLPlayerSeasonStats `gorm:"foreignKey:NFLPlayerID"`
 	Contract          NFLContract          `gorm:"foreignKey:NFLPlayerID"`

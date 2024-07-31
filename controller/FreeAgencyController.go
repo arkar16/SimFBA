@@ -79,3 +79,16 @@ func CancelWaiverWireOffer(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(true)
 }
+
+func TagPlayer(w http.ResponseWriter, r *http.Request) {
+	var tagDTO structs.NFLTagDTO
+	err := json.NewDecoder(r.Body).Decode(&tagDTO)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.TagPlayer(tagDTO)
+
+	json.NewEncoder(w).Encode(true)
+}

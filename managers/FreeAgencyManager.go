@@ -11,6 +11,7 @@ import (
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 	"gorm.io/gorm"
@@ -779,6 +780,33 @@ func CancelWaiverOffer(offer structs.NFLWaiverOffDTO) {
 	waiverOffer := GetWaiverOfferByOfferID(OfferID)
 
 	db.Delete(&waiverOffer)
+}
+
+func TagPlayer(tagDTO structs.NFLTagDTO) {
+	db := dbprovider.GetInstance().GetDB()
+	playerID := strconv.Itoa(int(tagDTO.PlayerID))
+
+	// Get the tag type
+	tagTypeStr := "Basic"
+	if tagDTO.TagType == 1 {
+		tagTypeStr = "Franchise"
+	} else if tagDTO.TagType == 2 {
+		tagTypeStr = "Transition"
+	} else if tagDTO.TagType == 3 {
+		tagTypeStr = "Playtime"
+	}
+
+	// Get the json file containing all tag data by position and tag type
+	tagDataBlob := util.GetTagObject()
+	fifthYearSalary := 0.5
+	fifthYearBonus := tagDataBlob[tagDTO.Position][tagTypeStr]
+
+	// Get the contract & tag the player with the appropriate tag information
+	nflContract := GetContractByPlayerID(playerID)
+	nflContract.TagContract(tagDTO.TagType, fifthYearSalary, fifthYearBonus)
+
+	// SAVE
+	repository.SaveNFLContract(nflContract, db)
 }
 
 func getExtensionPercentageOdds(percentage float64) float64 {

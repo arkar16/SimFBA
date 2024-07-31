@@ -5,27 +5,28 @@ import "github.com/jinzhu/gorm"
 type NFLTeam struct {
 	gorm.Model
 	BaseTeam
-	ConferenceID     uint
-	Conference       string
-	DivisionID       uint
-	Division         string
-	NFLOwnerID       uint
-	NFLOwnerName     string
-	NFLCoachID       uint
-	NFLCoachName     string
-	NFLGMID          uint
-	NFLGMName        string
-	NFLAssistantID   uint
-	NFLAssistantName string
-	WaiverOrder      uint
-	Capsheet         NFLCapsheet          `gorm:"foreignKey:NFLTeamID"`
-	Contracts        []NFLContract        `gorm:"foreignKey:TeamID"`
-	DraftPicks       []NFLDraftPick       `gorm:"foreignKey:TeamID"`
-	TeamStats        []NFLTeamStats       `gorm:"foreignKey:TeamID"`
-	TeamSeasonStats  []NFLTeamSeasonStats `gorm:"foreignKey:TeamID"`
-	TeamDepthChart   NFLDepthChart        `gorm:"foreignKey:TeamID"`
-	TeamGameplan     NFLGameplan          `gorm:"foreignKey:TeamID"`
-	Standings        []NFLStandings       `gorm:"foreignKey:TeamID"`
+	ConferenceID      uint
+	Conference        string
+	DivisionID        uint
+	Division          string
+	NFLOwnerID        uint
+	NFLOwnerName      string
+	NFLCoachID        uint
+	NFLCoachName      string
+	NFLGMID           uint
+	NFLGMName         string
+	NFLAssistantID    uint
+	NFLAssistantName  string
+	WaiverOrder       uint
+	UsedTagThisSeason bool
+	Capsheet          NFLCapsheet          `gorm:"foreignKey:NFLTeamID"`
+	Contracts         []NFLContract        `gorm:"foreignKey:TeamID"`
+	DraftPicks        []NFLDraftPick       `gorm:"foreignKey:TeamID"`
+	TeamStats         []NFLTeamStats       `gorm:"foreignKey:TeamID"`
+	TeamSeasonStats   []NFLTeamSeasonStats `gorm:"foreignKey:TeamID"`
+	TeamDepthChart    NFLDepthChart        `gorm:"foreignKey:TeamID"`
+	TeamGameplan      NFLGameplan          `gorm:"foreignKey:TeamID"`
+	Standings         []NFLStandings       `gorm:"foreignKey:TeamID"`
 
 	// Offers           []FreeAgencyOffer `gorm:"foreignKey:TeamID"`
 	// NFLCoach     NFLUser        `gorm:"foreignKey:TeamID"`

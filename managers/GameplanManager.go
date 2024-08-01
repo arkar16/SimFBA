@@ -3202,12 +3202,24 @@ func FixBrokenGameplans() {
 	db := dbprovider.GetInstance().GetDB()
 
 	collegeTeams := GetAllCollegeTeams()
-	gameplanMap := GetCollegeGameplanMap()
-	recruitingProfileMap := GetTeamProfileMap()
+	teamMap := make(map[uint]structs.CollegeTeam)
 
 	for _, t := range collegeTeams {
-		id := strconv.Itoa(int(t.ID))
-		gp := gameplanMap[t.ID]
+		teamMap[t.ID] = t
+	}
+	gameplanMap := GetCollegeGameplanMap()
+	recruitingProfileMap := GetTeamProfileMap()
+	ts := GetTimestamp()
+	currentGames := GetCollegeGamesByWeekIdAndSeasonID(strconv.Itoa(ts.CollegeWeekID), strconv.Itoa(ts.CollegeSeasonID))
+	teamIDs := []uint{}
+
+	for _, g := range currentGames {
+		teamIDs = append(teamIDs, uint(g.HomeTeamID), uint(g.AwayTeamID))
+	}
+	for _, t := range teamIDs {
+		team := teamMap[t]
+		id := strconv.Itoa(int(t))
+		gp := gameplanMap[t]
 		rtp := *recruitingProfileMap[id]
 
 		dc := GetDepthchartByTeamID(id)
@@ -3230,12 +3242,12 @@ func FixBrokenGameplans() {
 			// Penalize CFB Team
 			rtp.SubtractScholarshipsAvailable()
 			repository.SaveRecruitingTeamProfile(rtp, db)
-			t.MarkTeamForPenalty()
-			repository.SaveCFBTeam(t, db)
+			team.MarkTeamForPenalty()
+			repository.SaveCFBTeam(team, db)
 
 			// Notify team
-			message := rtp.TeamAbbreviation + " has lost a scholarship due to having an injured player (" + playerLabel + ") on their depthchart. This is penalty number " + strconv.Itoa(int(t.PenaltyMarks)) + "."
-			CreateNotification("CFB", message, "Invalid Depth Chart", t.ID)
+			message := rtp.TeamAbbreviation + " has lost a scholarship due to having an injured player (" + playerLabel + ") on their depthchart. This is penalty number " + strconv.Itoa(int(team.PenaltyMarks)) + "."
+			CreateNotification("CFB", message, "Invalid Depth Chart", t)
 
 			// Autosort Depth Chart
 			ReAlignCollegeDepthChart(db, id, gp)
@@ -3281,19 +3293,24 @@ func FixBrokenGameplans() {
 func CheckForSchemePenalties() {
 	db := dbprovider.GetInstance().GetDB()
 
-	collegeTeams := GetAllCollegeTeams()
 	gameplanMap := GetCollegeGameplanMap()
 	ts := GetTimestamp()
+	currentGames := GetCollegeGamesByWeekIdAndSeasonID(strconv.Itoa(ts.CollegeWeekID), strconv.Itoa(ts.CollegeSeasonID))
+	teamIDs := []uint{}
+
+	for _, g := range currentGames {
+		teamIDs = append(teamIDs, uint(g.HomeTeamID), uint(g.AwayTeamID))
+	}
 	seasonID := strconv.Itoa(ts.CollegeSeasonID)
-	for _, t := range collegeTeams {
-		gameplan := gameplanMap[t.ID]
+	for _, t := range teamIDs {
+		gameplan := gameplanMap[t]
 		if gameplan.ID == 0 {
 			continue
 		}
-		teamID := strconv.Itoa(int(t.ID))
+		teamID := strconv.Itoa(int(t))
 		teamStats := GetHistoricalTeamStats(teamID, seasonID)
 		lastStatsIdx := len(teamStats) - 1
-		if lastStatsIdx < 0 || t.ID > 194 {
+		if lastStatsIdx < 0 || t > 194 {
 			continue
 		}
 		offScheme := teamStats[lastStatsIdx].OffensiveScheme

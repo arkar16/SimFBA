@@ -1,0 +1,61 @@
+GameID,Season,Week,Home Team,Away Team,Listed Win,Other Win,Listed Score,Other Score,Conference Game,Division Game,Neutral Site,Conference Champ,Bowl Game,Playoff,National Champ,home bye,prev bye,Listed Coach,Other Coach,TimeSlot,Stadium,City,State,Domed Stadium,GameTitle,Info,NextGame,NextGameHOA
+4006,2024,16,MASS,MISS,0,0,0,0,0,0,1,0,1,0,0,0,0,AI,SlapYourBasil,Thursday Night,Brooks Stadium,Conway,SC,0,Myrtle Beach Bowl,,0,
+4007,2024,16,ULL,UTEP,0,0,0,0,0,0,1,0,1,0,0,0,0,AI,AI,Thursday Night,Cramton Bowl,Montgomery,AL,0,Camellia Bowl,,0,
+4008,2024,16,LT,ODU,0,0,0,0,0,0,1,0,1,0,0,0,0,AI,AI,Friday Night,Independence Stadium,Shreveport,LA,0,Independence Bowl,,0,
+4009,2024,16,TEMP,JMU,0,0,0,0,0,0,1,0,1,0,0,0,0,SandyToez,JC,Friday Night,Fenway Park,Boston,MA,0,Fenway Bowl,,0,
+4010,2024,16,ECU,BUFF,0,0,0,0,0,0,1,0,1,0,0,0,0,ObliviousLAX,AI,Saturday Morning,FAU Stadium,Boca Raton,FL,0,Boca Raton Bowl,,0,
+4011,2024,16,KANS,CAL,0,0,0,0,0,0,1,0,1,0,0,0,0,bundy,believer,Saturday Morning,Levi's Stadium,Santa Clara,CA,0,San Francisco Bowl,,0,
+4012,2024,16,BGSU,NAVY,0,0,0,0,0,0,1,0,1,1,0,0,0,PoopyRhinoPickle,Syndakyt,Saturday Morning,Liberty Bowl Memorial Stadium,Memphis,TN,0,Liberty Bowl,,4032,A
+4013,2024,16,UTSA,BALL,0,0,0,0,0,0,1,0,1,0,0,0,0,Dakotagreer,npklemm,Saturday Afternoon,Toyota Stadium,Frisco,TX,0,Frisco Bowl,,0,
+4014,2024,16,ND,GT,0,0,0,0,0,0,1,0,1,1,0,0,0,LordLittlebutt,ATonOfLaw,Saturday Afternoon,TIAA Bank Field,Jacksonville,FL,0,Gator Bowl,,4025,A
+4015,2024,16,PNST,BYU,0,0,0,0,0,0,1,0,1,0,0,0,0,Rocketcan,Curby4,Saturday Evening,Chase Field,Phoenix,AZ,1,Cactus Bowl,,0,
+4016,2024,16,WVU,MSST,0,0,0,0,0,0,1,0,1,0,0,0,0,smackemz3,AI,Saturday Evening,Camping World Stadium,Orlando,FL,0,Citrus Bowl,,4027,A
+4017,2024,16,USAF,GASO,0,0,0,0,0,0,1,0,1,0,0,0,0,Coach123,miller,Saturday Night,Aloha Stadium,Honolulu,HI,0,Hawai'i Bowl,,0,
+4018,2024,16,UNM,LSU,0,0,0,0,0,0,1,0,1,1,0,0,0,DarthJarJar,Jumbo,Saturday Night,Sun Bowl,El Paso,TX,0,Sun Bowl,,4030,A
+4019,2024,17,NIU,MIAF,0,0,0,0,0,0,1,0,1,0,0,0,0,Ape,cultur3,Thursday Night,Navy-Marine Corps Memorial Stadium,Annapolis,MD,0,Military Bowl,,0,
+4020,2024,17,MICH,UHOU,0,0,0,0,0,0,1,0,1,0,0,0,0,subsequent,mahrowkeen,Thursday Night,Camp Randall Stadium,Madison,WI,0,Duluth Trading Co. Northern Lights Bowl,,0,
+4021,2024,17,UNT,OHST,0,0,0,0,0,0,1,0,1,0,0,0,0,AI,carmen,Friday Night,TQL Stadium,Cincinnati,OH,0,Chili Bowl,,0,
+4022,2024,17,UTAH,TLNE,0,0,0,0,0,0,1,0,1,0,0,0,0,SageBow,kgreene829,Friday Night,SoFi Stadium,Inglewood,CA,1,Huy Fong Foods Sriracha Bowl,,0,
+4023,2024,17,OKST,APST,0,0,0,0,0,0,1,0,1,0,0,0,0,Broletariat,Dearden,Saturday Morning,University Stadium,Albuquerque,NM,0,New Mexico Bowl,,0,
+4024,2024,17,PITT,UMD,0,0,0,0,0,0,1,0,1,0,0,0,0,TheLiberator,RobSun08,Saturday Morning,Yankee Stadium,The Bronx,NY,0,New Era Pinstripe Bowl,,0,
+4025,2024,17,TLDO,,0,0,0,0,0,0,1,0,1,1,0,1,0,AI,#N/A,Saturday Morning,Hard Rock Stadium,Miami Gardens,FL,0,Orange Bowl,,4046,H
+4026,2024,17,ARK,USC,0,0,0,0,0,0,1,0,1,0,0,0,0,AI,Dhawk18,Saturday Afternoon,Protective Stadium,Birmingham,AL,0,Birmingham Bowl,,0,
+4027,2024,17,TENN,,0,0,0,0,0,0,1,0,1,1,0,1,0,tsweezy,#N/A,Saturday Afternoon,Mercedes-Benz Stadium,Atlanta,GA,1,Peach Bowl,,4046,A
+4028,2024,17,TTU,WISC,0,0,0,0,0,0,1,0,1,0,0,0,0,rcarlson77,khweeler,Saturday Evening,NRG Stadium,Houston,TX,0,Texas Bowl,,0,
+4029,2024,17,UCLA,AZST,0,0,0,0,0,0,1,0,1,0,0,0,0,jmjacobs,AI,Saturday Evening,SoFi Stadium,Inglewood,CA,0,LA Bowl,,0,
+4030,2024,17,BAYL,,0,0,0,0,0,0,1,0,1,1,0,1,0,Vivid,#N/A,Saturday Evening,AT&T Stadium,Arlington,TX,1,Cotton Bowl,,4048,H
+4031,2024,17,WMU,CSU,0,0,0,0,0,0,1,0,1,0,0,0,0,Jieret,Bellwood,Saturday Night,Albertsons Stadium,Boise,ID,0,Famous Idaho Potato Bowl,,0,
+4032,2024,17,TULS,,0,0,0,0,0,0,1,0,1,1,0,1,0,acewulf,#N/A,Saturday Night,State Farm Stadium,Glendale,AZ,1,Fiesta Bowl,,4048,A
+4033,2024,18,RICE,USM,0,0,0,0,0,0,1,0,1,0,0,0,0,AI,AI,Thursday Night,Exploria Stadium,Orlando,FL,0,The Cure Bowl,,0,
+4034,2024,18,BAMA,PURD,0,0,0,0,0,0,1,0,1,0,0,0,0,thatfunk,MasonAsher,Thursday Night,Nissan Stadium,Nashville,TN,0,Music City Bowl,,0,
+4035,2024,18,MEMP,FIU,0,0,0,0,0,0,1,0,1,0,0,0,0,AI,AI,Friday Night,Thomas Robinson Stadium,Nassau,BH,0,Bahamas Bowl,,0,
+4036,2024,18,IND,DUKE,0,0,0,0,0,0,1,0,1,0,0,0,0,Piercewise1,Viselli,Friday Night,Bank of America Stadium,Charlotte,NC,0,Duke's Mayo Bowl,,0,
+4037,2024,18,CMU,BOIS,0,0,0,0,0,0,1,0,1,0,0,0,0,AI,AI,Saturday Morning,Arizona Stadium,Tucson,AZ,0,Arizona Bowl,,0,
+4038,2024,18,OKLA,ILLI,0,0,0,0,0,0,1,0,1,0,0,0,0,HAFFnHAFF,nemolee.exe,Saturday Morning,Raymond James Stadium,Tampa,FL,0,ReliaQuest Bowl,,0,
+4039,2024,18,TXST,MTSU,0,0,0,0,0,0,1,0,1,0,0,0,0,checkman,AI,Saturday Morning,Hancock Whiteny Stadium,Mobile,AL,0,68 Venutres Bowl,,0,
+4040,2024,18,TAMU,FSU,0,0,0,0,0,0,1,0,1,0,0,0,0,VerifiedThing,Kirby,Saturday Morning,Petco Park,San Diego,CA,0,Holiday Bowl,,0,
+4041,2024,18,WAST,TCU,0,0,0,0,0,0,1,0,1,0,0,0,0,TuscanSota,DangerZoneh,Saturday Afternoon,Alamodome,San Antonio,TX,1,Alamo Bowl,,0,
+4042,2024,18,WKU,MRSH,0,0,0,0,0,0,1,0,1,0,0,0,0,AI,AI,Saturday Afternoon,Caesars Superdome,New Orleans,LA,1,New Orleans Bowl,,0,
+4043,2024,18,UVA,NEB,0,0,0,0,0,0,1,0,1,0,0,0,0,Wahoo,huskersax,Saturday Afternoon,Camping World Stadium,Orlando,FL,0,Cheez-It Bowl,,0,
+4044,2024,18,UNC,UGA,0,0,0,0,0,0,1,0,1,0,0,0,0,Tryggr,Sarge,Saturday Evening,Milan Puskar Stadium,Morgantown,WV,0,"Big Timber Brewing Almost Heaven, West Virginia Bowl",,0,
+4045,2024,18,UKEN,KSST,0,0,0,0,0,0,1,0,1,0,0,0,0,Ezaco,AI,Saturday Evening,Amon G. Carter Stadium,Fort Worth,TX,0,Armed Forces Bowl,,0,
+4046,2024,18,,,0,0,0,0,0,0,1,0,1,1,0,0,0,#N/A,#N/A,Saturday Evening,Caesars Superdome,New Orleans,LA,1,Sugar Bowl,,4050,H
+4047,2024,18,STAN,UNLV,0,0,0,0,0,0,1,0,1,0,0,0,0,Ricky Campbell,ChizDippler,Saturday Night,Allegiant Stadium,Paradise,NV,0,Las Vegas Bowl,,0,
+4048,2024,18,,,0,0,0,0,0,0,1,0,1,1,0,0,0,#N/A,#N/A,Saturday Night,Rose Bowl,Pasadena,CA,0,Rose Bowl,,4050,A
+4049,2024,19,ARST,SHSU,0,0,0,0,0,0,1,0,1,0,0,0,0,AI,AI,Saturday Morning,The Kibbie Dome,Moscow,ID,1,The Toilet Bowl,,0,
+4050,2024,19,,,0,0,0,0,0,0,1,0,1,1,1,0,0,#N/A,#N/A,Saturday Morning,NRG Stadium,Houston,TX,1,2024 National Championship Game,,0,
+4051,2024,16,COLG,SDST,0,0,0,0,0,0,0,0,0,1,0,0,0,AI,AI,Saturday Morning,Andy Kerr Stadium,Hamilton,NY,0,FCS Playoffs First Round,,4060,
+4052,2024,16,SIU,CP,0,0,0,0,0,0,0,0,0,1,0,0,0,AI,AI,Saturday Morning,Saluki Stadium,Carbondale,IL,0,FCS Playoffs First Round,,4061,
+4053,2024,16,BUCK,ILST,0,0,0,0,0,0,0,0,0,1,0,0,0,AI,AI,Saturday Morning,Christy Mathewson-Memorial Stadium,Lewisburg,PA,0,FCS Playoffs First Round,,4062,
+4054,2024,16,NDSU,EWU,0,0,0,0,0,0,0,0,0,1,0,0,0,AI,AI,Saturday Morning,Fargodome,Fargo,ND,1,FCS Playoffs First Round,,4063,
+4055,2024,16,MER,IDST,0,0,0,0,0,0,0,0,0,1,0,0,0,AI,AI,Saturday Morning,Five Star Stadium,Macon,GA,0,FCS Playoffs First Round,,4063,
+4056,2024,16,GEOT,UND,0,0,0,0,0,0,0,0,0,1,0,0,0,AI,AI,Saturday Morning,Cooper Field,Washington,DC,0,FCS Playoffs First Round,,4062,
+4057,2024,16,BCU,INST,0,0,0,0,0,0,0,0,0,1,0,0,0,AI,AI,Saturday Morning,Daytona Stadium,Daytona Beach,FL,0,FCS Playoffs First Round,,4061,
+4058,2024,16,WIU,HC,0,0,0,0,0,0,0,0,0,1,0,0,0,AI,AI,Saturday Morning,Hanson Field,Macomb,IL,0,FCS Playoffs First Round,,4060,
+4059,2024,17,FCS #1/16,FCS #8/9,0,0,0,0,0,0,0,0,0,1,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS Playoffs Quarterfinals,,4064,
+4060,2024,17,FCS #2/15,FCS #7/10,0,0,0,0,0,0,0,0,0,1,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS Playoffs Quarterfinals,,4064,
+4061,2024,17,FCS #3/14,FCS #6/11,0,0,0,0,0,0,0,0,0,1,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS Playoffs Quarterfinals,,4065,
+4062,2024,17,FCS #4/13,FCS #5/12,0,0,0,0,0,0,0,0,0,1,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS Playoffs Quarterfinals,,4065,
+4063,2024,18,FCS #1/8/9/16,FCS #2/7/10/15,0,0,0,0,0,0,0,0,0,1,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS Playoffs Semifinals,,4066,
+4064,2024,18,FCS #3/6/11/14,FCS #4/5/12/13,0,0,0,0,0,0,0,0,0,1,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS Playoffs Semifinals,,4066,
+4065,2024,19,FCS #1/2/7/8/9/10/15/16,FCS #3/4/5/6/11/12/13/14,0,0,0,0,0,0,0,0,0,1,1,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,2024 FCS National Championship Game,,0,

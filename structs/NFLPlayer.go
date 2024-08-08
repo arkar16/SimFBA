@@ -215,3 +215,7 @@ func (np *NFLPlayer) Progress(attr CollegePlayerProgressions) {
 func (f *NFLPlayer) MapSeasonStats(seasonStats NFLPlayerSeasonStats) {
 	f.SeasonStats = seasonStats
 }
+
+func (f *NFLPlayer) AddTagType(tagType uint8) {
+	f.TagType = tagType
+}

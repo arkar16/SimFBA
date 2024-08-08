@@ -75,3 +75,7 @@ func (t *NFLTeam) RemoveNFLUserFromTeam(r NFLRequest, u NFLUser) {
 func (t *NFLTeam) AssignWaiverOrder(val uint) {
 	t.WaiverOrder = val
 }
+
+func (bt *NFLTeam) ToggleTag() {
+	bt.UsedTagThisSeason = true
+}

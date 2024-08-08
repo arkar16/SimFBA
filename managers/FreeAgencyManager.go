@@ -796,17 +796,32 @@ func TagPlayer(tagDTO structs.NFLTagDTO) {
 		tagTypeStr = "Playtime"
 	}
 
+	// Get the contract
+	nflContract := GetContractByPlayerID(playerID)
+	nflPlayerRecord := GetNFLPlayerRecord(playerID)
+	nflPlayerRecord.AddTagType(tagDTO.TagType)
+
+	// NFLTeam
+	if tagDTO.TagType == 1 || tagDTO.TagType == 2 {
+		nflTeam := GetNFLTeamByTeamID(strconv.Itoa(int(nflContract.TeamID)))
+		if nflTeam.UsedTagThisSeason {
+			return
+		}
+		nflTeam.ToggleTag()
+		repository.SaveNFLTeam(nflTeam, db)
+	}
+
 	// Get the json file containing all tag data by position and tag type
 	tagDataBlob := util.GetTagObject()
 	fifthYearSalary := 0.5
 	fifthYearBonus := tagDataBlob[tagDTO.Position][tagTypeStr]
 
-	// Get the contract & tag the player with the appropriate tag information
-	nflContract := GetContractByPlayerID(playerID)
+	// Tag the player with the appropriate tag information
 	nflContract.TagContract(tagDTO.TagType, fifthYearSalary, fifthYearBonus)
 
 	// SAVE
 	repository.SaveNFLContract(nflContract, db)
+	repository.SaveNFLPlayer(nflPlayerRecord, db)
 }
 
 func getExtensionPercentageOdds(percentage float64) float64 {

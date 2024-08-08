@@ -3238,17 +3238,14 @@ func FixBrokenGameplans() {
 		}
 
 		if isBroken {
-
 			// Penalize CFB Team
 			rtp.SubtractScholarshipsAvailable()
 			repository.SaveRecruitingTeamProfile(rtp, db)
 			team.MarkTeamForPenalty()
 			repository.SaveCFBTeam(team, db)
-
 			// Notify team
 			message := rtp.TeamAbbreviation + " has lost a scholarship due to having an injured player (" + playerLabel + ") on their depthchart. This is penalty number " + strconv.Itoa(int(team.PenaltyMarks)) + "."
 			CreateNotification("CFB", message, "Invalid Depth Chart", t)
-
 			// Autosort Depth Chart
 			ReAlignCollegeDepthChart(db, id, gp)
 		}

@@ -981,7 +981,7 @@ func updateTeamRankings(teamRecruitingProfiles []structs.RecruitingTeamProfile, 
 
 			rp.AssignCompositeRank(avg)
 		}
-		if rp.SpentPoints == 0 {
+		if rp.SpentPoints == 0 && rp.TotalCommitments < rp.RecruitClassSize {
 			notificationMessage := "You have missed recruiting this past week. You have missed recruiting a total of " + strconv.Itoa(rp.WeeksMissed) + " times."
 			if rp.WeeksMissed == 3 {
 				notificationMessage += " If you miss another week of recruiting, you will lose your team."

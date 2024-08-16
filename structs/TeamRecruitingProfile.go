@@ -62,6 +62,9 @@ func (r *RecruitingTeamProfile) ResetSpentPoints() {
 	} else {
 		r.WeeksMissed = 0
 	}
+	if r.TotalCommitments == r.RecruitClassSize {
+		r.WeeksMissed = 0
+	}
 	r.SpentPoints = 0
 }
 

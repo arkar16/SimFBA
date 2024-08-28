@@ -58,3 +58,10 @@ func ToggleNotificationAsRead(w http.ResponseWriter, r *http.Request) {
 	managers.ToggleNotification(notiID)
 	json.NewEncoder(w).Encode("Toggled Notification")
 }
+
+func DeleteNotification(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	notiID := vars["notiID"]
+	managers.DeleteNotification(notiID)
+	json.NewEncoder(w).Encode("Toggled Notification")
+}

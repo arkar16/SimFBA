@@ -257,6 +257,16 @@ func GetNFLSeasonSnapsByPlayerAndSeason(PlayerID, SeasonID string) structs.NFLPl
 	return playerStats
 }
 
+func GetNFLSeasonSnapsBySeason(SeasonID string) []structs.NFLPlayerSeasonSnaps {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerSnaps []structs.NFLPlayerSeasonSnaps
+
+	db.Where("season_id = ?", SeasonID).Find(&playerSnaps)
+
+	return playerSnaps
+}
+
 func GetCollegeSeasonSnapsBySeason(SeasonID string) []structs.CollegePlayerSeasonSnaps {
 	db := dbprovider.GetInstance().GetDB()
 

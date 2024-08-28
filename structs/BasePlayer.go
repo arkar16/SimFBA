@@ -50,6 +50,8 @@ type BasePlayer struct {
 	PrimeAge        uint
 	Clutch          int // -1 is choker, 0 is normal, 1 is clutch, 2 is very clutch
 	Shotgun         int // -1 is Under Center, 0 Balanced, 1 Shotgun
+	PositionTwo     string
+	ArchetypeTwo    string
 }
 
 func (cp *BasePlayer) GetOverall() {
@@ -213,4 +215,9 @@ func (cp *BasePlayer) SetRecruitingBias(bias string) {
 
 func (cp *BasePlayer) AssignPrimeAge(age uint) {
 	cp.PrimeAge = age
+}
+
+func (bp *BasePlayer) DesignateNewPosition(pos, arch string) {
+	bp.PositionTwo = pos
+	bp.ArchetypeTwo = arch
 }

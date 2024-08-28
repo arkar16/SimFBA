@@ -694,9 +694,9 @@ func ImportNFLGames() {
 		}
 		timeSlot := row[18]
 		// Need to implement Stadium ID
-		stadium := row[19]
-		city := row[20]
-		state := row[21]
+		stadium := ht.Stadium
+		city := ht.City
+		state := ht.State
 		// Need to check for if a game is in a domed stadium or not
 		isConferenceGame := util.ConvertStringToBool(row[9])
 		isDivisionGame := util.ConvertStringToBool(row[10])

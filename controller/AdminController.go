@@ -125,7 +125,7 @@ func SyncTeamRecruitingRanks(w http.ResponseWriter, r *http.Request) {
 }
 
 func ProgressToNextSeason(w http.ResponseWriter, r *http.Request) {
-	managers.ProgressionMain()
+	managers.CFBProgressionMain()
 	fmt.Println(w, "Team Ranks successfully generated.")
 }
 

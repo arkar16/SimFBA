@@ -20,6 +20,9 @@ type UnsignedPlayer struct {
 	Stats              []CollegePlayerStats     `gorm:"foreignKey:CollegePlayerID"`
 	SeasonStats        CollegePlayerSeasonStats `gorm:"foreignKey:CollegePlayerID"`
 	HasProgressed      bool
+	WillDeclare        bool
+	LegacyID           uint                    // Either a legacy school or a legacy coach
+	Profiles           []TransferPortalProfile `gorm:"foreignKey:CollegePlayerID"`
 }
 
 func (up *UnsignedPlayer) GraduatePlayer() {

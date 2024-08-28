@@ -14,12 +14,12 @@ import (
 	"github.com/CalebRose/SimFBA/util"
 )
 
-func ProgressionMain() {
+func CFBProgressionMain() {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
 	SeasonID := strconv.Itoa(ts.CollegeSeasonID)
 	// Get All Teams
-
+	snapMap := GetCollegePlayerSeasonSnapMap(SeasonID)
 	collegeTeams := GetAllCollegeTeams()
 	// Loop
 	var graduatingPlayers []models.NFLDraftee
@@ -36,6 +36,7 @@ func ProgressionMain() {
 				}
 				// Get Latest Stats
 				stats := GetCollegePlayerStatsByPlayerIDAndSeason(strconv.Itoa(int(player.ID)), SeasonID)
+				snaps := snapMap[player.ID]
 
 				// Get Average Snaps
 				avgSnaps := getAverageSnaps(stats)
@@ -44,7 +45,7 @@ func ProgressionMain() {
 				willDeclare := DetermineIfDeclaring(player, avgSnaps)
 
 				// Progress the Player
-				player = ProgressCollegePlayer(player, SeasonID, stats)
+				player = ProgressCollegePlayer(player, SeasonID, stats, snaps)
 
 				if willDeclare {
 					player.GraduatePlayer()
@@ -193,10 +194,9 @@ func NFLProgressionMain() {
 func ProgressNFLPlayers() {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
-	// SeasonID := strconv.Itoa(ts.NFLSeasonID - 1)
-	SeasonID := "2"
+	SeasonID := strconv.Itoa(ts.CollegeSeasonID)
 	fmt.Println(time.Now().UnixNano())
-
+	snapMap := GetNFLPlayerSeasonSnapMap(SeasonID)
 	teams := GetAllNFLTeams()
 	// nflPlayers := GetAllNFLPlayers()
 	freeAgents := GetAllFreeAgents()
@@ -213,15 +213,14 @@ func ProgressNFLPlayers() {
 			// Progress the Player
 			// Get Latest Stats
 			stats := GetNFLPlayerStatsByPlayerIDAndSeason(strconv.Itoa(int(player.ID)), SeasonID)
-
 			// Get Average Snaps
-			avgSnaps := getAverageNFLSnaps(stats)
-
+			totalSnaps, avgSnaps := getAverageNFLSnaps(stats)
+			snaps := snapMap[player.ID]
 			// Run Function to Determine if Player is Declaring Early
 			willRetire := DetermineIfRetiring(player)
 
 			// Progress the Player
-			player = ProgressNFLPlayer(player, SeasonID, avgSnaps)
+			player = ProgressNFLPlayer(player, SeasonID, totalSnaps, avgSnaps, snaps)
 
 			playerID := strconv.Itoa(int(player.ID))
 			if !player.IsFreeAgent || player.TeamID > 0 {
@@ -282,13 +281,13 @@ func ProgressNFLPlayers() {
 		stats := GetNFLPlayerStatsByPlayerIDAndSeason(strconv.Itoa(int(player.ID)), SeasonID)
 
 		// Get Average Snaps
-		avgSnaps := getAverageNFLSnaps(stats)
-
+		totalSnaps, avgSnaps := getAverageNFLSnaps(stats)
+		snaps := snapMap[player.ID]
 		// Run Function to Determine if Player is Declaring Early
 		willRetire := DetermineIfRetiring(player)
 
 		// Progress the Player
-		player = ProgressNFLPlayer(player, SeasonID, avgSnaps)
+		player = ProgressNFLPlayer(player, SeasonID, totalSnaps, avgSnaps, snaps)
 
 		playerID := strconv.Itoa(int(player.ID))
 		if !player.IsFreeAgent || player.TeamID > 0 {
@@ -339,7 +338,7 @@ func ProgressNFLPlayers() {
 	}
 }
 
-func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) structs.NFLPlayer {
+func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, totalSnaps, SnapsPerGame int, snaps structs.NFLPlayerSeasonSnaps) structs.NFLPlayer {
 	Agility := 0
 	ThrowPower := 0
 	ThrowAccuracy := 0
@@ -361,14 +360,28 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 	ManCoverage := 0
 	ZoneCoverage := 0
 
-	if np.Position == "QB" {
+	mostPlayedPosition, mostPlayedSnaps := getMostPlayedPosition(snaps.BasePlayerSeasonSnaps, np.Position)
+	posThreshold := float64(totalSnaps) * 0.8
+
+	if mostPlayedPosition != np.Position && float64(mostPlayedSnaps) > posThreshold {
+		// Designate New Position
+		newArchetype, archCheck := getNewArchetype(np.Position, np.Archetype, mostPlayedPosition)
+		// If Archhetype exists, assign new position. Otherwise, progress by old position
+		if archCheck {
+			np.DesignateNewPosition(mostPlayedPosition, newArchetype)
+		} else {
+			mostPlayedPosition = np.Position
+		}
+	}
+
+	if mostPlayedPosition == "QB" {
 		// Primary Progressions
-		Agility = PrimaryProgression(np.Progression, np.Agility, np.Position, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
-		ThrowPower = PrimaryProgression(np.Progression, np.ThrowPower, np.Position, np.Archetype, SnapsPerGame, "Throw Power", np.IsPracticeSquad)
-		ThrowAccuracy = PrimaryProgression(np.Progression, np.ThrowAccuracy, np.Position, np.Archetype, SnapsPerGame, "Throw Accuracy", np.IsPracticeSquad)
-		Speed = PrimaryProgression(np.Progression, np.Speed, np.Position, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
-		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, np.Position, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
-		Strength = PrimaryProgression(np.Progression, np.Strength, np.Position, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
+		Agility = PrimaryProgression(np.Progression, np.Agility, mostPlayedPosition, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
+		ThrowPower = PrimaryProgression(np.Progression, np.ThrowPower, mostPlayedPosition, np.Archetype, SnapsPerGame, "Throw Power", np.IsPracticeSquad)
+		ThrowAccuracy = PrimaryProgression(np.Progression, np.ThrowAccuracy, mostPlayedPosition, np.Archetype, SnapsPerGame, "Throw Accuracy", np.IsPracticeSquad)
+		Speed = PrimaryProgression(np.Progression, np.Speed, mostPlayedPosition, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
+		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, mostPlayedPosition, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
+		Strength = PrimaryProgression(np.Progression, np.Strength, mostPlayedPosition, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
 
 		// Secondary Progressions
 		RunBlock = SecondaryProgression(np.Progression, np.RunBlock)
@@ -385,15 +398,15 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 		KickAccuracy = SecondaryProgression(np.Progression, np.KickAccuracy)
 		ManCoverage = SecondaryProgression(np.Progression, np.ManCoverage)
 		ZoneCoverage = SecondaryProgression(np.Progression, np.ZoneCoverage)
-	} else if np.Position == "RB" {
+	} else if mostPlayedPosition == "RB" {
 		// Primary
-		Agility = PrimaryProgression(np.Progression, np.Agility, np.Position, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
-		Carrying = PrimaryProgression(np.Progression, np.Carrying, np.Position, np.Archetype, SnapsPerGame, "Carrying", np.IsPracticeSquad)
-		Speed = PrimaryProgression(np.Progression, np.Speed, np.Position, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
-		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, np.Position, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
-		Strength = PrimaryProgression(np.Progression, np.Strength, np.Position, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
-		Catching = PrimaryProgression(np.Progression, np.Catching, np.Position, np.Archetype, SnapsPerGame, "Catching", np.IsPracticeSquad)
-		PassBlock = PrimaryProgression(np.Progression, np.PassBlock, np.Position, np.Archetype, SnapsPerGame, "Pass Blocking", np.IsPracticeSquad)
+		Agility = PrimaryProgression(np.Progression, np.Agility, mostPlayedPosition, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
+		Carrying = PrimaryProgression(np.Progression, np.Carrying, mostPlayedPosition, np.Archetype, SnapsPerGame, "Carrying", np.IsPracticeSquad)
+		Speed = PrimaryProgression(np.Progression, np.Speed, mostPlayedPosition, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
+		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, mostPlayedPosition, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
+		Strength = PrimaryProgression(np.Progression, np.Strength, mostPlayedPosition, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
+		Catching = PrimaryProgression(np.Progression, np.Catching, mostPlayedPosition, np.Archetype, SnapsPerGame, "Catching", np.IsPracticeSquad)
+		PassBlock = PrimaryProgression(np.Progression, np.PassBlock, mostPlayedPosition, np.Archetype, SnapsPerGame, "Pass Blocking", np.IsPracticeSquad)
 		// Secondary
 		RunBlock = SecondaryProgression(np.Progression, np.RunBlock)
 		RunDefense = SecondaryProgression(np.Progression, np.RunDefense)
@@ -408,16 +421,16 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 		ZoneCoverage = SecondaryProgression(np.Progression, np.ZoneCoverage)
 		ThrowPower = SecondaryProgression(np.Progression, np.ThrowPower)
 		ThrowAccuracy = SecondaryProgression(np.Progression, np.ThrowAccuracy)
-	} else if np.Position == "FB" {
+	} else if mostPlayedPosition == "FB" {
 		// Primary
-		Agility = PrimaryProgression(np.Progression, np.Agility, np.Position, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
-		Carrying = PrimaryProgression(np.Progression, np.Carrying, np.Position, np.Archetype, SnapsPerGame, "Carrying", np.IsPracticeSquad)
-		Speed = PrimaryProgression(np.Progression, np.Speed, np.Position, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
-		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, np.Position, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
-		Strength = PrimaryProgression(np.Progression, np.Strength, np.Position, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
-		Catching = PrimaryProgression(np.Progression, np.Catching, np.Position, np.Archetype, SnapsPerGame, "Catching", np.IsPracticeSquad)
-		PassBlock = PrimaryProgression(np.Progression, np.PassBlock, np.Position, np.Archetype, SnapsPerGame, "Pass Blocking", np.IsPracticeSquad)
-		RunBlock = PrimaryProgression(np.Progression, np.RunBlock, np.Position, np.Archetype, SnapsPerGame, "Run Blocking", np.IsPracticeSquad)
+		Agility = PrimaryProgression(np.Progression, np.Agility, mostPlayedPosition, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
+		Carrying = PrimaryProgression(np.Progression, np.Carrying, mostPlayedPosition, np.Archetype, SnapsPerGame, "Carrying", np.IsPracticeSquad)
+		Speed = PrimaryProgression(np.Progression, np.Speed, mostPlayedPosition, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
+		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, mostPlayedPosition, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
+		Strength = PrimaryProgression(np.Progression, np.Strength, mostPlayedPosition, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
+		Catching = PrimaryProgression(np.Progression, np.Catching, mostPlayedPosition, np.Archetype, SnapsPerGame, "Catching", np.IsPracticeSquad)
+		PassBlock = PrimaryProgression(np.Progression, np.PassBlock, mostPlayedPosition, np.Archetype, SnapsPerGame, "Pass Blocking", np.IsPracticeSquad)
+		RunBlock = PrimaryProgression(np.Progression, np.RunBlock, mostPlayedPosition, np.Archetype, SnapsPerGame, "Run Blocking", np.IsPracticeSquad)
 
 		// Secondary
 		RunDefense = SecondaryProgression(np.Progression, np.RunDefense)
@@ -433,17 +446,17 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 		ThrowPower = SecondaryProgression(np.Progression, np.ThrowPower)
 		ThrowAccuracy = SecondaryProgression(np.Progression, np.ThrowAccuracy)
 
-	} else if np.Position == "TE" {
+	} else if mostPlayedPosition == "TE" {
 		// Primary
-		Agility = PrimaryProgression(np.Progression, np.Agility, np.Position, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
-		Carrying = PrimaryProgression(np.Progression, np.Carrying, np.Position, np.Archetype, SnapsPerGame, "Carrying", np.IsPracticeSquad)
-		Speed = PrimaryProgression(np.Progression, np.Speed, np.Position, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
-		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, np.Position, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
-		Strength = PrimaryProgression(np.Progression, np.Strength, np.Position, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
-		Catching = PrimaryProgression(np.Progression, np.Catching, np.Position, np.Archetype, SnapsPerGame, "Catching", np.IsPracticeSquad)
-		RouteRunning = PrimaryProgression(np.Progression, np.RouteRunning, np.Position, np.Archetype, SnapsPerGame, "Route Running", np.IsPracticeSquad)
-		PassBlock = PrimaryProgression(np.Progression, np.PassBlock, np.Position, np.Archetype, SnapsPerGame, "Pass Blocking", np.IsPracticeSquad)
-		RunBlock = PrimaryProgression(np.Progression, np.RunBlock, np.Position, np.Archetype, SnapsPerGame, "Run Blocking", np.IsPracticeSquad)
+		Agility = PrimaryProgression(np.Progression, np.Agility, mostPlayedPosition, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
+		Carrying = PrimaryProgression(np.Progression, np.Carrying, mostPlayedPosition, np.Archetype, SnapsPerGame, "Carrying", np.IsPracticeSquad)
+		Speed = PrimaryProgression(np.Progression, np.Speed, mostPlayedPosition, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
+		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, mostPlayedPosition, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
+		Strength = PrimaryProgression(np.Progression, np.Strength, mostPlayedPosition, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
+		Catching = PrimaryProgression(np.Progression, np.Catching, mostPlayedPosition, np.Archetype, SnapsPerGame, "Catching", np.IsPracticeSquad)
+		RouteRunning = PrimaryProgression(np.Progression, np.RouteRunning, mostPlayedPosition, np.Archetype, SnapsPerGame, "Route Running", np.IsPracticeSquad)
+		PassBlock = PrimaryProgression(np.Progression, np.PassBlock, mostPlayedPosition, np.Archetype, SnapsPerGame, "Pass Blocking", np.IsPracticeSquad)
+		RunBlock = PrimaryProgression(np.Progression, np.RunBlock, mostPlayedPosition, np.Archetype, SnapsPerGame, "Run Blocking", np.IsPracticeSquad)
 
 		// Secondary
 		RunDefense = SecondaryProgression(np.Progression, np.RunDefense)
@@ -457,15 +470,15 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 		ZoneCoverage = SecondaryProgression(np.Progression, np.ZoneCoverage)
 		ThrowPower = SecondaryProgression(np.Progression, np.ThrowPower)
 		ThrowAccuracy = SecondaryProgression(np.Progression, np.ThrowAccuracy)
-	} else if np.Position == "WR" {
+	} else if mostPlayedPosition == "WR" {
 		// Primary
-		Agility = PrimaryProgression(np.Progression, np.Agility, np.Position, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
-		Carrying = PrimaryProgression(np.Progression, np.Carrying, np.Position, np.Archetype, SnapsPerGame, "Carrying", np.IsPracticeSquad)
-		Speed = PrimaryProgression(np.Progression, np.Speed, np.Position, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
-		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, np.Position, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
-		Strength = PrimaryProgression(np.Progression, np.Strength, np.Position, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
-		Catching = PrimaryProgression(np.Progression, np.Catching, np.Position, np.Archetype, SnapsPerGame, "Catching", np.IsPracticeSquad)
-		RouteRunning = PrimaryProgression(np.Progression, np.RouteRunning, np.Position, np.Archetype, SnapsPerGame, "Route Running", np.IsPracticeSquad)
+		Agility = PrimaryProgression(np.Progression, np.Agility, mostPlayedPosition, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
+		Carrying = PrimaryProgression(np.Progression, np.Carrying, mostPlayedPosition, np.Archetype, SnapsPerGame, "Carrying", np.IsPracticeSquad)
+		Speed = PrimaryProgression(np.Progression, np.Speed, mostPlayedPosition, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
+		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, mostPlayedPosition, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
+		Strength = PrimaryProgression(np.Progression, np.Strength, mostPlayedPosition, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
+		Catching = PrimaryProgression(np.Progression, np.Catching, mostPlayedPosition, np.Archetype, SnapsPerGame, "Catching", np.IsPracticeSquad)
+		RouteRunning = PrimaryProgression(np.Progression, np.RouteRunning, mostPlayedPosition, np.Archetype, SnapsPerGame, "Route Running", np.IsPracticeSquad)
 
 		// Secondary
 		RunBlock = SecondaryProgression(np.Progression, np.RunBlock)
@@ -481,13 +494,13 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 		ZoneCoverage = SecondaryProgression(np.Progression, np.ZoneCoverage)
 		ThrowPower = SecondaryProgression(np.Progression, np.ThrowPower)
 		ThrowAccuracy = SecondaryProgression(np.Progression, np.ThrowAccuracy)
-	} else if np.Position == "OT" || np.Position == "OG" || np.Position == "C" {
+	} else if mostPlayedPosition == "OT" || mostPlayedPosition == "OG" || mostPlayedPosition == "C" {
 		// Primary
-		Agility = PrimaryProgression(np.Progression, np.Agility, np.Position, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
-		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, np.Position, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
-		Strength = PrimaryProgression(np.Progression, np.Strength, np.Position, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
-		PassBlock = PrimaryProgression(np.Progression, np.PassBlock, np.Position, np.Archetype, SnapsPerGame, "Pass Blocking", np.IsPracticeSquad)
-		RunBlock = PrimaryProgression(np.Progression, np.RunBlock, np.Position, np.Archetype, SnapsPerGame, "Run Blocking", np.IsPracticeSquad)
+		Agility = PrimaryProgression(np.Progression, np.Agility, mostPlayedPosition, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
+		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, mostPlayedPosition, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
+		Strength = PrimaryProgression(np.Progression, np.Strength, mostPlayedPosition, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
+		PassBlock = PrimaryProgression(np.Progression, np.PassBlock, mostPlayedPosition, np.Archetype, SnapsPerGame, "Pass Blocking", np.IsPracticeSquad)
+		RunBlock = PrimaryProgression(np.Progression, np.RunBlock, mostPlayedPosition, np.Archetype, SnapsPerGame, "Run Blocking", np.IsPracticeSquad)
 
 		// Secondary
 		RunDefense = SecondaryProgression(np.Progression, np.RunDefense)
@@ -505,14 +518,14 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 		Carrying = SecondaryProgression(np.Progression, np.Carrying)
 		Speed = SecondaryProgression(np.Progression, np.Speed)
 		Catching = SecondaryProgression(np.Progression, np.Catching)
-	} else if np.Position == "DT" {
+	} else if mostPlayedPosition == "DT" {
 		// Primary
-		Agility = PrimaryProgression(np.Progression, np.Agility, np.Position, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
-		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, np.Position, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
-		Strength = PrimaryProgression(np.Progression, np.Strength, np.Position, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
-		PassRush = PrimaryProgression(np.Progression, np.PassRush, np.Position, np.Archetype, SnapsPerGame, "Pass Rush", np.IsPracticeSquad)
-		RunDefense = PrimaryProgression(np.Progression, np.RunDefense, np.Position, np.Archetype, SnapsPerGame, "Run Defense", np.IsPracticeSquad)
-		Tackle = PrimaryProgression(np.Progression, np.Tackle, np.Position, np.Archetype, SnapsPerGame, "Tackle", np.IsPracticeSquad)
+		Agility = PrimaryProgression(np.Progression, np.Agility, mostPlayedPosition, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
+		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, mostPlayedPosition, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
+		Strength = PrimaryProgression(np.Progression, np.Strength, mostPlayedPosition, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
+		PassRush = PrimaryProgression(np.Progression, np.PassRush, mostPlayedPosition, np.Archetype, SnapsPerGame, "Pass Rush", np.IsPracticeSquad)
+		RunDefense = PrimaryProgression(np.Progression, np.RunDefense, mostPlayedPosition, np.Archetype, SnapsPerGame, "Run Defense", np.IsPracticeSquad)
+		Tackle = PrimaryProgression(np.Progression, np.Tackle, mostPlayedPosition, np.Archetype, SnapsPerGame, "Tackle", np.IsPracticeSquad)
 
 		// Secondary
 		PuntPower = SecondaryProgression(np.Progression, np.PuntPower)
@@ -529,15 +542,15 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 		Speed = SecondaryProgression(np.Progression, np.Speed)
 		RunBlock = SecondaryProgression(np.Progression, np.RunBlock)
 		PassBlock = SecondaryProgression(np.Progression, np.PassBlock)
-	} else if np.Position == "DE" {
+	} else if mostPlayedPosition == "DE" {
 		// Primary
-		Agility = PrimaryProgression(np.Progression, np.Agility, np.Position, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
-		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, np.Position, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
-		Strength = PrimaryProgression(np.Progression, np.Strength, np.Position, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
-		Speed = PrimaryProgression(np.Progression, np.Speed, np.Position, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
-		PassRush = PrimaryProgression(np.Progression, np.PassRush, np.Position, np.Archetype, SnapsPerGame, "Pass Rush", np.IsPracticeSquad)
-		RunDefense = PrimaryProgression(np.Progression, np.RunDefense, np.Position, np.Archetype, SnapsPerGame, "Run Defense", np.IsPracticeSquad)
-		Tackle = PrimaryProgression(np.Progression, np.Tackle, np.Position, np.Archetype, SnapsPerGame, "Tackle", np.IsPracticeSquad)
+		Agility = PrimaryProgression(np.Progression, np.Agility, mostPlayedPosition, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
+		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, mostPlayedPosition, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
+		Strength = PrimaryProgression(np.Progression, np.Strength, mostPlayedPosition, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
+		Speed = PrimaryProgression(np.Progression, np.Speed, mostPlayedPosition, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
+		PassRush = PrimaryProgression(np.Progression, np.PassRush, mostPlayedPosition, np.Archetype, SnapsPerGame, "Pass Rush", np.IsPracticeSquad)
+		RunDefense = PrimaryProgression(np.Progression, np.RunDefense, mostPlayedPosition, np.Archetype, SnapsPerGame, "Run Defense", np.IsPracticeSquad)
+		Tackle = PrimaryProgression(np.Progression, np.Tackle, mostPlayedPosition, np.Archetype, SnapsPerGame, "Tackle", np.IsPracticeSquad)
 
 		// Secondary
 		PuntPower = SecondaryProgression(np.Progression, np.PuntPower)
@@ -553,17 +566,17 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 		RouteRunning = SecondaryProgression(np.RouteRunning, np.RouteRunning)
 		RunBlock = SecondaryProgression(np.Progression, np.RunBlock)
 		PassBlock = SecondaryProgression(np.Progression, np.PassBlock)
-	} else if np.Position == "OLB" || np.Position == "ILB" {
+	} else if mostPlayedPosition == "OLB" || mostPlayedPosition == "ILB" {
 		// Primary
-		Agility = PrimaryProgression(np.Progression, np.Agility, np.Position, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
-		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, np.Position, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
-		Strength = PrimaryProgression(np.Progression, np.Strength, np.Position, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
-		Speed = PrimaryProgression(np.Progression, np.Speed, np.Position, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
-		PassRush = PrimaryProgression(np.Progression, np.PassRush, np.Position, np.Archetype, SnapsPerGame, "Pass Rush", np.IsPracticeSquad)
-		RunDefense = PrimaryProgression(np.Progression, np.RunDefense, np.Position, np.Archetype, SnapsPerGame, "Run Defense", np.IsPracticeSquad)
-		Tackle = PrimaryProgression(np.Progression, np.Tackle, np.Position, np.Archetype, SnapsPerGame, "Tackle", np.IsPracticeSquad)
-		ManCoverage = PrimaryProgression(np.Progression, np.ManCoverage, np.Position, np.Archetype, SnapsPerGame, "Man Coverage", np.IsPracticeSquad)
-		ZoneCoverage = PrimaryProgression(np.Progression, np.ZoneCoverage, np.Position, np.Archetype, SnapsPerGame, "Zone Coverage", np.IsPracticeSquad)
+		Agility = PrimaryProgression(np.Progression, np.Agility, mostPlayedPosition, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
+		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, mostPlayedPosition, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
+		Strength = PrimaryProgression(np.Progression, np.Strength, mostPlayedPosition, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
+		Speed = PrimaryProgression(np.Progression, np.Speed, mostPlayedPosition, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
+		PassRush = PrimaryProgression(np.Progression, np.PassRush, mostPlayedPosition, np.Archetype, SnapsPerGame, "Pass Rush", np.IsPracticeSquad)
+		RunDefense = PrimaryProgression(np.Progression, np.RunDefense, mostPlayedPosition, np.Archetype, SnapsPerGame, "Run Defense", np.IsPracticeSquad)
+		Tackle = PrimaryProgression(np.Progression, np.Tackle, mostPlayedPosition, np.Archetype, SnapsPerGame, "Tackle", np.IsPracticeSquad)
+		ManCoverage = PrimaryProgression(np.Progression, np.ManCoverage, mostPlayedPosition, np.Archetype, SnapsPerGame, "Man Coverage", np.IsPracticeSquad)
+		ZoneCoverage = PrimaryProgression(np.Progression, np.ZoneCoverage, mostPlayedPosition, np.Archetype, SnapsPerGame, "Zone Coverage", np.IsPracticeSquad)
 
 		// Secondary
 		PuntPower = SecondaryProgression(np.Progression, np.PuntPower)
@@ -577,16 +590,16 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 		RouteRunning = SecondaryProgression(np.RouteRunning, np.RouteRunning)
 		RunBlock = SecondaryProgression(np.Progression, np.RunBlock)
 		PassBlock = SecondaryProgression(np.Progression, np.PassBlock)
-	} else if np.Position == "CB" {
+	} else if mostPlayedPosition == "CB" {
 		// Primary
-		Agility = PrimaryProgression(np.Progression, np.Agility, np.Position, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
-		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, np.Position, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
-		Strength = PrimaryProgression(np.Progression, np.Strength, np.Position, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
-		Speed = PrimaryProgression(np.Progression, np.Speed, np.Position, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
-		Tackle = PrimaryProgression(np.Progression, np.Tackle, np.Position, np.Archetype, SnapsPerGame, "Tackle", np.IsPracticeSquad)
-		ManCoverage = PrimaryProgression(np.Progression, np.ManCoverage, np.Position, np.Archetype, SnapsPerGame, "Man Coverage", np.IsPracticeSquad)
-		ZoneCoverage = PrimaryProgression(np.Progression, np.ZoneCoverage, np.Position, np.Archetype, SnapsPerGame, "Zone Coverage", np.IsPracticeSquad)
-		Catching = PrimaryProgression(np.Progression, np.Catching, np.Position, np.Archetype, SnapsPerGame, "Catching", np.IsPracticeSquad)
+		Agility = PrimaryProgression(np.Progression, np.Agility, mostPlayedPosition, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
+		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, mostPlayedPosition, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
+		Strength = PrimaryProgression(np.Progression, np.Strength, mostPlayedPosition, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
+		Speed = PrimaryProgression(np.Progression, np.Speed, mostPlayedPosition, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
+		Tackle = PrimaryProgression(np.Progression, np.Tackle, mostPlayedPosition, np.Archetype, SnapsPerGame, "Tackle", np.IsPracticeSquad)
+		ManCoverage = PrimaryProgression(np.Progression, np.ManCoverage, mostPlayedPosition, np.Archetype, SnapsPerGame, "Man Coverage", np.IsPracticeSquad)
+		ZoneCoverage = PrimaryProgression(np.Progression, np.ZoneCoverage, mostPlayedPosition, np.Archetype, SnapsPerGame, "Zone Coverage", np.IsPracticeSquad)
+		Catching = PrimaryProgression(np.Progression, np.Catching, mostPlayedPosition, np.Archetype, SnapsPerGame, "Catching", np.IsPracticeSquad)
 
 		// Secondary
 		ThrowPower = SecondaryProgression(np.Progression, np.ThrowPower)
@@ -601,17 +614,17 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 		RunBlock = SecondaryProgression(np.Progression, np.RunBlock)
 		PassBlock = SecondaryProgression(np.Progression, np.PassBlock)
 		RouteRunning = SecondaryProgression(np.RouteRunning, np.RouteRunning)
-	} else if np.Position == "FS" || np.Position == "SS" {
+	} else if mostPlayedPosition == "FS" || mostPlayedPosition == "SS" {
 		// Primary
-		Agility = PrimaryProgression(np.Progression, np.Agility, np.Position, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
-		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, np.Position, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
-		Strength = PrimaryProgression(np.Progression, np.Strength, np.Position, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
-		Speed = PrimaryProgression(np.Progression, np.Speed, np.Position, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
-		RunDefense = PrimaryProgression(np.Progression, np.RunDefense, np.Position, np.Archetype, SnapsPerGame, "Run Defense", np.IsPracticeSquad)
-		Tackle = PrimaryProgression(np.Progression, np.Tackle, np.Position, np.Archetype, SnapsPerGame, "Tackle", np.IsPracticeSquad)
-		ManCoverage = PrimaryProgression(np.Progression, np.ManCoverage, np.Position, np.Archetype, SnapsPerGame, "Man Coverage", np.IsPracticeSquad)
-		ZoneCoverage = PrimaryProgression(np.Progression, np.ZoneCoverage, np.Position, np.Archetype, SnapsPerGame, "Zone Coverage", np.IsPracticeSquad)
-		Catching = PrimaryProgression(np.Progression, np.Catching, np.Position, np.Archetype, SnapsPerGame, "Catching", np.IsPracticeSquad)
+		Agility = PrimaryProgression(np.Progression, np.Agility, mostPlayedPosition, np.Archetype, SnapsPerGame, "Agility", np.IsPracticeSquad)
+		FootballIQ = PrimaryProgression(np.Progression, np.FootballIQ, mostPlayedPosition, np.Archetype, SnapsPerGame, "Football IQ", np.IsPracticeSquad)
+		Strength = PrimaryProgression(np.Progression, np.Strength, mostPlayedPosition, np.Archetype, SnapsPerGame, "Strength", np.IsPracticeSquad)
+		Speed = PrimaryProgression(np.Progression, np.Speed, mostPlayedPosition, np.Archetype, SnapsPerGame, "Speed", np.IsPracticeSquad)
+		RunDefense = PrimaryProgression(np.Progression, np.RunDefense, mostPlayedPosition, np.Archetype, SnapsPerGame, "Run Defense", np.IsPracticeSquad)
+		Tackle = PrimaryProgression(np.Progression, np.Tackle, mostPlayedPosition, np.Archetype, SnapsPerGame, "Tackle", np.IsPracticeSquad)
+		ManCoverage = PrimaryProgression(np.Progression, np.ManCoverage, mostPlayedPosition, np.Archetype, SnapsPerGame, "Man Coverage", np.IsPracticeSquad)
+		ZoneCoverage = PrimaryProgression(np.Progression, np.ZoneCoverage, mostPlayedPosition, np.Archetype, SnapsPerGame, "Zone Coverage", np.IsPracticeSquad)
+		Catching = PrimaryProgression(np.Progression, np.Catching, mostPlayedPosition, np.Archetype, SnapsPerGame, "Catching", np.IsPracticeSquad)
 
 		// Secondary
 		ThrowPower = SecondaryProgression(np.Progression, np.ThrowPower)
@@ -625,10 +638,10 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 		RunBlock = SecondaryProgression(np.Progression, np.RunBlock)
 		PassBlock = SecondaryProgression(np.Progression, np.PassBlock)
 		RouteRunning = SecondaryProgression(np.RouteRunning, np.RouteRunning)
-	} else if np.Position == "K" {
+	} else if mostPlayedPosition == "K" {
 		// Primary
-		KickPower = PrimaryProgression(np.Progression, np.KickPower, np.Position, np.Archetype, SnapsPerGame, "Kick Power", np.IsPracticeSquad)
-		KickAccuracy = PrimaryProgression(np.Progression, np.KickAccuracy, np.Position, np.Archetype, SnapsPerGame, "Kick Accuracy", np.IsPracticeSquad)
+		KickPower = PrimaryProgression(np.Progression, np.KickPower, mostPlayedPosition, np.Archetype, SnapsPerGame, "Kick Power", np.IsPracticeSquad)
+		KickAccuracy = PrimaryProgression(np.Progression, np.KickAccuracy, mostPlayedPosition, np.Archetype, SnapsPerGame, "Kick Accuracy", np.IsPracticeSquad)
 		// Secondary
 		ThrowPower = SecondaryProgression(np.Progression, np.ThrowPower)
 		ThrowAccuracy = SecondaryProgression(np.Progression, np.ThrowAccuracy)
@@ -648,18 +661,18 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 		ZoneCoverage = SecondaryProgression(np.Progression, np.ZoneCoverage)
 		FootballIQ = SecondaryProgression(np.Progression, np.FootballIQ)
 		Tackle = SecondaryProgression(np.Progression, np.Tackle)
-	} else if np.Position == "P" {
+	} else if mostPlayedPosition == "P" {
 		// If David Ross
 		if np.ID == 24984 {
-			ThrowPower = PrimaryProgression(np.Progression, np.ThrowPower, np.Position, np.Archetype, SnapsPerGame, "Throw Power", np.IsPracticeSquad)
-			ThrowAccuracy = PrimaryProgression(np.Progression, np.ThrowAccuracy, np.Position, np.Archetype, SnapsPerGame, "Throw Accuracy", np.IsPracticeSquad)
+			ThrowPower = PrimaryProgression(np.Progression, np.ThrowPower, mostPlayedPosition, np.Archetype, SnapsPerGame, "Throw Power", np.IsPracticeSquad)
+			ThrowAccuracy = PrimaryProgression(np.Progression, np.ThrowAccuracy, mostPlayedPosition, np.Archetype, SnapsPerGame, "Throw Accuracy", np.IsPracticeSquad)
 		} else {
 			ThrowPower = SecondaryProgression(np.Progression, np.ThrowPower)
 			ThrowAccuracy = SecondaryProgression(np.Progression, np.ThrowAccuracy)
 		}
 		// Primary Progressions
-		PuntPower = PrimaryProgression(np.Progression, np.PuntPower, np.Position, np.Archetype, SnapsPerGame, "Punt Power", np.IsPracticeSquad)
-		PuntAccuracy = PrimaryProgression(np.Progression, np.PuntAccuracy, np.Position, np.Archetype, SnapsPerGame, "Punt Accuracy", np.IsPracticeSquad)
+		PuntPower = PrimaryProgression(np.Progression, np.PuntPower, mostPlayedPosition, np.Archetype, SnapsPerGame, "Punt Power", np.IsPracticeSquad)
+		PuntAccuracy = PrimaryProgression(np.Progression, np.PuntAccuracy, mostPlayedPosition, np.Archetype, SnapsPerGame, "Punt Accuracy", np.IsPracticeSquad)
 		// Secondary Progressions
 		RunBlock = SecondaryProgression(np.Progression, np.RunBlock)
 		PassBlock = SecondaryProgression(np.Progression, np.PassBlock)
@@ -732,7 +745,7 @@ func ProgressNFLPlayer(np structs.NFLPlayer, SeasonID string, SnapsPerGame int) 
 	return np
 }
 
-func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []structs.CollegePlayerStats) structs.CollegePlayer {
+func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []structs.CollegePlayerStats, snaps structs.CollegePlayerSeasonSnaps) structs.CollegePlayer {
 	totalSnaps := 0
 
 	for _, stat := range stats {
@@ -765,14 +778,29 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 	ManCoverage := 0
 	ZoneCoverage := 0
 
-	if cp.Position == "QB" {
+	// Get most played position
+	mostPlayedPosition, mostPlayedSnaps := getMostPlayedPosition(snaps.BasePlayerSeasonSnaps, cp.Position)
+	posThreshold := float64(totalSnaps) * 0.8
+
+	if mostPlayedPosition != cp.Position && float64(mostPlayedSnaps) > posThreshold {
+		// Designate New Position
+		newArchetype, archCheck := getNewArchetype(cp.Position, cp.Archetype, mostPlayedPosition)
+		// If Archhetype exists, assign new position. Otherwise, progress by old position
+		if archCheck {
+			cp.DesignateNewPosition(mostPlayedPosition, newArchetype)
+		} else {
+			mostPlayedPosition = cp.Position
+		}
+	}
+
+	if mostPlayedPosition == "QB" {
 		// Primary Progressions
-		Agility = PrimaryProgression(cp.Progression, cp.Agility, cp.Position, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
-		ThrowPower = PrimaryProgression(cp.Progression, cp.ThrowPower, cp.Position, cp.Archetype, SnapsPerGame, "Throw Power", cp.IsRedshirting)
-		ThrowAccuracy = PrimaryProgression(cp.Progression, cp.ThrowAccuracy, cp.Position, cp.Archetype, SnapsPerGame, "Throw Accuracy", cp.IsRedshirting)
-		Speed = PrimaryProgression(cp.Progression, cp.Speed, cp.Position, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
-		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, cp.Position, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
-		Strength = PrimaryProgression(cp.Progression, cp.Strength, cp.Position, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
+		Agility = PrimaryProgression(cp.Progression, cp.Agility, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
+		ThrowPower = PrimaryProgression(cp.Progression, cp.ThrowPower, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Throw Power", cp.IsRedshirting)
+		ThrowAccuracy = PrimaryProgression(cp.Progression, cp.ThrowAccuracy, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Throw Accuracy", cp.IsRedshirting)
+		Speed = PrimaryProgression(cp.Progression, cp.Speed, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
+		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
+		Strength = PrimaryProgression(cp.Progression, cp.Strength, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
 
 		// Secondary Progressions
 		RunBlock = SecondaryProgression(cp.Progression, cp.RunBlock)
@@ -789,15 +817,15 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		KickAccuracy = SecondaryProgression(cp.Progression, cp.KickAccuracy)
 		ManCoverage = SecondaryProgression(cp.Progression, cp.ManCoverage)
 		ZoneCoverage = SecondaryProgression(cp.Progression, cp.ZoneCoverage)
-	} else if cp.Position == "RB" {
+	} else if mostPlayedPosition == "RB" {
 		// Primary
-		Agility = PrimaryProgression(cp.Progression, cp.Agility, cp.Position, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
-		Carrying = PrimaryProgression(cp.Progression, cp.Carrying, cp.Position, cp.Archetype, SnapsPerGame, "Carrying", cp.IsRedshirting)
-		Speed = PrimaryProgression(cp.Progression, cp.Speed, cp.Position, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
-		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, cp.Position, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
-		Strength = PrimaryProgression(cp.Progression, cp.Strength, cp.Position, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
-		Catching = PrimaryProgression(cp.Progression, cp.Catching, cp.Position, cp.Archetype, SnapsPerGame, "Catching", cp.IsRedshirting)
-		PassBlock = PrimaryProgression(cp.Progression, cp.PassBlock, cp.Position, cp.Archetype, SnapsPerGame, "Pass Blocking", cp.IsRedshirting)
+		Agility = PrimaryProgression(cp.Progression, cp.Agility, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
+		Carrying = PrimaryProgression(cp.Progression, cp.Carrying, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Carrying", cp.IsRedshirting)
+		Speed = PrimaryProgression(cp.Progression, cp.Speed, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
+		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
+		Strength = PrimaryProgression(cp.Progression, cp.Strength, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
+		Catching = PrimaryProgression(cp.Progression, cp.Catching, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Catching", cp.IsRedshirting)
+		PassBlock = PrimaryProgression(cp.Progression, cp.PassBlock, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Pass Blocking", cp.IsRedshirting)
 		// Secondary
 		RunBlock = SecondaryProgression(cp.Progression, cp.RunBlock)
 		RunDefense = SecondaryProgression(cp.Progression, cp.RunDefense)
@@ -812,16 +840,16 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		ZoneCoverage = SecondaryProgression(cp.Progression, cp.ZoneCoverage)
 		ThrowPower = SecondaryProgression(cp.Progression, cp.ThrowPower)
 		ThrowAccuracy = SecondaryProgression(cp.Progression, cp.ThrowAccuracy)
-	} else if cp.Position == "FB" {
+	} else if mostPlayedPosition == "FB" {
 		// Primary
-		Agility = PrimaryProgression(cp.Progression, cp.Agility, cp.Position, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
-		Carrying = PrimaryProgression(cp.Progression, cp.Carrying, cp.Position, cp.Archetype, SnapsPerGame, "Carrying", cp.IsRedshirting)
-		Speed = PrimaryProgression(cp.Progression, cp.Speed, cp.Position, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
-		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, cp.Position, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
-		Strength = PrimaryProgression(cp.Progression, cp.Strength, cp.Position, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
-		Catching = PrimaryProgression(cp.Progression, cp.Catching, cp.Position, cp.Archetype, SnapsPerGame, "Catching", cp.IsRedshirting)
-		PassBlock = PrimaryProgression(cp.Progression, cp.PassBlock, cp.Position, cp.Archetype, SnapsPerGame, "Pass Blocking", cp.IsRedshirting)
-		RunBlock = PrimaryProgression(cp.Progression, cp.RunBlock, cp.Position, cp.Archetype, SnapsPerGame, "Run Blocking", cp.IsRedshirting)
+		Agility = PrimaryProgression(cp.Progression, cp.Agility, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
+		Carrying = PrimaryProgression(cp.Progression, cp.Carrying, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Carrying", cp.IsRedshirting)
+		Speed = PrimaryProgression(cp.Progression, cp.Speed, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
+		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
+		Strength = PrimaryProgression(cp.Progression, cp.Strength, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
+		Catching = PrimaryProgression(cp.Progression, cp.Catching, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Catching", cp.IsRedshirting)
+		PassBlock = PrimaryProgression(cp.Progression, cp.PassBlock, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Pass Blocking", cp.IsRedshirting)
+		RunBlock = PrimaryProgression(cp.Progression, cp.RunBlock, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Run Blocking", cp.IsRedshirting)
 
 		// Secondary
 		RunDefense = SecondaryProgression(cp.Progression, cp.RunDefense)
@@ -837,17 +865,17 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		ThrowPower = SecondaryProgression(cp.Progression, cp.ThrowPower)
 		ThrowAccuracy = SecondaryProgression(cp.Progression, cp.ThrowAccuracy)
 
-	} else if cp.Position == "TE" {
+	} else if mostPlayedPosition == "TE" {
 		// Primary
-		Agility = PrimaryProgression(cp.Progression, cp.Agility, cp.Position, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
-		Carrying = PrimaryProgression(cp.Progression, cp.Carrying, cp.Position, cp.Archetype, SnapsPerGame, "Carrying", cp.IsRedshirting)
-		Speed = PrimaryProgression(cp.Progression, cp.Speed, cp.Position, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
-		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, cp.Position, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
-		Strength = PrimaryProgression(cp.Progression, cp.Strength, cp.Position, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
-		Catching = PrimaryProgression(cp.Progression, cp.Catching, cp.Position, cp.Archetype, SnapsPerGame, "Catching", cp.IsRedshirting)
-		RouteRunning = PrimaryProgression(cp.Progression, cp.RouteRunning, cp.Position, cp.Archetype, SnapsPerGame, "Route Running", cp.IsRedshirting)
-		PassBlock = PrimaryProgression(cp.Progression, cp.PassBlock, cp.Position, cp.Archetype, SnapsPerGame, "Pass Blocking", cp.IsRedshirting)
-		RunBlock = PrimaryProgression(cp.Progression, cp.RunBlock, cp.Position, cp.Archetype, SnapsPerGame, "Run Blocking", cp.IsRedshirting)
+		Agility = PrimaryProgression(cp.Progression, cp.Agility, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
+		Carrying = PrimaryProgression(cp.Progression, cp.Carrying, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Carrying", cp.IsRedshirting)
+		Speed = PrimaryProgression(cp.Progression, cp.Speed, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
+		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
+		Strength = PrimaryProgression(cp.Progression, cp.Strength, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
+		Catching = PrimaryProgression(cp.Progression, cp.Catching, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Catching", cp.IsRedshirting)
+		RouteRunning = PrimaryProgression(cp.Progression, cp.RouteRunning, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Route Running", cp.IsRedshirting)
+		PassBlock = PrimaryProgression(cp.Progression, cp.PassBlock, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Pass Blocking", cp.IsRedshirting)
+		RunBlock = PrimaryProgression(cp.Progression, cp.RunBlock, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Run Blocking", cp.IsRedshirting)
 
 		// Secondary
 		RunDefense = SecondaryProgression(cp.Progression, cp.RunDefense)
@@ -861,15 +889,15 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		ZoneCoverage = SecondaryProgression(cp.Progression, cp.ZoneCoverage)
 		ThrowPower = SecondaryProgression(cp.Progression, cp.ThrowPower)
 		ThrowAccuracy = SecondaryProgression(cp.Progression, cp.ThrowAccuracy)
-	} else if cp.Position == "WR" {
+	} else if mostPlayedPosition == "WR" {
 		// Primary
-		Agility = PrimaryProgression(cp.Progression, cp.Agility, cp.Position, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
-		Carrying = PrimaryProgression(cp.Progression, cp.Carrying, cp.Position, cp.Archetype, SnapsPerGame, "Carrying", cp.IsRedshirting)
-		Speed = PrimaryProgression(cp.Progression, cp.Speed, cp.Position, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
-		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, cp.Position, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
-		Strength = PrimaryProgression(cp.Progression, cp.Strength, cp.Position, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
-		Catching = PrimaryProgression(cp.Progression, cp.Catching, cp.Position, cp.Archetype, SnapsPerGame, "Catching", cp.IsRedshirting)
-		RouteRunning = PrimaryProgression(cp.Progression, cp.RouteRunning, cp.Position, cp.Archetype, SnapsPerGame, "Route Running", cp.IsRedshirting)
+		Agility = PrimaryProgression(cp.Progression, cp.Agility, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
+		Carrying = PrimaryProgression(cp.Progression, cp.Carrying, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Carrying", cp.IsRedshirting)
+		Speed = PrimaryProgression(cp.Progression, cp.Speed, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
+		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
+		Strength = PrimaryProgression(cp.Progression, cp.Strength, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
+		Catching = PrimaryProgression(cp.Progression, cp.Catching, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Catching", cp.IsRedshirting)
+		RouteRunning = PrimaryProgression(cp.Progression, cp.RouteRunning, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Route Running", cp.IsRedshirting)
 
 		// Secondary
 		RunBlock = SecondaryProgression(cp.Progression, cp.RunBlock)
@@ -885,13 +913,13 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		ZoneCoverage = SecondaryProgression(cp.Progression, cp.ZoneCoverage)
 		ThrowPower = SecondaryProgression(cp.Progression, cp.ThrowPower)
 		ThrowAccuracy = SecondaryProgression(cp.Progression, cp.ThrowAccuracy)
-	} else if cp.Position == "OT" || cp.Position == "OG" || cp.Position == "C" {
+	} else if mostPlayedPosition == "OT" || mostPlayedPosition == "OG" || mostPlayedPosition == "C" {
 		// Primary
-		Agility = PrimaryProgression(cp.Progression, cp.Agility, cp.Position, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
-		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, cp.Position, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
-		Strength = PrimaryProgression(cp.Progression, cp.Strength, cp.Position, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
-		PassBlock = PrimaryProgression(cp.Progression, cp.PassBlock, cp.Position, cp.Archetype, SnapsPerGame, "Pass Blocking", cp.IsRedshirting)
-		RunBlock = PrimaryProgression(cp.Progression, cp.RunBlock, cp.Position, cp.Archetype, SnapsPerGame, "Run Blocking", cp.IsRedshirting)
+		Agility = PrimaryProgression(cp.Progression, cp.Agility, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
+		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
+		Strength = PrimaryProgression(cp.Progression, cp.Strength, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
+		PassBlock = PrimaryProgression(cp.Progression, cp.PassBlock, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Pass Blocking", cp.IsRedshirting)
+		RunBlock = PrimaryProgression(cp.Progression, cp.RunBlock, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Run Blocking", cp.IsRedshirting)
 
 		// Secondary
 		RunDefense = SecondaryProgression(cp.Progression, cp.RunDefense)
@@ -909,14 +937,14 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		Carrying = SecondaryProgression(cp.Progression, cp.Carrying)
 		Speed = SecondaryProgression(cp.Progression, cp.Speed)
 		Catching = SecondaryProgression(cp.Progression, cp.Catching)
-	} else if cp.Position == "DT" {
+	} else if mostPlayedPosition == "DT" {
 		// Primary
-		Agility = PrimaryProgression(cp.Progression, cp.Agility, cp.Position, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
-		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, cp.Position, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
-		Strength = PrimaryProgression(cp.Progression, cp.Strength, cp.Position, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
-		PassRush = PrimaryProgression(cp.Progression, cp.PassRush, cp.Position, cp.Archetype, SnapsPerGame, "Pass Rush", cp.IsRedshirting)
-		RunDefense = PrimaryProgression(cp.Progression, cp.RunDefense, cp.Position, cp.Archetype, SnapsPerGame, "Run Defense", cp.IsRedshirting)
-		Tackle = PrimaryProgression(cp.Progression, cp.Tackle, cp.Position, cp.Archetype, SnapsPerGame, "Tackle", cp.IsRedshirting)
+		Agility = PrimaryProgression(cp.Progression, cp.Agility, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
+		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
+		Strength = PrimaryProgression(cp.Progression, cp.Strength, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
+		PassRush = PrimaryProgression(cp.Progression, cp.PassRush, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Pass Rush", cp.IsRedshirting)
+		RunDefense = PrimaryProgression(cp.Progression, cp.RunDefense, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Run Defense", cp.IsRedshirting)
+		Tackle = PrimaryProgression(cp.Progression, cp.Tackle, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Tackle", cp.IsRedshirting)
 
 		// Secondary
 		PuntPower = SecondaryProgression(cp.Progression, cp.PuntPower)
@@ -933,15 +961,15 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		Speed = SecondaryProgression(cp.Progression, cp.Speed)
 		RunBlock = SecondaryProgression(cp.Progression, cp.RunBlock)
 		PassBlock = SecondaryProgression(cp.Progression, cp.PassBlock)
-	} else if cp.Position == "DE" {
+	} else if mostPlayedPosition == "DE" {
 		// Primary
-		Agility = PrimaryProgression(cp.Progression, cp.Agility, cp.Position, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
-		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, cp.Position, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
-		Strength = PrimaryProgression(cp.Progression, cp.Strength, cp.Position, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
-		Speed = PrimaryProgression(cp.Progression, cp.Speed, cp.Position, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
-		PassRush = PrimaryProgression(cp.Progression, cp.PassRush, cp.Position, cp.Archetype, SnapsPerGame, "Pass Rush", cp.IsRedshirting)
-		RunDefense = PrimaryProgression(cp.Progression, cp.RunDefense, cp.Position, cp.Archetype, SnapsPerGame, "Run Defense", cp.IsRedshirting)
-		Tackle = PrimaryProgression(cp.Progression, cp.Tackle, cp.Position, cp.Archetype, SnapsPerGame, "Tackle", cp.IsRedshirting)
+		Agility = PrimaryProgression(cp.Progression, cp.Agility, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
+		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
+		Strength = PrimaryProgression(cp.Progression, cp.Strength, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
+		Speed = PrimaryProgression(cp.Progression, cp.Speed, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
+		PassRush = PrimaryProgression(cp.Progression, cp.PassRush, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Pass Rush", cp.IsRedshirting)
+		RunDefense = PrimaryProgression(cp.Progression, cp.RunDefense, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Run Defense", cp.IsRedshirting)
+		Tackle = PrimaryProgression(cp.Progression, cp.Tackle, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Tackle", cp.IsRedshirting)
 
 		// Secondary
 		PuntPower = SecondaryProgression(cp.Progression, cp.PuntPower)
@@ -957,17 +985,17 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		RouteRunning = SecondaryProgression(cp.RouteRunning, cp.RouteRunning)
 		RunBlock = SecondaryProgression(cp.Progression, cp.RunBlock)
 		PassBlock = SecondaryProgression(cp.Progression, cp.PassBlock)
-	} else if cp.Position == "OLB" || cp.Position == "ILB" {
+	} else if mostPlayedPosition == "OLB" || mostPlayedPosition == "ILB" {
 		// Primary
-		Agility = PrimaryProgression(cp.Progression, cp.Agility, cp.Position, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
-		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, cp.Position, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
-		Strength = PrimaryProgression(cp.Progression, cp.Strength, cp.Position, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
-		Speed = PrimaryProgression(cp.Progression, cp.Speed, cp.Position, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
-		PassRush = PrimaryProgression(cp.Progression, cp.PassRush, cp.Position, cp.Archetype, SnapsPerGame, "Pass Rush", cp.IsRedshirting)
-		RunDefense = PrimaryProgression(cp.Progression, cp.RunDefense, cp.Position, cp.Archetype, SnapsPerGame, "Run Defense", cp.IsRedshirting)
-		Tackle = PrimaryProgression(cp.Progression, cp.Tackle, cp.Position, cp.Archetype, SnapsPerGame, "Tackle", cp.IsRedshirting)
-		ManCoverage = PrimaryProgression(cp.Progression, cp.ManCoverage, cp.Position, cp.Archetype, SnapsPerGame, "Man Coverage", cp.IsRedshirting)
-		ZoneCoverage = PrimaryProgression(cp.Progression, cp.ZoneCoverage, cp.Position, cp.Archetype, SnapsPerGame, "Zone Coverage", cp.IsRedshirting)
+		Agility = PrimaryProgression(cp.Progression, cp.Agility, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
+		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
+		Strength = PrimaryProgression(cp.Progression, cp.Strength, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
+		Speed = PrimaryProgression(cp.Progression, cp.Speed, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
+		PassRush = PrimaryProgression(cp.Progression, cp.PassRush, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Pass Rush", cp.IsRedshirting)
+		RunDefense = PrimaryProgression(cp.Progression, cp.RunDefense, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Run Defense", cp.IsRedshirting)
+		Tackle = PrimaryProgression(cp.Progression, cp.Tackle, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Tackle", cp.IsRedshirting)
+		ManCoverage = PrimaryProgression(cp.Progression, cp.ManCoverage, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Man Coverage", cp.IsRedshirting)
+		ZoneCoverage = PrimaryProgression(cp.Progression, cp.ZoneCoverage, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Zone Coverage", cp.IsRedshirting)
 
 		// Secondary
 		PuntPower = SecondaryProgression(cp.Progression, cp.PuntPower)
@@ -981,16 +1009,16 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		RouteRunning = SecondaryProgression(cp.RouteRunning, cp.RouteRunning)
 		RunBlock = SecondaryProgression(cp.Progression, cp.RunBlock)
 		PassBlock = SecondaryProgression(cp.Progression, cp.PassBlock)
-	} else if cp.Position == "CB" {
+	} else if mostPlayedPosition == "CB" {
 		// Primary
-		Agility = PrimaryProgression(cp.Progression, cp.Agility, cp.Position, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
-		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, cp.Position, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
-		Strength = PrimaryProgression(cp.Progression, cp.Strength, cp.Position, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
-		Speed = PrimaryProgression(cp.Progression, cp.Speed, cp.Position, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
-		Tackle = PrimaryProgression(cp.Progression, cp.Tackle, cp.Position, cp.Archetype, SnapsPerGame, "Tackle", cp.IsRedshirting)
-		ManCoverage = PrimaryProgression(cp.Progression, cp.ManCoverage, cp.Position, cp.Archetype, SnapsPerGame, "Man Coverage", cp.IsRedshirting)
-		ZoneCoverage = PrimaryProgression(cp.Progression, cp.ZoneCoverage, cp.Position, cp.Archetype, SnapsPerGame, "Zone Coverage", cp.IsRedshirting)
-		Catching = PrimaryProgression(cp.Progression, cp.Catching, cp.Position, cp.Archetype, SnapsPerGame, "Catching", cp.IsRedshirting)
+		Agility = PrimaryProgression(cp.Progression, cp.Agility, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
+		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
+		Strength = PrimaryProgression(cp.Progression, cp.Strength, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
+		Speed = PrimaryProgression(cp.Progression, cp.Speed, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
+		Tackle = PrimaryProgression(cp.Progression, cp.Tackle, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Tackle", cp.IsRedshirting)
+		ManCoverage = PrimaryProgression(cp.Progression, cp.ManCoverage, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Man Coverage", cp.IsRedshirting)
+		ZoneCoverage = PrimaryProgression(cp.Progression, cp.ZoneCoverage, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Zone Coverage", cp.IsRedshirting)
+		Catching = PrimaryProgression(cp.Progression, cp.Catching, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Catching", cp.IsRedshirting)
 
 		// Secondary
 		ThrowPower = SecondaryProgression(cp.Progression, cp.ThrowPower)
@@ -1005,17 +1033,17 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		RunBlock = SecondaryProgression(cp.Progression, cp.RunBlock)
 		PassBlock = SecondaryProgression(cp.Progression, cp.PassBlock)
 		RouteRunning = SecondaryProgression(cp.RouteRunning, cp.RouteRunning)
-	} else if cp.Position == "FS" || cp.Position == "SS" {
+	} else if mostPlayedPosition == "FS" || mostPlayedPosition == "SS" {
 		// Primary
-		Agility = PrimaryProgression(cp.Progression, cp.Agility, cp.Position, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
-		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, cp.Position, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
-		Strength = PrimaryProgression(cp.Progression, cp.Strength, cp.Position, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
-		Speed = PrimaryProgression(cp.Progression, cp.Speed, cp.Position, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
-		RunDefense = PrimaryProgression(cp.Progression, cp.RunDefense, cp.Position, cp.Archetype, SnapsPerGame, "Run Defense", cp.IsRedshirting)
-		Tackle = PrimaryProgression(cp.Progression, cp.Tackle, cp.Position, cp.Archetype, SnapsPerGame, "Tackle", cp.IsRedshirting)
-		ManCoverage = PrimaryProgression(cp.Progression, cp.ManCoverage, cp.Position, cp.Archetype, SnapsPerGame, "Man Coverage", cp.IsRedshirting)
-		ZoneCoverage = PrimaryProgression(cp.Progression, cp.ZoneCoverage, cp.Position, cp.Archetype, SnapsPerGame, "Zone Coverage", cp.IsRedshirting)
-		Catching = PrimaryProgression(cp.Progression, cp.Catching, cp.Position, cp.Archetype, SnapsPerGame, "Catching", cp.IsRedshirting)
+		Agility = PrimaryProgression(cp.Progression, cp.Agility, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Agility", cp.IsRedshirting)
+		FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
+		Strength = PrimaryProgression(cp.Progression, cp.Strength, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Strength", cp.IsRedshirting)
+		Speed = PrimaryProgression(cp.Progression, cp.Speed, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Speed", cp.IsRedshirting)
+		RunDefense = PrimaryProgression(cp.Progression, cp.RunDefense, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Run Defense", cp.IsRedshirting)
+		Tackle = PrimaryProgression(cp.Progression, cp.Tackle, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Tackle", cp.IsRedshirting)
+		ManCoverage = PrimaryProgression(cp.Progression, cp.ManCoverage, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Man Coverage", cp.IsRedshirting)
+		ZoneCoverage = PrimaryProgression(cp.Progression, cp.ZoneCoverage, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Zone Coverage", cp.IsRedshirting)
+		Catching = PrimaryProgression(cp.Progression, cp.Catching, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Catching", cp.IsRedshirting)
 
 		// Secondary
 		ThrowPower = SecondaryProgression(cp.Progression, cp.ThrowPower)
@@ -1029,10 +1057,10 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		RunBlock = SecondaryProgression(cp.Progression, cp.RunBlock)
 		PassBlock = SecondaryProgression(cp.Progression, cp.PassBlock)
 		RouteRunning = SecondaryProgression(cp.RouteRunning, cp.RouteRunning)
-	} else if cp.Position == "K" {
+	} else if mostPlayedPosition == "K" {
 		// Primary
-		KickPower = PrimaryProgression(cp.Progression, cp.KickPower, cp.Position, cp.Archetype, SnapsPerGame, "Kick Power", cp.IsRedshirting)
-		KickAccuracy = PrimaryProgression(cp.Progression, cp.KickAccuracy, cp.Position, cp.Archetype, SnapsPerGame, "Kick Accuracy", cp.IsRedshirting)
+		KickPower = PrimaryProgression(cp.Progression, cp.KickPower, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Kick Power", cp.IsRedshirting)
+		KickAccuracy = PrimaryProgression(cp.Progression, cp.KickAccuracy, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Kick Accuracy", cp.IsRedshirting)
 		// Secondary
 		ThrowPower = SecondaryProgression(cp.Progression, cp.ThrowPower)
 		ThrowAccuracy = SecondaryProgression(cp.Progression, cp.ThrowAccuracy)
@@ -1052,18 +1080,18 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		ZoneCoverage = SecondaryProgression(cp.Progression, cp.ZoneCoverage)
 		FootballIQ = SecondaryProgression(cp.Progression, cp.FootballIQ)
 		Tackle = SecondaryProgression(cp.Progression, cp.Tackle)
-	} else if cp.Position == "P" {
+	} else if mostPlayedPosition == "P" {
 		// If David Ross
 		if cp.ID == 24984 {
-			ThrowPower = PrimaryProgression(cp.Progression, cp.ThrowPower, cp.Position, cp.Archetype, SnapsPerGame, "Throw Power", cp.IsRedshirting)
-			ThrowAccuracy = PrimaryProgression(cp.Progression, cp.ThrowAccuracy, cp.Position, cp.Archetype, SnapsPerGame, "Throw Accuracy", cp.IsRedshirting)
+			ThrowPower = PrimaryProgression(cp.Progression, cp.ThrowPower, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Throw Power", cp.IsRedshirting)
+			ThrowAccuracy = PrimaryProgression(cp.Progression, cp.ThrowAccuracy, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Throw Accuracy", cp.IsRedshirting)
 		} else {
 			ThrowPower = SecondaryProgression(cp.Progression, cp.ThrowPower)
 			ThrowAccuracy = SecondaryProgression(cp.Progression, cp.ThrowAccuracy)
 		}
 		// Primary Progressions
-		PuntPower = PrimaryProgression(cp.Progression, cp.PuntPower, cp.Position, cp.Archetype, SnapsPerGame, "Punt Power", cp.IsRedshirting)
-		PuntAccuracy = PrimaryProgression(cp.Progression, cp.PuntAccuracy, cp.Position, cp.Archetype, SnapsPerGame, "Punt Accuracy", cp.IsRedshirting)
+		PuntPower = PrimaryProgression(cp.Progression, cp.PuntPower, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Punt Power", cp.IsRedshirting)
+		PuntAccuracy = PrimaryProgression(cp.Progression, cp.PuntAccuracy, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Punt Accuracy", cp.IsRedshirting)
 		// Secondary Progressions
 		RunBlock = SecondaryProgression(cp.Progression, cp.RunBlock)
 		PassBlock = SecondaryProgression(cp.Progression, cp.PassBlock)
@@ -2206,7 +2234,7 @@ func DetermineIfDeclaring(player structs.CollegePlayer, avgSnaps int) bool {
 	return false
 }
 
-func getAverageNFLSnaps(stats []structs.NFLPlayerStats) int {
+func getAverageNFLSnaps(stats []structs.NFLPlayerStats) (int, int) {
 	totalSnaps := 0
 
 	for _, stat := range stats {
@@ -2218,7 +2246,7 @@ func getAverageNFLSnaps(stats []structs.NFLPlayerStats) int {
 		SnapsPerGame = totalSnaps / 17
 	}
 
-	return SnapsPerGame
+	return totalSnaps, SnapsPerGame
 }
 
 func getAverageSnaps(stats []structs.CollegePlayerStats) int {
@@ -2261,6 +2289,120 @@ func getRetirementOdds(age int) float64 {
 		return 0.46
 	}
 	return 0.5
+}
+
+func getMostPlayedPosition(snaps structs.BasePlayerSeasonSnaps, pos string) (string, uint16) {
+	position := ""
+	mostSnaps := uint16(0)
+
+	if snaps.QBSnaps > mostSnaps {
+		mostSnaps = snaps.QBSnaps
+		position = "QB"
+	}
+
+	if snaps.RBSnaps > mostSnaps {
+		mostSnaps = snaps.RBSnaps
+		position = "RB"
+	}
+
+	if snaps.FBSnaps > mostSnaps {
+		mostSnaps = snaps.FBSnaps
+		position = "FB"
+	}
+
+	if snaps.WRSnaps > mostSnaps {
+		mostSnaps = snaps.WRSnaps
+		position = "WR"
+	}
+
+	if snaps.TESnaps > mostSnaps {
+		mostSnaps = snaps.TESnaps
+		position = "TE"
+	}
+
+	if snaps.OTSnaps > mostSnaps {
+		mostSnaps = snaps.OTSnaps
+		position = "OT"
+	}
+
+	if snaps.OGSnaps > mostSnaps {
+		mostSnaps = snaps.OGSnaps
+		position = "OG"
+	}
+
+	if snaps.CSnaps > mostSnaps {
+		mostSnaps = snaps.CSnaps
+		position = "C"
+	}
+
+	if snaps.DTSnaps > mostSnaps {
+		mostSnaps = snaps.DTSnaps
+		position = "DT"
+	}
+
+	if snaps.DESnaps > mostSnaps {
+		mostSnaps = snaps.DESnaps
+		position = "DE"
+	}
+
+	if snaps.OLBSnaps > mostSnaps {
+		mostSnaps = snaps.OLBSnaps
+		position = "OLB"
+	}
+
+	if snaps.ILBSnaps > mostSnaps {
+		mostSnaps = snaps.ILBSnaps
+		position = "ILB"
+	}
+
+	if snaps.CBSnaps > mostSnaps {
+		mostSnaps = snaps.CBSnaps
+		position = "CB"
+	}
+
+	if snaps.FSSnaps > mostSnaps {
+		mostSnaps = snaps.FSSnaps
+		position = "FS"
+	}
+
+	if snaps.SSSnaps > mostSnaps {
+		mostSnaps = snaps.SSSnaps
+		position = "SS"
+	}
+
+	if snaps.KSnaps > mostSnaps {
+		mostSnaps = snaps.KSnaps
+		position = "K"
+	}
+
+	if snaps.PSnaps > mostSnaps {
+		mostSnaps = snaps.PSnaps
+		position = "P"
+	}
+
+	if snaps.STSnaps > mostSnaps {
+		return pos, 0
+	}
+
+	return position, mostSnaps
+}
+
+func getNewArchetype(pos, arch, newPos string) (string, bool) {
+	newArchetypeMap := util.GetNewArchetypeMap()
+	posMap, posExists := newArchetypeMap[pos]
+	if !posExists {
+		return "", false
+	}
+	oriArchMap, archExists := posMap[arch]
+	if !archExists {
+		return "", false
+	}
+	newArchtype, newPosExists := oriArchMap[newPos]
+	if !newPosExists {
+		return "", false
+	}
+
+	return newArchtype, true
 }
 
 func RegressAttribute(attr, age int, isIQ bool) int {

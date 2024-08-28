@@ -142,16 +142,36 @@ func GetNotificationByTeamIDAndLeague(league, teamID string) []structs.Notificat
 	return noti
 }
 
-func ToggleNotification(id string) {
+func GetNotificationById(id string) structs.Notification {
 	db := dbprovider.GetInstance().GetDB()
 
 	noti := structs.Notification{}
 	db.Where("id = ?", id).Find(&noti)
+
+	return noti
+}
+
+func ToggleNotification(id string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	noti := GetNotificationById(id)
 
 	if noti.ID == 0 {
 		return
 	}
 
 	noti.ToggleIsRead()
-	db.Save(&noti)
+	repository.SaveNotification(noti, db)
+}
+
+func DeleteNotification(id string) {
+	db := dbprovider.GetInstance().GetDB()
+
+	noti := GetNotificationById(id)
+
+	if noti.ID == 0 {
+		return
+	}
+
+	repository.DeleteNotificationRecord(noti, db)
 }

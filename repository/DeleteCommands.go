@@ -27,3 +27,10 @@ func DeleteCollegePromise(promise structs.CollegePromise, db *gorm.DB) {
 		log.Panicln("Could not delete old college player record.")
 	}
 }
+
+func DeleteNotificationRecord(noti structs.Notification, db *gorm.DB) {
+	err := db.Delete(&noti).Error
+	if err != nil {
+		log.Panicln("Could not delete old notification record.")
+	}
+}

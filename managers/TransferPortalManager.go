@@ -169,11 +169,11 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 		// the more likely they will transfer.
 		/// Have this be a multiplicative factor to odds
 		if p.Year == 1 {
-			ageMod = .125
+			ageMod = .15
 		} else if p.Year == 2 {
-			ageMod = .33
+			ageMod = .4
 		} else if p.Year == 3 {
-			ageMod = .66
+			ageMod = .75
 		} else if p.Year == 4 {
 			ageMod = 1
 		}
@@ -186,11 +186,11 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 		} else if p.Stars == 2 {
 			starMod = .75
 		} else if p.Stars == 3 {
-			starMod = 1
+			starMod = util.GenerateFloatFromRange(0.9, 1.1)
 		} else if p.Stars == 4 {
-			starMod = 1.2
+			starMod = util.GenerateFloatFromRange(1.11, 1.3)
 		} else if p.Stars == 5 {
-			starMod = 1.5
+			starMod = util.GenerateFloatFromRange(1.31, 1.75)
 		}
 
 		// Check Team Position Rank
@@ -239,7 +239,7 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 			if youngerPlayerAhead {
 				depthChartCompetitionMod += 33
 			} else {
-				depthChartCompetitionMod = .5 * depthChartCompetitionMod
+				depthChartCompetitionMod = .63 * depthChartCompetitionMod
 			}
 		}
 
@@ -1242,7 +1242,7 @@ func GetTransferPortalPlayersForPage() []structs.TransferPlayerResponse {
 
 	var players []structs.CollegePlayer
 
-	db.Preload("Profiles").Where("transfer_status = 2").Find(&players)
+	db.Preload("Profiles").Where("transfer_status = 2").Order("overall DESC").Find(&players)
 
 	playerList := []structs.TransferPlayerResponse{}
 
@@ -1255,6 +1255,17 @@ func GetTransferPortalPlayersForPage() []structs.TransferPlayerResponse {
 	}
 
 	return playerList
+}
+
+func GetNFLPlayerSeasonSnapMap(seasonID string) map[uint]structs.NFLPlayerSeasonSnaps {
+	seasonStatMap := make(map[uint]structs.NFLPlayerSeasonSnaps)
+
+	seasonStats := GetNFLSeasonSnapsBySeason(seasonID)
+	for _, stat := range seasonStats {
+		seasonStatMap[stat.PlayerID] = stat
+	}
+
+	return seasonStatMap
 }
 
 func GetCollegePlayerSeasonSnapMap(seasonID string) map[uint]structs.CollegePlayerSeasonSnaps {

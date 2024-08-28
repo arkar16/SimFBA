@@ -157,6 +157,7 @@ func handleRequests() {
 	// Notification Controls
 	myRouter.HandleFunc("/fba/inbox/get/{cfbID}/{nflID}/", controller.GetFBAInbox).Methods("GET")
 	myRouter.HandleFunc("/notification/toggle/{notiID}", controller.ToggleNotificationAsRead).Methods("GET")
+	myRouter.HandleFunc("/notification/delete/{notiID}", controller.DeleteNotification).Methods("GET")
 
 	// Player Controls
 	myRouter.HandleFunc("/players/all/", controller.AllPlayers).Methods("GET")

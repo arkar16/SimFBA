@@ -436,3 +436,358 @@ func GetFreeAgencyBias() string {
 
 	return PickFromStringList(list)
 }
+
+func GetNewArchetypeMap() map[string]map[string]map[string]string {
+	return map[string]map[string]map[string]string{
+		"QB": {
+			"Balanced": {
+				"RB": "Balanced",
+				"WR": "Possession",
+				"TE": "Receiving",
+			},
+			"Scrambler": {
+				"RB": "Speed",
+				"WR": "Speed",
+				"TE": "Vertical Threat",
+			},
+			"Pocket": {
+				"RB": "Power",
+				"WR": "Possession",
+				"TE": "Receiving",
+			},
+			"Field General": {
+				"RB": "Balanced",
+				"WR": "Possession",
+				"TE": "Receiving",
+			},
+		},
+		"RB": {
+			"Balanced": {
+				"FB": "Balanced",
+				"WR": "Possession",
+				"TE": "Blocking",
+			},
+			"Speed": {
+				"FB": "Rushing",
+				"WR": "Speed",
+				"TE": "Vertical Threat",
+			},
+			"Power": {
+				"FB": "Balanced",
+				"WR": "Possession",
+				"TE": "Blocking",
+			},
+			"Receiving": {
+				"FB": "Receiving",
+				"WR": "Route Runner",
+				"TE": "Vertical Threat",
+			},
+		},
+		"FB": {
+			"Balanced": {
+				"RB": "Power",
+				"WR": "Possession",
+				"TE": "Receiving",
+				"OT": "Balanced",
+				"OG": "Balanced",
+			},
+			"Blocking": {
+				"RB": "Power",
+				"WR": "Possession",
+				"TE": "Blocking",
+				"OT": "Balanced",
+				"OG": "Balanced",
+			},
+			"Rushing": {
+				"RB": "Balanced",
+				"WR": "Speed",
+				"TE": "Receiving",
+				"OT": "Balanced",
+				"OG": "Balanced",
+			},
+			"Receiving": {
+				"RB": "Receiving",
+				"WR": "Route Runner",
+				"TE": "Receiving",
+				"OT": "Balanced",
+				"OG": "Balanced",
+			},
+		},
+		"TE": {
+			"Vertical Threat": {
+				"RB": "Receiving",
+				"WR": "Possession",
+				"FB": "Receiving",
+				"OT": "Balanced",
+				"OG": "Balanced",
+			},
+			"Blocking": {
+				"RB": "Power",
+				"WR": "Red Zone Threat",
+				"FB": "Blocking",
+				"OT": "Balanced",
+				"OG": "Balanced",
+			},
+			"Receiving": {
+				"RB": "Receiving",
+				"WR": "Red Zone Threat",
+				"FB": "Receiving",
+				"OT": "Balanced",
+				"OG": "Balanced",
+			},
+		},
+		"WR": {
+			"Route Runner": {
+				"FB": "Receiving",
+				"RB": "Receiving",
+				"TE": "Receiving",
+			},
+			"Speed": {
+				"FB": "Receiving",
+				"RB": "Speed",
+				"TE": "Vertical Threat",
+			},
+			"Red Zone Threat": {
+				"FB": "Receiving",
+				"RB": "Balanced",
+				"TE": "Receiving",
+			},
+			"Possession": {
+				"FB": "Receiving",
+				"RB": "Receiving",
+				"TE": "Receiving",
+			},
+		},
+		"OG": {
+			"Balanced": {
+				"OT": "Balanced",
+				"C":  "Balanced",
+				"TE": "Blocking",
+			},
+			"Pass Blocking": {
+				"OT": "Pass Blocking",
+				"C":  "Pass Blocking",
+				"TE": "Blocking",
+			},
+			"Run Blocking": {
+				"OT": "Run Blocking",
+				"C":  "Run Blocking",
+				"TE": "Blocking",
+			},
+		},
+		"OT": {
+			"Balanced": {
+				"OG": "Balanced",
+				"C":  "Balanced",
+				"TE": "Blocking",
+			},
+			"Pass Blocking": {
+				"OG": "Pass Blocking",
+				"C":  "Pass Blocking",
+				"TE": "Blocking",
+			},
+			"Run Blocking": {
+				"OG": "Run Blocking",
+				"C":  "Run Blocking",
+				"TE": "Blocking",
+			},
+		},
+		"C": {
+			"Line Captain": {
+				"OT": "Balanced",
+				"OG": "Balanced",
+				"TE": "Blocking",
+			},
+			"Balanced": {
+				"OT": "Balanced",
+				"OG": "Balanced",
+				"TE": "Blocking",
+			},
+			"Pass Blocking": {
+				"OT": "Pass Blocking",
+				"OG": "Pass Blocking",
+				"TE": "Blocking",
+			},
+			"Run Blocking": {
+				"OT": "Run Blocking",
+				"OG": "Run Blocking",
+				"TE": "Blocking",
+			},
+		},
+		"DE": {
+			"Balanced": {
+				"DT":  "Balanced",
+				"OLB": "Run Stopper",
+				"ILB": "Run Stopper",
+			},
+			"Speed Rush": {
+				"DT":  "Pass Rusher",
+				"OLB": "Pass Rush",
+				"ILB": "Speed",
+			},
+			"Run Stopper": {
+				"DT":  "Balanced",
+				"OLB": "Run Stopper",
+				"ILB": "Run Stopper",
+			},
+		},
+		"DT": {
+			"Balanced": {
+				"DE":  "Balanced",
+				"OLB": "Run Stopper",
+			},
+			"Pass Rusher": {
+				"DE":  "Speed Rush",
+				"OLB": "Pass Rush",
+			},
+			"Nose Tackle": {
+				"DE":  "Run Stopper",
+				"OLB": "Run Stopper",
+			},
+		},
+		"OLB": {
+			"Coverage": {
+				"DE":  "Balanced",
+				"ILB": "Coverage",
+				"SS":  "Man Coverage",
+			},
+			"Pass Rush": {
+				"DE":  "Speed Rush",
+				"ILB": "Speed",
+				"SS":  "Man Coverage",
+			},
+			"Run Stopper": {
+				"DE":  "Run Stopper",
+				"ILB": "Run Stopper",
+				"SS":  "Run Stopper",
+			},
+			"Speed": {
+				"DE":  "Speed Rush",
+				"ILB": "Speed",
+				"SS":  "Zone Coverage",
+			},
+		},
+		"ILB": {
+			"Coverage": {
+				"DE":  "Balanced",
+				"OLB": "Coverage",
+				"SS":  "Man Coverage",
+			},
+			"Field General": {
+				"DE":  "Balanced",
+				"OLB": "Coverage",
+				"SS":  "Run Stopper",
+			},
+			"Run Stopper": {
+				"DE":  "Run Stopper",
+				"OLB": "Run Stopper",
+				"SS":  "Run Stopper",
+			},
+			"Speed": {
+				"DE":  "Speed Rush",
+				"OLB": "Speed",
+				"SS":  "Run Stopper",
+			},
+		},
+		"SS": {
+			"Man Coverage": {
+				"FS":  "Man Coverage",
+				"OLB": "Coverage",
+				"ILB": "Coverage",
+				"CB":  "Man Coverage",
+				"DE":  "Run Stopper",
+			},
+			"Zone Coverage": {
+				"FS":  "Zone Coverage",
+				"OLB": "Coverage",
+				"ILB": "Coverage",
+				"CB":  "Zone Coverage",
+				"DE":  "Run Stopper",
+			},
+			"Ball Hawk": {
+				"FS":  "Ball Hawk",
+				"OLB": "Speed",
+				"ILB": "Speed",
+				"CB":  "Ball Hawk",
+				"DE":  "Run Stopper",
+			},
+			"Run Stopper": {
+				"FS":  "Run Stopper",
+				"OLB": "Run Stopper",
+				"ILB": "Run Stopper",
+				"CB":  "Man Coverage",
+				"DE":  "Run Stopper",
+			},
+		},
+		"FS": {
+			"Man Coverage": {
+				"SS":  "Man Coverage",
+				"OLB": "Coverage",
+				"ILB": "Coverage",
+				"CB":  "Man Coverage",
+				"DE":  "Run Stopper",
+			},
+			"Zone Coverage": {
+				"SS":  "Zone Coverage",
+				"OLB": "Coverage",
+				"ILB": "Coverage",
+				"CB":  "Zone Coverage",
+				"DE":  "Run Stopper",
+			},
+			"Ball Hawk": {
+				"SS":  "Ball Hawk",
+				"OLB": "Speed",
+				"ILB": "Speed",
+				"CB":  "Ball Hawk",
+				"DE":  "Run Stopper",
+			},
+			"Run Stopper": {
+				"SS":  "Run Stopper",
+				"OLB": "Run Stopper",
+				"ILB": "Run Stopper",
+				"CB":  "Zone Coverage",
+				"DE":  "Run Stopper",
+			},
+		},
+		"CB": {
+			"Man Coverage": {
+				"SS":  "Man Coverage",
+				"OLB": "Coverage",
+				"ILB": "Coverage",
+				"FS":  "Man Coverage",
+			},
+			"Zone Coverage": {
+				"SS":  "Zone Coverage",
+				"OLB": "Coverage",
+				"ILB": "Coverage",
+				"FS":  "Zone Coverage",
+			},
+			"Ball Hawk": {
+				"SS":  "Ball Hawk",
+				"OLB": "Speed",
+				"ILB": "Speed",
+				"FS":  "Ball Hawk",
+			},
+		},
+		"K": {
+			"Power": {
+				"P":  "Power",
+				"QB": "Balanced",
+			},
+			"Accuracy": {
+				"P":  "Accuracy",
+				"QB": "Balanced",
+			},
+		},
+		"P": {
+			"Power": {
+				"K":  "Power",
+				"QB": "Balanced",
+			},
+			"Accuracy": {
+				"K":  "Accuracy",
+				"QB": "Balanced",
+			},
+		},
+	}
+}

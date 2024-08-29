@@ -11,7 +11,7 @@ type CollegePromise struct {
 	gorm.Model
 	TeamID          uint
 	CollegePlayerID uint
-	PromiseType     string // Minutes (at least minimum), Wins (varies), March Madness (Medium), Conf Championship (High), Final Four (Very High), National Championship (very High), Gameplan Fit (medium), Adjust Gameplan (Low), Play Game In State
+	PromiseType     string // Snaps (at least minimum), Wins (varies), Bowl Game (Medium), Conf Championship (High), Playoffs (Very High), National Championship (very High), Gameplan Fit (medium), Adjust Gameplan (Low), Play Game In State (Low)
 	PromiseWeight   string // The impact the promise will have on their decision. Low, Medium, High
 	Benchmark       int    // The value that must be met. For wins & minutes
 	BenchmarkStr    string // Needed value for benchmarks that are a string

@@ -437,6 +437,18 @@ func GetCollegePromiseByID(id string) structs.CollegePromise {
 	return p
 }
 
+func GetCollegePromisesByTeamID(teamID string) []structs.CollegePromise {
+	db := dbprovider.GetInstance().GetDB()
+
+	p := []structs.CollegePromise{}
+
+	err := db.Where("team_id = ?", teamID).Find(&p).Error
+	if err != nil {
+		return []structs.CollegePromise{}
+	}
+	return p
+}
+
 func GetCollegePromiseByCollegePlayerID(id, teamID string) structs.CollegePromise {
 	db := dbprovider.GetInstance().GetDB()
 

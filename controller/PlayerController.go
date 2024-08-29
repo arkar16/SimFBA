@@ -29,8 +29,14 @@ func AllCollegePlayersByTeamID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	players := managers.GetAllCollegePlayersByTeamId(teamId)
+	promises := managers.GetCollegePromisesByTeamID(teamId)
 
-	json.NewEncoder(w).Encode(players)
+	response := structs.CFBRosterPageResponse{
+		Players:  players,
+		Promises: promises,
+	}
+
+	json.NewEncoder(w).Encode(response)
 }
 
 // AllCollegePlayersByTeamIDWithoutRedshirts

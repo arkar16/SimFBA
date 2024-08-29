@@ -535,7 +535,14 @@ func ExportCFBGameResults(w http.ResponseWriter, seasonID, weekID, nflWeekID, ti
 	w.Header().Set("Content-Disposition", "attachment;"+fileName)
 	w.Header().Set("Transfer-Encoding", "chunked")
 	writer := csv.NewWriter(w)
-
+	ts := GetTimestamp()
+	isExactWeek := weekID == strconv.Itoa(ts.CollegeWeekID) && seasonID == strconv.Itoa(ts.CollegeSeasonID)
+	gameNotRan := (timeslot == "Thursday Night" && !ts.ThursdayGames) ||
+		(timeslot == "Friday Night" && !ts.FridayGames) ||
+		(timeslot == "Saturday Morning" && !ts.SaturdayMorning) ||
+		(timeslot == "Saturday Afternoon" && !ts.SaturdayNoon) ||
+		(timeslot == "Saturday Evening" && !ts.SaturdayEvening) ||
+		(timeslot == "Saturday Night" && !ts.SaturdayNight)
 	// Get All needed data
 	matchChn := make(chan []structs.CollegeGame)
 	nflMatchChn := make(chan []structs.NFLGame)
@@ -569,6 +576,9 @@ func ExportCFBGameResults(w http.ResponseWriter, seasonID, weekID, nflWeekID, ti
 	for _, m := range collegeGames {
 		if !m.GameComplete {
 			continue
+		}
+		if isExactWeek && gameNotRan {
+			m.HideScore()
 		}
 		neutralStr := "N"
 		if m.IsNeutral {

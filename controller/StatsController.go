@@ -340,3 +340,16 @@ func GetNFLGameResultsByGameID(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(player)
 }
+
+func GetCFBSeasonStatsRecord(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	playerID := vars["playerID"]
+	seasonID := vars["seasonID"]
+	if len(playerID) == 0 {
+		panic("User did not provide a first name")
+	}
+
+	player := managers.GetCollegePlayerSeasonStatsByPlayerIDAndSeason(playerID, seasonID)
+
+	json.NewEncoder(w).Encode(player)
+}

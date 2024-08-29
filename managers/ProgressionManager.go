@@ -791,6 +791,8 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		} else {
 			mostPlayedPosition = cp.Position
 		}
+	} else {
+		mostPlayedPosition = cp.Position
 	}
 
 	if mostPlayedPosition == "QB" {
@@ -1916,7 +1918,8 @@ func PrimaryProgression(progression int, input int, position string, archetype s
 	if !isRedshirting {
 		progress = ((1 - math.Pow((float64(input)/99.0), 15)) * math.Log10(float64(input)) * (0.6 + modifier)) * (1 + (float64(progression) / 70))
 	} else {
-		progress = ((1 - math.Pow((float64(input)/99), 15)) * math.Log10(float64(input)) * 1.6 * (1 + (float64(progression / 60))))
+		rsMod := util.GenerateFloatFromRange(1.5, 1.9)
+		progress = ((1 - math.Pow((float64(input)/99), 15)) * math.Log10(float64(input)) * rsMod * (1 + (float64(progression / 60))))
 	}
 
 	if progress+float64(input) > 99 {

@@ -52,6 +52,8 @@ func MoveUpWeek() structs.Timestamp {
 	}
 	if ts.NFLWeek > 15 {
 		SyncExtensionOffers()
+		AllocateCapsheets()
+
 	}
 	if ts.CollegeSeasonOver && ts.NFLSeasonOver {
 		ts.MoveUpSeason()
@@ -729,7 +731,7 @@ func SyncTimeslot(timeslot string) {
 
 					nextGame := GetNFLGameByGameID(nextGameID)
 					nextGame.AddTeam(game.NextGameHOA == "H", winningTeamID, winningTeam, winningCoach)
-					if !nextGame.IsNeutral && !game.IsSuperBowl {
+					if !nextGame.IsNeutral && !game.IsSuperBowl && game.NextGameHOA == "H" {
 						stadiumID := 0
 						stadium := ""
 						city := ""

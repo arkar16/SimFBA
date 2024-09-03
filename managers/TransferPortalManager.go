@@ -980,10 +980,6 @@ func SyncTransferPortal() {
 		})
 
 		for i := range portalProfiles {
-			roster := rosterMap[portalProfiles[i].ProfileID]
-			if len(roster) >= 13 {
-				continue
-			}
 			if eligiblePointThreshold == 0.0 {
 				eligiblePointThreshold = portalProfiles[i].TotalPoints * signingMinimum
 			}
@@ -1005,9 +1001,8 @@ func SyncTransferPortal() {
 			// threshold met
 			readyToSign = true
 		}
-
+		var winningTeamID uint = 0
 		if readyToSign {
-			var winningTeamID uint = 0
 			var odds float64 = 0
 
 			for winningTeamID == 0 {
@@ -1046,13 +1041,8 @@ func SyncTransferPortal() {
 						for i := range portalProfiles {
 							if portalProfiles[i].ID == winningTeamID {
 								portalProfiles[i].SignPlayer()
-							} else {
-								promise := GetCollegePromiseByCollegePlayerID(strconv.Itoa(int(portalPlayer.ID)), strconv.Itoa(int(portalProfiles[i].ProfileID)))
-								if promise.ID > 0 {
-									repository.DeleteCollegePromise(promise, db)
-								}
+								break
 							}
-							portalProfiles[i].Lock()
 						}
 
 					} else {
@@ -1073,8 +1063,18 @@ func SyncTransferPortal() {
 
 		}
 		for _, p := range portalProfiles {
+			if p.ID != winningTeamID {
+				p.RemovePromise()
+				p.Lock()
+			}
 			repository.SaveTransferPortalProfile(p, db)
 			fmt.Println("Save transfer portal profile from " + portalPlayer.TeamAbbr + " towards " + portalPlayer.FirstName + " " + portalPlayer.LastName)
+			if p.ID != winningTeamID {
+				promise := GetCollegePromiseByCollegePlayerID(strconv.Itoa(int(portalPlayer.ID)), strconv.Itoa(int(p.ProfileID)))
+				if promise.ID > 0 {
+					repository.DeleteCollegePromise(promise, db)
+				}
+			}
 		}
 		// Save Recruit
 		repository.SaveCollegePlayerRecord(portalPlayer, db)

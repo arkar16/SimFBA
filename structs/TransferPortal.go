@@ -74,6 +74,13 @@ func (p *TransferPortalProfile) Reactivate() {
 	p.RemovedFromBoard = false
 }
 
+func (p *TransferPortalProfile) RemovePromise() {
+	p.PromiseID = sql.NullInt64{
+		Int64: 0,
+		Valid: false,
+	}
+}
+
 func (p *TransferPortalProfile) SignPlayer() {
 	p.IsSigned = true
 	p.LockProfile = true

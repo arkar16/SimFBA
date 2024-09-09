@@ -583,9 +583,14 @@ func FillAIRecruitingBoards() {
 			if count >= boardCount {
 				break
 			}
-
+			starMin := team.AIStarMin
+			starMax := team.AIStarMax
+			if ts.CollegeWeek >= 18 {
+				starMin = 1
+				starMax = 3
+			}
 			if (teamNeeds[croot.Position] < 1) ||
-				(croot.Stars > team.AIStarMax) || (croot.Stars < team.AIStarMin) {
+				(croot.Stars > starMax) || (croot.Stars < starMin) {
 				continue
 			}
 

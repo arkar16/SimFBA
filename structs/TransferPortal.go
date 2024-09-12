@@ -119,6 +119,8 @@ type TransferPlayerResponse struct {
 	LastName            string
 	Archetype           string
 	Position            string
+	PositionTwo         string
+	ArchetypeTwo        string
 	Age                 int
 	Year                int
 	State               string
@@ -178,6 +180,8 @@ func (c *TransferPlayerResponse) Map(r CollegePlayer, ovr string) {
 	c.LastName = r.LastName
 	c.Position = r.Position
 	c.Archetype = r.Archetype
+	c.PositionTwo = r.PositionTwo
+	c.ArchetypeTwo = r.ArchetypeTwo
 	c.Height = r.Height
 	c.Weight = r.Weight
 	c.Stars = r.Stars

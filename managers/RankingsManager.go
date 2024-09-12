@@ -17,7 +17,7 @@ func AssignAllRecruitRanks() {
 
 	// var recruitsToSync []structs.Recruit
 
-	db.Order("overall desc").Find(&recruits)
+	db.Order("overall desc").Where("stars > 0").Find(&recruits)
 
 	rivalsModifiers := config.RivalsModifiers()
 
@@ -41,6 +41,13 @@ func AssignAllRecruitRanks() {
 			r = 0.95 + rand.Float64()*(1.05-0.95)
 		}
 
+		if croot.Stars == 0 {
+			rank247 = 0.001
+			espnRank = 0.001
+			rivalsRank = 0.001
+			r = 0
+		}
+
 		croot.AssignRankValues(rank247, espnRank, rivalsRank, r)
 
 		recruitingModifier := getRecruitingModifier(croot.Stars)
@@ -55,6 +62,20 @@ func AssignAllRecruitRanks() {
 		// recruitsToSync = append(recruitsToSync, croot)
 	}
 
+	walkons := []structs.Recruit{}
+	db.Order("overall desc").Where("stars = 0").Find(&walkons)
+	for _, croot := range recruits {
+		croot.AssignRankValues(0.001, 0.001, 0.001, 1)
+
+		recruitingModifier := getRecruitingModifier(croot.Stars)
+
+		croot.AssignRecruitingModifier(recruitingModifier)
+		shotgunVal := getShotgunVal()
+		clutchVal := getClutchValue()
+		croot.AssignNewAttributes(shotgunVal, clutchVal)
+
+		db.Save(&croot)
+	}
 }
 
 func Get247Ranking(r structs.Recruit) float64 {

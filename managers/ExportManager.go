@@ -297,8 +297,8 @@ func ExportPlayerStatsToCSV(cp []structs.CollegePlayerResponse, w http.ResponseW
 	// Get Players
 
 	HeaderRow := []string{
-		"First Name", "Last Name", "Position",
-		"Archetype", "Year", "Is Redshirt?", "Team", "Conference", "Age", "Stars",
+		"First Name", "Last Name", "Position", "Position Two",
+		"Archetype", "Archetype Two", "Year", "Is Redshirt?", "Team", "Conference", "Age", "Stars",
 		"Passing Yards", "Pass Attempts", "Pass Completions", "Passing Avg",
 		"Passing TDs", "Interceptions", "Longest Pass", "QB Sacks",
 		"QB Rating", "Rush Attempts", "Rushing Yards", "Rushing Avg",
@@ -323,8 +323,8 @@ func ExportPlayerStatsToCSV(cp []structs.CollegePlayerResponse, w http.ResponseW
 		Year, RedshirtStatus := util.GetYearAndRedshirtStatus(p.Year, p.IsRedshirt)
 		seasonStats := p.SeasonStats
 
-		pr := []string{p.FirstName, p.LastName, p.Position,
-			p.Archetype, Year, RedshirtStatus, p.TeamAbbr, p.Conference, strconv.Itoa(p.Age), strconv.Itoa(p.Stars),
+		pr := []string{p.FirstName, p.LastName, p.Position, p.PositionTwo,
+			p.Archetype, p.ArchetypeTwo, Year, RedshirtStatus, p.TeamAbbr, p.Conference, strconv.Itoa(p.Age), strconv.Itoa(p.Stars),
 			strconv.Itoa(seasonStats.PassingYards), strconv.Itoa(seasonStats.PassAttempts), strconv.Itoa(seasonStats.PassCompletions), strconv.Itoa(int(seasonStats.PassingAvg)),
 			strconv.Itoa(seasonStats.PassingTDs), strconv.Itoa(seasonStats.Interceptions), strconv.Itoa(seasonStats.LongestPass), strconv.Itoa(seasonStats.Sacks),
 			strconv.Itoa(int(seasonStats.QBRating)), strconv.Itoa(seasonStats.RushAttempts), strconv.Itoa(seasonStats.RushingYards), strconv.Itoa(int(seasonStats.RushingAvg)),

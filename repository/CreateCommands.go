@@ -3,6 +3,7 @@ package repository
 import (
 	"log"
 
+	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
 	"gorm.io/gorm"
 )
@@ -97,4 +98,49 @@ func CreateNotification(noti structs.Notification, db *gorm.DB) {
 	if err != nil {
 		log.Panicln("Could not create notification record!")
 	}
+}
+
+func CreateCFBPlayerRecord(player structs.CollegePlayer, db *gorm.DB) {
+	err := db.Create(&player).Error
+	if err != nil {
+		log.Panicln("Could not create cfb season snaps record!")
+	}
+}
+
+func CreateHistoricCFBPlayerRecord(player structs.HistoricCollegePlayer, db *gorm.DB) {
+	err := db.Create(&player).Error
+	if err != nil {
+		log.Panicln("Could not create cfb season snaps record!")
+	}
+}
+
+func CreateNFLDrafteeRecord(player models.NFLDraftee, db *gorm.DB) {
+	err := db.Create(&player).Error
+	if err != nil {
+		log.Panicln("Could not create cfb season snaps record!")
+	}
+}
+
+func CreateNFLDrafteesInBatches(db *gorm.DB, draftees []models.NFLDraftee, batchSize int) error {
+	// Create the records in batches with the specified batch size
+	if err := db.CreateInBatches(draftees, batchSize).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func CreateNFLDrafteesSafely(db *gorm.DB, draftees []models.NFLDraftee, batchSize int) error {
+	total := len(draftees)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(draftees[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
 }

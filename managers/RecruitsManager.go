@@ -34,6 +34,16 @@ func GetAllRecruits() []structs.Croot {
 	return croots
 }
 
+func GetAllRecruitRecords() []structs.Recruit {
+	db := dbprovider.GetInstance().GetDB()
+
+	var croots []structs.Recruit
+
+	db.Find(&croots)
+
+	return croots
+}
+
 func GetAllUnsignedRecruits() []structs.Recruit {
 	db := dbprovider.GetInstance().GetDB()
 

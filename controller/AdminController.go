@@ -159,3 +159,8 @@ func FixSmallTownBigCityAIBoards(w http.ResponseWriter, r *http.Request) {
 	managers.FixSmallTownBigCityAIBoards()
 	fmt.Println(w, "Affinities fixed!")
 }
+
+func ImportMissingDraftees(w http.ResponseWriter, r *http.Request) {
+	managers.MigrateHistoricPlayersToNFLDraftees()
+	fmt.Println(w, "Affinities fixed!")
+}

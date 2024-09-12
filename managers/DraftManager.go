@@ -1,6 +1,7 @@
 package managers
 
 import (
+	"fmt"
 	"log"
 	"sort"
 	"strconv"
@@ -257,7 +258,6 @@ func ExportDraftedPlayers(picks []structs.NFLDraftPick) bool {
 			DraftedTeam:     pick.Team,
 			DraftedRound:    pick.DraftRound,
 			DraftedPick:     pick.DraftNumber,
-			PrimeAge:        draftee.PrimeAge,
 			ShowLetterGrade: showLetterGrade,
 			HighSchool:      draftee.HighSchool,
 			Hometown:        draftee.City,
@@ -318,7 +318,6 @@ func ExportDraftedPlayers(picks []structs.NFLDraftPick) bool {
 			DraftPickID:       0,
 			DraftedTeamID:     0,
 			DraftedTeam:       "UDFA",
-			PrimeAge:          uint(draftee.PrimeAge),
 			IsNegotiating:     false,
 			IsAcceptingOffers: true,
 			IsFreeAgent:       true,
@@ -348,25 +347,20 @@ func BoomOrBust() {
 	draftees := GetAllNFLDraftees()
 
 	for _, player := range draftees {
-		if player.BoomOrBust && player.BoomOrBustStatus == "Bust" {
+		diceRoll := util.GenerateIntFromRange(1, 20)
+		if diceRoll == 1 {
+			// Bust
+			fmt.Println("BUST!")
+			player.AssignBoomBustStatus("Bust")
 			player = BoomBustDraftee(player, SeasonID, 51, false)
+		} else if diceRoll == 20 {
+			// Boom
+			fmt.Println("BOOM!")
+			player.AssignBoomBustStatus("Boom")
+			player = BoomBustDraftee(player, SeasonID, 51, true)
 		} else {
 			continue
 		}
-		// diceRoll := util.GenerateIntFromRange(1, 20)
-		// if diceRoll == 1 {
-		// 	// Bust
-		// 	fmt.Println("BUST!")
-		// 	player.AssignBoomBustStatus("Bust")
-		// 	player = BoomBustDraftee(player, SeasonID, 51, false)
-		// } else if diceRoll == 20 {
-		// 	// Boom
-		// 	fmt.Println("BOOM!")
-		// 	player.AssignBoomBustStatus("Boom")
-		// 	player = BoomBustDraftee(player, SeasonID, 51, true)
-		// } else {
-		// 	continue
-		// }
 		db.Save(&player)
 	}
 }

@@ -199,9 +199,11 @@ func (cp *CollegePlayer) GetPotentialGrade() {
 	}
 }
 
-func (cp *CollegePlayer) Progress(attr CollegePlayerProgressions) {
-	cp.Age++
-	cp.Year++
+func (cp *CollegePlayer) Progress(attr CollegePlayerProgressions, isBoomBust bool) {
+	if !isBoomBust {
+		cp.Age++
+		cp.Year++
+	}
 	cp.Agility = attr.Agility
 	cp.Speed = attr.Speed
 	cp.FootballIQ = attr.FootballIQ

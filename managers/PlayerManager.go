@@ -1057,10 +1057,12 @@ func CutCFBPlayer(playerId string) {
 	player := GetCollegePlayerByCollegePlayerId(playerId)
 	player.WillTransfer()
 	ts := GetTimestamp()
-	if ts.IsOffSeason || ts.CollegeWeek == 1 {
+	if ts.IsOffSeason || ts.CollegeWeek <= 1 || ts.TransferPortalPhase == 3 {
 		previousTeamID := strconv.Itoa(int(player.PreviousTeamID))
+		points := -1 * player.Stars
 		teamProfile := GetOnlyRecruitingProfileByTeamID(previousTeamID)
 		teamProfile.IncrementClassSize()
+		teamProfile.AdjustPortalReputation(points)
 		repository.SaveRecruitingTeamProfile(teamProfile, db)
 	}
 	repository.SaveCFBPlayer(player, db)

@@ -902,36 +902,37 @@ func ImplementPrimeAge() {
 	db := dbprovider.GetInstance().GetDB()
 
 	// Recruits
-	croots := GetAllUnsignedRecruits()
+	croots := GetAllRecruitRecords()
 	// College Players
 	collegePlayers := GetAllCollegePlayers()
-	// Unsigned Players
-	unsignedPlayers := GetAllUnsignedPlayers()
 	// NFL Players
 	nflPlayers := GetAllNFLPlayers()
 
 	for _, c := range croots {
+		if c.PrimeAge > 0 {
+			continue
+		}
 		primeAge := util.GetPrimeAge(c.Position, c.Archetype)
 		c.AssignPrimeAge(uint(primeAge))
-		db.Save(&c)
+		repository.SaveRecruitRecord(c, db)
 	}
 
 	for _, cp := range collegePlayers {
+		if cp.PrimeAge > 0 {
+			continue
+		}
 		primeAge := util.GetPrimeAge(cp.Position, cp.Archetype)
 		cp.AssignPrimeAge(uint(primeAge))
-		db.Save(&cp)
-	}
-
-	for _, up := range unsignedPlayers {
-		primeAge := util.GetPrimeAge(up.Position, up.Archetype)
-		up.AssignPrimeAge(uint(primeAge))
-		db.Save(&up)
+		repository.SaveCFBPlayer(cp, db)
 	}
 
 	for _, nflP := range nflPlayers {
+		if nflP.PrimeAge > 0 {
+			continue
+		}
 		primeAge := util.GetPrimeAge(nflP.Position, nflP.Archetype)
 		nflP.AssignPrimeAge(uint(primeAge))
-		db.Save(&nflP)
+		repository.SaveNFLPlayer(nflP, db)
 	}
 }
 

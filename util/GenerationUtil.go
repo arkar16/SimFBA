@@ -33,6 +33,22 @@ func GenerateNormalizedIntFromRange(min int, max int) int {
 	}
 }
 
+func GenerateNormalizedIntFromMeanStdev(mean, stdDev float64) float64 {
+	num := rand.NormFloat64()*stdDev + mean
+	// Round to nearest integer and convert to int type
+	intNum := int(num + 0.5) // Adding 0.5 before truncating simulates rounding
+	return float64(intNum)
+}
+
+func RegressValue(val, min, max int) int {
+	newVal := val - GenerateNormalizedIntFromRange(min, max)
+
+	if newVal < 1 {
+		return 1
+	}
+	return newVal
+}
+
 func PickFromStringList(list []string) string {
 	if len(list) == 0 {
 		return ""
@@ -132,168 +148,77 @@ func GetWeightedPotentialGrade(rating int) string {
 }
 
 func GetPrimeAge(pos, arch string) int {
-	min := 25
-	max := 27
-	mod := 0
-	diceRoll := GenerateIntFromRange(1, 20)
-	if pos == "QB" {
-		if diceRoll == 100 {
-			mod += GenerateIntFromRange(1, 5)
-		}
-		min = 26
-		max = 32
+	venerable := false
+	vDiceRoll := GenerateIntFromRange(1, 10000)
+	chance := getVenerableChance(pos)
+	if vDiceRoll < chance {
+		venerable = true
+	}
+
+	mean, stddev := getPositionMean(pos, venerable)
+
+	age := GenerateNormalizedIntFromMeanStdev(mean, stddev)
+	return int(age)
+}
+
+func getPositionMean(pos string, venerable bool) (float64, float64) {
+	meanMap := getPositionMeanMap()
+	return meanMap[venerable][pos][0], meanMap[venerable][pos][1]
+}
+
+func getPositionMeanMap() map[bool]map[string][]float64 {
+	return map[bool]map[string][]float64{
+		true: {
+			"QB":  []float64{39, 2},
+			"RB":  []float64{32, 1},
+			"FB":  []float64{35, 1},
+			"WR":  []float64{35, 1},
+			"TE":  []float64{35, 1},
+			"OT":  []float64{35, 1},
+			"OG":  []float64{35, 1},
+			"C":   []float64{35, 1},
+			"DE":  []float64{36, 1},
+			"DT":  []float64{35, 1},
+			"ILB": []float64{35, 1},
+			"OLB": []float64{35, 1},
+			"CB":  []float64{35, 1},
+			"FS":  []float64{35, 1},
+			"SS":  []float64{35, 1},
+			"K":   []float64{40, 1},
+			"P":   []float64{38, 1},
+			"ATH": []float64{36, 1},
+		},
+		false: {
+			"QB":  []float64{32, 2},
+			"RB":  []float64{26, 0.67},
+			"FB":  []float64{26, 0.67},
+			"WR":  []float64{29, 1.33},
+			"TE":  []float64{28, 1.33},
+			"OT":  []float64{30, 1.4},
+			"OG":  []float64{30, 0.67},
+			"C":   []float64{30, 1.33},
+			"DE":  []float64{30, 0.67},
+			"DT":  []float64{30, 1.33},
+			"ILB": []float64{29, 0.67},
+			"OLB": []float64{29, 0.67},
+			"CB":  []float64{29, 0.67},
+			"FS":  []float64{29, 1.33},
+			"SS":  []float64{29, 1.33},
+			"K":   []float64{34, 0.73},
+			"P":   []float64{31, 2},
+			"ATH": []float64{30, 1.33},
+		},
+	}
+}
+
+func getVenerableChance(pos string) int {
+	if pos == "QB" || pos == "K" || pos == "P" {
+		return 20
 	}
 	if pos == "RB" {
-		if diceRoll == 100 {
-			mod += GenerateIntFromRange(1, 3)
-		}
-		min = 24
-		max = 27
+		return 5
 	}
-	if pos == "FB" {
-		if diceRoll == 100 {
-			mod += GenerateIntFromRange(1, 3)
-		}
-		min = 24
-		max = 29
-	}
-	if pos == "WR" {
-		if diceRoll == 100 {
-			mod += GenerateIntFromRange(1, 3)
-		}
-		min = 25
-		max = 29
-	}
-	if pos == "TE" {
-		if diceRoll == 100 {
-			mod += GenerateIntFromRange(1, 3)
-		}
-		min = 26
-		max = 29
-	}
-	if pos == "OG" {
-		min = 27
-		max = 30
-	}
-	if pos == "OT" {
-		min = 27
-		max = 30
-	}
-	if pos == "C" {
-		min = 27
-		max = 30
-	}
-	if pos == "DE" {
-		min = 27
-		max = 30
-	}
-	if pos == "DT" {
-		min = 27
-		max = 30
-	}
-	if pos == "ILB" {
-		if diceRoll == 100 {
-			mod += GenerateIntFromRange(1, 3)
-		}
-		min = 26
-		max = 29
-	}
-	if pos == "OLB" {
-		if diceRoll == 100 {
-			mod += GenerateIntFromRange(1, 3)
-		}
-		min = 26
-		max = 29
-	}
-	if pos == "CB" {
-		if diceRoll == 100 {
-			mod += GenerateIntFromRange(1, 3)
-		}
-		min = 25
-		max = 29
-	}
-	if pos == "FS" {
-		if diceRoll == 100 {
-			mod += GenerateIntFromRange(1, 3)
-		}
-		min = 26
-		max = 28
-	}
-	if pos == "SS" {
-		if diceRoll == 100 {
-			mod += GenerateIntFromRange(1, 3)
-		}
-		min = 26
-		max = 28
-	}
-	if pos == "K" {
-		min = 25
-		max = 30
-	}
-	if pos == "P" {
-		min = 25
-		max = 30
-	}
-	if pos == "ATH" {
-		if arch == "Field General" {
-			if diceRoll == 100 {
-				mod += GenerateIntFromRange(1, 3)
-			}
-			min = 25
-			max = 30
-		}
-		if arch == "Triple-Threat" {
-			if diceRoll == 100 {
-				mod += GenerateIntFromRange(1, 3)
-			}
-			min = 24
-			max = 27
-		}
-		if arch == "Wingback" {
-			if diceRoll == 100 {
-				mod += GenerateIntFromRange(1, 3)
-			}
-			min = 24
-			max = 28
-		}
-		if arch == "Slotback" {
-			if diceRoll == 100 {
-				mod += GenerateIntFromRange(1, 3)
-			}
-			min = 24
-			max = 28
-		}
-		if arch == "Lineman" {
-			min = 27
-			max = 30
-		}
-		if arch == "Strongside" {
-			if diceRoll == 100 {
-				mod += GenerateIntFromRange(1, 3)
-			}
-			min = 26
-			max = 29
-		}
-		if arch == "Weakside" {
-			if diceRoll == 100 {
-				mod += GenerateIntFromRange(1, 3)
-			}
-			min = 26
-			max = 29
-		}
-		if arch == "Bandit" {
-			if diceRoll == 100 {
-				mod += GenerateIntFromRange(1, 3)
-			}
-			min = 26
-			max = 29
-		}
-		if arch == "Soccer Player" {
-			min = 26
-			max = 29
-		}
-	}
-	return GenerateNormalizedIntFromRange(min, max) + mod
+	return 10
 }
 
 func GetPersonality() string {

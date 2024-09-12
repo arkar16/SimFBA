@@ -66,7 +66,7 @@ func UpdateDraftPicksForDraft(w http.ResponseWriter, r *http.Request) {
 	managers.UpdateDraftPicks()
 }
 
-func ImplementRecruitingBiases(w http.ResponseWriter, r *http.Request) {
+func ImplementPrimeAge(w http.ResponseWriter, r *http.Request) {
 	managers.ImplementPrimeAge()
 }
 

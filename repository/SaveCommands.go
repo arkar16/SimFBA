@@ -124,6 +124,14 @@ func SaveRecruitProfile(profile structs.RecruitPlayerProfile, db *gorm.DB) {
 	}
 }
 
+func SaveRecruitRecord(croot structs.Recruit, db *gorm.DB) {
+	croot.RecruitPlayerProfiles = nil
+	err := db.Save(&croot).Error
+	if err != nil {
+		log.Panicln("Could not save team profile")
+	}
+}
+
 func SaveCollegeTeamRecord(team structs.CollegeTeam, db *gorm.DB) {
 	team.CollegeCoach = structs.CollegeCoach{}
 	team.RecruitingProfile = structs.RecruitingTeamProfile{}

@@ -132,6 +132,46 @@ func GetAllPlayerStatsByWeek(WeekID string) []structs.CollegePlayerStats {
 	return playerStats
 }
 
+func GetAllPlayerStatsBySeason(SeasonID string) []structs.CollegePlayerStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats []structs.CollegePlayerStats
+
+	db.Where("season_id = ?", SeasonID).Find(&playerStats)
+
+	return playerStats
+}
+
+func GetAllNFLPlayerStatsBySeason(SeasonID string) []structs.NFLPlayerStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats []structs.NFLPlayerStats
+
+	db.Where("season_id = ?", SeasonID).Find(&playerStats)
+
+	return playerStats
+}
+
+func GetNFLLastTwoSeasonStatMap(SeasonID int) map[uint][]structs.NFLPlayerSeasonStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var playerStats []structs.NFLPlayerSeasonStats
+	seasonID := strconv.Itoa(SeasonID)
+	previousSeasonID := strconv.Itoa(SeasonID - 1)
+	statMap := make(map[uint][]structs.NFLPlayerSeasonStats)
+
+	db.Where("season_id in (?,?)", previousSeasonID, seasonID).Find(&playerStats)
+
+	for _, stat := range playerStats {
+		if len(statMap[stat.NFLPlayerID]) == 0 {
+			statMap[stat.NFLPlayerID] = []structs.NFLPlayerSeasonStats{}
+		}
+		statMap[stat.NFLPlayerID] = append(statMap[stat.NFLPlayerID], stat)
+	}
+
+	return statMap
+}
+
 func GetTeamStatsByWeekAndTeam(TeamID string, Week string) structs.CollegeTeam {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()

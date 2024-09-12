@@ -811,6 +811,8 @@ func getArchetype(pos string) string {
 		return util.PickFromStringList([]string{"Run Stopper", "Ball Hawk", "Man Coverage", "Zone Coverage"})
 	} else if pos == "K" || pos == "P" {
 		return util.PickFromStringList([]string{"Balanced", "Accuracy", "Power"})
+	} else if pos == "ATH" {
+		return util.PickFromStringList([]string{"Bandit", "Return Specialist", "Wingback", "Soccer Player", "Slotback", "Lineman", "Strongside", "Weakside", "Triple-Threat", "Field General"})
 	}
 	return ""
 
@@ -947,9 +949,9 @@ func getCityAndHighSchool(schools []structs.CrootLocation) (string, string) {
 
 func getValueFromInterfaceRange(star string, starMap map[string]interface{}) int {
 	u, ok := starMap[star]
-	if ok {
-		fmt.Println("(Was able to get value)")
-	}
+	// if ok {
+	// 	fmt.Println("(Was able to get value)")
+	// }
 
 	minMax, ok := u.([]interface{})
 	if !ok {

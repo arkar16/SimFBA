@@ -49,7 +49,6 @@ type NFLDraftee struct {
 }
 
 func (n *NFLDraftee) Map(cp structs.CollegePlayer) {
-	attributeMeans := config.NFLAttributeMeans()
 	n.ID = cp.ID
 	n.PlayerID = cp.PlayerID
 	n.HighSchool = cp.HighSchool
@@ -95,30 +94,34 @@ func (n *NFLDraftee) Map(cp structs.CollegePlayer) {
 	n.RecruitingBias = cp.RecruitingBias
 	n.WorkEthic = cp.WorkEthic
 	n.AcademicBias = cp.AcademicBias
+}
+
+func (n *NFLDraftee) GetLetterGrades() {
+	attributeMeans := config.NFLAttributeMeans()
 	rangeNum := 7
-	OverallGrade := util.GetNFLOverallGrade(util.GenerateIntFromRange(cp.Overall-rangeNum, cp.Overall+rangeNum))
-	StaminaGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.Stamina-rangeNum, cp.Stamina+rangeNum), attributeMeans["Stamina"][cp.Position]["mean"], attributeMeans["Stamina"][cp.Position]["stddev"], cp.Year)
-	InjuryGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.Injury-rangeNum, cp.Injury+rangeNum), attributeMeans["Injury"][cp.Position]["mean"], attributeMeans["Injury"][cp.Position]["stddev"], cp.Year)
-	SpeedGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.Speed-rangeNum, cp.Speed+rangeNum), attributeMeans["Speed"][cp.Position]["mean"], attributeMeans["Speed"][cp.Position]["stddev"], cp.Year)
-	FootballIQGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.FootballIQ-rangeNum, cp.FootballIQ+rangeNum), attributeMeans["FootballIQ"][cp.Position]["mean"], attributeMeans["FootballIQ"][cp.Position]["stddev"], cp.Year)
-	AgilityGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.Agility-rangeNum, cp.Agility+rangeNum), attributeMeans["Agility"][cp.Position]["mean"], attributeMeans["Agility"][cp.Position]["stddev"], cp.Year)
-	CarryingGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.Carrying-rangeNum, cp.Carrying+rangeNum), attributeMeans["Carrying"][cp.Position]["mean"], attributeMeans["Carrying"][cp.Position]["stddev"], cp.Year)
-	CatchingGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.Catching-rangeNum, cp.Catching+rangeNum), attributeMeans["Catching"][cp.Position]["mean"], attributeMeans["Catching"][cp.Position]["stddev"], cp.Year)
-	RouteRunningGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.RouteRunning-rangeNum, cp.RouteRunning+rangeNum), attributeMeans["RouteRunning"][cp.Position]["mean"], attributeMeans["RouteRunning"][cp.Position]["stddev"], cp.Year)
-	ZoneCoverageGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.ZoneCoverage-rangeNum, cp.ZoneCoverage+rangeNum), attributeMeans["ZoneCoverage"][cp.Position]["mean"], attributeMeans["ZoneCoverage"][cp.Position]["stddev"], cp.Year)
-	ManCoverageGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.ManCoverage-rangeNum, cp.ManCoverage+rangeNum), attributeMeans["ManCoverage"][cp.Position]["mean"], attributeMeans["ManCoverage"][cp.Position]["stddev"], cp.Year)
-	StrengthGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.Strength-rangeNum, cp.Strength+rangeNum), attributeMeans["Strength"][cp.Position]["mean"], attributeMeans["Strength"][cp.Position]["stddev"], cp.Year)
-	TackleGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.Tackle-rangeNum, cp.Tackle+rangeNum), attributeMeans["Tackle"][cp.Position]["mean"], attributeMeans["Tackle"][cp.Position]["stddev"], cp.Year)
-	PassBlockGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.PassBlock-rangeNum, cp.PassBlock+rangeNum), attributeMeans["PassBlock"][cp.Position]["mean"], attributeMeans["PassBlock"][cp.Position]["stddev"], cp.Year)
-	RunBlockGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.RunBlock-rangeNum, cp.RunBlock+rangeNum), attributeMeans["RunBlock"][cp.Position]["mean"], attributeMeans["RunBlock"][cp.Position]["stddev"], cp.Year)
-	PassRushGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.PassRush-rangeNum, cp.PassRush+rangeNum), attributeMeans["PassRush"][cp.Position]["mean"], attributeMeans["PassRush"][cp.Position]["stddev"], cp.Year)
-	RunDefenseGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.RunDefense-rangeNum, cp.RunDefense+rangeNum), attributeMeans["RunDefense"][cp.Position]["mean"], attributeMeans["RunDefense"][cp.Position]["stddev"], cp.Year)
-	ThrowPowerGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.ThrowPower-rangeNum, cp.ThrowPower+rangeNum), attributeMeans["ThrowPower"][cp.Position]["mean"], attributeMeans["ThrowPower"][cp.Position]["stddev"], cp.Year)
-	ThrowAccuracyGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.ThrowAccuracy-rangeNum, cp.ThrowAccuracy+rangeNum), attributeMeans["ThrowAccuracy"][cp.Position]["mean"], attributeMeans["ThrowAccuracy"][cp.Position]["stddev"], cp.Year)
-	KickPowerGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.KickPower-rangeNum, cp.KickPower+rangeNum), attributeMeans["KickPower"][cp.Position]["mean"], attributeMeans["KickPower"][cp.Position]["stddev"], cp.Year)
-	KickAccuracyGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.KickAccuracy-rangeNum, cp.KickAccuracy+rangeNum), attributeMeans["KickAccuracy"][cp.Position]["mean"], attributeMeans["KickAccuracy"][cp.Position]["stddev"], cp.Year)
-	PuntPowerGrade := util.GetLetterGrade(util.GenerateIntFromRange(cp.PuntAccuracy-rangeNum, cp.PuntPower+rangeNum), attributeMeans["PuntPower"][cp.Position]["mean"], attributeMeans["PuntPower"][cp.Position]["stddev"], cp.Year)
-	PuntAccuracyGrade := util.GetLetterGrade(cp.PuntAccuracy, attributeMeans["PuntAccuracy"][cp.Position]["mean"], attributeMeans["PuntAccuracy"][cp.Position]["stddev"], cp.Year)
+	OverallGrade := util.GetNFLOverallGrade(util.GenerateIntFromRange(n.Overall-rangeNum, n.Overall+rangeNum))
+	StaminaGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.Stamina-rangeNum, n.Stamina+rangeNum), attributeMeans["Stamina"][n.Position]["mean"], attributeMeans["Stamina"][n.Position]["stddev"], 5)
+	InjuryGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.Injury-rangeNum, n.Injury+rangeNum), attributeMeans["Injury"][n.Position]["mean"], attributeMeans["Injury"][n.Position]["stddev"], 5)
+	SpeedGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.Speed-rangeNum, n.Speed+rangeNum), attributeMeans["Speed"][n.Position]["mean"], attributeMeans["Speed"][n.Position]["stddev"], 5)
+	FootballIQGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.FootballIQ-rangeNum, n.FootballIQ+rangeNum), attributeMeans["FootballIQ"][n.Position]["mean"], attributeMeans["FootballIQ"][n.Position]["stddev"], 5)
+	AgilityGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.Agility-rangeNum, n.Agility+rangeNum), attributeMeans["Agility"][n.Position]["mean"], attributeMeans["Agility"][n.Position]["stddev"], 5)
+	CarryingGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.Carrying-rangeNum, n.Carrying+rangeNum), attributeMeans["Carrying"][n.Position]["mean"], attributeMeans["Carrying"][n.Position]["stddev"], 5)
+	CatchingGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.Catching-rangeNum, n.Catching+rangeNum), attributeMeans["Catching"][n.Position]["mean"], attributeMeans["Catching"][n.Position]["stddev"], 5)
+	RouteRunningGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.RouteRunning-rangeNum, n.RouteRunning+rangeNum), attributeMeans["RouteRunning"][n.Position]["mean"], attributeMeans["RouteRunning"][n.Position]["stddev"], 5)
+	ZoneCoverageGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.ZoneCoverage-rangeNum, n.ZoneCoverage+rangeNum), attributeMeans["ZoneCoverage"][n.Position]["mean"], attributeMeans["ZoneCoverage"][n.Position]["stddev"], 5)
+	ManCoverageGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.ManCoverage-rangeNum, n.ManCoverage+rangeNum), attributeMeans["ManCoverage"][n.Position]["mean"], attributeMeans["ManCoverage"][n.Position]["stddev"], 5)
+	StrengthGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.Strength-rangeNum, n.Strength+rangeNum), attributeMeans["Strength"][n.Position]["mean"], attributeMeans["Strength"][n.Position]["stddev"], 5)
+	TackleGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.Tackle-rangeNum, n.Tackle+rangeNum), attributeMeans["Tackle"][n.Position]["mean"], attributeMeans["Tackle"][n.Position]["stddev"], 5)
+	PassBlockGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.PassBlock-rangeNum, n.PassBlock+rangeNum), attributeMeans["PassBlock"][n.Position]["mean"], attributeMeans["PassBlock"][n.Position]["stddev"], 5)
+	RunBlockGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.RunBlock-rangeNum, n.RunBlock+rangeNum), attributeMeans["RunBlock"][n.Position]["mean"], attributeMeans["RunBlock"][n.Position]["stddev"], 5)
+	PassRushGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.PassRush-rangeNum, n.PassRush+rangeNum), attributeMeans["PassRush"][n.Position]["mean"], attributeMeans["PassRush"][n.Position]["stddev"], 5)
+	RunDefenseGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.RunDefense-rangeNum, n.RunDefense+rangeNum), attributeMeans["RunDefense"][n.Position]["mean"], attributeMeans["RunDefense"][n.Position]["stddev"], 5)
+	ThrowPowerGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.ThrowPower-rangeNum, n.ThrowPower+rangeNum), attributeMeans["ThrowPower"][n.Position]["mean"], attributeMeans["ThrowPower"][n.Position]["stddev"], 5)
+	ThrowAccuracyGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.ThrowAccuracy-rangeNum, n.ThrowAccuracy+rangeNum), attributeMeans["ThrowAccuracy"][n.Position]["mean"], attributeMeans["ThrowAccuracy"][n.Position]["stddev"], 5)
+	KickPowerGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.KickPower-rangeNum, n.KickPower+rangeNum), attributeMeans["KickPower"][n.Position]["mean"], attributeMeans["KickPower"][n.Position]["stddev"], 5)
+	KickAccuracyGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.KickAccuracy-rangeNum, n.KickAccuracy+rangeNum), attributeMeans["KickAccuracy"][n.Position]["mean"], attributeMeans["KickAccuracy"][n.Position]["stddev"], 5)
+	PuntPowerGrade := util.GetLetterGrade(util.GenerateIntFromRange(n.PuntPower-rangeNum, n.PuntPower+rangeNum), attributeMeans["PuntPower"][n.Position]["mean"], attributeMeans["PuntPower"][n.Position]["stddev"], 5)
+	PuntAccuracyGrade := util.GetLetterGrade(n.PuntAccuracy, attributeMeans["PuntAccuracy"][n.Position]["mean"], attributeMeans["PuntAccuracy"][n.Position]["stddev"], 5)
 	n.OverallGrade = OverallGrade
 	n.StaminaGrade = StaminaGrade
 	n.InjuryGrade = InjuryGrade
@@ -142,7 +145,6 @@ func (n *NFLDraftee) Map(cp structs.CollegePlayer) {
 	n.KickAccuracyGrade = KickAccuracyGrade
 	n.PuntPowerGrade = PuntPowerGrade
 	n.PuntAccuracyGrade = PuntAccuracyGrade
-
 }
 
 func (n *NFLDraftee) MapUnsignedPlayer(up structs.UnsignedPlayer) {

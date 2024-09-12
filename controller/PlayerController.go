@@ -110,7 +110,7 @@ func CutCFBPlayerFromRoster(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	PlayerID := vars["PlayerID"]
 
-	managers.CutNFLPlayer(PlayerID)
+	managers.CutCFBPlayer(PlayerID)
 
 	fmt.Println(w, "NFL Player Cut from Roster")
 }

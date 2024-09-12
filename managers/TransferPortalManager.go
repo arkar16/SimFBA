@@ -37,7 +37,7 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 	ts := GetTimestamp()
 	seasonID := strconv.Itoa(ts.CollegeSeasonID)
 	allCollegePlayers := GetAllCollegePlayers()
-	seasonSnapMap := GetCollegePlayerSeasonSnapMap(seasonID)
+	seasonSnapMap := GetCollegePlayerSeasonStatsMap(seasonID)
 	fullRosterMap := GetFullTeamRosterWithCrootsMap()
 	teamProfileMap := GetTeamProfileMap()
 	transferCount := 0
@@ -64,6 +64,7 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 		"Team", "First Name", "Last Name", "Stars",
 		"Archetype", "Position", "Year", "Age", "Redshirt Status",
 		"Overall", "Transfer Bias", "Transfer Status", "Transfer Weight", "Dice Roll",
+		"Age Mod", "Snap Mod", "star Mod", "DC Comp Mod", "Scheme Mod", "FCS Mod",
 	}
 
 	err := writer.Write(HeaderRow)
@@ -73,7 +74,7 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 
 	for _, p := range allCollegePlayers {
 		// Do not include redshirts and all graduating players
-		if p.IsRedshirting || p.Year == 5 || (p.Year == 4 && !p.IsRedshirt) {
+		if p.IsRedshirting || p.TeamID > 194 || p.TeamID == 0 {
 			continue
 		}
 		// Weight will be the initial barrier required for a player to consider transferring.
@@ -90,7 +91,7 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 
 		// Check Snaps
 		seasonStats := seasonSnapMap[p.ID]
-		totalSnaps := seasonStats.GetTotalSnaps()
+		totalSnaps := seasonStats.Snaps
 		snapsPerGame := totalSnaps / 12
 
 		if p.Position == "P" || p.Position == "K" {
@@ -169,13 +170,19 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 		// the more likely they will transfer.
 		/// Have this be a multiplicative factor to odds
 		if p.Year == 1 {
-			ageMod = .15
-		} else if p.Year == 2 {
+			ageMod = .01
+		} else if p.Year == 2 && p.IsRedshirt {
+			ageMod = .1
+		} else if p.Year == 2 && !p.IsRedshirt {
 			ageMod = .4
-		} else if p.Year == 3 {
-			ageMod = .75
-		} else if p.Year == 4 {
+		} else if p.Year == 3 && p.IsRedshirt {
+			ageMod = .7
+		} else if p.Year == 3 && !p.IsRedshirt {
 			ageMod = 1
+		} else if p.Year == 4 {
+			ageMod = 1.25
+		} else if p.Year == 5 {
+			ageMod = 1.45
 		}
 
 		/// Higher star players are more likely to transfer
@@ -217,17 +224,17 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 				if (p.Position == "RB" ||
 					p.Position == "TE" ||
 					p.Position == "FS" ||
+					p.Position == "OT" ||
+					p.Position == "OG" ||
+					p.Position == "DT" ||
+					p.Position == "DE" ||
+					p.Position == "OLB" ||
+					p.Position == "ILB" ||
 					p.Position == "SS") && idx > 2 {
 					depthChartCompetitionMod += 33
 				}
 
 				if (p.Position == "WR" ||
-					p.Position == "OT" ||
-					p.Position == "OG" ||
-					p.Position == "DE" ||
-					p.Position == "DT" ||
-					p.Position == "OLB" ||
-					p.Position == "ILB" ||
 					p.Position == "CB") && idx > 3 {
 					depthChartCompetitionMod += 33
 				}
@@ -255,8 +262,18 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 		teamProfile := teamProfileMap[teamIdStr]
 		schemeMod = getSchemeMod(teamProfile, p, smallDrop, smallGain)
 
+		fcsMod := 1.0
+		if p.TeamID > 134 && p.TeamID != 138 && p.TeamID != 206 {
+			if p.Year > 2 && p.Overall > 39 {
+				fcsMod += (0.1 * float64(p.Year))
+			}
+			if p.Personality == "Loyal" {
+				fcsMod = 0.0
+			}
+		}
+
 		/// Not playing = 25, low depth chart = 16 or 33, scheme = 10, if you're all 3, that's a ~60% chance of transferring pre- modifiers
-		transferWeight = starMod * ageMod * (snapMod + depthChartCompetitionMod + schemeMod)
+		transferWeight = starMod * ageMod * (snapMod + depthChartCompetitionMod + schemeMod) * fcsMod
 		diceRoll := util.GenerateIntFromRange(1, 100)
 
 		// NOT INTENDING TO TRANSFER
@@ -306,6 +323,7 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 			csvModel.Archetype, csvModel.Position,
 			csvModel.Year, strconv.Itoa(p.Age), csvModel.RedshirtStatus,
 			csvModel.OverallGrade, p.RecruitingBias, p.TransferLikeliness, strconv.Itoa(transferInt), strconv.Itoa(diceRoll),
+			fmt.Sprintf("%.3f", ageMod), fmt.Sprintf("%.3f", snapMod), fmt.Sprintf("%.3f", starMod), fmt.Sprintf("%.3f", depthChartCompetitionMod), fmt.Sprintf("%.3f", schemeMod), fmt.Sprintf("%.3f", fcsMod),
 		}
 
 		err = writer.Write(playerRow)
@@ -1291,12 +1309,42 @@ func GetCollegePlayerSeasonSnapMap(seasonID string) map[uint]structs.CollegePlay
 	return seasonStatMap
 }
 
-func GetCollegePlayerSeasonStatMap(seasonID string) map[uint]structs.CollegePlayerSeasonStats {
+func GetCollegePlayerSeasonStatsMap(seasonID string) map[uint]structs.CollegePlayerSeasonStats {
 	seasonStatMap := make(map[uint]structs.CollegePlayerSeasonStats)
 
 	seasonStats := GetCollegePlayerSeasonStatsBySeason(seasonID)
 	for _, stat := range seasonStats {
 		seasonStatMap[stat.CollegePlayerID] = stat
+	}
+
+	return seasonStatMap
+}
+
+func GetCollegePlayerStatsMap(seasonID string) map[uint][]structs.CollegePlayerStats {
+	seasonStatMap := make(map[uint][]structs.CollegePlayerStats)
+
+	seasonStats := GetAllPlayerStatsBySeason(seasonID)
+	for _, stat := range seasonStats {
+		stats := seasonStatMap[uint(stat.CollegePlayerID)]
+		if len(stats) == 0 {
+			seasonStatMap[uint(stat.CollegePlayerID)] = []structs.CollegePlayerStats{}
+		}
+		seasonStatMap[uint(stat.CollegePlayerID)] = append(seasonStatMap[uint(stat.CollegePlayerID)], stat)
+	}
+
+	return seasonStatMap
+}
+
+func GetNFLPlayerStatsMap(seasonID string) map[uint][]structs.NFLPlayerStats {
+	seasonStatMap := make(map[uint][]structs.NFLPlayerStats)
+
+	seasonStats := GetAllNFLPlayerStatsBySeason(seasonID)
+	for _, stat := range seasonStats {
+		stats := seasonStatMap[uint(stat.NFLPlayerID)]
+		if len(stats) == 0 {
+			seasonStatMap[uint(stat.NFLPlayerID)] = []structs.NFLPlayerStats{}
+		}
+		seasonStatMap[uint(stat.NFLPlayerID)] = append(seasonStatMap[uint(stat.NFLPlayerID)], stat)
 	}
 
 	return seasonStatMap
@@ -1564,7 +1612,9 @@ func GetTeamProfileMap() map[string]*structs.RecruitingTeamProfile {
 
 func getSchemeMod(tp *structs.RecruitingTeamProfile, p structs.CollegePlayer, drop, gain float64) float64 {
 	schemeMod := 0.0
-
+	if tp.OffensiveScheme == "" {
+		fmt.Println("PING!")
+	}
 	goodFit := IsGoodSchemeFit(tp.OffensiveScheme, tp.DefensiveScheme, p.Archetype, p.Position)
 	badFit := IsBadSchemeFit(tp.OffensiveScheme, tp.DefensiveScheme, p.Archetype, p.Position)
 	if goodFit {

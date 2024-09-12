@@ -1,7 +1,6 @@
 package managers
 
 import (
-	"encoding/csv"
 	"errors"
 	"fmt"
 	"log"
@@ -29,11 +28,11 @@ var legacy = "Legacy"
 var richHistory = "Prefers to play for a team with a rich history"
 
 func ProcessTransferIntention(w http.ResponseWriter) {
-	// db := dbprovider.GetInstance().GetDB()
-	w.Header().Set("Content-Disposition", "attachment;filename=transferStats.csv")
-	w.Header().Set("Transfer-Encoding", "chunked")
+	db := dbprovider.GetInstance().GetDB()
+	// w.Header().Set("Content-Disposition", "attachment;filename=transferStats.csv")
+	// w.Header().Set("Transfer-Encoding", "chunked")
 	// Initialize writer
-	writer := csv.NewWriter(w)
+	// writer := csv.NewWriter(w)
 	ts := GetTimestamp()
 	seasonID := strconv.Itoa(ts.CollegeSeasonID)
 	allCollegePlayers := GetAllCollegePlayers()
@@ -58,19 +57,20 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 	tinyGain := 5.0
 	smallGain := 10.0
 	mediumGain := 15.0
+	mediumDrop := -15.0
 	bigGain := 25.0
 
-	HeaderRow := []string{
-		"Team", "First Name", "Last Name", "Stars",
-		"Archetype", "Position", "Year", "Age", "Redshirt Status",
-		"Overall", "Transfer Bias", "Transfer Status", "Transfer Weight", "Dice Roll",
-		"Age Mod", "Snap Mod", "star Mod", "DC Comp Mod", "Scheme Mod", "FCS Mod",
-	}
+	// HeaderRow := []string{
+	// 	"Team", "First Name", "Last Name", "Stars",
+	// 	"Archetype", "Position", "Year", "Age", "Redshirt Status",
+	// 	"Overall", "Transfer Bias", "Transfer Status", "Transfer Weight", "Dice Roll",
+	// 	"Age Mod", "Snap Mod", "star Mod", "DC Comp Mod", "Scheme Mod", "FCS Mod",
+	// }
 
-	err := writer.Write(HeaderRow)
-	if err != nil {
-		log.Fatal("Cannot write header row", err)
-	}
+	// err := writer.Write(HeaderRow)
+	// if err != nil {
+	// 	log.Fatal("Cannot write header row", err)
+	// }
 
 	for _, p := range allCollegePlayers {
 		// Do not include redshirts and all graduating players
@@ -260,7 +260,7 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 		}
 		teamIdStr := strconv.Itoa(teamID)
 		teamProfile := teamProfileMap[teamIdStr]
-		schemeMod = getSchemeMod(teamProfile, p, smallDrop, smallGain)
+		schemeMod = getSchemeMod(teamProfile, p, mediumDrop, mediumGain)
 
 		fcsMod := 1.0
 		if p.TeamID > 134 && p.TeamID != 138 && p.TeamID != 206 {
@@ -315,28 +315,39 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 			highCount++
 		}
 
-		fmt.Println(strconv.Itoa(p.Year)+" YEAR "+p.TeamAbbr+" "+p.Position+" "+p.FirstName+" "+p.LastName+" HAS ANNOUNCED THEIR INTENTION TO TRANSFER | Weight: ", int(transferWeight))
-		// db.Save(&p)
-		csvModel := structs.MapPlayerToCSVModel(p)
-		playerRow := []string{
-			p.TeamAbbr, csvModel.FirstName, csvModel.LastName, strconv.Itoa(p.Stars),
-			csvModel.Archetype, csvModel.Position,
-			csvModel.Year, strconv.Itoa(p.Age), csvModel.RedshirtStatus,
-			csvModel.OverallGrade, p.RecruitingBias, p.TransferLikeliness, strconv.Itoa(transferInt), strconv.Itoa(diceRoll),
-			fmt.Sprintf("%.3f", ageMod), fmt.Sprintf("%.3f", snapMod), fmt.Sprintf("%.3f", starMod), fmt.Sprintf("%.3f", depthChartCompetitionMod), fmt.Sprintf("%.3f", schemeMod), fmt.Sprintf("%.3f", fcsMod),
+		repository.SaveCFBPlayer(p, db)
+		if p.Stars > 2 {
+			message := "Breaking News! " + strconv.Itoa(p.Stars) + " star " + p.Position + " " + p.FirstName + " " + p.LastName + " has announced their intention to transfer from " + p.TeamAbbr + "!"
+			CreateNewsLog("CFB", message, "Transfer Portal", int(p.TeamID), ts)
 		}
+		notificationMessage := strconv.Itoa(p.Stars) + " star " + p.Position + " " + p.FirstName + " " + p.LastName + " has a " + p.TransferLikeliness + " likeliness of entering the transfer portal. Please navigate to the Roster page to submit a promise."
+		CreateNotification("CFB", notificationMessage, "Transfer Intention", uint(p.TeamID))
+		// fmt.Println(strconv.Itoa(p.Year)+" YEAR "+p.TeamAbbr+" "+p.Position+" "+p.FirstName+" "+p.LastName+" HAS ANNOUNCED THEIR INTENTION TO TRANSFER | Weight: ", int(transferWeight))
+		// // db.Save(&p)
+		// csvModel := structs.MapPlayerToCSVModel(p)
+		// playerRow := []string{
+		// 	p.TeamAbbr, csvModel.FirstName, csvModel.LastName, strconv.Itoa(p.Stars),
+		// 	csvModel.Archetype, csvModel.Position,
+		// 	csvModel.Year, strconv.Itoa(p.Age), csvModel.RedshirtStatus,
+		// 	csvModel.OverallGrade, p.RecruitingBias, p.TransferLikeliness, strconv.Itoa(transferInt), strconv.Itoa(diceRoll),
+		// 	fmt.Sprintf("%.3f", ageMod), fmt.Sprintf("%.3f", snapMod), fmt.Sprintf("%.3f", starMod), fmt.Sprintf("%.3f", depthChartCompetitionMod), fmt.Sprintf("%.3f", schemeMod), fmt.Sprintf("%.3f", fcsMod),
+		// }
 
-		err = writer.Write(playerRow)
-		if err != nil {
-			log.Fatal("Cannot write player row to CSV", err)
-		}
+		// err = writer.Write(playerRow)
+		// if err != nil {
+		// 	log.Fatal("Cannot write player row to CSV", err)
+		// }
 
-		writer.Flush()
-		err = writer.Error()
-		if err != nil {
-			log.Fatal("Error while writing to file ::", err)
-		}
+		// writer.Flush()
+		// err = writer.Error()
+		// if err != nil {
+		// 	log.Fatal("Error while writing to file ::", err)
+		// }
 	}
+	transferPortalMessage := "Breaking News! About " + strconv.Itoa(transferCount) + " players intend to transfer from their current schools. Teams have one week to commit promises to retain players."
+	CreateNewsLog("CFB", transferPortalMessage, "Transfer Portal", 0, ts)
+	ts.EnactPromisePhase()
+	repository.SaveTimestamp(ts, db)
 	fmt.Println("Total number of players entering the transfer portal: ", transferCount)
 	fmt.Println("Total number of freshmen entering the transfer portal: ", freshmanCount)
 	fmt.Println("Total number of redshirt freshmen entering the transfer portal: ", redshirtFreshmanCount)
@@ -359,7 +370,7 @@ func AICoachPromisePhase() {
 	coachMap := GetActiveCollegeCoachMap()
 
 	for _, team := range aiTeamProfiles {
-		if !team.IsAI {
+		if !team.IsAI || team.ID > 194 || team.ID == 0 {
 			continue
 		}
 		coach := coachMap[team.ID]
@@ -393,7 +404,7 @@ func AICoachPromisePhase() {
 				if bias == closeToHome {
 					promiseType = "Home State Game"
 					benchmarkStr = p.State
-				} else if bias == immediateStart && p.Overall > 48 {
+				} else if bias == immediateStart && p.Overall > 42 {
 					promiseType = "Snaps"
 					// REWRITE
 					promiseBenchmark = 0

@@ -19,244 +19,244 @@ func CFBProgressionMain() {
 	ts := GetTimestamp()
 	SeasonID := strconv.Itoa(ts.CollegeSeasonID)
 	// Get All Teams
-	snapMap := GetCollegePlayerSeasonSnapMap(SeasonID)
-	statMap := GetCollegePlayerStatsMap(SeasonID)
+	// snapMap := GetCollegePlayerSeasonSnapMap(SeasonID)
+	// statMap := GetCollegePlayerStatsMap(SeasonID)
 
-	collegeTeams := GetAllCollegeTeams()
-	// Loop
-	var graduatingPlayers []models.NFLDraftee
+	// collegeTeams := GetAllCollegeTeams()
+	// // Loop
+	// var graduatingPlayers []models.NFLDraftee
 
-	for _, team := range collegeTeams {
-		teamID := strconv.Itoa(int(team.ID))
-		roster := GetAllCollegePlayersByTeamId(teamID)
-		croots := GetSignedRecruitsByTeamProfileID(teamID)
+	// for _, team := range collegeTeams {
+	// 	teamID := strconv.Itoa(int(team.ID))
+	// 	roster := GetAllCollegePlayersByTeamId(teamID)
+	// 	croots := GetSignedRecruitsByTeamProfileID(teamID)
 
-		if !team.PlayersProgressed {
-			for _, player := range roster {
-				if player.HasProgressed {
-					continue
-				}
-				// Get Latest Stats
-				stats := statMap[player.ID]
-				snaps := snapMap[player.ID]
+	// 	if !team.PlayersProgressed {
+	// 		for _, player := range roster {
+	// 			if player.HasProgressed {
+	// 				continue
+	// 			}
+	// 			// Get Latest Stats
+	// 			stats := statMap[player.ID]
+	// 			snaps := snapMap[player.ID]
 
-				// Get Average Snaps
-				avgSnaps := getAverageSnaps(stats)
+	// 			// Get Average Snaps
+	// 			avgSnaps := getAverageSnaps(stats)
 
-				// Run Function to Determine if Player is Declaring Early
-				willDeclare := DetermineIfDeclaring(player, avgSnaps)
+	// 			// Run Function to Determine if Player is Declaring Early
+	// 			willDeclare := DetermineIfDeclaring(player, avgSnaps)
 
-				// Progress the Player
-				player = ProgressCollegePlayer(player, SeasonID, stats, snaps)
+	// 			// Progress the Player
+	// 			player = ProgressCollegePlayer(player, SeasonID, stats, snaps)
 
-				if willDeclare {
-					player.GraduatePlayer()
-					draftee := models.NFLDraftee{}
-					draftee.Map(player)
-					// Map New Progression value for NFL
-					newProgression := util.GenerateNFLPotential(player.Progression)
-					newPotentialGrade := util.GetWeightedPotentialGrade(newProgression)
-					draftee.MapProgression(newProgression, newPotentialGrade)
+	// 			if willDeclare {
+	// 				player.GraduatePlayer()
+	// 				draftee := models.NFLDraftee{}
+	// 				draftee.Map(player)
+	// 				// Map New Progression value for NFL
+	// 				newProgression := util.GenerateNFLPotential(player.Progression)
+	// 				newPotentialGrade := util.GetWeightedPotentialGrade(newProgression)
+	// 				draftee.MapProgression(newProgression, newPotentialGrade)
 
-					if draftee.Position == "RB" {
-						draftee = BoomBustDraftee(draftee, SeasonID, 31, true)
-					}
+	// 				if draftee.Position == "RB" {
+	// 					draftee = BoomBustDraftee(draftee, SeasonID, 31, true)
+	// 				}
 
-					draftee.GetLetterGrades()
+	// 				draftee.GetLetterGrades()
 
-					/*
-						Boom/Bust Function
-					*/
-					tier := 1
-					isBoom := false
-					enableBoomBust := false
-					boomBustStatus := "None"
-					tierRoll := util.GenerateIntFromRange(1, 10)
-					diceRoll := util.GenerateIntFromRange(1, 20)
+	// 				/*
+	// 					Boom/Bust Function
+	// 				*/
+	// 				tier := 1
+	// 				isBoom := false
+	// 				enableBoomBust := false
+	// 				boomBustStatus := "None"
+	// 				tierRoll := util.GenerateIntFromRange(1, 10)
+	// 				diceRoll := util.GenerateIntFromRange(1, 20)
 
-					if tierRoll > 7 && tierRoll < 10 {
-						tier = 2
-					} else if tierRoll > 9 {
-						tier = 3
-					}
+	// 				if tierRoll > 7 && tierRoll < 10 {
+	// 					tier = 2
+	// 				} else if tierRoll > 9 {
+	// 					tier = 3
+	// 				}
 
-					// Generate Tier
-					if diceRoll == 1 {
-						boomBustStatus = "Bust"
-						enableBoomBust = true
-						// Bust
+	// 				// Generate Tier
+	// 				if diceRoll == 1 {
+	// 					boomBustStatus = "Bust"
+	// 					enableBoomBust = true
+	// 					// Bust
 
-						draftee.AssignBoomBustStatus(boomBustStatus)
+	// 					draftee.AssignBoomBustStatus(boomBustStatus)
 
-					} else if diceRoll == 20 {
-						enableBoomBust = true
-						// Boom
+	// 				} else if diceRoll == 20 {
+	// 					enableBoomBust = true
+	// 					// Boom
 
-						boomBustStatus = "Boom"
-						isBoom = true
-						draftee.AssignBoomBustStatus(boomBustStatus)
-					} else {
-						tier = 0
-					}
-					if enableBoomBust {
-						for i := 0; i < tier; i++ {
-							draftee = BoomBustDraftee(draftee, SeasonID, 51, isBoom)
-						}
-					}
+	// 					boomBustStatus = "Boom"
+	// 					isBoom = true
+	// 					draftee.AssignBoomBustStatus(boomBustStatus)
+	// 				} else {
+	// 					tier = 0
+	// 				}
+	// 				if enableBoomBust {
+	// 					for i := 0; i < tier; i++ {
+	// 						draftee = BoomBustDraftee(draftee, SeasonID, 51, isBoom)
+	// 					}
+	// 				}
 
-					// Create Historic Player Record
-					hcp := (structs.HistoricCollegePlayer)(player)
-					repository.CreateHistoricCFBPlayerRecord(hcp, db)
+	// 				// Create Historic Player Record
+	// 				hcp := (structs.HistoricCollegePlayer)(player)
+	// 				repository.CreateHistoricCFBPlayerRecord(hcp, db)
 
-					message := player.Position + " " + player.FirstName + " " + player.LastName + " has graduated from " + player.TeamAbbr + "!"
-					if (player.Year < 5 && player.IsRedshirt) || (player.Year < 4 && !player.IsRedshirt) {
-						message = "Breaking News! " + player.Position + " " + player.FirstName + " " + player.LastName + " is declaring early from " + player.TeamAbbr + ", and will be eligible for the SimNFL Draft!"
-					}
+	// 				message := player.Position + " " + player.FirstName + " " + player.LastName + " has graduated from " + player.TeamAbbr + "!"
+	// 				if (player.Year < 5 && player.IsRedshirt) || (player.Year < 4 && !player.IsRedshirt) {
+	// 					message = "Breaking News! " + player.Position + " " + player.FirstName + " " + player.LastName + " is declaring early from " + player.TeamAbbr + ", and will be eligible for the SimNFL Draft!"
+	// 				}
 
-					CreateNewsLog("CFB", message, "Graduation", player.TeamID, ts)
+	// 				CreateNewsLog("CFB", message, "Graduation", player.TeamID, ts)
 
-					// Create Draftee Record
-					graduatingPlayers = append(graduatingPlayers, draftee)
-					// CollegePlayer record will be deleted, but record will be mapped to a GraduatedCollegePlayer struct, and then saved in that table, along side with NFL Draftees table
-					// GraduatedCollegePlayer will be a copy of the collegeplayers table, but only for historical players
-					repository.DeleteCollegePlayerRecord(player, db)
-					continue
-				}
-				fmt.Println("Saved " + player.FirstName + " " + player.LastName + "'s record")
-				repository.SaveCollegePlayerRecord(player, db)
-			}
+	// 				// Create Draftee Record
+	// 				graduatingPlayers = append(graduatingPlayers, draftee)
+	// 				// CollegePlayer record will be deleted, but record will be mapped to a GraduatedCollegePlayer struct, and then saved in that table, along side with NFL Draftees table
+	// 				// GraduatedCollegePlayer will be a copy of the collegeplayers table, but only for historical players
+	// 				repository.DeleteCollegePlayerRecord(player, db)
+	// 				continue
+	// 			}
+	// 			fmt.Println("Saved " + player.FirstName + " " + player.LastName + "'s record")
+	// 			repository.SaveCollegePlayerRecord(player, db)
+	// 		}
 
-			team.TogglePlayersProgressed()
-		}
+	// 		team.TogglePlayersProgressed()
+	// 	}
 
-		if !team.RecruitsAdded {
-			for _, croot := range croots {
-				// Convert to College Player Record
-				cp := structs.CollegePlayer{}
-				cp.MapFromRecruit(croot, team)
+	// 	if !team.RecruitsAdded {
+	// 		for _, croot := range croots {
+	// 			// Convert to College Player Record
+	// 			cp := structs.CollegePlayer{}
+	// 			cp.MapFromRecruit(croot, team)
 
-				// Add in Boom/Bust
-				// Tiering only for FCS teams
-				tier := 1
-				isBoom := false
-				enableBoomBust := false
-				tierRoll := util.GenerateIntFromRange(1, 10)
-				diceRoll := util.GenerateIntFromRange(1, 20)
+	// 			// Add in Boom/Bust
+	// 			// Tiering only for FCS teams
+	// 			tier := 1
+	// 			isBoom := false
+	// 			enableBoomBust := false
+	// 			tierRoll := util.GenerateIntFromRange(1, 10)
+	// 			diceRoll := util.GenerateIntFromRange(1, 20)
 
-				if !team.IsFBS && tierRoll > 7 && tierRoll < 10 {
-					tier = 2
-				} else if !team.IsFBS && tierRoll == 10 {
-					tier = 3
-				}
+	// 			if !team.IsFBS && tierRoll > 7 && tierRoll < 10 {
+	// 				tier = 2
+	// 			} else if !team.IsFBS && tierRoll == 10 {
+	// 				tier = 3
+	// 			}
 
-				// Generate Tier
-				if diceRoll == 1 {
+	// 			// Generate Tier
+	// 			if diceRoll == 1 {
 
-					enableBoomBust = true
-				} else if diceRoll == 20 || (cp.ID == 84719 || cp.ID == 84504) {
-					enableBoomBust = true
-					isBoom = true
-				} else {
-					tier = 0
-				}
-				if enableBoomBust {
-					for i := 0; i < tier; i++ {
-						cp = BoomBustRecruit(cp, SeasonID, 51, isBoom)
-					}
-				}
+	// 				enableBoomBust = true
+	// 			} else if diceRoll == 20 || (cp.ID == 84719 || cp.ID == 84504) {
+	// 				enableBoomBust = true
+	// 				isBoom = true
+	// 			} else {
+	// 				tier = 0
+	// 			}
+	// 			if enableBoomBust {
+	// 				for i := 0; i < tier; i++ {
+	// 					cp = BoomBustRecruit(cp, SeasonID, 51, isBoom)
+	// 				}
+	// 			}
 
-				fmt.Println("Adding " + croot.FirstName + " " + croot.LastName + "to " + team.TeamAbbr)
+	// 			fmt.Println("Adding " + croot.FirstName + " " + croot.LastName + "to " + team.TeamAbbr)
 
-				// Save College Player Record
-				repository.CreateCFBPlayerRecord(cp, db)
+	// 			// Save College Player Record
+	// 			repository.CreateCFBPlayerRecord(cp, db)
 
-				// Delete Recruit Record
-				repository.DeleteCollegeRecruitRecord(croot, db)
-			}
+	// 			// Delete Recruit Record
+	// 			repository.DeleteCollegeRecruitRecord(croot, db)
+	// 		}
 
-			team.ToggleRecruitsAdded()
-		}
-		repository.SaveCFBTeam(team, db)
-	}
+	// 		team.ToggleRecruitsAdded()
+	// 	}
+	// 	repository.SaveCFBTeam(team, db)
+	// }
 
-	// Unsigned Players
-	unsignedPlayers := GetAllCollegePlayersByTeamId("0")
-	for _, player := range unsignedPlayers {
-		player = ProgressCollegePlayer(player, SeasonID, []structs.CollegePlayerStats{}, structs.CollegePlayerSeasonSnaps{})
-		if (player.IsRedshirt && player.Year > 5) ||
-			(!player.IsRedshirt && player.Year > 4) {
-			player.GraduatePlayer()
-			draftee := models.NFLDraftee{}
-			draftee.Map(player)
+	// // Unsigned Players
+	// unsignedPlayers := GetAllCollegePlayersByTeamId("0")
+	// for _, player := range unsignedPlayers {
+	// 	player = ProgressCollegePlayer(player, SeasonID, []structs.CollegePlayerStats{}, structs.CollegePlayerSeasonSnaps{})
+	// 	if (player.IsRedshirt && player.Year > 5) ||
+	// 		(!player.IsRedshirt && player.Year > 4) {
+	// 		player.GraduatePlayer()
+	// 		draftee := models.NFLDraftee{}
+	// 		draftee.Map(player)
 
-			// Map New Progression value for NFL
-			newProgression := util.GenerateNFLPotential(player.Progression)
-			newPotentialGrade := util.GetWeightedPotentialGrade(newProgression)
-			draftee.MapProgression(newProgression, newPotentialGrade)
+	// 		// Map New Progression value for NFL
+	// 		newProgression := util.GenerateNFLPotential(player.Progression)
+	// 		newPotentialGrade := util.GetWeightedPotentialGrade(newProgression)
+	// 		draftee.MapProgression(newProgression, newPotentialGrade)
 
-			if draftee.Position == "RB" {
-				draftee = BoomBustDraftee(draftee, SeasonID, 31, true)
-			}
+	// 		if draftee.Position == "RB" {
+	// 			draftee = BoomBustDraftee(draftee, SeasonID, 31, true)
+	// 		}
 
-			draftee.GetLetterGrades()
+	// 		draftee.GetLetterGrades()
 
-			/*
-				Boom/Bust Function
-			*/
-			tier := 1
-			isBoom := false
-			enableBoomBust := false
-			boomBustStatus := "None"
-			tierRoll := util.GenerateIntFromRange(1, 10)
-			diceRoll := util.GenerateIntFromRange(1, 20)
+	// 		/*
+	// 			Boom/Bust Function
+	// 		*/
+	// 		tier := 1
+	// 		isBoom := false
+	// 		enableBoomBust := false
+	// 		boomBustStatus := "None"
+	// 		tierRoll := util.GenerateIntFromRange(1, 10)
+	// 		diceRoll := util.GenerateIntFromRange(1, 20)
 
-			if tierRoll > 7 && tierRoll < 10 {
-				tier = 2
-			} else if tierRoll > 9 {
-				tier = 3
-			}
+	// 		if tierRoll > 7 && tierRoll < 10 {
+	// 			tier = 2
+	// 		} else if tierRoll > 9 {
+	// 			tier = 3
+	// 		}
 
-			// Generate Tier
-			if diceRoll == 1 {
-				boomBustStatus = "Bust"
-				enableBoomBust = true
-				// Bust
-				fmt.Println("BUST!")
-				draftee.AssignBoomBustStatus(boomBustStatus)
+	// 		// Generate Tier
+	// 		if diceRoll == 1 {
+	// 			boomBustStatus = "Bust"
+	// 			enableBoomBust = true
+	// 			// Bust
+	// 			fmt.Println("BUST!")
+	// 			draftee.AssignBoomBustStatus(boomBustStatus)
 
-			} else if diceRoll == 20 {
-				enableBoomBust = true
-				// Boom
-				fmt.Println("BOOM!")
-				boomBustStatus = "Boom"
-				isBoom = true
-				draftee.AssignBoomBustStatus(boomBustStatus)
-			} else {
-				tier = 0
-			}
-			if enableBoomBust {
-				for i := 0; i < tier; i++ {
-					draftee = BoomBustDraftee(draftee, SeasonID, 51, isBoom)
-				}
-			}
+	// 		} else if diceRoll == 20 {
+	// 			enableBoomBust = true
+	// 			// Boom
+	// 			fmt.Println("BOOM!")
+	// 			boomBustStatus = "Boom"
+	// 			isBoom = true
+	// 			draftee.AssignBoomBustStatus(boomBustStatus)
+	// 		} else {
+	// 			tier = 0
+	// 		}
+	// 		if enableBoomBust {
+	// 			for i := 0; i < tier; i++ {
+	// 				draftee = BoomBustDraftee(draftee, SeasonID, 51, isBoom)
+	// 			}
+	// 		}
 
-			hcp := (structs.HistoricCollegePlayer)(player)
+	// 		hcp := (structs.HistoricCollegePlayer)(player)
 
-			repository.CreateHistoricCFBPlayerRecord(hcp, db)
-			graduatingPlayers = append(graduatingPlayers, draftee)
-			// CollegePlayer record will be deleted, but record will be mapped to a GraduatedCollegePlayer struct, and then saved in that table, along side with NFL Draftees table
-			// GraduatedCollegePlayer will be a copy of the collegeplayers table, but only for historical players
+	// 		repository.CreateHistoricCFBPlayerRecord(hcp, db)
+	// 		graduatingPlayers = append(graduatingPlayers, draftee)
+	// 		// CollegePlayer record will be deleted, but record will be mapped to a GraduatedCollegePlayer struct, and then saved in that table, along side with NFL Draftees table
+	// 		// GraduatedCollegePlayer will be a copy of the collegeplayers table, but only for historical players
 
-			repository.DeleteCollegePlayerRecord(player, db)
-			continue
-		}
-		repository.SaveCFBPlayer(player, db)
-	}
+	// 		repository.DeleteCollegePlayerRecord(player, db)
+	// 		continue
+	// 	}
+	// 	repository.SaveCFBPlayer(player, db)
+	// }
 
-	// Graduating players
-	for _, grad := range graduatingPlayers {
-		repository.CreateNFLDrafteeRecord(grad, db)
-	}
+	// // Graduating players
+	// for _, grad := range graduatingPlayers {
+	// 	repository.CreateNFLDrafteeRecord(grad, db)
+	// }
 	// get all unsigned players
 	// progress through all unsigned players
 	// move all seniors + to graduates table
@@ -2057,7 +2057,7 @@ func PrimaryProgression(progression int, input int, position string, archetype s
 	if !isRedshirting {
 		progress = ((1 - math.Pow((float64(input)/99.0), 15)) * math.Log10(float64(input)) * (0.6 + modifier)) * (1 + (float64(progression) / 70))
 	} else {
-		rsMod := util.GenerateFloatFromRange(1.5, 1.9)
+		rsMod := util.GenerateFloatFromRange(1.7, 2.3)
 		progress = ((1 - math.Pow((float64(input)/99), 15)) * math.Log10(float64(input)) * rsMod * (1 + (float64(progression / 60))))
 	}
 
@@ -2305,10 +2305,6 @@ func GetArchetypeMod(pos string, arch string, attribute string) float64 {
 }
 
 func DetermineIfRetiring(player structs.NFLPlayer, statMap map[uint][]structs.NFLPlayerSeasonStats) bool {
-	if player.Age < int(player.PrimeAge) {
-		return false
-	}
-
 	if player.IsFreeAgent && player.Experience > 1 {
 		lastTwoSeasonStats := statMap[player.ID]
 		totalSnaps := 0
@@ -2316,6 +2312,10 @@ func DetermineIfRetiring(player structs.NFLPlayer, statMap map[uint][]structs.NF
 			totalSnaps += stat.Snaps
 		}
 		return totalSnaps == 0
+	}
+
+	if player.Age < int(player.PrimeAge) {
+		return false
 	}
 
 	/*
@@ -2418,33 +2418,6 @@ func getAverageSnaps(stats []structs.CollegePlayerStats) int {
 	}
 
 	return SnapsPerGame
-}
-
-func getRetirementOdds(age int) float64 {
-	if age < 28 {
-		return 0
-	} else if age == 28 {
-		return 0.1
-	} else if age == 29 {
-		return 0.18
-	} else if age == 30 {
-		return 0.21
-	} else if age == 31 {
-		return 0.25
-	} else if age == 32 {
-		return 0.28
-	} else if age == 33 {
-		return 0.32
-	} else if age == 34 {
-		return 0.36
-	} else if age == 35 {
-		return 0.39
-	} else if age == 36 {
-		return 0.43
-	} else if age == 37 {
-		return 0.46
-	}
-	return 0.5
 }
 
 func getMostPlayedPosition(snaps structs.BasePlayerSeasonSnaps, pos string) (string, uint16) {
@@ -2565,7 +2538,7 @@ func RegressAttribute(attr, age, primeAge int, isIQ bool) int {
 	min := 0.0
 	max := 0.0
 	ageRequirement := primeAge
-	mod := float64(primeAge) - 4.0
+	mod := float64(primeAge) - 6.0
 	if isIQ {
 		ageRequirement = primeAge + 1
 		mod = float64(primeAge)

@@ -211,3 +211,11 @@ func SaveNotification(noti structs.Notification, db *gorm.DB) {
 		log.Panicln("Could not save notification record!")
 	}
 }
+
+func SaveCollegePromiseRecord(promise structs.CollegePromise, db *gorm.DB) {
+	// Save College Player Record
+	err := db.Save(&promise).Error
+	if err != nil {
+		log.Panicln("Could not save new college recruit record")
+	}
+}

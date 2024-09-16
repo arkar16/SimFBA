@@ -20,6 +20,391 @@ import (
 	"gorm.io/gorm"
 )
 
+type CrootGenerator struct {
+	firstNameMap      map[string][][]string
+	lastNameMap       map[string][][]string
+	collegePlayerList []structs.CollegePlayer
+	coachList         []structs.CollegeCoach
+	teamMap           map[uint]structs.CollegeTeam
+	positionList      []string
+	CrootList         []structs.Recruit
+	GlobalList        []structs.Player
+	attributeBlob     map[string]map[string]map[string]map[string]interface{}
+	crootLocations    map[string][]structs.CrootLocation
+	newID             uint
+	count             int
+	requiredPlayers   int
+	qbCount           int
+	rbCount           int
+	fbCount           int
+	wrCount           int
+	teCount           int
+	otCount           int
+	ogCount           int
+	cCount            int
+	dtCount           int
+	deCount           int
+	ilbCount          int
+	olbCount          int
+	cbCount           int
+	fsCount           int
+	ssCount           int
+	pCount            int
+	kCount            int
+	athCount          int
+	star5             int
+	star4             int
+	star3             int
+	star2             int
+	star1             int
+	highestOvr        int
+	lowestOvr         int
+	pickedEthnicity   string
+	caser             cases.Caser
+}
+
+func (pg *CrootGenerator) GenerateRecruits() {
+	for pg.count < pg.requiredPlayers {
+		player, globalPlayer := pg.generatePlayer()
+		pg.CrootList = append(pg.CrootList, player)
+		pg.GlobalList = append(pg.GlobalList, globalPlayer)
+		pg.updateStatistics(player) // A method to update player counts and statistics
+		if player.RelativeType == 5 {
+			twinPlayer, twinGlobal := pg.generateTwin(&player)
+			pg.updateStatistics(twinPlayer)
+			pg.CrootList = append(pg.CrootList, twinPlayer)
+			pg.GlobalList = append(pg.GlobalList, twinGlobal)
+			pg.count++
+		}
+		pg.count++
+		pg.newID++
+	}
+}
+
+func (pg *CrootGenerator) generatePlayer() (structs.Recruit, structs.Player) {
+	cpLen := len(pg.collegePlayerList) - 1
+	coachLen := len(pg.coachList)
+	relativeType := 0
+	relativeID := 0
+	coachTeamID := 0
+	coachTeamAbbr := ""
+	notes := ""
+	star := util.GetStarRating()
+	state := util.PickState()
+	pg.pickedEthnicity = pickEthnicity()
+	firstNameList := pg.firstNameMap[pg.pickedEthnicity]
+	lastNameList := pg.lastNameMap[pg.pickedEthnicity]
+	fName := getName(firstNameList)
+	firstName := pg.caser.String(strings.ToLower(fName))
+	lastName := ""
+	roof := 100
+	relativeRoll := util.GenerateIntFromRange(1, roof)
+	relativeIdx := 0
+	if relativeRoll == roof {
+		relativeType = getRelativeType()
+		if relativeType == 2 {
+			// Brother of college player
+			fmt.Println("BROTHER")
+			relativeIdx = util.GenerateIntFromRange(0, cpLen)
+			if relativeIdx < 0 || relativeIdx > len(pg.collegePlayerList) {
+				relativeIdx = util.GenerateIntFromRange(0, cpLen)
+			}
+			cp := pg.collegePlayerList[relativeIdx]
+			relativeID = int(cp.ID)
+			lastName = cp.LastName
+			state = cp.State
+			notes = "Brother of " + cp.TeamAbbr + " " + cp.Position + " " + cp.FirstName + " " + cp.LastName
+		} else if relativeType == 3 {
+			fmt.Println("COUSIN")
+			// Cousin
+			relativeIdx = util.GenerateIntFromRange(0, cpLen)
+			if relativeIdx < 0 || relativeIdx > len(pg.collegePlayerList) {
+				relativeIdx = util.GenerateIntFromRange(0, cpLen)
+			}
+			cp := pg.collegePlayerList[relativeIdx]
+			relativeID = int(cp.ID)
+			coinFlip := util.GenerateIntFromRange(1, 2)
+			if coinFlip == 1 {
+				lastName = cp.LastName
+			} else {
+				lName := getName(lastNameList)
+				lastName = pg.caser.String(strings.ToLower(lName))
+			}
+			state = cp.State
+			notes = "Cousin of " + cp.TeamAbbr + " " + cp.Position + " " + cp.FirstName + " " + cp.LastName
+		} else if relativeType == 4 {
+			// Half Brother
+			fmt.Println("HALF BROTHER GENERATED")
+			relativeIdx = util.GenerateIntFromRange(0, cpLen)
+			if relativeIdx < 0 || relativeIdx > len(pg.collegePlayerList) {
+				relativeIdx = util.GenerateIntFromRange(0, cpLen)
+			}
+			cp := pg.collegePlayerList[relativeIdx]
+			relativeID = int(cp.ID)
+			coinFlip := util.GenerateIntFromRange(1, 3)
+			if coinFlip < 3 {
+				lastName = cp.LastName
+			} else {
+				lName := getName(lastNameList)
+				lastName = pg.caser.String(strings.ToLower(lName))
+			}
+			state = cp.State
+			notes = "Half-Brother of " + cp.TeamAbbr + " " + cp.Position + " " + cp.FirstName + " " + cp.LastName
+		} else if relativeType == 5 {
+			// Twin
+			relativeType = 5
+			relativeID = int(pg.newID)
+		} else if relativeType == 6 {
+			// Coach's Son
+			fmt.Println("COACH'S SON")
+			relativeIdx = util.GenerateIntFromRange(0, coachLen)
+			if relativeIdx < 0 || relativeIdx > len(pg.coachList) {
+				relativeIdx = util.GenerateIntFromRange(0, coachLen)
+			}
+			coach := pg.coachList[relativeIdx]
+			relativeID = int(coach.ID)
+			lastName = getCoachLastName(coach.CoachName)
+			team := pg.teamMap[coach.TeamID]
+			if len(team.State) > 2 {
+				stateLabel, err := util.GetStateAbbreviation(team.State)
+				if err != nil {
+					log.Panicln("WRONG STATE INPUT")
+				}
+				state = stateLabel
+			} else {
+				state = team.State
+			}
+			notes = "Son of Coach " + coach.CoachName + " of " + coach.Team
+			coachTeamID = int(coach.TeamID)
+			coachTeamAbbr = coach.Team
+		} else if relativeType == 7 {
+			// Coach's Nephew
+			fmt.Println("COACH'S NEPHEW")
+			relativeIdx = util.GenerateIntFromRange(0, coachLen)
+			if relativeIdx < 0 || relativeIdx > len(pg.coachList) {
+				relativeIdx = util.GenerateIntFromRange(0, coachLen)
+			}
+			coach := pg.coachList[relativeIdx]
+			relativeID = int(coach.ID)
+			coachLastName := getCoachLastName(coach.CoachName)
+			coinFlip := util.GenerateIntFromRange(1, 2)
+			if coinFlip == 1 {
+				lastName = coachLastName
+			} else {
+				lName := getName(lastNameList)
+				lastName = pg.caser.String(strings.ToLower(lName))
+			}
+			team := pg.teamMap[coach.TeamID]
+			if len(team.State) > 2 {
+				stateLabel, err := util.GetStateAbbreviation(team.State)
+				if err != nil {
+					log.Panicln("WRONG STATE INPUT")
+				}
+				state = stateLabel
+			} else {
+				state = team.State
+			}
+			notes = "Nephew of Coach " + coach.CoachName + " of " + coach.Team
+			coachTeamID = int(coach.TeamID)
+			coachTeamAbbr = coach.Team
+		}
+	} else {
+		relativeType = 1
+	}
+	if relativeType == 1 || relativeType == 5 {
+		lName := getName(lastNameList)
+		lastName = pg.caser.String(strings.ToLower(lName))
+	}
+
+	pickedPosition := util.PickPosition()
+	player := createRecruit(pg.pickedEthnicity, pickedPosition, star, firstName, lastName, pg.newID, pg.attributeBlob, state, pg.crootLocations[state], pg.caser)
+	player.AssignRelativeData(uint(relativeID), uint(relativeType), uint(coachTeamID), coachTeamAbbr, notes)
+	globalPlayer := structs.Player{
+		CollegePlayerID: int(pg.newID),
+		RecruitID:       int(pg.newID),
+		NFLPlayerID:     int(pg.newID),
+	}
+
+	globalPlayer.AssignID(pg.newID)
+	return player, globalPlayer
+}
+
+func (pg *CrootGenerator) generateTwin(player *structs.Recruit) (structs.Recruit, structs.Player) {
+	fmt.Println("TWIN!!")
+	// Generate Twin Record
+	firstTwinRelativeID := int(pg.newID)
+	pg.newID++
+	// Twin being generated is secondTwin
+	secondTwinRelativeID := pg.newID
+	firstNameList := pg.firstNameMap[pg.pickedEthnicity]
+	twinName := getName(firstNameList)
+	twinN := pg.caser.String(strings.ToLower(twinName))
+	twinPosition := util.PickFromStringList(pg.positionList)
+	coinFlip := util.GenerateIntFromRange(1, 2)
+	stars := util.GetStarRating()
+	if coinFlip == 2 {
+		twinPosition = player.Position
+		stars = player.Stars
+	}
+	twinNotes := "Twin Brother of " + strconv.Itoa(player.Stars) + " Star Recruit " + player.Position + " " + player.FirstName + " " + player.LastName
+	twinPlayer := createRecruit("", twinPosition, stars, twinN, player.LastName, secondTwinRelativeID, pg.attributeBlob, player.State, pg.crootLocations[player.State], pg.caser)
+	twinPlayer.AssignRelativeData(uint(firstTwinRelativeID), 4, 0, "", twinNotes)
+	twinPlayer.AssignTwinData(player.LastName, player.City, player.State, player.HighSchool)
+	notes := "Twin Brother of " + strconv.Itoa(twinPlayer.Stars) + " Star Recruit " + twinPlayer.Position + " " + twinPlayer.FirstName + " " + twinPlayer.LastName
+	player.AssignRelativeData(uint(secondTwinRelativeID), 4, 0, "", notes)
+	globalTwinPlayer := structs.Player{
+		CollegePlayerID: int(secondTwinRelativeID),
+		RecruitID:       int(secondTwinRelativeID),
+		NFLPlayerID:     int(secondTwinRelativeID),
+	}
+	globalTwinPlayer.AssignID(secondTwinRelativeID)
+	globalPlayer := structs.Player{
+		CollegePlayerID: firstTwinRelativeID,
+		RecruitID:       firstTwinRelativeID,
+		NFLPlayerID:     firstTwinRelativeID,
+	}
+	globalPlayer.AssignID(uint(firstTwinRelativeID))
+	return twinPlayer, globalPlayer
+}
+
+func (pg *CrootGenerator) updateStatistics(player structs.Recruit) {
+	if player.Stars == 5 {
+		pg.star5++
+	} else if player.Stars == 4 {
+		pg.star4++
+	} else if player.Stars == 3 {
+		pg.star3++
+	} else if player.Stars == 2 {
+		pg.star2++
+	} else {
+		pg.star1++
+	}
+	if player.Position == "QB" {
+		pg.qbCount++
+	} else if player.Position == "RB" {
+		pg.rbCount++
+	} else if player.Position == "FB" {
+		pg.fbCount++
+	} else if player.Position == "WR" {
+		pg.wrCount++
+	} else if player.Position == "TE" {
+		pg.teCount++
+	} else if player.Position == "OT" {
+		pg.otCount++
+	} else if player.Position == "OG" {
+		pg.ogCount++
+	} else if player.Position == "C" {
+		pg.cCount++
+	} else if player.Position == "DT" {
+		pg.dtCount++
+	} else if player.Position == "DE" {
+		pg.deCount++
+	} else if player.Position == "ILB" {
+		pg.ilbCount++
+	} else if player.Position == "OLB" {
+		pg.olbCount++
+	} else if player.Position == "CB" {
+		pg.cbCount++
+	} else if player.Position == "FS" {
+		pg.fsCount++
+	} else if player.Position == "SS" {
+		pg.ssCount++
+	} else if player.Position == "K" {
+		pg.kCount++
+	} else if player.Position == "P" {
+		pg.pCount++
+	} else if player.Position == "ATH" {
+		pg.athCount++
+	}
+
+	if player.Overall > pg.highestOvr {
+		pg.highestOvr = player.Overall
+	}
+	if player.Overall < pg.lowestOvr {
+		pg.lowestOvr = player.Overall
+	}
+}
+
+func (pg *CrootGenerator) OutputRecruitStats() {
+	// Croot Stats
+	fmt.Println("Total Recruit Count: ", pg.count)
+	fmt.Println("Total 5 Star  Count: ", pg.star5)
+	fmt.Println("Total 4 Star  Count: ", pg.star4)
+	fmt.Println("Total 3 Star  Count: ", pg.star3)
+	fmt.Println("Total 2 Star  Count: ", pg.star2)
+	fmt.Println("Total 1 Star  Count: ", pg.star1)
+	fmt.Println("Total QB  Count: ", pg.qbCount)
+	fmt.Println("Total RB  Count: ", pg.rbCount)
+	fmt.Println("Total FB  Count: ", pg.fbCount)
+	fmt.Println("Total WR  Count: ", pg.wrCount)
+	fmt.Println("Total TE  Count: ", pg.teCount)
+	fmt.Println("Total OT  Count: ", pg.otCount)
+	fmt.Println("Total OG  Count: ", pg.ogCount)
+	fmt.Println("Total C  Count: ", pg.cCount)
+	fmt.Println("Total DT  Count: ", pg.dtCount)
+	fmt.Println("Total DE  Count: ", pg.deCount)
+	fmt.Println("Total ILB  Count: ", pg.ilbCount)
+	fmt.Println("Total OLB  Count: ", pg.olbCount)
+	fmt.Println("Total CB  Count: ", pg.cbCount)
+	fmt.Println("Total FS  Count: ", pg.fsCount)
+	fmt.Println("Total SS  Count: ", pg.ssCount)
+	fmt.Println("Total K  Count: ", pg.kCount)
+	fmt.Println("Total P  Count: ", pg.pCount)
+	fmt.Println("Total ATH  Count: ", pg.athCount)
+
+	fmt.Println("Highest Recruit Ovr: ", pg.highestOvr)
+	fmt.Println("Lowest  Recruit Ovr: ", pg.lowestOvr)
+}
+
+func GenerateCroots() {
+	db := dbprovider.GetInstance().GetDB()
+	var lastPlayerRecord structs.Player
+	ts := GetTimestamp()
+
+	err := db.Last(&lastPlayerRecord).Error
+	if err != nil {
+		log.Fatalln("Could not grab last player record from players table...")
+	}
+
+	// var playerList []structs.CollegePlayer
+	fNameMap, lNameMap := getNameMaps()
+	generator := CrootGenerator{
+		firstNameMap:      fNameMap,
+		lastNameMap:       lNameMap,
+		collegePlayerList: GetAllCollegePlayers(),
+		coachList:         GetAllAICollegeCoaches(),
+		teamMap:           GetCollegeTeamMap(),
+		crootLocations:    getCrootLocations(),
+		attributeBlob:     getAttributeBlob(),
+		positionList:      util.GetPositionList(),
+		newID:             lastPlayerRecord.ID + 1,
+		requiredPlayers:   util.GenerateIntFromRange(6400, 6601),
+		count:             0,
+		star5:             0,
+		star4:             0,
+		star3:             0,
+		star2:             0,
+		star1:             0,
+		highestOvr:        0,
+		lowestOvr:         100000,
+		CrootList:         []structs.Recruit{},
+		GlobalList:        []structs.Player{},
+		caser:             cases.Title(language.English),
+		pickedEthnicity:   "",
+	}
+
+	// The plan is to ensure that every recruit is signed
+	generator.GenerateRecruits()
+	// Croot Stats
+	generator.OutputRecruitStats()
+
+	// repository.CreateCFBRecruitRecordsBatch(db, generator.CrootList, 500)
+	// repository.CreateGlobalPlayerRecordsBatch(db, generator.GlobalList, 500)
+	ts.ToggleGeneratedCroots()
+	// repository.SaveTimestamp(ts, db)
+	// AssignAllRecruitRanks()
+}
+
 func GenerateWalkOns() {
 	fmt.Println(time.Now().UnixNano())
 	db := dbprovider.GetInstance().GetDB()
@@ -74,9 +459,9 @@ func GenerateWalkOns() {
 			year := 1
 			ethnicity := pickEthnicity()
 
-			state := pickState(team.State)
+			state := pickWalkonState(team.State)
 
-			recruit := createRecruit(ethnicity, pos, year, firstNameMap[ethnicity], lastNameMap[ethnicity], newID, attributeBlob, state, highSchoolBlob[state])
+			recruit := createWalkon(ethnicity, pos, year, firstNameMap[ethnicity], lastNameMap[ethnicity], newID, attributeBlob, state, highSchoolBlob[state])
 
 			recruit.AssignWalkon(team.TeamAbbreviation, int(team.ID), newID)
 
@@ -186,19 +571,11 @@ func GenerateCoachesForAITeams() {
 	}
 }
 
-func createRecruit(ethnicity string, position string, year int, firstNameList [][]string, lastNameList [][]string, id uint, blob map[string]map[string]map[string]map[string]interface{}, state string, hsBlob []structs.CrootLocation) structs.Recruit {
-	fName := getName(firstNameList)
-	lName := getName(lastNameList)
-	firstName := strings.Title(strings.ToLower(fName))
-	lastName := strings.Title(strings.ToLower(lName))
+func createRecruit(ethnicity, position string, stars int, firstName, lastName string, id uint, blob map[string]map[string]map[string]map[string]interface{}, state string, hsBlob []structs.CrootLocation, caser cases.Caser) structs.Recruit {
 	age := 18
 	city, highSchool := getCityAndHighSchool(hsBlob)
 
 	archetype := getArchetype(position)
-	stars := getStarRating()
-	if stars == 5 {
-		fmt.Println("WE'VE GOT A FIVE STAR: " + position + " " + firstName + " " + lastName)
-	}
 	height := getAttributeValue(position, archetype, stars, "Height", blob)
 	weight := getAttributeValue(position, archetype, stars, "Weight", blob)
 	footballIQ := getAttributeValue(position, archetype, stars, "Football IQ", blob)
@@ -221,17 +598,17 @@ func createRecruit(ethnicity string, position string, year int, firstNameList []
 	kickPower := getAttributeValue(position, archetype, stars, "Kick Power", blob)
 	puntAccuracy := getAttributeValue(position, archetype, stars, "Punt Accuracy", blob)
 	puntPower := getAttributeValue(position, archetype, stars, "Punt Power", blob)
-	injury := util.GenerateIntFromRange(10, 100)
-	stamina := util.GenerateIntFromRange(10, 100)
-	discipline := util.GenerateIntFromRange(10, 100)
-	progression := util.GenerateIntFromRange(1, 100)
+	injury := util.GenerateNormalizedIntFromMeanStdev(50, 15)
+	stamina := util.GenerateNormalizedIntFromMeanStdev(50, 15)
+	discipline := util.GenerateNormalizedIntFromMeanStdev(50, 15)
+	progression := util.GenerateNormalizedIntFromMeanStdev(50, 15)
 
 	freeAgency := util.GetFreeAgencyBias()
 	personality := util.GetPersonality()
 	recruitingBias := util.GetRecruitingBias()
 	workEthic := util.GetWorkEthic()
 	academicBias := util.GetAcademicBias()
-	potentialGrade := util.GetWeightedPotentialGrade(progression)
+	potentialGrade := util.GetWeightedPotentialGrade(int(progression))
 
 	basePlayer := structs.BasePlayer{
 		FirstName:      firstName,
@@ -239,11 +616,11 @@ func createRecruit(ethnicity string, position string, year int, firstNameList []
 		Position:       position,
 		Archetype:      archetype,
 		Age:            age,
-		Stars:          0,
+		Stars:          stars,
 		Height:         height,
 		Weight:         weight,
-		Stamina:        stamina,
-		Injury:         injury,
+		Stamina:        int(stamina),
+		Injury:         int(injury),
 		FootballIQ:     footballIQ,
 		Speed:          speed,
 		Carrying:       carrying,
@@ -264,8 +641,104 @@ func createRecruit(ethnicity string, position string, year int, firstNameList []
 		KickPower:      kickPower,
 		PuntAccuracy:   puntAccuracy,
 		PuntPower:      puntPower,
-		Progression:    progression,
-		Discipline:     discipline,
+		Progression:    int(progression),
+		Discipline:     int(discipline),
+		PotentialGrade: potentialGrade,
+		FreeAgency:     freeAgency,
+		Personality:    personality,
+		RecruitingBias: recruitingBias,
+		WorkEthic:      workEthic,
+		AcademicBias:   academicBias,
+	}
+
+	basePlayer.GetOverall()
+
+	return structs.Recruit{
+		BasePlayer: basePlayer,
+		City:       city,
+		HighSchool: highSchool,
+		State:      state,
+		IsSigned:   true,
+	}
+}
+
+func createWalkon(ethnicity string, position string, year int, firstNameList [][]string, lastNameList [][]string, id uint, blob map[string]map[string]map[string]map[string]interface{}, state string, hsBlob []structs.CrootLocation) structs.Recruit {
+	fName := getName(firstNameList)
+	lName := getName(lastNameList)
+	firstName := strings.Title(strings.ToLower(fName))
+	lastName := strings.Title(strings.ToLower(lName))
+	age := 18
+	city, highSchool := getCityAndHighSchool(hsBlob)
+
+	archetype := getArchetype(position)
+	stars := getWalkonStarRating()
+	height := getAttributeValue(position, archetype, stars, "Height", blob)
+	weight := getAttributeValue(position, archetype, stars, "Weight", blob)
+	footballIQ := getAttributeValue(position, archetype, stars, "Football IQ", blob)
+	speed := getAttributeValue(position, archetype, stars, "Speed", blob)
+	agility := getAttributeValue(position, archetype, stars, "Agility", blob)
+	carrying := getAttributeValue(position, archetype, stars, "Carrying", blob)
+	catching := getAttributeValue(position, archetype, stars, "Catching", blob)
+	routeRunning := getAttributeValue(position, archetype, stars, "Route Running", blob)
+	zoneCoverage := getAttributeValue(position, archetype, stars, "Zone Coverage", blob)
+	manCoverage := getAttributeValue(position, archetype, stars, "Man Coverage", blob)
+	strength := getAttributeValue(position, archetype, stars, "Strength", blob)
+	tackle := getAttributeValue(position, archetype, stars, "Tackle", blob)
+	passBlock := getAttributeValue(position, archetype, stars, "Pass Block", blob)
+	runBlock := getAttributeValue(position, archetype, stars, "Run Block", blob)
+	passRush := getAttributeValue(position, archetype, stars, "Pass Rush", blob)
+	runDefense := getAttributeValue(position, archetype, stars, "Run Defense", blob)
+	throwPower := getAttributeValue(position, archetype, stars, "Throw Power", blob)
+	throwAccuracy := getAttributeValue(position, archetype, stars, "Throw Accuracy", blob)
+	kickAccuracy := getAttributeValue(position, archetype, stars, "Kick Accuracy", blob)
+	kickPower := getAttributeValue(position, archetype, stars, "Kick Power", blob)
+	puntAccuracy := getAttributeValue(position, archetype, stars, "Punt Accuracy", blob)
+	puntPower := getAttributeValue(position, archetype, stars, "Punt Power", blob)
+	injury := util.GenerateNormalizedIntFromMeanStdev(50, 15)
+	stamina := util.GenerateNormalizedIntFromMeanStdev(50, 15)
+	discipline := util.GenerateNormalizedIntFromMeanStdev(50, 15)
+	progression := util.GenerateNormalizedIntFromMeanStdev(50, 15)
+
+	freeAgency := util.GetFreeAgencyBias()
+	personality := util.GetPersonality()
+	recruitingBias := util.GetRecruitingBias()
+	workEthic := util.GetWorkEthic()
+	academicBias := util.GetAcademicBias()
+	potentialGrade := util.GetWeightedPotentialGrade(int(progression))
+
+	basePlayer := structs.BasePlayer{
+		FirstName:      firstName,
+		LastName:       lastName,
+		Position:       position,
+		Archetype:      archetype,
+		Age:            age,
+		Stars:          0,
+		Height:         height,
+		Weight:         weight,
+		Stamina:        int(stamina),
+		Injury:         int(injury),
+		FootballIQ:     footballIQ,
+		Speed:          speed,
+		Carrying:       carrying,
+		Agility:        agility,
+		Catching:       catching,
+		RouteRunning:   routeRunning,
+		ZoneCoverage:   zoneCoverage,
+		ManCoverage:    manCoverage,
+		Strength:       strength,
+		Tackle:         tackle,
+		PassBlock:      passBlock,
+		RunBlock:       runBlock,
+		PassRush:       passRush,
+		RunDefense:     runDefense,
+		ThrowPower:     throwPower,
+		ThrowAccuracy:  throwAccuracy,
+		KickAccuracy:   kickAccuracy,
+		KickPower:      kickPower,
+		PuntAccuracy:   puntAccuracy,
+		PuntPower:      puntPower,
+		Progression:    int(progression),
+		Discipline:     int(discipline),
 		PotentialGrade: potentialGrade,
 		FreeAgency:     freeAgency,
 		Personality:    personality,
@@ -548,7 +1021,7 @@ func pickEthnicity() string {
 	return "NativeAmerican"
 }
 
-func pickState(state string) string {
+func pickWalkonState(state string) string {
 	if state == "AL" {
 		return util.PickFromStringList([]string{"AL", "LA", "MS", "TN", "GA", "FL"})
 	} else if state == "AR" {
@@ -981,7 +1454,7 @@ func getCustomCrootStarRating() int {
 	return 5
 }
 
-func getStarRating() int {
+func getWalkonStarRating() int {
 	weightedRoll := util.GenerateIntFromRange(0, 10000)
 
 	if weightedRoll < 9001 {
@@ -1124,4 +1597,43 @@ func getStartingPrestige(goodHire bool) int {
 		return util.GenerateIntFromRange(3, 7)
 	}
 	return util.GenerateIntFromRange(1, 5)
+}
+
+func getRelativeType() int {
+	roll := util.GenerateIntFromRange(1, 1000)
+	// Brother of existing player
+	if roll < 600 {
+		return 2
+	}
+	// Cousin of existing player
+	if roll < 800 {
+		return 3
+	}
+	// Half brother of existing player
+	if roll < 850 {
+		return 4
+	}
+	// Twin
+	if roll < 900 {
+		return 5
+	}
+	// Best friend of another recruit
+	if roll < 925 {
+		return 8
+	}
+	// Best friend of a college player
+	if roll < 950 {
+		return 8
+	}
+	// Coach's Son
+	if roll < 985 {
+		return 6
+	}
+	// Coach's Nephew
+	return 7
+}
+
+func getCoachLastName(fullName string) string {
+	nameSplit := strings.Split(fullName, " ")
+	return nameSplit[1]
 }

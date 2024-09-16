@@ -52,6 +52,9 @@ type BasePlayer struct {
 	Shotgun         int // -1 is Under Center, 0 Balanced, 1 Shotgun
 	PositionTwo     string
 	ArchetypeTwo    string
+	RelativeID      uint
+	RelativeType    uint
+	Notes           string
 }
 
 func (cp *BasePlayer) GetOverall() {

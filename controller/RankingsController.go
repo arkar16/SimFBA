@@ -7,6 +7,14 @@ import (
 	"github.com/CalebRose/SimFBA/managers"
 )
 
+func GenerateRecruits(w http.ResponseWriter, r *http.Request) {
+
+	managers.GenerateCroots()
+
+	fmt.Println("All Croots have been generated")
+	w.WriteHeader(http.StatusOK)
+}
+
 func AssignAllRecruitRanks(w http.ResponseWriter, r *http.Request) {
 
 	managers.AssignAllRecruitRanks()

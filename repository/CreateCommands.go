@@ -130,6 +130,36 @@ func CreateNFLDrafteesInBatches(db *gorm.DB, draftees []models.NFLDraftee, batch
 	return nil
 }
 
+func CreateCFBRecruitRecordsBatch(db *gorm.DB, croots []structs.Recruit, batchSize int) error {
+	total := len(croots)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(croots[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateGlobalPlayerRecordsBatch(db *gorm.DB, croots []structs.Player, batchSize int) error {
+	total := len(croots)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(croots[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func CreateNFLDrafteesSafely(db *gorm.DB, draftees []models.NFLDraftee, batchSize int) error {
 	total := len(draftees)
 	for i := 0; i < total; i += batchSize {

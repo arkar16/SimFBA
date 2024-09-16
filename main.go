@@ -69,7 +69,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/admin/ai/sync/boards", controller.SyncAIBoards).Methods("GET")
 	// myRouter.HandleFunc("/admin/fix/affinities", controller.FixSmallTownBigCityAIBoards).Methods("GET")
 	myRouter.HandleFunc("/admin/run/the/games/", controller.RunTheGames).Methods("GET")
-	myRouter.HandleFunc("/admin/overall/progressions/next/season", controller.ProgressToNextSeason).Methods("GET")
+	// myRouter.HandleFunc("/admin/overall/progressions/next/season", controller.ProgressToNextSeason).Methods("GET")
 	// myRouter.HandleFunc("/admin/overall/progressions/nfl", controller.ProgressNFL).Methods("GET")
 	myRouter.HandleFunc("/admin/trades/accept/sync/{proposalID}", controller.SyncAcceptedTrade).Methods("GET")
 	myRouter.HandleFunc("/admin/trades/veto/sync/{proposalID}", controller.VetoAcceptedTrade).Methods("GET")
@@ -184,6 +184,7 @@ func handleRequests() {
 	myRouter.HandleFunc("/college/poll/submission/{username}", controller.GetPollSubmission).Methods("GET")
 
 	// Rankings Controls
+	// myRouter.HandleFunc("/simfba/cfb/croots/generate/", controller.GenerateRecruits).Methods("GET")
 	myRouter.HandleFunc("/rankings/assign/all/croots/", controller.AssignAllRecruitRanks).Methods("GET")
 
 	// Recruiting Controls

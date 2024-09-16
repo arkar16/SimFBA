@@ -1,8 +1,18 @@
 package util
 
 import (
+	"fmt"
 	"math/rand"
+	"strings"
 )
+
+func GetPositionList() []string {
+	return []string{
+		"QB", "RB", "FB", "TE", "WR", "OT", "OG", "C",
+		"DT", "DE", "ILB", "OLB", "CB", "FS", "SS", "P", "K",
+		"ATH",
+	}
+}
 
 func GenerateIntFromRange(min int, max int) int {
 	diff := max - min + 1
@@ -715,4 +725,293 @@ func GetNewArchetypeMap() map[string]map[string]map[string]string {
 			},
 		},
 	}
+}
+
+func GetStarRating() int {
+	roll := GenerateIntFromRange(1, 10000)
+	if roll < 67 {
+		return 5
+	}
+	if roll < 865 {
+		return 4
+	}
+	if roll < 3683 {
+		return 3
+	}
+	if roll < 7367 {
+		return 2
+	}
+	return 1
+}
+
+func PickState() string {
+	diceRoll := GenerateIntFromRange(1, 4748)
+	if diceRoll < 672 {
+		return "FL"
+	}
+	if diceRoll < 1332 {
+		return "TX"
+	}
+	if diceRoll < 1780 {
+		return "CA"
+	}
+	if diceRoll < 2200 {
+		return "GA"
+	}
+	if diceRoll < 2442 {
+		return "OH"
+	}
+	if diceRoll < 2632 {
+		return "LA"
+	}
+	if diceRoll < 2814 {
+		return "AL"
+	}
+	if diceRoll < 2980 {
+		return "NC"
+	}
+	if diceRoll < 3124 {
+		return "MI"
+	}
+	if diceRoll < 3256 {
+		return "IL"
+	}
+	if diceRoll < 3484 {
+		return "PA"
+	}
+	if diceRoll < 3584 {
+		return "MD"
+	}
+	if diceRoll < 3680 {
+		return "NJ"
+	}
+	if diceRoll < 3768 {
+		return "MS"
+	}
+	if diceRoll < 3844 {
+		return "IN"
+	}
+	if diceRoll < 3916 {
+		return "SC"
+	}
+	if diceRoll < 3988 {
+		return "TN"
+	}
+	if diceRoll < 4058 {
+		return "WA"
+	}
+	if diceRoll < 4124 {
+		return "OK"
+	}
+	if diceRoll < 4190 {
+		return "UT"
+	}
+	if diceRoll < 4244 {
+		return "MO"
+	}
+	if diceRoll < 4288 {
+		return "AZ"
+	}
+	if diceRoll < 4328 {
+		return "KY"
+	}
+	if diceRoll < 4366 {
+		return "NY"
+	}
+	if diceRoll < 4402 {
+		return "HI"
+	}
+	if diceRoll < 4438 {
+		return "MN"
+	}
+	if diceRoll < 4468 {
+		return "AR"
+	}
+	if diceRoll < 4528 {
+		return "KS"
+	}
+	if diceRoll < 4558 {
+		return "WI"
+	}
+	if diceRoll < 4586 {
+		return "OR"
+	}
+	if diceRoll < 4612 {
+		return "NV"
+	}
+	if diceRoll < 4636 {
+		return "IA"
+	}
+	if diceRoll < 4658 {
+		return "MA"
+	}
+	if diceRoll < 4676 {
+		return "CT"
+	}
+	if diceRoll < 4688 {
+		return "NE"
+	}
+	if diceRoll < 4700 {
+		return "NM"
+	}
+	if diceRoll < 4712 {
+		return "DC"
+	}
+	if diceRoll < 4722 {
+		return "WV"
+	}
+	if diceRoll < 4728 {
+		return "ID"
+	}
+	if diceRoll < 4732 {
+		return "DE"
+	}
+	if diceRoll < 4736 {
+		return "WY"
+	}
+	if diceRoll < 4738 {
+		return "ND"
+	}
+	if diceRoll < 4740 {
+		return "RI"
+	}
+	if diceRoll < 4742 {
+		return "SD"
+	}
+	if diceRoll < 4743 {
+		return "AK"
+	}
+	if diceRoll < 4744 {
+		return "ME"
+	}
+	if diceRoll < 4745 {
+		return "MT"
+	}
+	if diceRoll < 4746 {
+		return "NH"
+	}
+	return "VT"
+}
+
+// getStateAbbreviation returns the two-letter state abbreviation for a given state name.
+func GetStateAbbreviation(state string) (string, error) {
+	// Map of state names to their two-letter abbreviations
+	stateAbbreviations := map[string]string{
+		"Alabama":        "AL",
+		"Alaska":         "AK",
+		"Arizona":        "AZ",
+		"Arkansas":       "AR",
+		"California":     "CA",
+		"Colorado":       "CO",
+		"Connecticut":    "CT",
+		"Delaware":       "DE",
+		"Florida":        "FL",
+		"Georgia":        "GA",
+		"Hawai'i":        "HI",
+		"Idaho":          "ID",
+		"Illinois":       "IL",
+		"Indiana":        "IN",
+		"Iowa":           "IA",
+		"Kansas":         "KS",
+		"Kentucky":       "KY",
+		"Louisiana":      "LA",
+		"Maine":          "ME",
+		"Maryland":       "MD",
+		"Massachusetts":  "MA",
+		"Michigan":       "MI",
+		"Minnesota":      "MN",
+		"Mississippi":    "MS",
+		"Missouri":       "MO",
+		"Montana":        "MT",
+		"Nebraska":       "NE",
+		"Nevada":         "NV",
+		"New Hampshire":  "NH",
+		"New Jersey":     "NJ",
+		"New Mexico":     "NM",
+		"New York":       "NY",
+		"North Carolina": "NC",
+		"North Dakota":   "ND",
+		"Ohio":           "OH",
+		"Oklahoma":       "OK",
+		"Oregon":         "OR",
+		"Pennsylvania":   "PA",
+		"Rhode Island":   "RI",
+		"South Carolina": "SC",
+		"South Dakota":   "SD",
+		"Tennessee":      "TN",
+		"Texas":          "TX",
+		"Utah":           "UT",
+		"Vermont":        "VT",
+		"Virginia":       "VA",
+		"Washington":     "WA",
+		"West Virginia":  "WV",
+		"Wisconsin":      "WI",
+		"Wyoming":        "WY",
+	}
+
+	// Normalize the input by trimming spaces and capitalizing the first letter of each word
+	normalizedState := strings.Title(strings.ToLower(strings.TrimSpace(state)))
+
+	// Check if the state exists in the map
+	if abbreviation, ok := stateAbbreviations[normalizedState]; ok {
+		return abbreviation, nil
+	}
+
+	return "", fmt.Errorf("state not found: %s", state)
+}
+
+func PickPosition() string {
+	roll := GenerateIntFromRange(1, 100000)
+	if roll < 6681 {
+		return "QB"
+	}
+	if roll < 14780 {
+		return "RB"
+	}
+	if roll < 16645 {
+		return "FB"
+	}
+	if roll < 26952 {
+		return "WR"
+	}
+	if roll < 31123 {
+		return "TE"
+	}
+	if roll < 39979 {
+		return "OT"
+	}
+	if roll < 45622 {
+		return "OG"
+	}
+	if roll < 48569 {
+		return "C"
+	}
+	if roll < 58346 {
+		return "DE"
+	}
+	if roll < 64356 {
+		return "DT"
+	}
+	if roll < 69219 {
+		return "ILB"
+	}
+	if roll < 75683 {
+		return "OLB"
+	}
+	if roll < 84097 {
+		return "CB"
+	}
+	if roll < 88180 {
+		return "FS"
+	}
+	if roll < 91171 {
+		return "SS"
+	}
+	if roll < 93035 {
+		return "K"
+	}
+	if roll < 94900 {
+		return "P"
+	}
+	return "ATH"
 }

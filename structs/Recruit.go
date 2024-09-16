@@ -280,3 +280,20 @@ func (r *Recruit) AssignNewRecruitingBiases(bias, af1, af2 string) {
 	r.AffinityOne = af1
 	r.AffinityTwo = af2
 }
+
+func (r *Recruit) AssignRelativeData(rID, rType, teamID uint, team, notes string) {
+	r.RelativeID = rID
+	r.RelativeType = rType
+	r.Notes = notes
+	if teamID > 0 {
+		r.UpdateTeamID(int(teamID))
+		r.AssignCollege(team)
+	}
+}
+
+func (r *Recruit) AssignTwinData(lastName, city, state, highschool string) {
+	r.LastName = lastName
+	r.City = city
+	r.State = state
+	r.HighSchool = highschool
+}

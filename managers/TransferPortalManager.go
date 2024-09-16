@@ -496,14 +496,13 @@ func GetCollegePromiseByCollegePlayerID(id, teamID string) structs.CollegePromis
 
 func CreatePromise(promise structs.CollegePromise) structs.CollegePromise {
 	db := dbprovider.GetInstance().GetDB()
-	id := strconv.Itoa(int(promise.ID))
 	collegePlayerID := strconv.Itoa(int(promise.CollegePlayerID))
 	profileID := strconv.Itoa(int(promise.TeamID))
 
-	existingPromise := GetCollegePromiseByID(id)
+	existingPromise := GetCollegePromiseByCollegePlayerID(collegePlayerID, profileID)
 	if existingPromise.ID != 0 && existingPromise.ID > 0 {
 		existingPromise.Reactivate(promise.PromiseType, promise.PromiseWeight, promise.Benchmark)
-		db.Save(&existingPromise)
+		repository.SaveCollegePromiseRecord(promise, db)
 		assignPromiseToProfile(db, collegePlayerID, profileID, existingPromise.ID)
 		return existingPromise
 	}

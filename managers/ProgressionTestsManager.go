@@ -234,7 +234,7 @@ func CFBProgressionExport(w http.ResponseWriter) {
 }
 
 func NFLProgressionExport(w http.ResponseWriter) {
-	w.Header().Set("Content-Disposition", "attachment;filename=2025_nfl_progression_sample_five.csv")
+	w.Header().Set("Content-Disposition", "attachment;filename=2025_nfl_progression_sample_eight.csv")
 	w.Header().Set("Transfer-Encoding", "chunked")
 	// Initialize writer
 	writer := csv.NewWriter(w)
@@ -293,6 +293,19 @@ func NFLProgressionExport(w http.ResponseWriter) {
 
 			csvModel := structs.MapNFLPlayerToCSVModel(player)
 			idStr := strconv.Itoa(int(player.ID))
+			/*
+				"Team", "Player ID", "First Name", "Last Name", "Position",
+				"Archetype", "Year", "Age", "Prime Age", "Stars",
+				"High School", "City", "State", "Height",
+				"Weight", "Overall", "Speed",
+				"Football IQ", "Agility", "Carrying",
+				"Catching", "Route Running", "Zone Coverage", "Man Coverage",
+				"Strength", "Tackle", "Pass Block", "Run Block",
+				"Pass Rush", "Run Defense", "Throw Power", "Throw Accuracy",
+				"Kick Power", "Kick Accuracy", "Punt Power", "Punt Accuracy",
+				"Stamina", "Injury", "Potential Grade", "Redshirt Status",
+				"RetiringStatus", "College",
+			*/
 			playerRow := []string{
 				team.TeamName, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
 				csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(int(player.PrimeAge)), strconv.Itoa(player.Stars),
@@ -303,7 +316,7 @@ func NFLProgressionExport(w http.ResponseWriter) {
 				strconv.Itoa(player.Strength), strconv.Itoa(player.Tackle), strconv.Itoa(player.PassBlock), strconv.Itoa(player.RunBlock),
 				strconv.Itoa(player.PassRush), strconv.Itoa(player.RunDefense), strconv.Itoa(player.ThrowPower), strconv.Itoa(player.ThrowAccuracy),
 				strconv.Itoa(player.KickPower), strconv.Itoa(player.KickAccuracy), strconv.Itoa(player.PuntPower), strconv.Itoa(player.PuntAccuracy),
-				strconv.Itoa(player.Stamina), strconv.Itoa(player.Injury), csvModel.PotentialGrade, csvModel.RedshirtStatus,
+				strconv.Itoa(player.Stamina), strconv.Itoa(player.Injury), csvModel.PotentialGrade, "",
 				retireStatus, player.College,
 			}
 			csvRows = append(csvRows, playerRow)
@@ -332,7 +345,7 @@ func NFLProgressionExport(w http.ResponseWriter) {
 		idStr := strconv.Itoa(int(player.ID))
 		playerRow := []string{
 			"FA", idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
-			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
+			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(int(player.PrimeAge)), strconv.Itoa(player.Stars),
 			player.HighSchool, "", player.State, strconv.Itoa(player.Height),
 			strconv.Itoa(player.Weight), strconv.Itoa(player.Overall), strconv.Itoa(player.Speed),
 			strconv.Itoa(player.FootballIQ), strconv.Itoa(player.Agility), strconv.Itoa(player.Carrying),
@@ -340,7 +353,7 @@ func NFLProgressionExport(w http.ResponseWriter) {
 			strconv.Itoa(player.Strength), strconv.Itoa(player.Tackle), strconv.Itoa(player.PassBlock), strconv.Itoa(player.RunBlock),
 			strconv.Itoa(player.PassRush), strconv.Itoa(player.RunDefense), strconv.Itoa(player.ThrowPower), strconv.Itoa(player.ThrowAccuracy),
 			strconv.Itoa(player.KickPower), strconv.Itoa(player.KickAccuracy), strconv.Itoa(player.PuntPower), strconv.Itoa(player.PuntAccuracy),
-			strconv.Itoa(player.Stamina), strconv.Itoa(player.Injury), csvModel.PotentialGrade, csvModel.RedshirtStatus,
+			strconv.Itoa(player.Stamina), strconv.Itoa(player.Injury), csvModel.PotentialGrade, "",
 			retireStatus, player.College,
 		}
 		csvRows = append(csvRows, playerRow)

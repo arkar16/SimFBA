@@ -229,3 +229,17 @@ func (t *Timestamp) EndTheProfessionalSeason() {
 	t.IsFreeAgencyLocked = true
 	t.NFLSeasonOver = true
 }
+
+func (t *Timestamp) ToggleGeneratedCroots() {
+	t.CrootsGenerated = !t.CrootsGenerated
+}
+
+func (t *Timestamp) ToggleCollegeProgression() {
+	t.ProgressedCollegePlayers = !t.ProgressedCollegePlayers
+}
+
+func (t *Timestamp) ToggleProfessionalProgression() {
+	t.ProgressedProfessionalPlayers = !t.ProgressedProfessionalPlayers
+	t.IsFreeAgencyLocked = false
+	t.IsDraftTime = true
+}

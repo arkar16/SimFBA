@@ -2538,7 +2538,7 @@ func RegressAttribute(attr, age, primeAge int, isIQ bool) int {
 	min := 0.0
 	max := 0.0
 	ageRequirement := primeAge
-	mod := float64(primeAge) - 6.0
+	mod := float64(primeAge) - 5.5
 	if isIQ {
 		ageRequirement = primeAge + 1
 		mod = float64(primeAge)

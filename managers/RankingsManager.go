@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/repository"
 	config "github.com/CalebRose/SimFBA/secrets"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
@@ -19,9 +20,9 @@ func AssignAllRecruitRanks() {
 
 	db.Order("overall desc").Where("stars > 0").Find(&recruits)
 
-	rivalsModifiers := config.RivalsModifiers()
+	rivalsMod := 100.0
 
-	for idx, croot := range recruits {
+	for _, croot := range recruits {
 		// 247 Rankings
 		rank247 := Get247Ranking(croot)
 		// ESPN Rankings
@@ -29,11 +30,8 @@ func AssignAllRecruitRanks() {
 
 		// Rivals Ranking
 		var rivalsRank float64 = 0
-		if idx <= 249 {
-			rivalsBonus := rivalsModifiers[idx]
-
-			rivalsRank = GetRivalsRanking(croot.Stars, rivalsBonus)
-		}
+		rivalsBonus := rivalsMod
+		rivalsRank = GetRivalsRanking(croot.Stars, rivalsBonus)
 
 		var r float64 = croot.TopRankModifier
 
@@ -45,7 +43,7 @@ func AssignAllRecruitRanks() {
 			rank247 = 0.001
 			espnRank = 0.001
 			rivalsRank = 0.001
-			r = 0
+			r = 1
 		}
 
 		croot.AssignRankValues(rank247, espnRank, rivalsRank, r)
@@ -57,24 +55,12 @@ func AssignAllRecruitRanks() {
 		clutchVal := getClutchValue()
 		croot.AssignNewAttributes(shotgunVal, clutchVal)
 
-		db.Save(&croot)
+		repository.SaveRecruitRecord(croot, db)
+		if rivalsMod > 0.1 {
+			rivalsMod -= 0.1
+		}
 
 		// recruitsToSync = append(recruitsToSync, croot)
-	}
-
-	walkons := []structs.Recruit{}
-	db.Order("overall desc").Where("stars = 0").Find(&walkons)
-	for _, croot := range recruits {
-		croot.AssignRankValues(0.001, 0.001, 0.001, 1)
-
-		recruitingModifier := getRecruitingModifier(croot.Stars)
-
-		croot.AssignRecruitingModifier(recruitingModifier)
-		shotgunVal := getShotgunVal()
-		clutchVal := getClutchValue()
-		croot.AssignNewAttributes(shotgunVal, clutchVal)
-
-		db.Save(&croot)
 	}
 }
 
@@ -102,8 +88,8 @@ func GetESPNRanking(r structs.Recruit) float64 {
 	return espnRanking
 }
 
-func GetRivalsRanking(stars int, bonus int) float64 {
-	return GetRivalsStarModifier(stars) + float64(bonus)
+func GetRivalsRanking(stars int, bonus float64) float64 {
+	return GetRivalsStarModifier(stars) + bonus
 }
 
 func GetESPNStarRank(star int) int {

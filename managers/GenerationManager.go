@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 	"golang.org/x/text/cases"
@@ -264,7 +265,7 @@ func (pg *CrootGenerator) generateTwin(player *structs.Recruit) (structs.Recruit
 		NFLPlayerID:     firstTwinRelativeID,
 	}
 	globalPlayer.AssignID(uint(firstTwinRelativeID))
-	return twinPlayer, globalPlayer
+	return twinPlayer, globalTwinPlayer
 }
 
 func (pg *CrootGenerator) updateStatistics(player structs.Recruit) {
@@ -398,11 +399,11 @@ func GenerateCroots() {
 	// Croot Stats
 	generator.OutputRecruitStats()
 
-	// repository.CreateCFBRecruitRecordsBatch(db, generator.CrootList, 500)
-	// repository.CreateGlobalPlayerRecordsBatch(db, generator.GlobalList, 500)
+	repository.CreateCFBRecruitRecordsBatch(db, generator.CrootList, 500)
+	repository.CreateGlobalPlayerRecordsBatch(db, generator.GlobalList, 500)
 	ts.ToggleGeneratedCroots()
-	// repository.SaveTimestamp(ts, db)
-	// AssignAllRecruitRanks()
+	repository.SaveTimestamp(ts, db)
+	AssignAllRecruitRanks()
 }
 
 func GenerateWalkOns() {
@@ -497,7 +498,7 @@ func GenerateWalkOns() {
 
 func CreateCustomCroots() {
 	db := dbprovider.GetInstance().GetDB()
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024\\2024_Custom_Croot_Class.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2025\\2025_Custom_Croot_Class.csv"
 	crootCSV := util.ReadCSV(path)
 	attributeBlob := getAttributeBlob()
 	latestID := getLatestRecord(db)
@@ -610,6 +611,9 @@ func createRecruit(ethnicity, position string, stars int, firstName, lastName st
 	academicBias := util.GetAcademicBias()
 	potentialGrade := util.GetWeightedPotentialGrade(int(progression))
 
+	affinityOne := util.PickAffinity(stars, "", false)
+	affinityTwo := util.PickAffinity(stars, affinityOne, true)
+
 	basePlayer := structs.BasePlayer{
 		FirstName:      firstName,
 		LastName:       lastName,
@@ -654,11 +658,13 @@ func createRecruit(ethnicity, position string, stars int, firstName, lastName st
 	basePlayer.GetOverall()
 
 	return structs.Recruit{
-		BasePlayer: basePlayer,
-		City:       city,
-		HighSchool: highSchool,
-		State:      state,
-		IsSigned:   true,
+		BasePlayer:  basePlayer,
+		City:        city,
+		HighSchool:  highSchool,
+		State:       state,
+		IsSigned:    false,
+		AffinityOne: affinityOne,
+		AffinityTwo: affinityTwo,
 	}
 }
 
@@ -763,13 +769,17 @@ func createCustomCroot(croot []string, id uint, blob map[string]map[string]map[s
 	lastName := croot[1]
 	position := croot[2]
 	archetype := croot[3]
-	stars := getCustomCrootStarRating()
+	stars := 5
+	// stars := getCustomCrootStarRating()
 	height := util.ConvertStringToInt(croot[4])
 	weight := util.ConvertStringToInt(croot[5])
 	city := croot[6]
 	highSchool := croot[7]
 	state := croot[8]
 	crootFor := croot[9]
+	relativeID := croot[10]
+	relativeType := croot[11]
+	notes := croot[12]
 	age := 18
 	footballIQ := getAttributeValue(position, archetype, stars, "Football IQ", blob)
 	speed := getAttributeValue(position, archetype, stars, "Speed", blob)
@@ -797,10 +807,12 @@ func createCustomCroot(croot []string, id uint, blob map[string]map[string]map[s
 	progression := util.GenerateIntFromRange(40, 80)
 	freeAgency := util.GetFreeAgencyBias()
 	personality := util.GetPersonality()
-	recruitingBias := "Prefers to play for a specific coach"
+	recruitingBias := util.GetRecruitingBias()
 	workEthic := util.GetWorkEthic()
 	academicBias := util.GetAcademicBias()
 	potentialGrade := util.GetWeightedPotentialGrade(progression)
+	affinityOne := util.PickAffinity(stars, "", false)
+	affinityTwo := util.PickAffinity(stars, affinityOne, true)
 
 	basePlayer := structs.BasePlayer{
 		FirstName:      firstName,
@@ -841,6 +853,9 @@ func createCustomCroot(croot []string, id uint, blob map[string]map[string]map[s
 		RecruitingBias: recruitingBias,
 		WorkEthic:      workEthic,
 		AcademicBias:   academicBias,
+		RelativeID:     uint(util.ConvertStringToInt(relativeID)),
+		RelativeType:   uint(util.ConvertStringToInt(relativeType)),
+		Notes:          notes,
 	}
 
 	basePlayer.GetOverall()
@@ -854,7 +869,8 @@ func createCustomCroot(croot []string, id uint, blob map[string]map[string]map[s
 		IsSigned:       false,
 		IsCustomCroot:  true,
 		CustomCrootFor: crootFor,
-		AffinityOne:    "Close to Home",
+		AffinityOne:    affinityOne,
+		AffinityTwo:    affinityTwo,
 	}
 }
 

@@ -185,7 +185,7 @@ func handleRequests() {
 
 	// Rankings Controls
 	// myRouter.HandleFunc("/simfba/cfb/croots/generate/", controller.GenerateRecruits).Methods("GET")
-	myRouter.HandleFunc("/rankings/assign/all/croots/", controller.AssignAllRecruitRanks).Methods("GET")
+	// myRouter.HandleFunc("/rankings/assign/all/croots/", controller.AssignAllRecruitRanks).Methods("GET")
 
 	// Recruiting Controls
 	myRouter.HandleFunc("/recruiting/overview/dashboard/{teamID}", controller.GetRecruitingProfileForDashboardByTeamID).Methods("GET")
@@ -285,6 +285,8 @@ func handleRequests() {
 
 	// Transfer Intentions
 	myRouter.HandleFunc("/portal/transfer/intention", controller.ProcessTransferIntention).Methods("GET")
+	myRouter.HandleFunc("/portal/transfer/pre/promises", controller.ProcessPrePortalPromises).Methods("GET")
+	myRouter.HandleFunc("/portal/transfer/enter/portal", controller.EnterTheTransferPortal).Methods("GET")
 	// myRouter.HandleFunc("/portal/transfer/sync", controller.SyncTransferPortal).Methods("GET")
 	myRouter.HandleFunc("/portal/ai/generate/profiles", controller.FillUpTransferBoardsAI).Methods("GET")
 	myRouter.HandleFunc("/portal/ai/allocate/profiles", controller.AllocateAndPromisePlayersAI).Methods("GET")

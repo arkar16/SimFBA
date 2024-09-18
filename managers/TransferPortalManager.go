@@ -370,7 +370,7 @@ func AICoachPromisePhase() {
 	coachMap := GetActiveCollegeCoachMap()
 
 	for _, team := range aiTeamProfiles {
-		if !team.IsAI || team.ID > 194 || team.ID == 0 {
+		if !team.IsAI || team.ID > 194 || team.ID == 0 || team.IsUserTeam {
 			continue
 		}
 		coach := coachMap[team.ID]
@@ -409,25 +409,22 @@ func AICoachPromisePhase() {
 					// REWRITE
 					promiseBenchmark = 0
 					if promiseLevel == 1 {
-						promiseBenchmark += 5
-						if promiseBenchmark > p.Stamina {
-							promiseBenchmark = p.Stamina - 1
-						}
+						promiseBenchmark += 10
 					} else if promiseLevel == -1 {
 						promiseBenchmark -= 1
 					}
 
-					promiseWeight = getPromiseWeightByMinutesOrWins(promiseBenchmark)
+					promiseWeight = getPromiseWeightBySnapsOrWins(p.Position, "Snap Count", promiseBenchmark)
 				} else if bias == nationalChampionshipContender || bias == richHistory {
 					// Promise based on wins
-					promiseBenchmark = 20
+					promiseBenchmark = 6
 					promiseType = "Wins"
 					if promiseLevel == 1 {
-						promiseBenchmark += 5
+						promiseBenchmark += 3
 					} else if promiseLevel == -1 {
-						promiseBenchmark -= 5
+						promiseBenchmark -= 3
 					}
-					promiseWeight = getPromiseWeightByMinutesOrWins(promiseBenchmark)
+					promiseWeight = getPromiseWeightBySnapsOrWins(p.Position, "Wins", promiseBenchmark)
 				}
 
 				if promiseType == "" {
@@ -443,8 +440,7 @@ func AICoachPromisePhase() {
 					BenchmarkStr:    benchmarkStr,
 					IsActive:        true,
 				}
-
-				db.Create(&collegePromise)
+				repository.CreateCollegePromiseRecord(collegePromise, db)
 			}
 		}
 	}
@@ -557,7 +553,7 @@ func EnterTheTransferPortal() {
 			promise := GetCollegePromiseByCollegePlayerID(playerID, teamID)
 			if promise.ID == 0 {
 				p.WillTransfer()
-				db.Save(&p)
+				repository.SaveCollegePlayerRecord(p, db)
 				continue
 			}
 			// 1-100
@@ -565,6 +561,10 @@ func EnterTheTransferPortal() {
 			// 10, 20, 40, 60, 70
 			promiseModifier := getPromiseFloor(promise.PromiseWeight)
 			difference := baseFloor - promiseModifier
+			// In the future, add something like a bias modifier.
+			// If the coach promises something
+			// That does NOT match the bias of the player, it should not be as impactful.
+			// However, this should be implemented after investigating how to make bias more impactful.
 
 			diceRoll := util.GenerateIntFromRange(1, 100)
 
@@ -580,7 +580,7 @@ func EnterTheTransferPortal() {
 				CreateNewsLog("CFB", message, "Transfer Portal", int(p.PreviousTeamID), ts)
 
 				repository.SaveCFBPlayer(p, db)
-				db.Delete(&promise)
+				repository.DeleteCollegePromise(promise, db)
 				continue
 			}
 
@@ -589,15 +589,14 @@ func EnterTheTransferPortal() {
 			CreateNewsLog("CFB", message, "Transfer Portal", int(p.PreviousTeamID), ts)
 
 			promise.MakePromise()
-			db.Save(&promise)
+			repository.SaveCollegePromiseRecord(promise, db)
 			p.WillStay()
 			repository.SaveCFBPlayer(p, db)
-			db.Save(&p)
 		}
 	}
 
 	ts.EnactPortalPhase()
-	db.Save(&ts)
+	repository.SaveTimestamp(ts, db)
 }
 
 func AddTransferPlayerToBoard(transferPortalProfileDto structs.TransferPortalProfile) structs.TransferPortalProfile {
@@ -911,17 +910,17 @@ func AICoachAllocateAndPromisePhase() {
 							promiseBenchmark -= 1
 						}
 
-						promiseWeight = getPromiseWeightByMinutesOrWins(promiseBenchmark)
+						promiseWeight = getPromiseWeightBySnapsOrWins(tp.Position, "Snap Count", promiseBenchmark)
 					} else if bias == nationalChampionshipContender || bias == richHistory {
 						// Promise based on wins
-						promiseBenchmark = 5
+						promiseBenchmark = 6
 						promiseType = "Wins"
 						if promiseLevel == 1 {
-							promiseBenchmark += 5
+							promiseBenchmark += 3
 						} else if promiseLevel == -1 {
-							promiseBenchmark -= 5
+							promiseBenchmark -= 3
 						}
-						promiseWeight = getPromiseWeightByMinutesOrWins(promiseBenchmark)
+						promiseWeight = getPromiseWeightBySnapsOrWins(tp.Position, "Snap Count", promiseBenchmark)
 					} else if bias == legacy && tp.LegacyID == uint(teamProfile.TeamID) {
 						promiseType = "Legacy"
 					} else if bias == specificCoach && tp.LegacyID == coach.ID {
@@ -1436,15 +1435,15 @@ func getTransferPortalProfileMap(players []structs.CollegePlayer) map[uint][]str
 
 // GetTransferFloor -- Get the Base Floor to determine if a player will transfer or not based on a promise
 func getTransferFloor(likeliness string) int {
-	min := 15
+	min := 25
 	max := 100
 	if likeliness == "Low" {
-		max = 33
+		max = 40
 	} else if likeliness == "Medium" {
-		min = 34
-		max = 60
+		min = 45
+		max = 70
 	} else {
-		min = 61
+		min = 75
 	}
 
 	return util.GenerateIntFromRange(min, max)
@@ -1467,22 +1466,57 @@ func getPromiseFloor(weight string) int {
 	return util.GenerateIntFromRange(70, 80)
 }
 
-func getPromiseWeightByMinutesOrWins(benchmark int) string {
+func getPromiseWeightBySnapsOrWins(position, category string, benchmark int) string {
+	if benchmark == 0 {
+		return "Very Low"
+	}
 	weight := "Medium"
-	if benchmark <= 40 {
-		weight = "Very High"
+	if category == "Wins" {
+		if benchmark <= 4 {
+			weight = "Very Low"
+		}
+		if benchmark <= 6 {
+			weight = "Low"
+		}
+		if benchmark <= 10 {
+			weight = "Medium"
+		}
+		if benchmark <= 12 {
+			weight = "High"
+		}
+		if benchmark <= 15 {
+			weight = "Very High"
+		}
+
 	}
-	if benchmark <= 25 {
-		weight = "High"
-	}
-	if benchmark <= 20 {
-		weight = "Medium"
-	}
-	if benchmark <= 10 {
-		weight = "Low"
-	}
-	if benchmark <= 5 {
-		weight = "Very Low"
+	if category == "Snap Count" {
+		if position == "P" || position == "K" {
+			if benchmark <= 5 {
+				weight = "Low"
+			}
+			if benchmark <= 8 {
+				weight = "Medium"
+			}
+			if benchmark <= 10 {
+				weight = "High"
+			}
+			if benchmark <= 20 {
+				weight = "Very High"
+			}
+		} else {
+			if benchmark <= 10 {
+				weight = "Very Low"
+			}
+			if benchmark <= 20 {
+				weight = "Low"
+			}
+			if benchmark <= 30 {
+				weight = "Medium"
+			}
+			if benchmark <= 50 {
+				weight = "High"
+			}
+		}
 	}
 	return weight
 }

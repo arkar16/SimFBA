@@ -234,7 +234,7 @@ func CFBProgressionExport(w http.ResponseWriter) {
 }
 
 func NFLProgressionExport(w http.ResponseWriter) {
-	w.Header().Set("Content-Disposition", "attachment;filename=2025_nfl_progression_sample_eight.csv")
+	w.Header().Set("Content-Disposition", "attachment;filename=2025_nfl_progression_sample_nine.csv")
 	w.Header().Set("Transfer-Encoding", "chunked")
 	// Initialize writer
 	writer := csv.NewWriter(w)

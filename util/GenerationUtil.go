@@ -1015,3 +1015,35 @@ func PickPosition() string {
 	}
 	return "ATH"
 }
+
+func PickAffinity(stars int, af1 string, pickingAf2 bool) string {
+	if af1 == "" && pickingAf2 {
+		return ""
+	}
+	returnAnAffinity := GenerateIntFromRange(1, 2)
+	if returnAnAffinity == 2 {
+		return ""
+	}
+	roll := GenerateIntFromRange(1, 100)
+	if roll < 40 && af1 != "Close to Home" {
+		return "Close to Home"
+	}
+
+	list := []string{"Academics", "Service", "Religion", "Small School"}
+
+	coinFlip := GenerateIntFromRange(1, 2)
+	if coinFlip == 1 && af1 != "Small Town" && af1 != "Big City" {
+		list = append(list, "Small Town")
+	} else if coinFlip == 2 && af1 != "Small Town" && af1 != "Big City" {
+		list = append(list, "Big City")
+	}
+
+	if stars > 2 {
+		list = append(list, "Media Spotlight", "Rising Stars")
+	}
+	if stars > 3 {
+		list = append(list, "Frontrunner", "Large Crowds")
+	}
+
+	return PickFromStringList(list)
+}

@@ -213,3 +213,8 @@ func CancelExtensionOffer(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(true)
 }
+
+func ExportPortalPlayersToCSV(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/csv")
+	managers.ExportTransferPortalToCSV(w)
+}

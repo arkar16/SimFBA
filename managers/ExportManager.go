@@ -797,3 +797,60 @@ func ExportNFLPlayerStatsToCSV(cp []structs.NFLPlayerResponse, viewType string, 
 		}
 	}
 }
+
+func ExportTransferPortalToCSV(w http.ResponseWriter) {
+	// Get Team Data
+	w.Header().Set("Content-Disposition", "attachment;filename=Official_Portal_List.csv")
+	w.Header().Set("Transfer-Encoding", "chunked")
+	// Initialize writer
+	writer := csv.NewWriter(w)
+
+	// Get Players
+	players := GetTransferPortalPlayersForPage()
+
+	HeaderRow := []string{
+		"Previous Team", "Player ID", "First Name", "Last Name", "Position",
+		"Archetype", "Year", "Age", "Stars",
+		"State", "Height",
+		"Weight", "Overall", "Speed",
+		"Football IQ", "Agility", "Carrying",
+		"Catching", "Route Running", "Zone Coverage", "Man Coverage",
+		"Strength", "Tackle", "Pass Block", "Run Block",
+		"Pass Rush", "Run Defense", "Throw Power", "Throw Accuracy",
+		"Kick Power", "Kick Accuracy", "Punt Power", "Punt Accuracy",
+		"Stamina", "Injury", "Potential Grade", "Redshirt Status",
+	}
+
+	err := writer.Write(HeaderRow)
+	if err != nil {
+		log.Fatal("Cannot write header row", err)
+	}
+
+	for _, player := range players {
+		csvModel := structs.MapPortalPlayerToCSVModel(player)
+		idStr := strconv.Itoa(int(player.PlayerID))
+		playerRow := []string{
+			player.TeamAbbr, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
+			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
+			player.State, strconv.Itoa(player.Height),
+			strconv.Itoa(player.Weight), csvModel.OverallGrade, csvModel.SpeedGrade,
+			csvModel.FootballIQGrade, csvModel.AgilityGrade, csvModel.CarryingGrade,
+			csvModel.CatchingGrade, csvModel.RouteRunningGrade, csvModel.ZoneCoverageGrade, csvModel.ManCoverageGrade,
+			csvModel.StrengthGrade, csvModel.TackleGrade, csvModel.PassBlockGrade, csvModel.RunBlockGrade,
+			csvModel.PassRushGrade, csvModel.RunDefenseGrade, csvModel.ThrowPowerGrade, csvModel.ThrowAccuracyGrade,
+			csvModel.KickPowerGrade, csvModel.KickAccuracyGrade, csvModel.PuntPowerGrade, csvModel.PuntAccuracyGrade,
+			csvModel.StaminaGrade, csvModel.InjuryGrade, csvModel.PotentialGrade, csvModel.RedshirtStatus,
+		}
+
+		err = writer.Write(playerRow)
+		if err != nil {
+			log.Fatal("Cannot write player row to CSV", err)
+		}
+
+		writer.Flush()
+		err = writer.Error()
+		if err != nil {
+			log.Fatal("Error while writing to file ::", err)
+		}
+	}
+}

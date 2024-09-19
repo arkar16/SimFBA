@@ -830,7 +830,7 @@ func ExportTransferPortalToCSV(w http.ResponseWriter) {
 		csvModel := structs.MapPortalPlayerToCSVModel(player)
 		idStr := strconv.Itoa(int(player.PlayerID))
 		playerRow := []string{
-			player.TeamAbbr, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
+			csvModel.Team, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
 			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
 			player.State, strconv.Itoa(player.Height),
 			strconv.Itoa(player.Weight), csvModel.OverallGrade, csvModel.SpeedGrade,

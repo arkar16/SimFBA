@@ -833,7 +833,7 @@ func ExportTransferPortalToCSV(w http.ResponseWriter) {
 			csvModel.Team, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
 			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
 			player.State, strconv.Itoa(player.Height),
-			strconv.Itoa(player.Weight), csvModel.OverallGrade, csvModel.SpeedGrade,
+			strconv.Itoa(player.Weight), player.OverallGrade, csvModel.SpeedGrade,
 			csvModel.FootballIQGrade, csvModel.AgilityGrade, csvModel.CarryingGrade,
 			csvModel.CatchingGrade, csvModel.RouteRunningGrade, csvModel.ZoneCoverageGrade, csvModel.ManCoverageGrade,
 			csvModel.StrengthGrade, csvModel.TackleGrade, csvModel.PassBlockGrade, csvModel.RunBlockGrade,

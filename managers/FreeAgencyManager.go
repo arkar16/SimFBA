@@ -607,7 +607,7 @@ func SyncExtensionOffers() {
 					} else if !validation && player.FreeAgency != "Average" {
 						minimumValueMultiplier = 1.15
 					}
-					percentage := (e.ContractValue / (min * minimumValueMultiplier) * 100)
+					percentage := ((e.ContractValue / (min * minimumValueMultiplier)) * 100)
 					odds := getExtensionPercentageOdds(percentage)
 					// Run Check on the Extension
 

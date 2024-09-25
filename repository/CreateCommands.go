@@ -174,3 +174,25 @@ func CreateNFLDrafteesSafely(db *gorm.DB, draftees []models.NFLDraftee, batchSiz
 	}
 	return nil
 }
+
+func CreateTransferPortalProfileRecord(profile structs.TransferPortalProfile, db *gorm.DB) {
+	err := db.Create(&profile).Error
+	if err != nil {
+		log.Panicln("Could not create cfb season snaps record!")
+	}
+}
+
+func CreateTransferPortalProfileRecordsBatch(db *gorm.DB, profiles []structs.TransferPortalProfile, batchSize int) error {
+	total := len(profiles)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(profiles[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}

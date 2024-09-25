@@ -676,7 +676,7 @@ func AllocatePointsToTransferPlayer(updateTransferPortalBoardDto structs.UpdateT
 	}
 
 	// Save profile
-	db.Save(&profile)
+	repository.SaveRecruitingTeamProfile(profile, db)
 }
 
 func AICoachFillBoardsPhase() {
@@ -692,10 +692,12 @@ func AICoachFillBoardsPhase() {
 	coachMap := GetActiveCollegeCoachMap()
 	teamMap := GetCollegeTeamMap()
 	standingsMap := GetCollegeStandingsMap(seasonID)
-	for _, teamProfile := range AITeams {
-		if !teamProfile.IsAI {
+	profiles := []structs.TransferPortalProfile{}
+	for idx, teamProfile := range AITeams {
+		if teamProfile.IsUserTeam {
 			continue
 		}
+		fmt.Println("Iterating "+teamProfile.TeamAbbreviation+" on IDX: ", idx)
 		team := teamMap[teamProfile.ID]
 		teamStandings := standingsMap[uint(teamProfile.TeamID)]
 		teamID := strconv.Itoa(int(teamProfile.ID))
@@ -710,17 +712,19 @@ func AICoachFillBoardsPhase() {
 		if rosterSize >= teamCap {
 			continue
 		}
-		teamNeedsMap := GetRecruitingNeeds(teamID)
+
+		majorNeedsMap := getMajorNeedsMap()
 
 		for _, r := range roster {
-			if r.Year == 1 && !r.IsRedshirt {
-				teamNeedsMap[r.Position] -= 1
+			if (team.IsFBS && r.Overall > 42 && majorNeedsMap[r.Position]) ||
+				(!team.IsFBS && r.Overall > 34 && majorNeedsMap[r.Position]) {
+				majorNeedsMap[r.Position] = false
 			}
 		}
 
 		for _, tp := range transferPortalPlayers {
 			isBadFit := IsBadSchemeFit(teamProfile.OffensiveScheme, teamProfile.DefensiveScheme, tp.Archetype, tp.Position)
-			if isBadFit || teamNeedsMap[tp.Position] <= 0 || tp.PreviousTeamID == team.ID || portalProfileMap[tp.ID].CollegePlayerID == tp.ID || portalProfileMap[tp.ID].ID > 0 {
+			if isBadFit || !majorNeedsMap[tp.Position] || tp.PreviousTeamID == team.ID || portalProfileMap[tp.ID].CollegePlayerID == tp.ID || portalProfileMap[tp.ID].ID > 0 {
 				continue
 			}
 
@@ -761,6 +765,8 @@ func AICoachFillBoardsPhase() {
 				biasMod += 25
 			} else if bias == legacy && tp.LegacyID == team.ID {
 				biasMod += 25
+			} else {
+				biasMod = 5
 			}
 
 			diceRoll := util.GenerateIntFromRange(1, 50)
@@ -771,11 +777,13 @@ func AICoachFillBoardsPhase() {
 					SeasonID:         uint(ts.CollegeSeasonID),
 					TeamAbbreviation: teamProfile.TeamAbbreviation,
 				}
-
-				db.Create(&portalProfile)
+				profiles = append(profiles, portalProfile)
 			}
 		}
+
 	}
+
+	repository.CreateTransferPortalProfileRecordsBatch(db, profiles, 500)
 }
 
 func AICoachAllocateAndPromisePhase() {
@@ -791,7 +799,7 @@ func AICoachAllocateAndPromisePhase() {
 	})
 
 	for _, teamProfile := range AITeams {
-		if teamProfile.SpentPoints >= teamProfile.WeeklyPoints {
+		if teamProfile.IsUserTeam || teamProfile.SpentPoints >= teamProfile.WeeklyPoints {
 			continue
 		}
 
@@ -805,23 +813,26 @@ func AICoachAllocateAndPromisePhase() {
 			continue
 		}
 
-		teamNeedsMap := GetRecruitingNeeds(teamID)
+		majorNeedsMap := getMajorNeedsMap()
 
 		for _, r := range roster {
-			if r.Year == 1 && !r.IsRedshirt {
-				teamNeedsMap[r.Position] -= 1
+			if r.Overall > 42 && majorNeedsMap[r.Position] {
+				majorNeedsMap[r.Position] = false
 			}
 		}
 
 		portalProfiles := GetTransferPortalProfilesByTeamID(teamID)
 		for _, profile := range portalProfiles {
+			if teamProfile.SpentPoints >= teamProfile.WeeklyPoints {
+				break
+			}
 			if profile.CurrentWeeksPoints > 0 || profile.RemovedFromBoard {
 				continue
 			}
 			tp := transferPortalPlayerMap[profile.CollegePlayerID]
 			// If player has already signed or if the position has been fulfilled
 			isBadFit := IsBadSchemeFit(teamProfile.OffensiveScheme, teamProfile.DefensiveScheme, tp.Archetype, tp.Position)
-			if isBadFit || tp.TeamID > 0 || tp.TransferStatus == 0 || tp.ID == 0 || teamNeedsMap[tp.Position] <= 0 {
+			if isBadFit || tp.TeamID > 0 || tp.TransferStatus == 0 || tp.ID == 0 || !majorNeedsMap[tp.Position] {
 				profile.Deactivate()
 				repository.SaveTransferPortalProfile(profile, db)
 				continue
@@ -842,7 +853,7 @@ func AICoachAllocateAndPromisePhase() {
 				continue
 			} else if profile.CurrentWeeksPoints > 0 && profile.TotalPoints+float64(profile.CurrentWeeksPoints) < float64(leadingTeamVal)*0.66 {
 				profile.Deactivate()
-				db.Save(&profile)
+				repository.SaveTransferPortalProfile(profile, db)
 				continue
 			}
 
@@ -875,10 +886,11 @@ func AICoachAllocateAndPromisePhase() {
 
 			if removePlayerFromBoard {
 				profile.Deactivate()
-				db.Save(&profile)
+				repository.SaveTransferPortalProfile(profile, db)
 				continue
 			}
 			profile.AllocatePoints(int(num))
+			teamProfile.AIAllocateSpentPoints(num)
 
 			// Generate Promise based on coach bias
 			if profile.PromiseID.Int64 == 0 && !profile.RolledOnPromise {
@@ -898,6 +910,7 @@ func AICoachAllocateAndPromisePhase() {
 					if bias == closeToHome && (teamProfile.State == tp.State) {
 						promiseType = "Home State Game"
 						benchmarkStr = tp.State
+						promiseWeight = "Low"
 					} else if bias == immediateStart && tp.Overall > 40 {
 						promiseType = "Snaps"
 						// Rewrite
@@ -923,31 +936,38 @@ func AICoachAllocateAndPromisePhase() {
 						promiseWeight = getPromiseWeightBySnapsOrWins(tp.Position, "Snap Count", promiseBenchmark)
 					} else if bias == legacy && tp.LegacyID == uint(teamProfile.TeamID) {
 						promiseType = "Legacy"
+						promiseWeight = "Medium"
 					} else if bias == specificCoach && tp.LegacyID == coach.ID {
 						promiseType = "Specific Coach"
+						promiseWeight = "Low"
 					} else if bias == differentState && teamProfile.State != tp.State {
 						promiseType = "Different State"
 						promiseWeight = "Low"
 					}
 
-					collegePromise := structs.CollegePromise{
-						TeamID:          uint(teamProfile.TeamID),
-						CollegePlayerID: tp.ID,
-						PromiseType:     promiseType,
-						PromiseWeight:   promiseWeight,
-						Benchmark:       promiseBenchmark,
-						BenchmarkStr:    benchmarkStr,
-						IsActive:        true,
+					if promiseType != "" {
+						collegePromise := structs.CollegePromise{
+							TeamID:          uint(teamProfile.TeamID),
+							CollegePlayerID: tp.ID,
+							PromiseType:     promiseType,
+							PromiseWeight:   promiseWeight,
+							Benchmark:       promiseBenchmark,
+							BenchmarkStr:    benchmarkStr,
+							IsActive:        true,
+						}
+						repository.CreateCollegePromiseRecord(collegePromise, db)
 					}
-
-					repository.CreateCollegePromiseRecord(collegePromise, db)
 				}
 
 				profile.ToggleRolledOnPromise()
 			}
 			// Save Profile
-			repository.SaveTransferPortalProfile(profile, db)
+			if profile.CurrentWeeksPoints > 0 {
+				repository.SaveTransferPortalProfile(profile, db)
+			}
 		}
+
+		repository.SaveRecruitingTeamProfile(teamProfile, db)
 	}
 }
 
@@ -1583,7 +1603,7 @@ func getPromiseLevel(pt string) int {
 }
 
 func getMultiplier(pr structs.CollegePromise) float64 {
-	if pr.ID == 0 {
+	if pr.ID == 0 || !pr.IsActive {
 		return 1
 	}
 	weight := pr.PromiseWeight
@@ -1686,4 +1706,82 @@ func IsBadSchemeFit(offensiveScheme, defensiveScheme, arch, position string) boo
 	totalFitList := append(offensiveSchemeList, defensiveSchemeList...)
 
 	return CheckPlayerFits(archType, totalFitList)
+}
+
+func getMajorNeedsMap() map[string]bool {
+	majorNeedsMap := make(map[string]bool)
+
+	if _, ok := majorNeedsMap["QB"]; !ok {
+		majorNeedsMap["QB"] = true
+	}
+
+	if _, ok := majorNeedsMap["RB"]; !ok {
+		majorNeedsMap["RB"] = true
+	}
+
+	if _, ok := majorNeedsMap["FB"]; !ok {
+		majorNeedsMap["FB"] = true
+	}
+
+	if _, ok := majorNeedsMap["WR"]; !ok {
+		majorNeedsMap["WR"] = true
+	}
+
+	if _, ok := majorNeedsMap["TE"]; !ok {
+		majorNeedsMap["TE"] = true
+	}
+
+	if _, ok := majorNeedsMap["OT"]; !ok {
+		majorNeedsMap["OT"] = true
+	}
+
+	if _, ok := majorNeedsMap["OG"]; !ok {
+		majorNeedsMap["OG"] = true
+	}
+
+	if _, ok := majorNeedsMap["C"]; !ok {
+		majorNeedsMap["C"] = true
+	}
+
+	if _, ok := majorNeedsMap["DT"]; !ok {
+		majorNeedsMap["DT"] = true
+	}
+
+	if _, ok := majorNeedsMap["DE"]; !ok {
+		majorNeedsMap["DE"] = true
+	}
+
+	if _, ok := majorNeedsMap["OLB"]; !ok {
+		majorNeedsMap["OLB"] = true
+	}
+
+	if _, ok := majorNeedsMap["ILB"]; !ok {
+		majorNeedsMap["ILB"] = true
+	}
+
+	if _, ok := majorNeedsMap["CB"]; !ok {
+		majorNeedsMap["CB"] = true
+	}
+
+	if _, ok := majorNeedsMap["FS"]; !ok {
+		majorNeedsMap["FS"] = true
+	}
+
+	if _, ok := majorNeedsMap["SS"]; !ok {
+		majorNeedsMap["SS"] = true
+	}
+
+	if _, ok := majorNeedsMap["P"]; !ok {
+		majorNeedsMap["P"] = true
+	}
+
+	if _, ok := majorNeedsMap["K"]; !ok {
+		majorNeedsMap["K"] = true
+	}
+
+	if _, ok := majorNeedsMap["ATH"]; !ok {
+		majorNeedsMap["ATH"] = true
+	}
+
+	return majorNeedsMap
 }

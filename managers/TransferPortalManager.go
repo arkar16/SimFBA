@@ -633,14 +633,15 @@ func RemovePlayerFromTransferPortalBoard(id string) {
 	profile := GetOnlyTransferPortalProfileByID(id)
 
 	profile.Deactivate()
-
-	if profile.PromiseID.Int64 > 0 {
-		promiseID := strconv.Itoa(int(profile.PromiseID.Int64))
+	pid := profile.PromiseID.Int64
+	profile.RemovePromise()
+	repository.SaveTransferPortalProfile(profile, db)
+	if pid > 0 {
+		promiseID := strconv.Itoa(int(pid))
 		promise := GetCollegePromiseByID(promiseID)
+		promise.Deactivate()
 		repository.DeleteCollegePromise(promise, db)
 	}
-
-	db.Save(&profile)
 }
 
 func AllocatePointsToTransferPlayer(updateTransferPortalBoardDto structs.UpdateTransferPortalBoard) {

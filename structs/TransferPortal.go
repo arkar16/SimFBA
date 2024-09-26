@@ -93,6 +93,7 @@ func (p *TransferPortalProfile) Lock() {
 
 func (p *TransferPortalProfile) Deactivate() {
 	p.RemovedFromBoard = true
+	p.CurrentWeeksPoints = 0
 }
 
 func (p *TransferPortalProfile) AllocatePoints(points int) {

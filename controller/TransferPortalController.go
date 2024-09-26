@@ -158,6 +158,12 @@ func GetScoutingDataByTransfer(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(data)
 }
 
+func SyncTransferPortal(w http.ResponseWriter, r *http.Request) {
+	managers.SyncTransferPortal()
+
+	json.NewEncoder(w).Encode("AI Boards for Transfer Portal Complete.")
+}
+
 func FillUpTransferBoardsAI(w http.ResponseWriter, r *http.Request) {
 	managers.AICoachFillBoardsPhase()
 

@@ -769,6 +769,10 @@ func AICoachFillBoardsPhase() {
 				biasMod = 5
 			}
 
+			if tp.Overall < 31 && !teamProfile.IsFBS && teamProfile.ID > 194 {
+				biasMod += 20
+			}
+
 			diceRoll := util.GenerateIntFromRange(1, 50)
 			if diceRoll < biasMod {
 				portalProfile := structs.TransferPortalProfile{
@@ -799,7 +803,7 @@ func AICoachAllocateAndPromisePhase() {
 	})
 
 	for _, teamProfile := range AITeams {
-		if teamProfile.IsUserTeam || teamProfile.SpentPoints >= teamProfile.WeeklyPoints {
+		if teamProfile.IsUserTeam {
 			continue
 		}
 
@@ -821,9 +825,12 @@ func AICoachAllocateAndPromisePhase() {
 			}
 		}
 
+		teamProfile.ResetSpentPoints()
+		points := 0.0
+
 		portalProfiles := GetTransferPortalProfilesByTeamID(teamID)
 		for _, profile := range portalProfiles {
-			if teamProfile.SpentPoints >= teamProfile.WeeklyPoints {
+			if points >= teamProfile.WeeklyPoints {
 				break
 			}
 			if profile.CurrentWeeksPoints > 0 || profile.RemovedFromBoard {
@@ -850,6 +857,7 @@ func AICoachAllocateAndPromisePhase() {
 			leadingTeamVal := IsAITeamContendingForPortalPlayer(profiles)
 			if profile.CurrentWeeksPoints > 0 && profile.TotalPoints+float64(profile.CurrentWeeksPoints) >= float64(leadingTeamVal)*0.66 {
 				// continue, leave everything alone
+				points += float64(profile.CurrentWeeksPoints)
 				continue
 			} else if profile.CurrentWeeksPoints > 0 && profile.TotalPoints+float64(profile.CurrentWeeksPoints) < float64(leadingTeamVal)*0.66 {
 				profile.Deactivate()
@@ -880,7 +888,7 @@ func AICoachAllocateAndPromisePhase() {
 			if num+profile.TotalPoints < float64(leadingTeamVal)*0.66 {
 				removePlayerFromBoard = true
 			}
-			if leadingTeamVal < 14 {
+			if leadingTeamVal < 8 {
 				removePlayerFromBoard = false
 			}
 
@@ -890,7 +898,7 @@ func AICoachAllocateAndPromisePhase() {
 				continue
 			}
 			profile.AllocatePoints(int(num))
-			teamProfile.AIAllocateSpentPoints(num)
+			points += num
 
 			// Generate Promise based on coach bias
 			if profile.PromiseID.Int64 == 0 && !profile.RolledOnPromise {
@@ -966,7 +974,7 @@ func AICoachAllocateAndPromisePhase() {
 				repository.SaveTransferPortalProfile(profile, db)
 			}
 		}
-
+		teamProfile.AIAllocateSpentPoints(points)
 		repository.SaveRecruitingTeamProfile(teamProfile, db)
 	}
 }
@@ -983,7 +991,7 @@ func SyncTransferPortal() {
 
 	if !ts.IsRecruitingLocked {
 		ts.ToggleLockRecruiting()
-		db.Save(&ts)
+		repository.SaveTimestamp(ts, db)
 	}
 
 	for _, portalPlayer := range transferPortalPlayers {
@@ -999,8 +1007,14 @@ func SyncTransferPortal() {
 
 		// If no one has a profile on them during round 10
 		if len(portalProfiles) == 0 && ts.TransferPortalRound == 10 && len(portalPlayer.TransferLikeliness) > 0 {
+			roster := rosterMap[portalPlayer.PreviousTeamID]
+			tp := teamProfileMap[strconv.Itoa(int(portalPlayer.PreviousTeamID))]
+			if (len(roster) > 105 && tp.IsFBS) || (len(roster) > 80 && !tp.IsFBS) {
+				continue
+			}
+			rosterMap[portalPlayer.PreviousTeamID] = append(rosterMap[portalPlayer.PreviousTeamID], portalPlayer)
 			portalPlayer.WillReturn()
-			db.Save(&portalPlayer)
+			repository.SaveCFBPlayer(portalPlayer, db)
 			continue
 		}
 
@@ -1027,6 +1041,11 @@ func SyncTransferPortal() {
 		})
 
 		for i := range portalProfiles {
+			roster := rosterMap[portalProfiles[i].ProfileID]
+			tp := teamProfileMap[strconv.Itoa(int(portalProfiles[i].ProfileID))]
+			if (len(roster) > 105 && tp.IsFBS) || (len(roster) > 80 && !tp.IsFBS) {
+				continue
+			}
 			if eligiblePointThreshold == 0.0 {
 				eligiblePointThreshold = portalProfiles[i].TotalPoints * signingMinimum
 			}
@@ -1044,14 +1063,13 @@ func SyncTransferPortal() {
 
 		}
 
-		if (teamCount == 1 && minSpendingCount >= 2) || (teamCount > 1 && minSpendingCount > 3 || ts.TransferPortalRound == 10) {
+		if (teamCount >= 1 && minSpendingCount >= 2) || (teamCount > 1 && minSpendingCount > 3) || (ts.TransferPortalRound == 10) {
 			// threshold met
 			readyToSign = true
 		}
 		var winningTeamID uint = 0
+		var odds float64 = 0
 		if readyToSign {
-			var odds float64 = 0
-
 			for winningTeamID == 0 {
 				percentageOdds := rand.Float64() * (totalPointsOnPlayer)
 				currentProbability := 0.0
@@ -1068,9 +1086,10 @@ func SyncTransferPortal() {
 				if winningTeamID > 0 {
 					winningTeamIDSTR := strconv.Itoa(int(winningTeamID))
 					promise := GetCollegePromiseByCollegePlayerID(strconv.Itoa(int(portalPlayer.ID)), winningTeamIDSTR)
-
-					promise.MakePromise()
-					db.Save(&promise)
+					if promise.ID > 0 {
+						promise.MakePromise()
+						repository.SaveCollegePromiseRecord(promise, db)
+					}
 
 					teamProfile := teamProfileMap[winningTeamIDSTR]
 					currentRoster := rosterMap[teamProfile.ID]
@@ -1088,7 +1107,11 @@ func SyncTransferPortal() {
 						for i := range portalProfiles {
 							if portalProfiles[i].ID == winningTeamID {
 								portalProfiles[i].SignPlayer()
-								break
+							} else {
+								promise := GetCollegePromiseByCollegePlayerID(strconv.Itoa(int(portalPlayer.ID)), strconv.Itoa(int(portalProfiles[i].ProfileID)))
+								if promise.ID > 0 {
+									repository.DeleteCollegePromise(promise, db)
+								}
 							}
 						}
 
@@ -1105,18 +1128,21 @@ func SyncTransferPortal() {
 							totalPointsOnPlayer += p.TotalPoints
 						}
 					}
+
 				}
 			}
 
 		}
 		for _, p := range portalProfiles {
-			if p.ID != winningTeamID {
+			if winningTeamID > 0 && p.ID != winningTeamID {
 				p.RemovePromise()
 				p.Lock()
 			}
-			repository.SaveTransferPortalProfile(p, db)
+			if winningTeamID > 0 || p.SpendingCount > 0 {
+				repository.SaveTransferPortalProfile(p, db)
+			}
 			fmt.Println("Save transfer portal profile from " + portalPlayer.TeamAbbr + " towards " + portalPlayer.FirstName + " " + portalPlayer.LastName)
-			if p.ID != winningTeamID {
+			if winningTeamID > 0 && p.ID != winningTeamID {
 				promise := GetCollegePromiseByCollegePlayerID(strconv.Itoa(int(portalPlayer.ID)), strconv.Itoa(int(p.ProfileID)))
 				if promise.ID > 0 {
 					repository.DeleteCollegePromise(promise, db)

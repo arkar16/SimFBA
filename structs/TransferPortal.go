@@ -84,6 +84,7 @@ func (p *TransferPortalProfile) RemovePromise() {
 func (p *TransferPortalProfile) SignPlayer() {
 	p.IsSigned = true
 	p.LockProfile = true
+	p.CurrentWeeksPoints = 0
 }
 
 func (p *TransferPortalProfile) Lock() {
@@ -99,12 +100,14 @@ func (p *TransferPortalProfile) AllocatePoints(points int) {
 }
 
 func (p *TransferPortalProfile) AddPointsToTotal(multiplier float64) {
-	p.TotalPoints += (float64(p.CurrentWeeksPoints) * multiplier)
+	sum := (float64(p.CurrentWeeksPoints) * multiplier)
+	p.TotalPoints += sum
 	if p.CurrentWeeksPoints == 0 {
 		p.SpendingCount = 0
 	} else {
 		p.SpendingCount += 1
 	}
+	p.PreviouslySpentPoints = p.CurrentWeeksPoints
 }
 
 func (p *TransferPortalProfile) AssignPromise(id uint) {

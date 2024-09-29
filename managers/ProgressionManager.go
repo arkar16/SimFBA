@@ -317,10 +317,8 @@ func ProgressNFLPlayers() {
 	snapMap := GetNFLPlayerSeasonSnapMap(SeasonID)
 	statMap := GetNFLPlayerStatsMap(SeasonID)
 	teams := GetAllNFLTeams()
-	// nflPlayers := GetAllNFLPlayers()
 	freeAgents := GetAllFreeAgents()
 	lastTwoStatMap := GetNFLLastTwoSeasonStatMap(ts.NFLSeasonID)
-	// waivedPlayers := GetAllWaiverWirePlayers()
 
 	for _, team := range teams {
 		teamID := strconv.Itoa(int(team.ID))
@@ -374,11 +372,11 @@ func ProgressNFLPlayers() {
 				if willRetire {
 					activeContract.ToggleRetirement()
 				}
-				db.Save(&activeContract)
+				repository.SaveNFLContract(activeContract, db)
 			}
 			if !willRetire {
 				player.ToggleHasProgressed()
-				db.Save(&player)
+				repository.SaveNFLPlayer(player, db)
 				continue
 			}
 
@@ -386,8 +384,8 @@ func ProgressNFLPlayers() {
 			message := "Breaking News: " + player.Position + " " + player.FirstName + " " + player.LastName + " has decided to retire from SimNFL. He was drafted by " + player.DraftedTeam + " and last played with " + player.TeamAbbr + " and " + player.PreviousTeam + ". We thank him for his wondrous, extensive career and hope he enjoys his retirement!"
 			CreateNewsLog("NFL", message, "Retirement", player.TeamID, ts)
 			retiredPlayer := (structs.NFLRetiredPlayer)(player)
-			db.Create(&retiredPlayer)
-			db.Delete(&player)
+			repository.CreateRetireeRecord(retiredPlayer, db)
+			repository.DeleteNFLPlayerRecord(player, db)
 		}
 	}
 
@@ -419,8 +417,8 @@ func ProgressNFLPlayers() {
 		message := "Breaking News: " + player.Position + " " + player.FirstName + " " + player.LastName + " has decided to retire from SimNFL. He was drafted by " + player.DraftedTeam + " and last played with " + player.TeamAbbr + " and " + player.PreviousTeam + ". We thank him for his wondrous, extensive career and hope he enjoys his retirement!"
 		CreateNewsLog("NFL", message, "Retirement", player.TeamID, ts)
 		retiredPlayer := (structs.NFLRetiredPlayer)(player)
-		db.Create(&retiredPlayer)
-		db.Delete(&player)
+		repository.CreateRetireeRecord(retiredPlayer, db)
+		repository.DeleteNFLPlayerRecord(player, db)
 	}
 }
 

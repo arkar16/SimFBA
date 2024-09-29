@@ -473,7 +473,7 @@ func UpdateDraftPicks() {
 
 	draftPicks := GetAllCurrentSeasonDraftPicks()
 	pickMap := make(map[uint]structs.NFLDraftPick)
-	var latestID uint = 673 // Latest ID from Draft Pick table in DB
+	var latestID uint = 1136 // Latest ID from Draft Pick table in DB
 
 	for _, pick := range draftPicks {
 		pickMap[pick.ID] = pick

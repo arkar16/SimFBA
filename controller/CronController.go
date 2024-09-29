@@ -92,7 +92,7 @@ func ShowCFBThursdayViaCron() {
 	if !ts.ThursdayGames {
 		timeslot = "Thursday Night"
 	}
-	if ts.RunCron {
+	if ts.RunCron && (!ts.IsOffSeason || !ts.IsNFLOffSeason || !ts.CollegeSeasonOver || !ts.NFLSeasonOver) {
 		managers.SyncTimeslot(timeslot)
 	}
 }
@@ -103,7 +103,7 @@ func ShowNFLThursdayViaCron() {
 	if !ts.NFLThursday {
 		timeslot = "Thursday Night Football"
 	}
-	if ts.RunCron {
+	if ts.RunCron && (!ts.IsOffSeason || !ts.IsNFLOffSeason || !ts.CollegeSeasonOver || !ts.NFLSeasonOver) {
 		managers.SyncTimeslot(timeslot)
 	}
 }
@@ -114,7 +114,7 @@ func ShowCFBFridayViaCron() {
 	if !ts.FridayGames {
 		timeslot = "Friday Night"
 	}
-	if ts.RunCron {
+	if ts.RunCron && (!ts.IsOffSeason || !ts.IsNFLOffSeason || !ts.CollegeSeasonOver || !ts.NFLSeasonOver) {
 		managers.SyncTimeslot(timeslot)
 	}
 }
@@ -125,7 +125,7 @@ func ShowCFBSatMornViaCron() {
 	if !ts.SaturdayMorning {
 		timeslot = "Saturday Morning"
 	}
-	if ts.RunCron {
+	if ts.RunCron && (!ts.IsOffSeason || !ts.IsNFLOffSeason || !ts.CollegeSeasonOver || !ts.NFLSeasonOver) {
 		managers.SyncTimeslot(timeslot)
 	}
 }
@@ -136,7 +136,7 @@ func ShowCFBSatAftViaCron() {
 	if !ts.SaturdayNoon {
 		timeslot = "Saturday Afternoon"
 	}
-	if ts.RunCron {
+	if ts.RunCron && (!ts.IsOffSeason || !ts.IsNFLOffSeason || !ts.CollegeSeasonOver || !ts.NFLSeasonOver) {
 		managers.SyncTimeslot(timeslot)
 	}
 }
@@ -147,7 +147,7 @@ func ShowCFBSatEveViaCron() {
 	if !ts.SaturdayEvening {
 		timeslot = "Saturday Evening"
 	}
-	if ts.RunCron {
+	if ts.RunCron && (!ts.IsOffSeason || !ts.IsNFLOffSeason || !ts.CollegeSeasonOver || !ts.NFLSeasonOver) {
 		managers.SyncTimeslot(timeslot)
 	}
 }
@@ -176,7 +176,7 @@ func ShowCFBSatNitViaCron() {
 	} else if !ts.NFLMondayEvening {
 		timeslot = "Monday Night Football"
 	}
-	if ts.RunCron {
+	if ts.RunCron && (!ts.IsOffSeason || !ts.IsNFLOffSeason || !ts.CollegeSeasonOver || !ts.NFLSeasonOver) {
 		managers.SyncTimeslot(timeslot)
 	}
 }
@@ -187,7 +187,7 @@ func ShowNFLSunNoonViaCron() {
 	if !ts.NFLSundayNoon {
 		timeslot = "Sunday Noon"
 	}
-	if ts.RunCron {
+	if ts.RunCron && (!ts.IsOffSeason || !ts.IsNFLOffSeason || !ts.CollegeSeasonOver || !ts.NFLSeasonOver) {
 		managers.SyncTimeslot(timeslot)
 	}
 }
@@ -198,7 +198,7 @@ func ShowNFLSunAftViaCron() {
 	if !ts.NFLSundayAfternoon {
 		timeslot = "Sunday Afternoon"
 	}
-	if ts.RunCron {
+	if ts.RunCron && (!ts.IsOffSeason || !ts.IsNFLOffSeason || !ts.CollegeSeasonOver || !ts.NFLSeasonOver) {
 		managers.SyncTimeslot(timeslot)
 	}
 }
@@ -209,7 +209,7 @@ func ShowNFLSunNitViaCron() {
 	if !ts.NFLSundayEvening {
 		timeslot = "Sunday Night Football"
 	}
-	if ts.RunCron {
+	if ts.RunCron && (!ts.IsOffSeason || !ts.IsNFLOffSeason || !ts.CollegeSeasonOver || !ts.NFLSeasonOver) {
 		managers.SyncTimeslot(timeslot)
 	}
 }
@@ -220,7 +220,7 @@ func ShowNFLMonNitViaCron() {
 	if !ts.NFLMondayEvening {
 		timeslot = "Monday Night Football"
 	}
-	if ts.RunCron {
+	if ts.RunCron && (!ts.IsOffSeason || !ts.IsNFLOffSeason || !ts.CollegeSeasonOver || !ts.NFLSeasonOver) {
 		managers.SyncTimeslot(timeslot)
 	}
 }

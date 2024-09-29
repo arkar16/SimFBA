@@ -293,19 +293,6 @@ func NFLProgressionExport(w http.ResponseWriter) {
 
 			csvModel := structs.MapNFLPlayerToCSVModel(player)
 			idStr := strconv.Itoa(int(player.ID))
-			/*
-				"Team", "Player ID", "First Name", "Last Name", "Position",
-				"Archetype", "Year", "Age", "Prime Age", "Stars",
-				"High School", "City", "State", "Height",
-				"Weight", "Overall", "Speed",
-				"Football IQ", "Agility", "Carrying",
-				"Catching", "Route Running", "Zone Coverage", "Man Coverage",
-				"Strength", "Tackle", "Pass Block", "Run Block",
-				"Pass Rush", "Run Defense", "Throw Power", "Throw Accuracy",
-				"Kick Power", "Kick Accuracy", "Punt Power", "Punt Accuracy",
-				"Stamina", "Injury", "Potential Grade", "Redshirt Status",
-				"RetiringStatus", "College",
-			*/
 			playerRow := []string{
 				team.TeamName, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
 				csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(int(player.PrimeAge)), strconv.Itoa(player.Stars),

@@ -19,7 +19,7 @@ func ExportAllRostersToCSV(w http.ResponseWriter) {
 
 	HeaderRow := []string{
 		"Team", "Player ID", "First Name", "Last Name", "Position",
-		"Archetype", "Year", "Age", "Stars",
+		"Archetype", "Position Two", "Archetype Two", "Year", "Age", "Stars",
 		"High School", "City", "State", "Height",
 		"Weight", "Overall", "Speed",
 		"Football IQ", "Agility", "Carrying",
@@ -42,7 +42,7 @@ func ExportAllRostersToCSV(w http.ResponseWriter) {
 		idStr := strconv.Itoa(int(player.ID))
 		playerRow := []string{
 			player.TeamAbbr, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
-			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
+			csvModel.Archetype, csvModel.PositionTwo, csvModel.ArchetypeTwo, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
 			player.HighSchool, player.City, player.State, strconv.Itoa(player.Height),
 			strconv.Itoa(player.Weight), csvModel.OverallGrade, csvModel.SpeedGrade,
 			csvModel.FootballIQGrade, csvModel.AgilityGrade, csvModel.CarryingGrade,
@@ -79,7 +79,7 @@ func ExportTeamToCSV(TeamID string, w http.ResponseWriter) {
 
 	HeaderRow := []string{
 		"Team", "Player ID", "First Name", "Last Name", "Position",
-		"Archetype", "Year", "Age", "Stars",
+		"Archetype", "Position Two", "Archetype Two", "Year", "Age", "Stars",
 		"High School", "City", "State", "Height",
 		"Weight", "Overall", "Speed",
 		"Football IQ", "Agility", "Carrying",
@@ -100,7 +100,7 @@ func ExportTeamToCSV(TeamID string, w http.ResponseWriter) {
 		idStr := strconv.Itoa(int(player.ID))
 		playerRow := []string{
 			team.TeamName, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
-			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
+			csvModel.Archetype, csvModel.PositionTwo, csvModel.ArchetypeTwo, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
 			player.HighSchool, player.City, player.State, strconv.Itoa(player.Height),
 			strconv.Itoa(player.Weight), csvModel.OverallGrade, csvModel.SpeedGrade,
 			csvModel.FootballIQGrade, csvModel.AgilityGrade, csvModel.CarryingGrade,
@@ -137,7 +137,7 @@ func ExportNFLTeamToCSV(TeamID string, w http.ResponseWriter) {
 
 	HeaderRow := []string{
 		"Team", "First Name", "Last Name", "Position",
-		"Archetype", "Year", "Age",
+		"Archetype", "Position Two", "Archetype Two", "Year", "Age",
 		"High School", "Hometown", "State", "Height",
 		"Weight", "Overall", "Speed",
 		"Football IQ", "Agility", "Carrying",
@@ -157,7 +157,7 @@ func ExportNFLTeamToCSV(TeamID string, w http.ResponseWriter) {
 		csvModel := structs.MapNFLPlayerToCSVModel(player)
 		playerRow := []string{
 			team.TeamName, csvModel.FirstName, csvModel.LastName, csvModel.Position,
-			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age),
+			csvModel.Archetype, csvModel.PositionTwo, csvModel.ArchetypeTwo, csvModel.Year, strconv.Itoa(player.Age),
 			player.HighSchool, player.Hometown, player.State, strconv.Itoa(player.Height),
 			strconv.Itoa(player.Weight), csvModel.OverallGrade, csvModel.SpeedGrade,
 			csvModel.FootballIQGrade, csvModel.AgilityGrade, csvModel.CarryingGrade,
@@ -245,7 +245,7 @@ func ExportDrafteesToCSV(w http.ResponseWriter) {
 
 	HeaderRow := []string{
 		"PlayerID", "First Name", "Last Name", "Position",
-		"Archetype", "Age", "Stars", "College",
+		"Archetype", "Position Two", "Archetype Two", "Age", "Stars", "College",
 		"High School", "City", "State", "Height",
 		"Weight", "Overall", "Speed",
 		"Football IQ", "Agility", "Carrying",
@@ -264,7 +264,7 @@ func ExportDrafteesToCSV(w http.ResponseWriter) {
 	for _, player := range draftees {
 		playerRow := []string{
 			strconv.Itoa(player.PlayerID), player.FirstName, player.LastName, player.Position,
-			player.Archetype, strconv.Itoa(player.Age), strconv.Itoa(player.Stars), player.College,
+			player.Archetype, player.PositionTwo, player.ArchetypeTwo, strconv.Itoa(player.Age), strconv.Itoa(player.Stars), player.College,
 			player.HighSchool, player.City, player.State, strconv.Itoa(player.Height),
 			strconv.Itoa(player.Weight), player.OverallGrade, player.SpeedGrade,
 			player.FootballIQGrade, player.AgilityGrade, player.CarryingGrade,
@@ -740,7 +740,7 @@ func ExportNFLPlayerStatsToCSV(cp []structs.NFLPlayerResponse, viewType string, 
 
 	HeaderRow := []string{
 		"First Name", "Last Name", "Position",
-		"Archetype", "Year", "Team", "Conference", "Division", "Age", "Stars",
+		"Archetype", "Position Two", "Archetype Two", "Year", "Team", "Conference", "Division", "Age", "Stars",
 		"Passing Yards", "Pass Attempts", "Pass Completions", "Passing Avg",
 		"Passing TDs", "Interceptions", "Longest Pass", "QB Sacks",
 		"QB Rating", "Rush Attempts", "Rushing Yards", "Rushing Avg",
@@ -770,7 +770,7 @@ func ExportNFLPlayerStatsToCSV(cp []structs.NFLPlayerResponse, viewType string, 
 		}
 
 		pr := []string{p.FirstName, p.LastName, p.Position,
-			p.Archetype, Year, p.TeamAbbr, p.Conference, p.Division, strconv.Itoa(p.Age), strconv.Itoa(p.Stars),
+			p.Archetype, p.PositionTwo, p.ArchetypeTwo, Year, p.TeamAbbr, p.Conference, p.Division, strconv.Itoa(p.Age), strconv.Itoa(p.Stars),
 			strconv.Itoa(seasonStats.PassingYards), strconv.Itoa(seasonStats.PassAttempts), strconv.Itoa(seasonStats.PassCompletions), strconv.Itoa(int(seasonStats.PassingAvg)),
 			strconv.Itoa(seasonStats.PassingTDs), strconv.Itoa(seasonStats.Interceptions), strconv.Itoa(seasonStats.LongestPass), strconv.Itoa(seasonStats.Sacks),
 			strconv.Itoa(int(seasonStats.QBRating)), strconv.Itoa(seasonStats.RushAttempts), strconv.Itoa(seasonStats.RushingYards), strconv.Itoa(int(seasonStats.RushingAvg)),
@@ -810,7 +810,7 @@ func ExportTransferPortalToCSV(w http.ResponseWriter) {
 
 	HeaderRow := []string{
 		"Previous Team", "Player ID", "First Name", "Last Name", "Position",
-		"Archetype", "Year", "Age", "Stars",
+		"Archetype", "Position Two", "Archetype Two", "Year", "Age", "Stars",
 		"State", "Height",
 		"Weight", "Overall", "Speed",
 		"Football IQ", "Agility", "Carrying",
@@ -831,7 +831,7 @@ func ExportTransferPortalToCSV(w http.ResponseWriter) {
 		idStr := strconv.Itoa(int(player.PlayerID))
 		playerRow := []string{
 			csvModel.Team, idStr, csvModel.FirstName, csvModel.LastName, csvModel.Position,
-			csvModel.Archetype, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
+			csvModel.Archetype, csvModel.PositionTwo, csvModel.ArchetypeTwo, csvModel.Year, strconv.Itoa(player.Age), strconv.Itoa(player.Stars),
 			player.State, strconv.Itoa(player.Height),
 			strconv.Itoa(player.Weight), player.OverallGrade, csvModel.SpeedGrade,
 			csvModel.FootballIQGrade, csvModel.AgilityGrade, csvModel.CarryingGrade,

@@ -121,6 +121,13 @@ func CreateNFLDrafteeRecord(player models.NFLDraftee, db *gorm.DB) {
 	}
 }
 
+func CreateRetireeRecord(player structs.NFLRetiredPlayer, db *gorm.DB) {
+	err := db.Create(&player).Error
+	if err != nil {
+		log.Panicln("Could not create cfb season snaps record!")
+	}
+}
+
 func CreateNFLDrafteesInBatches(db *gorm.DB, draftees []models.NFLDraftee, batchSize int) error {
 	// Create the records in batches with the specified batch size
 	if err := db.CreateInBatches(draftees, batchSize).Error; err != nil {

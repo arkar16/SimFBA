@@ -50,6 +50,8 @@ type CollegePlayerCSV struct {
 	LastName           string
 	Position           string
 	Archetype          string
+	PositionTwo        string
+	ArchetypeTwo       string
 	Year               string
 	Team               string
 	Age                int
@@ -121,6 +123,8 @@ func MapPlayerForStats(player CollegePlayer) CollegePlayerCSV {
 		LastName:           player.LastName,
 		Position:           player.Position,
 		Archetype:          player.Archetype,
+		PositionTwo:        player.PositionTwo,
+		ArchetypeTwo:       player.ArchetypeTwo,
 		Year:               Year,
 		Age:                player.Age,
 		Stars:              player.Stars,

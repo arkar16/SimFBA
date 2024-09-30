@@ -131,6 +131,8 @@ func GetAllFreeAgentsWithOffers() []models.FreeAgentResponse {
 			FirstName:         fa.FirstName,
 			LastName:          fa.LastName,
 			Position:          fa.Position,
+			PositionTwo:       fa.PositionTwo,
+			ArchetypeTwo:      fa.ArchetypeTwo,
 			Archetype:         fa.Archetype,
 			Age:               fa.Age,
 			Overall:           fa.Overall,

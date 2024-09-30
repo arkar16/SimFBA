@@ -16,7 +16,9 @@ type FreeAgentResponse struct {
 	FirstName         string
 	LastName          string
 	Position          string
+	PositionTwo       string
 	Archetype         string
+	ArchetypeTwo      string
 	Height            int
 	Weight            int
 	Age               int

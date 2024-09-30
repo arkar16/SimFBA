@@ -82,7 +82,7 @@ func (nc *NFLCapsheet) CutPlayerFromCapsheet(contract NFLContract) {
 }
 
 func (nc *NFLCapsheet) SubtractFromCapsheetViaTrade(contract NFLContract) {
-	nc.Y1CapHit += contract.Y1Bonus
+	nc.Y1CapHit += contract.Y1Bonus + contract.Y2Bonus + contract.Y3Bonus + contract.Y4Bonus + contract.Y5Bonus
 	nc.Y1Bonus -= contract.Y1Bonus
 	nc.Y2Bonus -= contract.Y2Bonus
 	nc.Y3Bonus -= contract.Y3Bonus

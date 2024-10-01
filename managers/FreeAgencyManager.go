@@ -310,7 +310,6 @@ func CreateFAOffer(offer structs.FreeAgencyOfferDTO) structs.FreeAgencyOffer {
 		SignFreeAgent(freeAgentOffer, player, ts)
 	} else {
 		db.Save(&freeAgentOffer)
-
 		fmt.Println("Creating offer!")
 	}
 

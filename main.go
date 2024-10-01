@@ -149,6 +149,7 @@ func handleRequests() {
 	// myRouter.HandleFunc("/import/simfba/updated/picks", controller.UpdateDraftPicksForDraft).Methods("GET")
 	// myRouter.HandleFunc("/import/simfba/fix/contracts", controller.FixBrokenExtensions).Methods("GET")
 	// myRouter.HandleFunc("/import/simfba/import/attributes", controller.ImplementPrimeAge).Methods("GET")
+	// myRouter.HandleFunc("/import/simcfb/college/standings", controller.CreateCollegeStandings).Methods("GET")
 
 	// News Controls
 	myRouter.HandleFunc("/cfb/news/all/", controller.GetAllNewsLogsForASeason).Methods("GET")

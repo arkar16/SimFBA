@@ -214,3 +214,41 @@ func GetStandingsHistoryByTeamID(id string) []structs.CollegeStandings {
 
 	return standings
 }
+
+func GenerateCollegeStandings() {
+	db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+	teams := GetAllCollegeTeams()
+
+	for _, t := range teams {
+		if !t.IsActive {
+			continue
+		}
+		leagueID := 1
+		league := "FBS"
+		if !t.IsFBS {
+			leagueID = 2
+			league = "FCS"
+		}
+
+		standings := structs.CollegeStandings{
+			TeamID:           int(t.ID),
+			TeamName:         t.TeamName,
+			SeasonID:         ts.CollegeSeasonID,
+			Season:           ts.Season,
+			ConferenceID:     t.ConferenceID,
+			ConferenceName:   t.Conference,
+			PostSeasonStatus: "None",
+			IsFBS:            t.IsFBS,
+			DivisionID:       t.DivisionID,
+			LeagueID:         uint(leagueID),
+			LeagueName:       league,
+			BaseStandings: structs.BaseStandings{
+				Coach:    t.Coach,
+				TeamAbbr: t.TeamAbbr,
+			},
+		}
+
+		db.Create(&standings)
+	}
+}

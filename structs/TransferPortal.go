@@ -89,6 +89,7 @@ func (p *TransferPortalProfile) SignPlayer() {
 
 func (p *TransferPortalProfile) Lock() {
 	p.LockProfile = true
+	p.CurrentWeeksPoints = 0
 }
 
 func (p *TransferPortalProfile) Deactivate() {

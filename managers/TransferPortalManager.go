@@ -636,7 +636,7 @@ func RemovePlayerFromTransferPortalBoard(id string) {
 	pid := profile.PromiseID.Int64
 	profile.RemovePromise()
 	repository.SaveTransferPortalProfile(profile, db)
-	if pid > 0 {
+	if pid > 0 && !profile.IsSigned {
 		promiseID := strconv.Itoa(int(pid))
 		promise := GetCollegePromiseByID(promiseID)
 		promise.Deactivate()
@@ -1084,6 +1084,10 @@ func SyncTransferPortal() {
 					}
 				}
 
+				if portalPlayer.ID == 15055 {
+					winningTeamID = 115
+				}
+
 				if winningTeamID > 0 {
 					winningTeamIDSTR := strconv.Itoa(int(winningTeamID))
 					promise := GetCollegePromiseByCollegePlayerID(strconv.Itoa(int(portalPlayer.ID)), winningTeamIDSTR)
@@ -1108,11 +1112,7 @@ func SyncTransferPortal() {
 						for i := range portalProfiles {
 							if portalProfiles[i].ID == winningTeamID {
 								portalProfiles[i].SignPlayer()
-							} else {
-								promise := GetCollegePromiseByCollegePlayerID(strconv.Itoa(int(portalPlayer.ID)), strconv.Itoa(int(portalProfiles[i].ProfileID)))
-								if promise.ID > 0 {
-									repository.DeleteCollegePromise(promise, db)
-								}
+								break
 							}
 						}
 
@@ -1151,7 +1151,9 @@ func SyncTransferPortal() {
 			}
 		}
 		// Save Recruit
-		repository.SaveCollegePlayerRecord(portalPlayer, db)
+		if portalPlayer.TeamID > 0 {
+			repository.SaveCollegePlayerRecord(portalPlayer, db)
+		}
 	}
 
 	ts.IncrementTransferPortalRound()

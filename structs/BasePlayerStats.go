@@ -59,5 +59,12 @@ type BasePlayerStats struct {
 	InjuryType           string
 	RevealResults        bool
 	TeamID               uint
-	TeamAbbreviation     string
+	Team                 string
+	PreviousTeamID       uint
+	PreviousTeam         string
+}
+
+func (bp *BasePlayerStats) MapTeamInfo(teamID uint, team string) {
+	bp.TeamID = teamID
+	bp.Team = team
 }

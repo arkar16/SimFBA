@@ -127,3 +127,7 @@ func GetNFLDashboardByTeamID(w http.ResponseWriter, r *http.Request) {
 	dashboard := managers.GetDashboardByTeamID(false, teamID)
 	json.NewEncoder(w).Encode(dashboard)
 }
+
+func AssignCFBTeamGrades(w http.ResponseWriter, r *http.Request) {
+	managers.AssignCFBTeamGrades()
+}

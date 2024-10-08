@@ -7,7 +7,9 @@ import (
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/CalebRose/SimFBA/util"
 	"gorm.io/gorm"
 )
 
@@ -348,5 +350,59 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 		CollegeGames:     collegeGames,
 		NFLGames:         nflGames,
 		NewsLogs:         newsLogs,
+	}
+}
+
+func AssignCFBTeamGrades() {
+	db := dbprovider.GetInstance().GetDB()
+	collegeTeams := GetAllCollegeTeams()
+	depthChartMap := GetDepthChartMap()
+	for _, t := range collegeTeams {
+		if !t.IsActive {
+			continue
+		}
+		depthChart := depthChartMap[t.ID]
+		players := depthChart.DepthChartPlayers
+		overallScore := 0.0
+		offensiveScore := 0.0
+		defensiveScore := 0.0
+		offenseCount := 0
+		defenseCount := 0
+		totalCount := 0
+		for _, p := range players {
+			if (p.Position == "QB" || p.Position == "RB" || p.Position == "FB" || p.Position == "TE" || p.Position == "C" || p.Position == "MLB" || p.Position == "FS" || p.Position == "SS" || p.Position == "K" || p.Position == "P") &&
+				p.PositionLevel != "1" {
+				continue
+			}
+			if (p.Position == "WR" || p.Position == "OT" || p.Position == "OG" || p.Position == "DT" || p.Position == "DE" || p.Position == "OLB" || p.Position == "CB") &&
+				(p.PositionLevel != "1" && p.PositionLevel != "2") {
+				continue
+			}
+			if p.Position == "KR" || p.Position == "PR" || p.Position == "FG" || p.Position == "STU" {
+				continue
+			}
+			if p.Position == "QB" || p.Position == "RB" || p.Position == "FB" || p.Position == "TE" || p.Position == "C" || p.Position == "WR" || p.Position == "OT" || p.Position == "OG" {
+				offensiveScore += float64(p.CollegePlayer.Overall)
+				offenseCount += 1
+			}
+			if p.Position == "DT" || p.Position == "DE" || p.Position == "OLB" || p.Position == "CB" || p.Position == "MLB" || p.Position == "FS" || p.Position == "SS" {
+				defensiveScore += float64(p.CollegePlayer.Overall)
+				defenseCount += 1
+			}
+			totalCount += 1
+			overallScore += float64(p.CollegePlayer.Overall)
+		}
+
+		ovrAvg := overallScore / float64(totalCount)
+		offAvg := offensiveScore / float64(offenseCount)
+		defAvg := defensiveScore / float64(defenseCount)
+
+		ovrGrade := util.GetOverallGrade(int(ovrAvg), 4)
+		offGrade := util.GetOverallGrade(int(offAvg), 4)
+		defGrade := util.GetOverallGrade(int(defAvg), 4)
+
+		t.AssignTeamGrades(ovrGrade, offGrade, defGrade)
+
+		repository.SaveCFBTeam(t, db)
 	}
 }

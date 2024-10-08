@@ -59,18 +59,6 @@ func SyncTimeslot(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Timeslot updated")
 }
 
-func RegressTimeslot(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	timeslot := vars["timeslot"]
-	if len(timeslot) == 0 {
-		log.Panicln("Missing timeslot!")
-	}
-
-	managers.RegressTimeslot(timeslot)
-
-	json.NewEncoder(w).Encode("Timeslot updated")
-}
-
 func SyncFreeAgencyRound(w http.ResponseWriter, r *http.Request) {
 	managers.SyncFreeAgencyOffers()
 	managers.MoveUpInOffseasonFreeAgency()

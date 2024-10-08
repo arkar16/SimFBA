@@ -723,7 +723,6 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		for _, player := range gameDataDTO.HomePlayers {
 			collegePlayerStats := structs.CollegePlayerStats{
 				CollegePlayerID: player.GetPlayerID(),
-				TeamID:          homeTeam.TeamID,
 				GameID:          homeTeam.GameID,
 				WeekID:          gameRecord.WeekID,
 				SeasonID:        gameRecord.SeasonID,
@@ -732,6 +731,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				Year:            player.Year,
 				IsRedshirt:      player.IsRedshirt,
 			}
+			collegePlayerStats.MapTeamInfo(ht.ID, ht.TeamAbbr)
 			snaps := snapMap[player.GetPlayerID()]
 			cpSnaps := structs.CollegePlayerGameSnaps{
 				BasePlayerGameSnaps: structs.BasePlayerGameSnaps{
@@ -812,7 +812,6 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		for _, player := range gameDataDTO.AwayPlayers {
 			collegePlayerStats := structs.CollegePlayerStats{
 				CollegePlayerID: player.GetPlayerID(),
-				TeamID:          awayTeam.TeamID,
 				GameID:          awayTeam.GameID,
 				WeekID:          gameRecord.WeekID,
 				SeasonID:        gameRecord.SeasonID,
@@ -821,6 +820,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				Year:            player.Year,
 				IsRedshirt:      player.IsRedshirt,
 			}
+			collegePlayerStats.MapTeamInfo(at.ID, at.TeamAbbr)
 			snaps := snapMap[player.GetPlayerID()]
 			cpSnaps := structs.CollegePlayerGameSnaps{
 				BasePlayerGameSnaps: structs.BasePlayerGameSnaps{
@@ -995,7 +995,6 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		for _, player := range gameDataDTO.HomePlayers {
 			nflPlayerStats := structs.NFLPlayerStats{
 				NFLPlayerID:     player.GetPlayerID(),
-				TeamID:          int(homeTeam.TeamID),
 				GameID:          int(homeTeam.GameID),
 				WeekID:          gameRecord.WeekID,
 				SeasonID:        gameRecord.SeasonID,
@@ -1003,6 +1002,7 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
 				Year:            player.Year,
 			}
+			nflPlayerStats.MapTeamInfo(ht.ID, ht.TeamAbbr)
 			snaps := snapMap[player.GetPlayerID()]
 			snap := structs.NFLPlayerGameSnaps{
 				BasePlayerGameSnaps: structs.BasePlayerGameSnaps{
@@ -1083,7 +1083,6 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		for _, player := range gameDataDTO.AwayPlayers {
 			nflPlayerStats := structs.NFLPlayerStats{
 				NFLPlayerID:     player.GetPlayerID(),
-				TeamID:          int(awayTeam.TeamID),
 				GameID:          int(awayTeam.GameID),
 				WeekID:          gameRecord.WeekID,
 				SeasonID:        gameRecord.SeasonID,
@@ -1091,6 +1090,7 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				BasePlayerStats: player.MapTobasePlayerStatsObject(),
 				Year:            player.Year,
 			}
+			nflPlayerStats.MapTeamInfo(at.ID, at.TeamAbbr)
 			snaps := snapMap[player.GetPlayerID()]
 			snap := structs.NFLPlayerGameSnaps{
 				BasePlayerGameSnaps: structs.BasePlayerGameSnaps{

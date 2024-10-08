@@ -43,3 +43,9 @@ func (bt *BaseTeam) MarkTeamForPenalty() {
 func (bt *BaseTeam) ResetMarks() {
 	bt.PenaltyMarks = 0
 }
+
+func (bt *BaseTeam) AssignTeamGrades(ovr, off, def string) {
+	bt.OverallGrade = ovr
+	bt.OffenseGrade = off
+	bt.DefenseGrade = def
+}

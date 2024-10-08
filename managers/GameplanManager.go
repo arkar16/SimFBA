@@ -481,7 +481,7 @@ func UpdateCollegeAIDepthCharts() {
 
 	ts := GetTimestamp()
 	ts.ToggleAIDepthCharts()
-	db.Save(&ts)
+	repository.SaveTimestamp(ts, db)
 }
 
 func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGameplan) {
@@ -3168,6 +3168,10 @@ func SetAIGameplan() {
 			opponentGP := gameplanMap[uint(opponentID)]
 			os = opponentGP.OffensiveScheme
 			break
+		}
+
+		if os == "" {
+			os = "Power Run"
 		}
 
 		offFormations := offensiveSchemes[gp.OffensiveScheme]

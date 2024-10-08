@@ -5,8 +5,6 @@ import "github.com/jinzhu/gorm"
 type NFLPlayerSeasonStats struct {
 	gorm.Model
 	NFLPlayerID uint
-	TeamID      uint
-	Team        string
 	SeasonID    uint
 	Year        uint
 	BasePlayerStats
@@ -23,8 +21,6 @@ type NFLPlayerStats struct {
 	gorm.Model
 	IsPreseasonGame bool
 	NFLPlayerID     int
-	TeamID          int
-	Team            string
 	GameID          int
 	WeekID          int
 	SeasonID        int
@@ -100,6 +96,16 @@ func (ss *NFLPlayerSeasonStats) MapStats(stats []NFLPlayerStats, ts Timestamp) {
 			continue
 		}
 		ss.Snaps = ss.Snaps + stat.Snaps
+		if ss.TeamID == 0 {
+			ss.TeamID = stat.TeamID
+			ss.Team = stat.Team
+		}
+		if ss.TeamID > 0 && stat.TeamID > 0 && ss.TeamID != stat.TeamID {
+			ss.PreviousTeamID = ss.TeamID
+			ss.PreviousTeam = ss.Team
+			ss.TeamID = stat.TeamID
+			ss.Team = stat.Team
+		}
 		if !ts.NFLPreseason {
 			ss.GamesPlayed++
 			ss.PassingYards = ss.PassingYards + stat.PassingYards

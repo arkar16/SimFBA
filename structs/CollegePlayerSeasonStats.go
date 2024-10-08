@@ -5,7 +5,6 @@ import "github.com/jinzhu/gorm"
 type CollegePlayerSeasonStats struct {
 	gorm.Model
 	CollegePlayerID uint
-	TeamID          uint
 	SeasonID        uint
 	Year            uint
 	IsRedshirt      bool
@@ -84,6 +83,16 @@ func (ss *CollegePlayerSeasonStats) MapStats(stats []CollegePlayerStats) {
 	for _, stat := range stats {
 		if !stat.BasePlayerStats.RevealResults {
 			continue
+		}
+		if ss.TeamID == 0 {
+			ss.TeamID = stat.TeamID
+			ss.Team = stat.Team
+		}
+		if ss.TeamID > 0 && stat.TeamID > 0 && ss.TeamID != stat.TeamID {
+			ss.PreviousTeamID = ss.TeamID
+			ss.PreviousTeam = ss.Team
+			ss.TeamID = stat.TeamID
+			ss.Team = stat.Team
 		}
 		ss.GamesPlayed++
 		ss.PassingYards = ss.PassingYards + stat.PassingYards

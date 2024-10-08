@@ -18,7 +18,10 @@ func GetTimestamp() structs.Timestamp {
 
 	var timestamp structs.Timestamp
 
-	db.First(&timestamp)
+	err := db.First(&timestamp).Error
+	if err != nil {
+		log.Printf("Error querying for timestamp: %v", err)
+	}
 
 	return timestamp
 }

@@ -45,7 +45,7 @@ func SyncRecruitingViaCron() {
 
 func SyncFreeAgencyViaCron() {
 	ts := managers.GetTimestamp()
-	if ts.RunCron && !ts.IsDraftTime {
+	if ts.RunCron {
 		managers.SyncFreeAgencyOffers()
 		managers.MoveUpInOffseasonFreeAgency()
 		managers.AllocateCapsheets()

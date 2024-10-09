@@ -704,6 +704,9 @@ func AICoachFillBoardsPhase() {
 		teamID := strconv.Itoa(int(teamProfile.ID))
 		coach := coachMap[teamProfile.ID]
 		portalProfileMap := getTransferPortalProfileMapByTeamID(teamID)
+		if len(portalProfileMap) > 100 {
+			continue
+		}
 		roster := GetAllCollegePlayersByTeamId(teamID)
 		rosterSize := len(roster)
 		teamCap := 105

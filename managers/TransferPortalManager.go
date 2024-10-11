@@ -694,6 +694,7 @@ func AICoachFillBoardsPhase() {
 	teamMap := GetCollegeTeamMap()
 	standingsMap := GetCollegeStandingsMap(seasonID)
 	profiles := []structs.TransferPortalProfile{}
+
 	for idx, teamProfile := range AITeams {
 		if teamProfile.IsUserTeam {
 			continue
@@ -725,8 +726,12 @@ func AICoachFillBoardsPhase() {
 				majorNeedsMap[r.Position] = false
 			}
 		}
+		profileCount := len(portalProfileMap)
 
 		for _, tp := range transferPortalPlayers {
+			if profileCount >= 100 {
+				break
+			}
 			isBadFit := IsBadSchemeFit(teamProfile.OffensiveScheme, teamProfile.DefensiveScheme, tp.Archetype, tp.Position)
 			if isBadFit || !majorNeedsMap[tp.Position] || tp.PreviousTeamID == team.ID || portalProfileMap[tp.ID].CollegePlayerID == tp.ID || portalProfileMap[tp.ID].ID > 0 {
 				continue
@@ -779,6 +784,7 @@ func AICoachFillBoardsPhase() {
 
 			diceRoll := util.GenerateIntFromRange(1, 50)
 			if diceRoll < biasMod {
+				profileCount++
 				portalProfile := structs.TransferPortalProfile{
 					ProfileID:        teamProfile.ID,
 					CollegePlayerID:  tp.ID,

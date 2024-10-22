@@ -53,6 +53,7 @@ func (n *NFLDraftee) Map(cp structs.CollegePlayer) {
 	n.PlayerID = cp.PlayerID
 	n.HighSchool = cp.HighSchool
 	n.College = cp.TeamAbbr
+	n.CollegeID = uint(cp.TeamID)
 	n.City = cp.City
 	n.State = cp.State
 	n.FirstName = cp.FirstName

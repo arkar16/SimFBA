@@ -558,6 +558,33 @@ func ResetCFBSeasonalStats() {
 		fmt.Println("Reset Season Stats for " + player.FirstName + " " + player.LastName + " " + player.Position)
 	}
 
+	historicPlayers := GetAllHistoricCollegePlayers()
+	for _, player := range historicPlayers {
+		playerID := strconv.Itoa(int(player.ID))
+		playerStats := GetCollegePlayerStatsByPlayerIDAndSeason(playerID, seasonID)
+		if len(playerStats) > 0 {
+			seasonStats := GetCollegeSeasonStatsByPlayerAndSeason(playerID, seasonID)
+			if len(playerStats) == seasonStats.GamesPlayed {
+				continue
+			}
+			seasonStats.ResetStats()
+			seasonStats.MapStats(playerStats)
+			db.Save(&seasonStats)
+		}
+
+		playerSnaps := GetCollegePlayerSnapsByPlayerIDAndSeason(playerID, seasonID)
+		if len(playerSnaps) > 0 {
+			seasonSnaps := GetCollegeSeasonSnapsByPlayerAndSeason(playerID, seasonID)
+			seasonSnaps.Reset()
+			for _, s := range playerSnaps {
+				seasonSnaps.AddToSeason(s.BasePlayerGameSnaps)
+			}
+			repository.SaveCFBSeasonSnaps(seasonSnaps, db)
+		}
+
+		fmt.Println("Reset Season Stats for " + player.FirstName + " " + player.LastName + " " + player.Position)
+	}
+
 	standings := GetAllConferenceStandingsBySeasonID(seasonID)
 
 	for _, standing := range standings {

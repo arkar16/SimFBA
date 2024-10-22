@@ -322,24 +322,12 @@ func SyncRecruitingEfficiency(timestamp structs.Timestamp) {
 
 		// RES Calculation
 		// Base of .8
-
 		teamProfile.AssignRES(res + (totalSum * 0.4))
-
-		err := db.Save(&teamProfile).Error
-		if err != nil {
-			fmt.Println(err.Error())
-			log.Fatalf("Could not sync all team profiles.")
-		}
+		repository.SaveRecruitingTeamProfile(teamProfile, db)
 		fmt.Println("Saved RES for Team: " + team.TeamAbbr)
-
 		// teamProfilesToSave = append(teamProfilesToSave, teamProfile)
 	}
 	// Save the Recruiting Profiles
-	// err = db.Save(&recruitProfilesToSave).Error
-	// if err != nil {
-	// 	fmt.Println(err.Error())
-	// 	log.Fatalf("Could not sync res to all recruits")
-	// }
 }
 
 func SyncAllMissingEfficiencies() {

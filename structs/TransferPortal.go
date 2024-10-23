@@ -259,6 +259,7 @@ func (c *TransferPlayerResponse) Map(r CollegePlayer, ovr string) {
 			odds = float64(sortedProfiles[i].TotalPoints) / totalPoints
 		}
 		leadingTeam := LeadingTeams{
+			TeamID:   r.Profiles[i].ProfileID,
 			TeamAbbr: r.Profiles[i].TeamAbbreviation,
 			Odds:     odds,
 		}

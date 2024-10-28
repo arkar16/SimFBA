@@ -280,9 +280,14 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 	cGames := make(chan []structs.CollegeGame)
 	nGames := make(chan []structs.NFLGame)
 	newsChan := make(chan []structs.NewsLog)
+	cfbPlayerChan := make(chan []structs.CollegePlayerResponse)
+	nflPlayerChan := make(chan []structs.NFLPlayerResponse)
+	cfbTeamStatsChan := make(chan structs.CollegeTeamSeasonStats)
+	nflTeamStatsChan := make(chan structs.NFLTeamSeasonStats)
+	pollChan := make(chan structs.CollegePollOfficial)
 
 	var waitGroup sync.WaitGroup
-	waitGroup.Add(5)
+	waitGroup.Add(10)
 	go func() {
 		waitGroup.Wait()
 		close(cStandings)
@@ -290,6 +295,11 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 		close(cGames)
 		close(nGames)
 		close(newsChan)
+		close(cfbPlayerChan)
+		close(nflPlayerChan)
+		close(cfbTeamStatsChan)
+		close(nflTeamStatsChan)
+		close(pollChan)
 	}()
 
 	go func() {
@@ -327,6 +337,7 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 		}
 		nGames <- nG
 	}()
+
 	go func() {
 		defer waitGroup.Done()
 		nL := []structs.NewsLog{}
@@ -338,11 +349,84 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 		newsChan <- nL
 	}()
 
+	go func() {
+		defer waitGroup.Done()
+		players := []structs.CollegePlayerResponse{}
+		if isCFB {
+			seasonKey := ts.CollegeSeasonID
+			if ts.IsOffSeason {
+				seasonKey -= 1
+			}
+			players = GetAllCollegePlayersWithSeasonStatsByTeamID(teamID, strconv.Itoa(seasonKey))
+		}
+		cfbPlayerChan <- players
+	}()
+
+	go func() {
+		defer waitGroup.Done()
+		players := []structs.NFLPlayerResponse{}
+		if !isCFB {
+			seasonKey := ts.NFLSeasonID
+			if ts.IsNFLOffSeason {
+				seasonKey -= 1
+			}
+			players = GetAllNFLPlayersWithSeasonStatsByTeamID(teamID, strconv.Itoa(seasonKey))
+		}
+		nflPlayerChan <- players
+	}()
+
+	go func() {
+		defer waitGroup.Done()
+		stats := structs.CollegeTeamSeasonStats{}
+		if isCFB {
+			seasonKey := ts.CollegeSeasonID
+			if ts.IsOffSeason {
+				seasonKey -= 1
+			}
+			stats = GetCollegeTeamSeasonStatsBySeason(teamID, strconv.Itoa(seasonKey))
+		}
+		cfbTeamStatsChan <- stats
+	}()
+
+	go func() {
+		defer waitGroup.Done()
+		stats := structs.NFLTeamSeasonStats{}
+		if !isCFB {
+			seasonKey := ts.NFLSeasonID
+			if ts.IsNFLOffSeason {
+				seasonKey -= 1
+			}
+			stats = GetNFLTeamSeasonStatsByTeamANDSeason(teamID, strconv.Itoa(seasonKey))
+		}
+		nflTeamStatsChan <- stats
+	}()
+
+	go func() {
+		defer waitGroup.Done()
+		poll := structs.CollegePollOfficial{}
+		if isCFB {
+			seasonKey := ts.NFLSeasonID
+			if ts.IsOffSeason {
+				seasonKey -= 1
+			}
+			polls := GetOfficialPollBySeasonID(strconv.Itoa(seasonKey))
+			if len(polls) > 0 {
+				poll = polls[len(polls)-1]
+			}
+		}
+		pollChan <- poll
+	}()
+
 	collegeStandings := <-cStandings
 	nflStandings := <-nStandings
 	collegeGames := <-cGames
 	nflGames := <-nGames
 	newsLogs := <-newsChan
+	collegePlayers := <-cfbPlayerChan
+	nflPlayers := <-nflPlayerChan
+	cfbTeamStats := <-cfbTeamStatsChan
+	nflTeamStats := <-nflTeamStatsChan
+	collegePoll := <-pollChan
 
 	return structs.DashboardResponseData{
 		CollegeStandings: collegeStandings,
@@ -350,6 +434,11 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 		CollegeGames:     collegeGames,
 		NFLGames:         nflGames,
 		NewsLogs:         newsLogs,
+		TopCFBPlayers:    collegePlayers,
+		TopNFLPlayers:    nflPlayers,
+		CFBTeamStats:     cfbTeamStats,
+		NFLTeamStats:     nflTeamStats,
+		TopTenPoll:       collegePoll,
 	}
 }
 

@@ -610,7 +610,7 @@ func ResetCFBSeasonalStats() {
 func ResetNFLSeasonalStats() {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
-	seasonID := strconv.Itoa(int(ts.CollegeSeasonID))
+	seasonID := strconv.Itoa(int(ts.CollegeSeasonID - 1))
 	teams := GetAllNFLTeams()
 
 	for _, team := range teams {
@@ -630,9 +630,9 @@ func ResetNFLSeasonalStats() {
 		playerStats := GetNFLPlayerStatsByPlayerIDAndSeason(playerID, seasonID)
 		if len(playerStats) > 0 {
 			seasonStats := GetNFLSeasonStatsByPlayerAndSeason(playerID, seasonID)
-			if len(playerStats) == seasonStats.GamesPlayed {
-				continue
-			}
+			// if len(playerStats) == seasonStats.GamesPlayed {
+			// 	continue
+			// }
 			seasonStats.ResetStats()
 			seasonStats.MapStats(playerStats, ts)
 			db.Save(&seasonStats)

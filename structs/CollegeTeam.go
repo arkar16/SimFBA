@@ -49,4 +49,7 @@ type DashboardResponseData struct {
 	NFLGames         []NFLGame
 	TopCFBPlayers    []CollegePlayerResponse
 	TopNFLPlayers    []NFLPlayerResponse
+	TopTenPoll       CollegePollOfficial
+	CFBTeamStats     CollegeTeamSeasonStats
+	NFLTeamStats     NFLTeamSeasonStats
 }

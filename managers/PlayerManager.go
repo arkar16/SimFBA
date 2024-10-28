@@ -519,6 +519,35 @@ func GetAllNFLPlayersWithStatsBySeasonID(cMap, dMap map[int]int, cNMap, dNMap ma
 	return cpResponse
 }
 
+func GetAllCollegePlayersWithSeasonStatsByTeamID(TeamID string, SeasonID string) []structs.CollegePlayerResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	var collegePlayers []structs.CollegePlayer
+
+	var responseList []structs.CollegePlayerResponse
+
+	db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ? and team_id = ? and snaps > 0", SeasonID, TeamID)
+	}).Where("team_id = ?", TeamID).Find(&collegePlayers)
+
+	for _, p := range collegePlayers {
+		res := structs.CollegePlayerResponse{
+			ID:          p.PlayerID,
+			BasePlayer:  p.BasePlayer,
+			TeamID:      p.TeamID,
+			TeamAbbr:    p.TeamAbbr,
+			City:        p.City,
+			State:       p.State,
+			Year:        p.Year,
+			IsRedshirt:  p.IsRedshirt,
+			SeasonStats: p.SeasonStats,
+		}
+		responseList = append(responseList, res)
+	}
+
+	return responseList
+}
+
 func GetAllCollegePlayersWithStatsByTeamID(TeamID string, SeasonID string) []structs.CollegePlayer {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -1393,4 +1422,31 @@ func GetCollegePlayerMap() map[uint]structs.CollegePlayer {
 	}
 
 	return portalMap
+}
+
+func GetAllNFLPlayersWithSeasonStatsByTeamID(TeamID string, SeasonID string) []structs.NFLPlayerResponse {
+	db := dbprovider.GetInstance().GetDB()
+
+	var nflPlayers []structs.NFLPlayer
+
+	var responseList []structs.NFLPlayerResponse
+
+	db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
+		return db.Where("season_id = ? and team_id = ? and snaps > 0", SeasonID, TeamID)
+	}).Where("team_id = ?", TeamID).Find(&nflPlayers)
+
+	for _, p := range nflPlayers {
+		res := structs.NFLPlayerResponse{
+			ID:          p.PlayerID,
+			BasePlayer:  p.BasePlayer,
+			TeamID:      p.TeamID,
+			TeamAbbr:    p.TeamAbbr,
+			State:       p.State,
+			Year:        int(p.Experience),
+			SeasonStats: p.SeasonStats,
+		}
+		responseList = append(responseList, res)
+	}
+
+	return responseList
 }

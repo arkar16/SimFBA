@@ -333,13 +333,13 @@ func GetAllCollegePlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]str
 	// var distinctCollegeStats []structs.CollegePlayerStats
 	var distinctCollegeStats []structs.CollegePlayerSeasonStats
 
-	db.Distinct("college_player_id").Where("snaps > 0 AND season_id = ?", seasonID).Find(&distinctCollegeStats)
+	db.Distinct("college_player_id").Where("snaps > 0 AND season_id = ? AND game_type = ?", seasonID, gameType).Find(&distinctCollegeStats)
 
 	distinctCollegePlayerIDs := GetCollegePlayerIDsBySeasonStats(distinctCollegeStats)
 
 	if viewType == "SEASON" {
 		db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
-			return db.Where("season_id = ?", seasonID)
+			return db.Where("season_id = ? AND game_type = ?", seasonID, gameType)
 		}).Where("id in ?", distinctCollegePlayerIDs).Find(&collegePlayers)
 	} else {
 		db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
@@ -383,7 +383,7 @@ func GetAllCollegePlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]str
 
 		if viewType == "SEASON" {
 			db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
-				return db.Where("season_id = ?", seasonID)
+				return db.Where("season_id = ? AND game_type = ?", seasonID, gameType)
 			}).Where("id in ?", distinctCollegePlayerIDs).Find(&historicCollegePlayers)
 		} else {
 			db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
@@ -439,7 +439,7 @@ func GetAllNFLPlayersWithStatsBySeasonID(cMap, dMap map[int]int, cNMap, dNMap ma
 
 	if viewType == "SEASON" {
 		db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
-			return db.Where("season_id = ?", seasonID)
+			return db.Where("season_id = ? AND game_type = ?", seasonID, gameType)
 		}).Where("id in ?", distinctCollegePlayerIDs).Find(&nflPlayers)
 	} else {
 		db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
@@ -483,7 +483,7 @@ func GetAllNFLPlayersWithStatsBySeasonID(cMap, dMap map[int]int, cNMap, dNMap ma
 
 		if viewType == "SEASON" {
 			db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
-				return db.Where("season_id = ?", seasonID)
+				return db.Where("season_id = ? AND game_type = ?", seasonID, gameType)
 			}).Where("id in ?", distinctCollegePlayerIDs).Find(&historicNFLPlayers)
 		} else {
 			db.Preload("Stats", func(db *gorm.DB) *gorm.DB {

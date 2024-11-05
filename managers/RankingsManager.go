@@ -48,7 +48,7 @@ func AssignAllRecruitRanks() {
 
 		croot.AssignRankValues(rank247, espnRank, rivalsRank, r)
 
-		recruitingModifier := getRecruitingModifier(croot.Stars)
+		recruitingModifier := getRecruitingModifier()
 
 		croot.AssignRecruitingModifier(recruitingModifier)
 		shotgunVal := getShotgunVal()
@@ -271,7 +271,7 @@ func GetRivalsTeamRanking(rp structs.RecruitingTeamProfile, signedCroots []struc
 	return rivalsRank
 }
 
-func getRecruitingModifier(stars int) float64 {
+func getRecruitingModifier() float64 {
 	diceRoll := util.GenerateFloatFromRange(1, 20)
 	if diceRoll == 1 {
 		return 0.02

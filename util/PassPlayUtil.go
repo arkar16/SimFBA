@@ -20,7 +20,7 @@ func GetPassStatement(yards int, offensiveFormation, playName, poa, recLabel str
 		sackText := getSackText(safety, fumble, touchdown)
 		return snapText + sackText
 	}
-	throwStatement := getThrowStatement(yards, playName, recLabel)
+	throwStatement := getThrowStatement(yards, recLabel)
 	if interception {
 		intText := getInterceptText(yards, recLabel, turnOverLabel, fumble, touchdown)
 		return snapText + throwStatement + intText
@@ -406,9 +406,9 @@ func getFumbleExpression() string {
 	return PickFromStringList(list)
 }
 
-func getThrowStatement(yards int, playName, recLabel string) string {
+func getThrowStatement(yards int, recLabel string) string {
 	throwVerb := getThrowingVerb(yards)
-	distance := getDistance(playName, yards)
+	distance := getDistance(yards)
 	list := []string{throwVerb + " it ",
 		throwVerb + " it to " + recLabel,
 		throwVerb + " it " + distance + " to " + recLabel,
@@ -430,7 +430,7 @@ func getInterceptVerb() string {
 	return PickFromStringList(list)
 }
 
-func getDistance(playName string, yards int) string {
+func getDistance(yards int) string {
 	direction := GenerateIntFromRange(1, 3) // 1 == left, 2 == Middle, 3 == right
 	dirs := ""
 	var dirsList []string

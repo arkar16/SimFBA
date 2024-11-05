@@ -243,3 +243,23 @@ func (t *Timestamp) ToggleProfessionalProgression() {
 	t.IsFreeAgencyLocked = false
 	t.IsDraftTime = true
 }
+
+func (t *Timestamp) GetNFLCurrentGameType() (int, string) {
+	if t.NFLPreseason {
+		return 1, "1"
+	}
+	if t.NFLWeek > 18 {
+		return 3, "3"
+	}
+	return 2, "2"
+}
+
+func (t *Timestamp) GetCFBCurrentGameType() (int, string) {
+	if t.CFBSpringGames {
+		return 1, "1"
+	}
+	if t.CollegeWeek > 14 {
+		return 3, "3"
+	}
+	return 2, "2"
+}

@@ -73,5 +73,19 @@ type BaseTeamStats struct {
 	ScoreOT                       int
 	OffensiveScheme               string
 	DefensiveScheme               string
+	OffensiveSnaps                uint16
+	DefensiveSnaps                uint16
+	SpecialTeamSnaps              uint16
+	GameType                      uint8
 	RevealResults                 bool
+}
+
+func (b *BaseTeamStats) AddTeamSnaps(offense, defense, st uint16) {
+	b.OffensiveSnaps += offense
+	b.DefensiveSnaps += defense
+	b.SpecialTeamSnaps += st
+}
+
+func (b *BaseTeamStats) AddGameType(gameType uint8) {
+	b.GameType = gameType
 }

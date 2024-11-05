@@ -152,3 +152,8 @@ func ImportMissingDraftees(w http.ResponseWriter, r *http.Request) {
 	managers.MigrateHistoricPlayersToNFLDraftees()
 	fmt.Println(w, "Affinities fixed!")
 }
+
+func ImportMissingStats(w http.ResponseWriter, r *http.Request) {
+	managers.MigrateCFBPlayerStatsFromPreviousSeason()
+	fmt.Println(w, "NFL Stats fixed!")
+}

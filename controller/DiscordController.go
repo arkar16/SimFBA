@@ -111,12 +111,13 @@ func GetSeasonTeamStatsByTeamAbbrAndSeason(w http.ResponseWriter, r *http.Reques
 	vars := mux.Vars(r)
 	teamID := vars["team"]
 	season := vars["season"]
+	gameType := vars["gameType"]
 
 	if len(teamID) == 0 {
 		panic("User did not provide a first name")
 	}
 
-	team := managers.GetSeasonalTeamStats(teamID, season)
+	team := managers.GetSeasonalTeamStats(teamID, season, gameType)
 
 	json.NewEncoder(w).Encode(team)
 }
@@ -130,7 +131,10 @@ func GetCollegePlayer(w http.ResponseWriter, r *http.Request) {
 		panic("User did not provide a first name")
 	}
 
-	player := managers.GetCollegePlayerViaDiscord(id)
+	ts := managers.GetTimestamp()
+	_, gt := ts.GetCFBCurrentGameType()
+
+	player := managers.GetCollegePlayerViaDiscord(id, gt)
 
 	json.NewEncoder(w).Encode(player)
 }
@@ -145,7 +149,10 @@ func GetCollegePlayerByName(w http.ResponseWriter, r *http.Request) {
 		panic("User did not provide a first name")
 	}
 
-	player := managers.GetCollegePlayerByNameViaDiscord(firstName, lastName, teamID)
+	ts := managers.GetTimestamp()
+	_, gt := ts.GetCFBCurrentGameType()
+
+	player := managers.GetCollegePlayerByNameViaDiscord(firstName, lastName, teamID, gt)
 
 	json.NewEncoder(w).Encode(player)
 }
@@ -184,8 +191,9 @@ func GetNFLPlayer(w http.ResponseWriter, r *http.Request) {
 	if len(id) == 0 {
 		panic("User did not provide a first name")
 	}
-
-	player := managers.GetNFLPlayerViaDiscord(id)
+	ts := managers.GetTimestamp()
+	_, gt := ts.GetNFLCurrentGameType()
+	player := managers.GetNFLPlayerViaDiscord(id, gt)
 
 	json.NewEncoder(w).Encode(player)
 }
@@ -212,8 +220,9 @@ func GetNFLPlayerByName(w http.ResponseWriter, r *http.Request) {
 	if len(firstName) == 0 {
 		panic("User did not provide a first name")
 	}
-
-	player := managers.GetNFLPlayerByNameViaDiscord(firstName, lastName, teamID)
+	ts := managers.GetTimestamp()
+	_, gt := ts.GetNFLCurrentGameType()
+	player := managers.GetNFLPlayerByNameViaDiscord(firstName, lastName, teamID, gt)
 
 	json.NewEncoder(w).Encode(player)
 }

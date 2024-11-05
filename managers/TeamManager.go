@@ -267,6 +267,8 @@ func GetCollegeTeamsByConference(conf string) []structs.CollegeTeam {
 
 func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseData {
 	ts := GetTimestamp()
+	_, cfbGT := ts.GetCFBCurrentGameType()
+	_, nflGT := ts.GetNFLCurrentGameType()
 	seasonID := strconv.Itoa(ts.CollegeSeasonID)
 	collegeTeam := structs.CollegeTeam{}
 	nflTeam := structs.NFLTeam{}
@@ -357,7 +359,7 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 			if ts.IsOffSeason {
 				seasonKey -= 1
 			}
-			players = GetAllCollegePlayersWithSeasonStatsByTeamID(teamID, strconv.Itoa(seasonKey))
+			players = GetAllCollegePlayersWithSeasonStatsByTeamID(teamID, strconv.Itoa(seasonKey), cfbGT)
 		}
 		cfbPlayerChan <- players
 	}()
@@ -370,7 +372,7 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 			if ts.IsNFLOffSeason {
 				seasonKey -= 1
 			}
-			players = GetAllNFLPlayersWithSeasonStatsByTeamID(teamID, strconv.Itoa(seasonKey))
+			players = GetAllNFLPlayersWithSeasonStatsByTeamID(teamID, strconv.Itoa(seasonKey), nflGT)
 		}
 		nflPlayerChan <- players
 	}()
@@ -383,7 +385,7 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 			if ts.IsOffSeason {
 				seasonKey -= 1
 			}
-			stats = GetCollegeTeamSeasonStatsBySeason(teamID, strconv.Itoa(seasonKey))
+			stats = GetCollegeTeamSeasonStatsBySeason(teamID, strconv.Itoa(seasonKey), cfbGT)
 		}
 		cfbTeamStatsChan <- stats
 	}()
@@ -396,7 +398,7 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 			if ts.IsNFLOffSeason {
 				seasonKey -= 1
 			}
-			stats = GetNFLTeamSeasonStatsByTeamANDSeason(teamID, strconv.Itoa(seasonKey))
+			stats = GetNFLTeamSeasonStatsByTeamANDSeason(teamID, strconv.Itoa(seasonKey), nflGT)
 		}
 		nflTeamStatsChan <- stats
 	}()

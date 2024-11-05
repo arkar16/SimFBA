@@ -218,7 +218,7 @@ func (pg *CrootGenerator) generatePlayer() (structs.Recruit, structs.Player) {
 	}
 
 	pickedPosition := util.PickPosition()
-	player := createRecruit(pg.pickedEthnicity, pickedPosition, star, firstName, lastName, pg.newID, pg.attributeBlob, state, pg.crootLocations[state], pg.caser)
+	player := createRecruit(pickedPosition, star, firstName, lastName, pg.attributeBlob, state, pg.crootLocations[state])
 	player.AssignRelativeData(uint(relativeID), uint(relativeType), uint(coachTeamID), coachTeamAbbr, notes)
 	globalPlayer := structs.Player{
 		CollegePlayerID: int(pg.newID),
@@ -248,7 +248,7 @@ func (pg *CrootGenerator) generateTwin(player *structs.Recruit) (structs.Recruit
 		stars = player.Stars
 	}
 	twinNotes := "Twin Brother of " + strconv.Itoa(player.Stars) + " Star Recruit " + player.Position + " " + player.FirstName + " " + player.LastName
-	twinPlayer := createRecruit("", twinPosition, stars, twinN, player.LastName, secondTwinRelativeID, pg.attributeBlob, player.State, pg.crootLocations[player.State], pg.caser)
+	twinPlayer := createRecruit(twinPosition, stars, twinN, player.LastName, pg.attributeBlob, player.State, pg.crootLocations[player.State])
 	twinPlayer.AssignRelativeData(uint(firstTwinRelativeID), 4, 0, "", twinNotes)
 	twinPlayer.AssignTwinData(player.LastName, player.City, player.State, player.HighSchool)
 	notes := "Twin Brother of " + strconv.Itoa(twinPlayer.Stars) + " Star Recruit " + twinPlayer.Position + " " + twinPlayer.FirstName + " " + twinPlayer.LastName
@@ -457,12 +457,11 @@ func GenerateWalkOns() {
 				break
 			}
 
-			year := 1
 			ethnicity := pickEthnicity()
 
 			state := pickWalkonState(team.State)
 
-			recruit := createWalkon(ethnicity, pos, year, firstNameMap[ethnicity], lastNameMap[ethnicity], newID, attributeBlob, state, highSchoolBlob[state])
+			recruit := createWalkon(pos, firstNameMap[ethnicity], lastNameMap[ethnicity], attributeBlob, state, highSchoolBlob[state])
 
 			recruit.AssignWalkon(team.TeamAbbreviation, int(team.ID), newID)
 
@@ -559,7 +558,7 @@ func GenerateCoachesForAITeams() {
 
 		pickedEthnicity := pickEthnicity()
 		almaMater := pickAlmaMater(teams)
-		coach := createCollegeCoach(team, almaMater.ID, almaMater.TeamAbbreviation, pickedEthnicity, firstNameMap[pickedEthnicity], lastNameMap[pickedEthnicity], retiredPlayers, &retireeMap, &coachMap)
+		coach := createCollegeCoach(team, almaMater.ID, almaMater.TeamAbbreviation, firstNameMap[pickedEthnicity], lastNameMap[pickedEthnicity], retiredPlayers, &retireeMap, &coachMap)
 		team.UpdateAIBehavior(true, true, coach.StarMax, coach.StarMin, coach.PointMin, coach.PointMax, coach.OffensiveScheme, coach.DefensiveScheme)
 		team.AssignRecruiter(coach.CoachName)
 		coachList = append(coachList, coach)
@@ -572,7 +571,7 @@ func GenerateCoachesForAITeams() {
 	}
 }
 
-func createRecruit(ethnicity, position string, stars int, firstName, lastName string, id uint, blob map[string]map[string]map[string]map[string]interface{}, state string, hsBlob []structs.CrootLocation, caser cases.Caser) structs.Recruit {
+func createRecruit(position string, stars int, firstName, lastName string, blob map[string]map[string]map[string]map[string]interface{}, state string, hsBlob []structs.CrootLocation) structs.Recruit {
 	age := 18
 	city, highSchool := getCityAndHighSchool(hsBlob)
 
@@ -668,7 +667,7 @@ func createRecruit(ethnicity, position string, stars int, firstName, lastName st
 	}
 }
 
-func createWalkon(ethnicity string, position string, year int, firstNameList [][]string, lastNameList [][]string, id uint, blob map[string]map[string]map[string]map[string]interface{}, state string, hsBlob []structs.CrootLocation) structs.Recruit {
+func createWalkon(position string, firstNameList [][]string, lastNameList [][]string, blob map[string]map[string]map[string]map[string]interface{}, state string, hsBlob []structs.CrootLocation) structs.Recruit {
 	fName := getName(firstNameList)
 	lName := getName(lastNameList)
 	firstName := strings.Title(strings.ToLower(fName))
@@ -874,7 +873,7 @@ func createCustomCroot(croot []string, id uint, blob map[string]map[string]map[s
 	}
 }
 
-func createCollegeCoach(team structs.RecruitingTeamProfile, almaMaterID uint, almaMater, ethnicity string, firstNameList, lastNameList [][]string, retiredPlayers []structs.NFLRetiredPlayer, retireeMap, coachMap *map[uint]bool) structs.CollegeCoach {
+func createCollegeCoach(team structs.RecruitingTeamProfile, almaMaterID uint, almaMater string, firstNameList, lastNameList [][]string, retiredPlayers []structs.NFLRetiredPlayer, retireeMap, coachMap *map[uint]bool) structs.CollegeCoach {
 	firstName := ""
 	lastName := ""
 	diceRoll := util.GenerateIntFromRange(1, 50)
@@ -1437,7 +1436,7 @@ func getCityAndHighSchool(schools []structs.CrootLocation) (string, string) {
 }
 
 func getValueFromInterfaceRange(star string, starMap map[string]interface{}) int {
-	u, ok := starMap[star]
+	u := starMap[star]
 	// if ok {
 	// 	fmt.Println("(Was able to get value)")
 	// }

@@ -220,7 +220,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		db.Save(&recruit)
 	}
 
-	updateTeamRankings(teamRecruitingProfiles, teamMap, recruitProfilePointsMap, db)
+	updateTeamRankings(teamRecruitingProfiles, recruitProfilePointsMap, db)
 
 	if timestamp.IsRecruitingLocked {
 		timestamp.ToggleLockRecruiting()
@@ -913,7 +913,7 @@ func processRecruitProfile(i int, recruit structs.Recruit, recruitProfiles *[]st
 	return nil
 }
 
-func updateTeamRankings(teamRecruitingProfiles []structs.RecruitingTeamProfile, teamMap map[string]*structs.RecruitingTeamProfile, recruitProfilePointsMap map[string]float64, db *gorm.DB) {
+func updateTeamRankings(teamRecruitingProfiles []structs.RecruitingTeamProfile, recruitProfilePointsMap map[string]float64, db *gorm.DB) {
 	// Update rank system for all teams
 	var maxESPNScore float64 = 0
 	var minESPNScore float64 = 100000

@@ -600,7 +600,7 @@ func SyncExtensionOffers() {
 						continue
 					}
 					minimumValueMultiplier := 1.0
-					validation := validateFreeAgencyPref(player, roster, team, seasonID, e.ContractLength, idx)
+					validation := validateFreeAgencyPref(player, team, seasonID, e.ContractLength, idx)
 					// If the offer is valid and meets the player's free agency bias, reduce the minimum value required by 15%
 					if validation && player.FreeAgency != "Average" {
 						minimumValueMultiplier = 0.85
@@ -838,7 +838,7 @@ func getExtensionPercentageOdds(percentage float64) float64 {
 	return 0
 }
 
-func validateFreeAgencyPref(playerRecord structs.NFLPlayer, roster []structs.NFLPlayer, team structs.NFLTeam, seasonID string, offerLength int, offerIdx int) bool {
+func validateFreeAgencyPref(playerRecord structs.NFLPlayer, team structs.NFLTeam, seasonID string, offerLength int, offerIdx int) bool {
 	preference := playerRecord.FreeAgency
 
 	if preference == "Average" {

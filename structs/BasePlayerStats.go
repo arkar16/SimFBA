@@ -62,9 +62,14 @@ type BasePlayerStats struct {
 	Team                 string
 	PreviousTeamID       uint
 	PreviousTeam         string
+	GameType             uint8
 }
 
 func (bp *BasePlayerStats) MapTeamInfo(teamID uint, team string) {
 	bp.TeamID = teamID
 	bp.Team = team
+}
+
+func (b *BasePlayerStats) AddGameType(gameType uint8) {
+	b.GameType = gameType
 }

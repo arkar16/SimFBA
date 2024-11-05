@@ -85,7 +85,7 @@ func (ss *NFLTeamSeasonStats) ResetStats() {
 	ss.QBRating = 0
 }
 
-func (ss *NFLTeamSeasonStats) MapStats(stats []NFLTeamStats, season int, seasonID int) {
+func (ss *NFLTeamSeasonStats) MapStats(stats []NFLTeamStats, season, seasonID int) {
 	if ss.TeamID == 0 {
 		ss.TeamID = stats[0].TeamID
 		ss.SeasonID = uint(seasonID)

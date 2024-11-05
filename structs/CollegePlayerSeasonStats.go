@@ -94,7 +94,9 @@ func (ss *CollegePlayerSeasonStats) MapStats(stats []CollegePlayerStats) {
 			ss.TeamID = stat.TeamID
 			ss.Team = stat.Team
 		}
-		ss.GamesPlayed++
+		if stat.Snaps > 0 {
+			ss.GamesPlayed++
+		}
 		ss.PassingYards = ss.PassingYards + stat.PassingYards
 		ss.PassAttempts = ss.PassAttempts + stat.PassAttempts
 		ss.PassCompletions = ss.PassCompletions + stat.PassCompletions

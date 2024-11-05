@@ -55,13 +55,13 @@ func GetAllNFLPlayers() []structs.NFLPlayer {
 	return nflPlayers
 }
 
-func GetAllNFLPlayersWithCurrentSeasonStats(seasonID string) []structs.NFLPlayer {
+func GetAllNFLPlayersWithCurrentSeasonStats(seasonID, gameType string) []structs.NFLPlayer {
 	db := dbprovider.GetInstance().GetDB()
 
 	var nflPlayers []structs.NFLPlayer
 
 	db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ?", seasonID)
+		return db.Where("season_id = ? AND game_type = ?", seasonID, gameType)
 	}).Find(&nflPlayers)
 
 	return nflPlayers
@@ -110,14 +110,14 @@ func GetCollegePlayerByCollegePlayerId(CollegePlayerId string) structs.CollegePl
 	return CollegePlayer
 }
 
-func GetCollegePlayerViaDiscord(id string) structs.DiscordPlayerResponse {
+func GetCollegePlayerViaDiscord(id, gameType string) structs.DiscordPlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
 
 	seasonID := strconv.Itoa(ts.CollegeSeasonID)
 	var collegePlayer structs.CollegePlayer
 
-	db.Preload("SeasonStats", "season_id = ?", seasonID).Where("id = ?", id).Find(&collegePlayer)
+	db.Preload("SeasonStats", "season_id = ? AND game_type = ?", seasonID, gameType).Where("id = ?", id).Find(&collegePlayer)
 
 	collegePlayerResponse := structs.MapPlayerToCSVModel(collegePlayer)
 
@@ -127,14 +127,14 @@ func GetCollegePlayerViaDiscord(id string) structs.DiscordPlayerResponse {
 	}
 }
 
-func GetCollegePlayerByNameViaDiscord(firstName, lastName, teamID string) structs.DiscordPlayerResponse {
+func GetCollegePlayerByNameViaDiscord(firstName, lastName, teamID, gameType string) structs.DiscordPlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
 
 	seasonID := strconv.Itoa(ts.CollegeSeasonID)
 	var collegePlayer structs.CollegePlayer
 
-	db.Preload("SeasonStats", "season_id = ?", seasonID).Where("first_name = ? AND last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&collegePlayer)
+	db.Preload("SeasonStats", "season_id = ? AND game_type = ?", seasonID, gameType).Where("first_name = ? AND last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&collegePlayer)
 
 	collegePlayerResponse := structs.MapPlayerToCSVModel(collegePlayer)
 
@@ -144,14 +144,14 @@ func GetCollegePlayerByNameViaDiscord(firstName, lastName, teamID string) struct
 	}
 }
 
-func GetNFLPlayerViaDiscord(id string) structs.DiscordPlayerResponse {
+func GetNFLPlayerViaDiscord(id, gameType string) structs.DiscordPlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
 
 	seasonID := strconv.Itoa(ts.NFLSeasonID)
 	var nflPlayer structs.NFLPlayer
 
-	db.Preload("SeasonStats", "season_id = ?", seasonID).Where("id = ?", id).Find(&nflPlayer)
+	db.Preload("SeasonStats", "season_id = ? AND game_type = ?", seasonID, gameType).Where("id = ?", id).Find(&nflPlayer)
 
 	nflPlayerResponse := structs.MapNFLPlayerToCSVModel(nflPlayer)
 
@@ -183,14 +183,14 @@ func GetCareerNFLPlayerViaDiscord(id string) structs.DiscordPlayerResponse {
 	}
 }
 
-func GetNFLPlayerByNameViaDiscord(firstName, lastName, teamID string) structs.DiscordPlayerResponse {
+func GetNFLPlayerByNameViaDiscord(firstName, lastName, teamID, gameType string) structs.DiscordPlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
 
 	seasonID := strconv.Itoa(ts.NFLSeasonID)
 	var nflPlayer structs.NFLPlayer
 
-	db.Preload("SeasonStats", "season_id = ?", seasonID).Where("first_name = ? AND last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&nflPlayer)
+	db.Preload("SeasonStats", "season_id = ? AND game_type = ?", seasonID, gameType).Where("first_name = ? AND last_name = ? and team_id = ?", firstName, lastName, teamID).Find(&nflPlayer)
 
 	nflPlayerResponse := structs.MapNFLPlayerToCSVModel(nflPlayer)
 
@@ -321,7 +321,7 @@ func GetNFLDrafteeByPlayerID(PlayerID string) models.NFLDraftee {
 	return player
 }
 
-func GetAllCollegePlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]string, seasonID, weekID, viewType string) []structs.CollegePlayerResponse {
+func GetAllCollegePlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]string, seasonID, weekID, viewType, gameType string) []structs.CollegePlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	ts := GetTimestamp()
@@ -421,7 +421,7 @@ func GetAllCollegePlayersWithStatsBySeasonID(cMap map[int]int, cNMap map[int]str
 	return cpResponse
 }
 
-func GetAllNFLPlayersWithStatsBySeasonID(cMap, dMap map[int]int, cNMap, dNMap map[int]string, seasonID, weekID, viewType string) []structs.NFLPlayerResponse {
+func GetAllNFLPlayersWithStatsBySeasonID(cMap, dMap map[int]int, cNMap, dNMap map[int]string, seasonID, weekID, viewType, gameType string) []structs.NFLPlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	ts := GetTimestamp()
@@ -519,7 +519,7 @@ func GetAllNFLPlayersWithStatsBySeasonID(cMap, dMap map[int]int, cNMap, dNMap ma
 	return cpResponse
 }
 
-func GetAllCollegePlayersWithSeasonStatsByTeamID(TeamID string, SeasonID string) []structs.CollegePlayerResponse {
+func GetAllCollegePlayersWithSeasonStatsByTeamID(TeamID, SeasonID, gameType string) []structs.CollegePlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	var collegePlayers []structs.CollegePlayer
@@ -1204,7 +1204,7 @@ func RecoverPlayers() {
 func CheckNFLRookiesForLetterGrade(seasonID string) {
 	db := dbprovider.GetInstance().GetDB()
 
-	nflPlayers := GetAllNFLPlayersWithCurrentSeasonStats(seasonID)
+	nflPlayers := GetAllNFLPlayersWithCurrentSeasonStats(seasonID, "2")
 
 	for _, p := range nflPlayers {
 		if !p.ShowLetterGrade {
@@ -1424,7 +1424,7 @@ func GetCollegePlayerMap() map[uint]structs.CollegePlayer {
 	return portalMap
 }
 
-func GetAllNFLPlayersWithSeasonStatsByTeamID(TeamID string, SeasonID string) []structs.NFLPlayerResponse {
+func GetAllNFLPlayersWithSeasonStatsByTeamID(TeamID, SeasonID, gameType string) []structs.NFLPlayerResponse {
 	db := dbprovider.GetInstance().GetDB()
 
 	var nflPlayers []structs.NFLPlayer
@@ -1432,7 +1432,7 @@ func GetAllNFLPlayersWithSeasonStatsByTeamID(TeamID string, SeasonID string) []s
 	var responseList []structs.NFLPlayerResponse
 
 	db.Preload("SeasonStats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("season_id = ? and team_id = ? and snaps > 0", SeasonID, TeamID)
+		return db.Where("season_id = ? and team_id = ? and snaps > 0 AND game_type = ?", SeasonID, TeamID, gameType)
 	}).Where("team_id = ?", TeamID).Find(&nflPlayers)
 
 	for _, p := range nflPlayers {

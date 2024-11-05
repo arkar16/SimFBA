@@ -346,3 +346,35 @@ func FixByeWeekLogic() {
 		}
 	}
 }
+
+func GetNFLGamesMapSeasonId(SeasonID string) map[uint]structs.NFLGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	var games []structs.NFLGame
+
+	db.Order("week_id asc").Where("season_id = ?", SeasonID).Find(&games)
+
+	gameMap := make(map[uint]structs.NFLGame)
+
+	for _, g := range games {
+		gameMap[g.ID] = g
+	}
+
+	return gameMap
+}
+
+func GetCFBGamesMapSeasonId(SeasonID string) map[uint]structs.CollegeGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	var games []structs.CollegeGame
+
+	db.Order("week_id asc").Where("season_id = ?", SeasonID).Find(&games)
+
+	gameMap := make(map[uint]structs.CollegeGame)
+
+	for _, g := range games {
+		gameMap[g.ID] = g
+	}
+
+	return gameMap
+}

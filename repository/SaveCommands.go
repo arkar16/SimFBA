@@ -219,3 +219,51 @@ func SaveCollegePromiseRecord(promise structs.CollegePromise, db *gorm.DB) {
 		log.Panicln("Could not save new college recruit record")
 	}
 }
+
+func SaveCFBTeamStats(teamStat structs.CollegeTeamStats, db *gorm.DB) {
+	// Save NFL Team Stats Record
+	err := db.Save(&teamStat).Error
+	if err != nil {
+		log.Panicln("Could not save nfl team seasons stats record")
+	}
+}
+
+func SaveCFBTeamSeasonStats(seasonStats structs.CollegeTeamSeasonStats, db *gorm.DB) {
+	// Save NFL Team Season Stats Record
+	err := db.Save(&seasonStats).Error
+	if err != nil {
+		log.Panicln("Could not save nfl team seasons stats record")
+	}
+}
+
+func SaveNFLTeamStats(teamStat structs.NFLTeamStats, db *gorm.DB) {
+	// Save NFL Team Stats Record
+	err := db.Save(&teamStat).Error
+	if err != nil {
+		log.Panicln("Could not save nfl team seasons stats record")
+	}
+}
+
+func SaveNFLTeamSeasonStats(seasonStats structs.NFLTeamSeasonStats, db *gorm.DB) {
+	// Save NFL Team Season Stats Record
+	err := db.Save(&seasonStats).Error
+	if err != nil {
+		log.Panicln("Could not save nfl team seasons stats record")
+	}
+}
+
+func SaveNFLPlayerSeasonStats(seasonStats structs.NFLPlayerSeasonStats, db *gorm.DB) {
+	// Save NFL Player Season Stats Record
+	err := db.Save(&seasonStats).Error
+	if err != nil {
+		log.Panicln("Could not save nfl player seasons stats record")
+	}
+}
+
+func SaveCollegePlayerSeasonStats(seasonStats structs.CollegePlayerSeasonStats, db *gorm.DB) {
+	// Save CFB Player Season Stats Record
+	err := db.Save(&seasonStats).Error
+	if err != nil {
+		log.Panicln("Could not save cfb player seasons stats record")
+	}
+}

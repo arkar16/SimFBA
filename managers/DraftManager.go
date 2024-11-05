@@ -188,13 +188,12 @@ func RemovePlayerFromScoutBoard(id string) {
 
 func GetScoutingDataByPlayerID(id string) models.ScoutingDataResponse {
 	ts := GetTimestamp()
-
 	lastSeasonID := ts.NFLSeasonID - 1
 	lastSeasonIDSTR := strconv.Itoa(int(lastSeasonID))
 
 	draftee := GetHistoricCollegePlayerByID(id)
 
-	seasonStats := GetCollegeSeasonStatsByPlayerAndSeason(id, lastSeasonIDSTR)
+	seasonStats := GetCollegeSeasonStatsByPlayerAndSeason(id, lastSeasonIDSTR, "2")
 	teamID := strconv.Itoa(int(draftee.TeamID))
 	collegeStandings := GetCollegeStandingsRecordByTeamID(teamID, lastSeasonIDSTR)
 

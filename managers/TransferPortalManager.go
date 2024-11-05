@@ -36,7 +36,7 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 	ts := GetTimestamp()
 	seasonID := strconv.Itoa(ts.CollegeSeasonID)
 	allCollegePlayers := GetAllCollegePlayers()
-	seasonSnapMap := GetCollegePlayerSeasonStatsMap(seasonID)
+	seasonSnapMap := GetALLCFBPlayerSeasonStatMapBySeason(seasonID)
 	fullRosterMap := GetFullTeamRosterWithCrootsMap()
 	teamProfileMap := GetTeamProfileMap()
 	transferCount := 0
@@ -91,7 +91,10 @@ func ProcessTransferIntention(w http.ResponseWriter) {
 
 		// Check Snaps
 		seasonStats := seasonSnapMap[p.ID]
-		totalSnaps := seasonStats.Snaps
+		totalSnaps := 0
+		for _, s := range seasonStats {
+			totalSnaps += s.Snaps
+		}
 		snapsPerGame := totalSnaps / 12
 
 		if p.Position == "P" || p.Position == "K" {
@@ -1376,10 +1379,10 @@ func GetCollegePlayerSeasonSnapMap(seasonID string) map[uint]structs.CollegePlay
 	return seasonStatMap
 }
 
-func GetCollegePlayerSeasonStatsMap(seasonID string) map[uint]structs.CollegePlayerSeasonStats {
+func GetCollegePlayerSeasonStatsMap(seasonID, gameType string) map[uint]structs.CollegePlayerSeasonStats {
 	seasonStatMap := make(map[uint]structs.CollegePlayerSeasonStats)
 
-	seasonStats := GetCollegePlayerSeasonStatsBySeason(seasonID)
+	seasonStats := GetCollegePlayerSeasonStatsBySeason(seasonID, gameType)
 	for _, stat := range seasonStats {
 		seasonStatMap[stat.CollegePlayerID] = stat
 	}
@@ -1390,7 +1393,7 @@ func GetCollegePlayerSeasonStatsMap(seasonID string) map[uint]structs.CollegePla
 func GetCollegePlayerStatsMap(seasonID string) map[uint][]structs.CollegePlayerStats {
 	seasonStatMap := make(map[uint][]structs.CollegePlayerStats)
 
-	seasonStats := GetAllPlayerStatsBySeason(seasonID)
+	seasonStats := GetCollegeAllPlayerStatsBySeason(seasonID)
 	for _, stat := range seasonStats {
 		stats := seasonStatMap[uint(stat.CollegePlayerID)]
 		if len(stats) == 0 {
@@ -1679,7 +1682,7 @@ func GetTransferScoutingDataByPlayerID(id string) models.ScoutingDataResponse {
 
 	draftee := GetCollegePlayerByCollegePlayerId(id)
 
-	seasonStats := GetCollegePlayerSeasonStatsByPlayerIDAndSeason(id, seasonIDSTR)
+	seasonStats := GetCollegePlayerSeasonStatsByPlayerIDAndSeason(id, seasonIDSTR, "2")
 	teamID := strconv.Itoa(int(draftee.PreviousTeamID))
 	collegeStandings := GetCollegeStandingsRecordByTeamID(teamID, seasonIDSTR)
 

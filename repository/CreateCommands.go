@@ -203,3 +203,39 @@ func CreateTransferPortalProfileRecordsBatch(db *gorm.DB, profiles []structs.Tra
 	}
 	return nil
 }
+
+// CreateNFLTeamSeasonStats
+func CreateNFLTeamSeasonStats(seasonStats structs.NFLTeamSeasonStats, db *gorm.DB) {
+	// Save NFL Team Season Stats Record
+	err := db.Create(&seasonStats).Error
+	if err != nil {
+		log.Panicln("Could not save nfl team seasons stats record")
+	}
+}
+
+// CreateCFBTeamSeasonStats
+func CreateCFBTeamSeasonStats(seasonStats structs.CollegeTeamSeasonStats, db *gorm.DB) {
+	// Save NFL Team Season Stats Record
+	err := db.Create(&seasonStats).Error
+	if err != nil {
+		log.Panicln("Could not save nfl team seasons stats record")
+	}
+}
+
+// CreateNFLTeamSeasonStats
+func CreateNFLPlayerSeasonStats(seasonStats structs.NFLPlayerSeasonStats, db *gorm.DB) {
+	// Save NFL Player Season Stats Record
+	err := db.Create(&seasonStats).Error
+	if err != nil {
+		log.Panicln("Could not save nfl Player seasons stats record")
+	}
+}
+
+// CreateCFBTeamSeasonStats
+func CreateCFBPlayerSeasonStats(seasonStats structs.CollegePlayerSeasonStats, db *gorm.DB) {
+	// Save NFL Player Season Stats Record
+	err := db.Create(&seasonStats).Error
+	if err != nil {
+		log.Panicln("Could not save nfl Player seasons stats record")
+	}
+}

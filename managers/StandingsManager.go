@@ -101,12 +101,16 @@ func GetHistoricalRecordsByTeamID(TeamID string) models.TeamRecordResponse {
 			}
 
 			if game.IsConferenceChampionship {
-				conferenceChampionships = append(conferenceChampionships, season)
+				winningSeason := game.SeasonID + 2020
+				winningSeasonStr := strconv.Itoa(winningSeason)
+				conferenceChampionships = append(conferenceChampionships, winningSeasonStr)
 				divisionTitles = append(divisionTitles, season)
 			}
 
 			if game.IsNationalChampionship {
-				nationalChampionships = append(nationalChampionships, season)
+				winningSeason := game.SeasonID + 2020
+				winningSeasonStr := strconv.Itoa(winningSeason)
+				nationalChampionships = append(nationalChampionships, winningSeasonStr)
 			}
 		} else {
 			overallLosses++

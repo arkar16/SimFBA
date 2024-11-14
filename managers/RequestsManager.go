@@ -330,7 +330,7 @@ func GetCFBTeamForAvailableTeamsPage(teamID string) models.TeamRecordResponse {
 	// Get top 3 players on roster
 	roster := GetAllCollegePlayersByTeamId(teamID)
 	sort.Slice(roster, func(i, j int) bool {
-		return roster[i].Overall < roster[j].Overall
+		return roster[i].Overall > roster[j].Overall
 	})
 
 	topPlayers := []models.TopPlayer{}
@@ -355,7 +355,7 @@ func GetNFLTeamForAvailableTeamsPage(teamID string) models.TeamRecordResponse {
 	// Get top 3 players on roster
 	roster := GetNFLPlayersForDCPage(teamID)
 	sort.Slice(roster, func(i, j int) bool {
-		return roster[i].Overall < roster[j].Overall
+		return roster[i].Overall > roster[j].Overall
 	})
 
 	topPlayers := []models.TopPlayer{}

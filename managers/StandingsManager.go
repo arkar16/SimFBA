@@ -140,6 +140,88 @@ func GetHistoricalRecordsByTeamID(TeamID string) models.TeamRecordResponse {
 	return response
 }
 
+func GetHistoricalNFLRecordsByTeamID(TeamID string) models.TeamRecordResponse {
+	tsChn := make(chan structs.Timestamp)
+
+	go func() {
+		ts := GetTimestamp()
+		tsChn <- ts
+	}()
+
+	timestamp := <-tsChn
+	close(tsChn)
+
+	season := strconv.Itoa(timestamp.Season)
+
+	historicGames := GetNFLGamesByTeamId(TeamID)
+	var conferenceChampionships []string
+	var divisionTitles []string
+	var nationalChampionships []string
+	overallWins := 0
+	overallLosses := 0
+	currentSeasonWins := 0
+	currentSeasonLosses := 0
+	bowlWins := 0
+	bowlLosses := 0
+
+	for _, game := range historicGames {
+		if !game.GameComplete || (game.GameComplete && game.SeasonID == timestamp.CollegeSeasonID && game.WeekID == timestamp.CollegeWeekID) {
+			continue
+		}
+
+		isAway := strconv.Itoa(game.AwayTeamID) == TeamID
+
+		if (isAway && game.AwayTeamWin) || (!isAway && game.HomeTeamWin) {
+			overallWins++
+
+			if game.SeasonID == timestamp.CollegeSeasonID {
+				currentSeasonWins++
+			}
+
+			if game.IsPlayoffGame {
+				bowlWins++
+			}
+
+			if game.IsConferenceChampionship {
+				conferenceChampionships = append(conferenceChampionships, season)
+				divisionTitles = append(divisionTitles, season)
+			}
+
+			if game.IsSuperBowl {
+				nationalChampionships = append(nationalChampionships, season)
+			}
+		} else {
+			overallLosses++
+
+			if game.SeasonID == timestamp.CollegeSeasonID {
+				currentSeasonLosses++
+			}
+
+			if game.IsPlayoffGame {
+				bowlLosses++
+			}
+
+			if game.IsConferenceChampionship {
+				divisionTitles = append(divisionTitles, season)
+			}
+		}
+	}
+
+	response := models.TeamRecordResponse{
+		OverallWins:             overallWins,
+		OverallLosses:           overallLosses,
+		CurrentSeasonWins:       currentSeasonWins,
+		CurrentSeasonLosses:     currentSeasonLosses,
+		BowlWins:                bowlWins,
+		BowlLosses:              bowlLosses,
+		ConferenceChampionships: conferenceChampionships,
+		DivisionTitles:          divisionTitles,
+		NationalChampionships:   nationalChampionships,
+	}
+
+	return response
+}
+
 // GetStandingsByConferenceIDAndSeasonID
 func GetCFBStandingsByTeamIDAndSeasonID(TeamID string, seasonID string) structs.CollegeStandings {
 	var standings structs.CollegeStandings

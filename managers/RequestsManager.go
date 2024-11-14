@@ -3,9 +3,11 @@ package managers
 import (
 	"fmt"
 	"log"
+	"sort"
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 )
@@ -320,4 +322,54 @@ func RemoveUserFromNFLTeam(request structs.NFLRequest) {
 	}
 
 	db.Create(&newsLog)
+}
+
+func GetCFBTeamForAvailableTeamsPage(teamID string) models.TeamRecordResponse {
+	historicalDataResponse := GetHistoricalRecordsByTeamID(teamID)
+
+	// Get top 3 players on roster
+	roster := GetAllCollegePlayersByTeamId(teamID)
+	sort.Slice(roster, func(i, j int) bool {
+		return roster[i].Overall < roster[j].Overall
+	})
+
+	topPlayers := []models.TopPlayer{}
+
+	for i := range roster {
+		if i > 4 {
+			break
+		}
+		tp := models.TopPlayer{}
+		tp.MapCollegePlayer(roster[i])
+		topPlayers = append(topPlayers, tp)
+	}
+
+	historicalDataResponse.AddTopPlayers(topPlayers)
+
+	return historicalDataResponse
+}
+
+func GetNFLTeamForAvailableTeamsPage(teamID string) models.TeamRecordResponse {
+	historicalDataResponse := GetHistoricalNFLRecordsByTeamID(teamID)
+
+	// Get top 3 players on roster
+	roster := GetNFLPlayersForDCPage(teamID)
+	sort.Slice(roster, func(i, j int) bool {
+		return roster[i].Overall < roster[j].Overall
+	})
+
+	topPlayers := []models.TopPlayer{}
+
+	for i := range roster {
+		if i > 4 {
+			break
+		}
+		tp := models.TopPlayer{}
+		tp.MapNFLPlayer(roster[i])
+		topPlayers = append(topPlayers, tp)
+	}
+
+	historicalDataResponse.AddTopPlayers(topPlayers)
+
+	return historicalDataResponse
 }

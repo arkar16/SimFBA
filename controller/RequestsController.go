@@ -76,6 +76,30 @@ func RemoveUserFromTeam(w http.ResponseWriter, r *http.Request) {
 	// json.NewEncoder(w).Encode(team)
 }
 
+func ViewCFBTeamUponRequest(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+	if len(teamID) == 0 {
+		panic("User did not provide TeamID")
+	}
+
+	team := managers.GetCFBTeamForAvailableTeamsPage(teamID)
+
+	json.NewEncoder(w).Encode(team)
+}
+
+func ViewNFLTeamUponRequest(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamID := vars["teamID"]
+	if len(teamID) == 0 {
+		panic("User did not provide TeamID")
+	}
+
+	team := managers.GetNFLTeamForAvailableTeamsPage(teamID)
+
+	json.NewEncoder(w).Encode(team)
+}
+
 func CreateNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
 	var request structs.NFLRequest
 

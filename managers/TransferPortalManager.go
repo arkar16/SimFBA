@@ -699,7 +699,7 @@ func AICoachFillBoardsPhase() {
 	profiles := []structs.TransferPortalProfile{}
 
 	for idx, teamProfile := range AITeams {
-		if teamProfile.IsUserTeam {
+		if teamProfile.IsUserTeam || teamProfile.ID < 195 {
 			continue
 		}
 		fmt.Println("Iterating "+teamProfile.TeamAbbreviation+" on IDX: ", idx)
@@ -722,11 +722,15 @@ func AICoachFillBoardsPhase() {
 		}
 
 		majorNeedsMap := getMajorNeedsMap()
+		recruitingNeeds := GetRecruitingNeeds(teamID)
 
 		for _, r := range roster {
 			if (team.IsFBS && r.Overall > 42 && majorNeedsMap[r.Position]) ||
 				(!team.IsFBS && r.Overall > 34 && majorNeedsMap[r.Position]) {
 				majorNeedsMap[r.Position] = false
+			}
+			if teamProfile.ID > 194 && recruitingNeeds[r.Position] > 0 {
+				recruitingNeeds[r.Position]--
 			}
 		}
 		profileCount := len(portalProfileMap)
@@ -736,7 +740,7 @@ func AICoachFillBoardsPhase() {
 				break
 			}
 			isBadFit := IsBadSchemeFit(teamProfile.OffensiveScheme, teamProfile.DefensiveScheme, tp.Archetype, tp.Position)
-			if isBadFit || !majorNeedsMap[tp.Position] || tp.PreviousTeamID == team.ID || portalProfileMap[tp.ID].CollegePlayerID == tp.ID || portalProfileMap[tp.ID].ID > 0 {
+			if isBadFit || !majorNeedsMap[tp.Position] || tp.PreviousTeamID == team.ID || portalProfileMap[tp.ID].CollegePlayerID == tp.ID || portalProfileMap[tp.ID].ID > 0 || (teamProfile.ID > 194 && recruitingNeeds[tp.Position] <= 0) {
 				continue
 			}
 
@@ -781,7 +785,7 @@ func AICoachFillBoardsPhase() {
 				biasMod = 5
 			}
 
-			if tp.Overall < 31 && !teamProfile.IsFBS && teamProfile.ID > 194 {
+			if !teamProfile.IsFBS && teamProfile.ID > 194 {
 				biasMod += 20
 			}
 

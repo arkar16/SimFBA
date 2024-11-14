@@ -204,6 +204,16 @@ func GetCollegeGamesByTeamId(TeamID string) []structs.CollegeGame {
 	return games
 }
 
+func GetNFLGamesByTeamId(TeamID string) []structs.NFLGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	var games []structs.NFLGame
+
+	db.Order("week_id asc").Where("home_team_id = ? OR away_team_id = ?", TeamID, TeamID).Find(&games)
+
+	return games
+}
+
 func GetCollegeGameByAbbreviationsWeekAndSeasonID(HomeTeamAbbr string, WeekID string, SeasonID string) structs.CollegeGame {
 	db := dbprovider.GetInstance().GetDB()
 

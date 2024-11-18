@@ -1074,7 +1074,7 @@ func GetNFLPlayersWithContractsByTeamID(TeamID string) []structs.NFLPlayer {
 	var players []structs.NFLPlayer
 
 	db.Preload("Contract", func(db *gorm.DB) *gorm.DB {
-		return db.Where("is_active = true")
+		return db.Where("is_active = true AND is_cut = false")
 	}).Where("team_id = ?", TeamID).Find(&players)
 
 	return players
@@ -1132,7 +1132,7 @@ func CutNFLPlayer(playerId string) {
 		player.WaivePlayer()
 	} else {
 		player.ToggleIsFreeAgent()
-		contract.DeactivateContract()
+		contract.CutContract()
 	}
 
 	capsheet.CutPlayerFromCapsheet(contract)

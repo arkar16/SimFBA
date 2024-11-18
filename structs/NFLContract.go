@@ -32,10 +32,16 @@ type NFLContract struct {
 	PlayerRetired   bool
 	TagType         uint8
 	IsTagged        bool
+	IsCut           bool
 }
 
 func (c *NFLContract) DeactivateContract() {
 	c.IsActive = false
+}
+
+func (c *NFLContract) CutContract() {
+	c.IsActive = false
+	c.IsCut = true
 }
 
 func (c *NFLContract) ReassignTeam(TeamID uint, Team string) {

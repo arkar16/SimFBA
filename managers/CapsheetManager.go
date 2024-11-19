@@ -53,6 +53,10 @@ func AllocateCapsheets() {
 				continue
 			}
 			contract := player.Contract
+			if contract.IsCut {
+				window += 1
+				continue
+			}
 
 			Capsheet.AddContractToCapsheet(contract)
 		}

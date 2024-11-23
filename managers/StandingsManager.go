@@ -86,7 +86,8 @@ func GetHistoricalRecordsByTeamID(TeamID string) models.TeamRecordResponse {
 		if !game.GameComplete || (game.GameComplete && game.SeasonID == timestamp.CollegeSeasonID && game.WeekID == timestamp.CollegeWeekID) {
 			continue
 		}
-
+		winningSeason := game.SeasonID + 2020
+		winningSeasonStr := strconv.Itoa(winningSeason)
 		isAway := strconv.Itoa(game.AwayTeamID) == TeamID
 
 		if (isAway && game.AwayTeamWin) || (!isAway && game.HomeTeamWin) {
@@ -101,15 +102,11 @@ func GetHistoricalRecordsByTeamID(TeamID string) models.TeamRecordResponse {
 			}
 
 			if game.IsConferenceChampionship {
-				winningSeason := game.SeasonID + 2020
-				winningSeasonStr := strconv.Itoa(winningSeason)
 				conferenceChampionships = append(conferenceChampionships, winningSeasonStr)
-				divisionTitles = append(divisionTitles, season)
+				divisionTitles = append(divisionTitles, winningSeasonStr)
 			}
 
 			if game.IsNationalChampionship {
-				winningSeason := game.SeasonID + 2020
-				winningSeasonStr := strconv.Itoa(winningSeason)
 				nationalChampionships = append(nationalChampionships, winningSeasonStr)
 			}
 		} else {
@@ -155,8 +152,6 @@ func GetHistoricalNFLRecordsByTeamID(TeamID string) models.TeamRecordResponse {
 	timestamp := <-tsChn
 	close(tsChn)
 
-	season := strconv.Itoa(timestamp.Season)
-
 	historicGames := GetNFLGamesByTeamId(TeamID)
 	var conferenceChampionships []string
 	var divisionTitles []string
@@ -172,7 +167,7 @@ func GetHistoricalNFLRecordsByTeamID(TeamID string) models.TeamRecordResponse {
 		if !game.GameComplete || (game.GameComplete && game.SeasonID == timestamp.CollegeSeasonID && game.WeekID == timestamp.CollegeWeekID) {
 			continue
 		}
-
+		gameSeason := game.SeasonID + 2020
 		isAway := strconv.Itoa(game.AwayTeamID) == TeamID
 
 		if (isAway && game.AwayTeamWin) || (!isAway && game.HomeTeamWin) {
@@ -187,12 +182,12 @@ func GetHistoricalNFLRecordsByTeamID(TeamID string) models.TeamRecordResponse {
 			}
 
 			if game.IsConferenceChampionship {
-				conferenceChampionships = append(conferenceChampionships, season)
-				divisionTitles = append(divisionTitles, season)
+				conferenceChampionships = append(conferenceChampionships, strconv.Itoa(gameSeason))
+				divisionTitles = append(divisionTitles, strconv.Itoa(gameSeason))
 			}
 
 			if game.IsSuperBowl {
-				nationalChampionships = append(nationalChampionships, season)
+				nationalChampionships = append(nationalChampionships, strconv.Itoa(gameSeason))
 			}
 		} else {
 			overallLosses++
@@ -203,10 +198,6 @@ func GetHistoricalNFLRecordsByTeamID(TeamID string) models.TeamRecordResponse {
 
 			if game.IsPlayoffGame {
 				bowlLosses++
-			}
-
-			if game.IsConferenceChampionship {
-				divisionTitles = append(divisionTitles, season)
 			}
 		}
 	}

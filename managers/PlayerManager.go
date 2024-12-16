@@ -1450,3 +1450,9 @@ func GetAllNFLPlayersWithSeasonStatsByTeamID(TeamID, SeasonID, gameType string) 
 
 	return responseList
 }
+
+func GetAllNFLPlayersMap() map[uint]structs.NFLPlayer {
+	nflPlayers := GetAllNFLPlayers()
+
+	return MapNFLPlayers(nflPlayers)
+}

@@ -157,3 +157,8 @@ func ImportMissingStats(w http.ResponseWriter, r *http.Request) {
 	managers.MigrateCFBPlayerStatsFromPreviousSeason()
 	fmt.Println(w, "NFL Stats fixed!")
 }
+
+func GenerateNewGameplans(w http.ResponseWriter, r *http.Request) {
+	managers.MigrateCFBGameplansAndDepthChartsForRemainingFCSTeams()
+	fmt.Println(w, "NFL Stats fixed!")
+}

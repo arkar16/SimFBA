@@ -153,6 +153,7 @@ func handleRequests() http.Handler {
 	// apiRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")
 
 	// Import Controls
+	// apiRouter.HandleFunc("/admin/import/fcs/gameplans", controller.GenerateNewGameplans).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/recruit/ai", controller.ImportRecruitAICSV).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/nfl/draft", controller.Import2023DraftedPlayers).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/cfb/standings", controller.ImportCFBStandings).Methods("GET")
@@ -199,7 +200,7 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/nflplayers/cut/player/{PlayerID}/", controller.CutNFLPlayerFromRoster).Methods("GET")
 	apiRouter.HandleFunc("/nflplayers/place/player/squad/{PlayerID}/", controller.PlaceNFLPlayerOnPracticeSquad).Methods("GET")
 	apiRouter.HandleFunc("/nflplayers/injury/reserve/player/{PlayerID}/", controller.PlaceNFLPlayerOnInjuryReserve).Methods("GET")
-	// apiRouter.HandleFunc("/collegeplayers/teams/export/", controller.ExportAllRostersToCSV).Methods("GET") // DO NOT USE
+	apiRouter.HandleFunc("/collegeplayers/teams/export/", controller.ExportAllRostersToCSV).Methods("GET") // DO NOT USE
 
 	// Poll Controls
 	apiRouter.HandleFunc("/college/poll/create/", controller.CreatePollSubmission).Methods("POST")
@@ -314,8 +315,8 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/portal/transfer/intention", controller.ProcessTransferIntention).Methods("GET")
 	apiRouter.HandleFunc("/portal/transfer/pre/promises", controller.ProcessPrePortalPromises).Methods("GET")
 	apiRouter.HandleFunc("/portal/transfer/enter/portal", controller.EnterTheTransferPortal).Methods("GET")
-	// apiRouter.HandleFunc("/portal/transfer/sync", controller.SyncTransferPortal).Methods("GET")
-	// apiRouter.HandleFunc("/portal/ai/generate/profiles", controller.FillUpTransferBoardsAI).Methods("GET")
+	apiRouter.HandleFunc("/portal/transfer/sync", controller.SyncTransferPortal).Methods("GET")
+	apiRouter.HandleFunc("/portal/ai/generate/profiles", controller.FillUpTransferBoardsAI).Methods("GET")
 	apiRouter.HandleFunc("/portal/ai/allocate/profiles", controller.AllocateAndPromisePlayersAI).Methods("GET")
 	apiRouter.HandleFunc("/portal/page/data/{teamID}", controller.GetTransferPortalPageData).Methods("GET")
 	apiRouter.HandleFunc("/portal/profile/create", controller.AddTransferPlayerToBoard).Methods("POST")

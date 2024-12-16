@@ -87,6 +87,7 @@ func (t *Timestamp) DraftIsOver() {
 	t.IsDraftTime = false
 	t.IsNFLOffSeason = false
 	t.NFLPreseason = true
+	t.CFBSpringGames = true
 	t.IsOffSeason = false
 	t.IsFreeAgencyLocked = false
 }
@@ -219,6 +220,9 @@ func (t *Timestamp) IncrementTransferPortalRound() {
 	t.IsRecruitingLocked = false
 	if t.TransferPortalRound < 10 {
 		t.TransferPortalRound += 1
+	} else {
+		t.TransferPortalPhase = 0
+		t.TransferPortalRound = 0
 	}
 }
 

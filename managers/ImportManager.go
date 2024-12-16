@@ -1028,3 +1028,88 @@ func getClutchValue() int {
 	}
 	return 2
 }
+
+func MigrateCFBGameplansAndDepthChartsForRemainingFCSTeams() {
+	db := dbprovider.GetInstance().GetDB()
+
+	teamPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\dc_positions_migration.csv"
+
+	dcPositionsCSV := util.ReadCSV(teamPath)
+	gameplansList := []structs.CollegeGameplan{}
+	testgameplansList := []structs.CollegeGameplanTEST{}
+	dcList := []structs.CollegeTeamDepthChart{}
+	testDCList := []structs.CollegeTeamDepthChartTEST{}
+	dcPList := []structs.CollegeDepthChartPosition{}
+	testDCPList := []structs.CollegeDepthChartPositionTEST{}
+	for i := 195; i < 265; i++ {
+		gp := structs.CollegeGameplan{
+			TeamID: i,
+			Model: gorm.Model{
+				ID: uint(i),
+			},
+			BaseGameplan: structs.BaseGameplan{
+				OffensiveScheme: "Pistol",
+				DefensiveScheme: "Multiple",
+			},
+		}
+		gpt := structs.CollegeGameplanTEST{
+			TeamID: i,
+			Model: gorm.Model{
+				ID: uint(i),
+			},
+			BaseGameplan: structs.BaseGameplan{
+				OffensiveScheme: "Pistol",
+				DefensiveScheme: "Multiple",
+			},
+		}
+
+		gameplansList = append(gameplansList, gp)
+		testgameplansList = append(testgameplansList, gpt)
+
+		dc := structs.CollegeTeamDepthChart{
+			TeamID: i,
+			Model: gorm.Model{
+				ID: uint(i),
+			},
+		}
+		dct := structs.CollegeTeamDepthChartTEST{
+			TeamID: i,
+			Model: gorm.Model{
+				ID: uint(i),
+			},
+		}
+
+		dcList = append(dcList, dc)
+		testDCList = append(testDCList, dct)
+		for idx, row := range dcPositionsCSV {
+			if idx == 0 {
+				continue
+			}
+			positionlevel := row[3]
+			originalPosition := row[2]
+
+			dcp := structs.CollegeDepthChartPosition{
+				DepthChartID:     i,
+				PositionLevel:    positionlevel,
+				Position:         originalPosition,
+				OriginalPosition: originalPosition,
+			}
+
+			dcpt := structs.CollegeDepthChartPositionTEST{
+				DepthChartID:     i,
+				PositionLevel:    positionlevel,
+				Position:         originalPosition,
+				OriginalPosition: originalPosition,
+			}
+
+			dcPList = append(dcPList, dcp)
+			testDCPList = append(testDCPList, dcpt)
+		}
+	}
+	repository.CreateCollegeGameplansRecordsBatch(db, gameplansList, 50)
+	repository.CreateCollegeGameplansTESTRecordsBatch(db, testgameplansList, 50)
+	repository.CreateCollegeDCRecordsBatch(db, dcList, 50)
+	repository.CreateCollegeDCTESTRecordsBatch(db, testDCList, 50)
+	repository.CreateCollegeDCPRecordsBatch(db, dcPList, 200)
+	repository.CreateCollegeDCPTESTRecordsBatch(db, testDCPList, 200)
+}

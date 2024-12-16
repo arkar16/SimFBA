@@ -233,8 +233,12 @@ func RevealScoutingAttribute(dto models.RevealAttributeDTO) bool {
 func ExportDraftedPlayers(picks []structs.NFLDraftPick) bool {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
+
+	newNFLPlayerRecords := []structs.NFLPlayer{}
+	// newNFLContractRecords := []structs.NFLContract{}
+	nflPlayerMap := GetAllNFLPlayersMap()
 	for _, pick := range picks {
-		if (pick.IsVoid && pick.DraftNumber != 202) || pick.DraftNumber < 202 {
+		if pick.IsVoid {
 			continue
 		}
 		playerId := strconv.Itoa(int(pick.SelectedPlayerID))
@@ -266,38 +270,40 @@ func ExportDraftedPlayers(picks []structs.NFLDraftPick) bool {
 		}
 
 		NFLPlayer.SetID(pick.SelectedPlayerID)
-
-		year1Salary := util.GetDrafteeSalary(pick.DraftNumber, 1, pick.DraftRound, true)
-		year2Salary := util.GetDrafteeSalary(pick.DraftNumber, 2, pick.DraftRound, true)
-		year3Salary := util.GetDrafteeSalary(pick.DraftNumber, 3, pick.DraftRound, true)
-		year4Salary := util.GetDrafteeSalary(pick.DraftNumber, 4, pick.DraftRound, true)
-		year1Bonus := util.GetDrafteeSalary(pick.DraftNumber, 1, pick.DraftRound, false)
-		year2Bonus := util.GetDrafteeSalary(pick.DraftNumber, 2, pick.DraftRound, false)
-		year3Bonus := util.GetDrafteeSalary(pick.DraftNumber, 3, pick.DraftRound, false)
-		year4Bonus := util.GetDrafteeSalary(pick.DraftNumber, 4, pick.DraftRound, false)
-		yearsRemaining := 4
-		contract := structs.NFLContract{
-			PlayerID:       NFLPlayer.PlayerID,
-			TeamID:         uint(NFLPlayer.TeamID),
-			Team:           NFLPlayer.TeamAbbr,
-			OriginalTeamID: uint(NFLPlayer.TeamID),
-			OriginalTeam:   NFLPlayer.TeamAbbr,
-			ContractLength: yearsRemaining,
-			ContractType:   "Rookie",
-			Y1BaseSalary:   year1Salary,
-			Y2BaseSalary:   year2Salary,
-			Y3BaseSalary:   year3Salary,
-			Y4BaseSalary:   year4Salary,
-			Y1Bonus:        year1Bonus,
-			Y2Bonus:        year2Bonus,
-			Y3Bonus:        year3Bonus,
-			Y4Bonus:        year4Bonus,
-			IsActive:       true,
+		playerReference := nflPlayerMap[NFLPlayer.ID]
+		if playerReference.ID > 0 {
+			continue
 		}
-
-		db.Create(&contract)
-		db.Create(&NFLPlayer)
-		db.Save(&draftee)
+		// year1Salary := util.GetDrafteeSalary(pick.DraftNumber, 1, pick.DraftRound, true)
+		// year2Salary := util.GetDrafteeSalary(pick.DraftNumber, 2, pick.DraftRound, true)
+		// year3Salary := util.GetDrafteeSalary(pick.DraftNumber, 3, pick.DraftRound, true)
+		// year4Salary := util.GetDrafteeSalary(pick.DraftNumber, 4, pick.DraftRound, true)
+		// year1Bonus := util.GetDrafteeSalary(pick.DraftNumber, 1, pick.DraftRound, false)
+		// year2Bonus := util.GetDrafteeSalary(pick.DraftNumber, 2, pick.DraftRound, false)
+		// year3Bonus := util.GetDrafteeSalary(pick.DraftNumber, 3, pick.DraftRound, false)
+		// year4Bonus := util.GetDrafteeSalary(pick.DraftNumber, 4, pick.DraftRound, false)
+		// yearsRemaining := 4
+		// contract := structs.NFLContract{
+		// 	PlayerID:       NFLPlayer.PlayerID,
+		// 	TeamID:         uint(NFLPlayer.TeamID),
+		// 	Team:           NFLPlayer.TeamAbbr,
+		// 	OriginalTeamID: uint(NFLPlayer.TeamID),
+		// 	OriginalTeam:   NFLPlayer.TeamAbbr,
+		// 	ContractLength: yearsRemaining,
+		// 	ContractType:   "Rookie",
+		// 	Y1BaseSalary:   year1Salary,
+		// 	Y2BaseSalary:   year2Salary,
+		// 	Y3BaseSalary:   year3Salary,
+		// 	Y4BaseSalary:   year4Salary,
+		// 	Y1Bonus:        year1Bonus,
+		// 	Y2Bonus:        year2Bonus,
+		// 	Y3Bonus:        year3Bonus,
+		// 	Y4Bonus:        year4Bonus,
+		// 	IsActive:       true,
+		// }
+		// newNFLContractRecords = append(newNFLContractRecords, contract)
+		newNFLPlayerRecords = append(newNFLPlayerRecords, NFLPlayer)
+		// db.Save(&draftee)
 	}
 
 	draftablePlayers := GetAllNFLDraftees()
@@ -330,9 +336,21 @@ func ExportDraftedPlayers(picks []structs.NFLDraftPick) bool {
 		}
 
 		nflPlayer.SetID(draftee.ID)
-
-		db.Create(&nflPlayer)
+		playerReference := nflPlayerMap[nflPlayer.ID]
+		if playerReference.ID > 0 {
+			continue
+		}
+		newNFLPlayerRecords = append(newNFLPlayerRecords, nflPlayer)
 	}
+
+	for _, p := range newNFLPlayerRecords {
+		err := db.Create(&p).Error
+		if err != nil {
+			fmt.Println("Error:", err)
+		}
+	}
+	// repository.CreateNFLPlayerRecordsBatch(db, newNFLPlayerRecords, 250)
+	// repository.CreateNFLContractRecordsBatch(db, newNFLContractRecords, 250)
 
 	ts.DraftIsOver()
 	db.Save(&ts)

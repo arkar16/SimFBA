@@ -239,3 +239,123 @@ func CreateCFBPlayerSeasonStats(seasonStats structs.CollegePlayerSeasonStats, db
 		log.Panicln("Could not save nfl Player seasons stats record")
 	}
 }
+
+func CreateCollegeGameplansRecordsBatch(db *gorm.DB, gps []structs.CollegeGameplan, batchSize int) error {
+	total := len(gps)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(gps[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateCollegeGameplansTESTRecordsBatch(db *gorm.DB, gps []structs.CollegeGameplanTEST, batchSize int) error {
+	total := len(gps)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(gps[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateCollegeDCRecordsBatch(db *gorm.DB, gps []structs.CollegeTeamDepthChart, batchSize int) error {
+	total := len(gps)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(gps[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateCollegeDCTESTRecordsBatch(db *gorm.DB, gps []structs.CollegeTeamDepthChartTEST, batchSize int) error {
+	total := len(gps)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(gps[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateCollegeDCPRecordsBatch(db *gorm.DB, gps []structs.CollegeDepthChartPosition, batchSize int) error {
+	total := len(gps)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(gps[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateCollegeDCPTESTRecordsBatch(db *gorm.DB, gps []structs.CollegeDepthChartPositionTEST, batchSize int) error {
+	total := len(gps)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(gps[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateNFLPlayerRecordsBatch(db *gorm.DB, gps []structs.NFLPlayer, batchSize int) error {
+	total := len(gps)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(gps[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateNFLContractRecordsBatch(db *gorm.DB, gps []structs.NFLContract, batchSize int) error {
+	total := len(gps)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(gps[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}

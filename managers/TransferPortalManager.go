@@ -722,15 +722,11 @@ func AICoachFillBoardsPhase() {
 		}
 
 		majorNeedsMap := getMajorNeedsMap()
-		recruitingNeeds := GetRecruitingNeeds(teamID)
 
 		for _, r := range roster {
 			if (team.IsFBS && r.Overall > 42 && majorNeedsMap[r.Position]) ||
 				(!team.IsFBS && r.Overall > 34 && majorNeedsMap[r.Position]) {
 				majorNeedsMap[r.Position] = false
-			}
-			if teamProfile.ID > 194 && recruitingNeeds[r.Position] > 0 {
-				recruitingNeeds[r.Position]--
 			}
 		}
 		profileCount := len(portalProfileMap)
@@ -740,7 +736,7 @@ func AICoachFillBoardsPhase() {
 				break
 			}
 			isBadFit := IsBadSchemeFit(teamProfile.OffensiveScheme, teamProfile.DefensiveScheme, tp.Archetype, tp.Position)
-			if isBadFit || !majorNeedsMap[tp.Position] || tp.PreviousTeamID == team.ID || portalProfileMap[tp.ID].CollegePlayerID == tp.ID || portalProfileMap[tp.ID].ID > 0 || (teamProfile.ID > 194 && recruitingNeeds[tp.Position] <= 0) {
+			if isBadFit || !majorNeedsMap[tp.Position] || tp.PreviousTeamID == team.ID || portalProfileMap[tp.ID].CollegePlayerID == tp.ID || portalProfileMap[tp.ID].ID > 0 {
 				continue
 			}
 
@@ -1045,6 +1041,9 @@ func SyncTransferPortal() {
 		eligibleTeams := []structs.TransferPortalProfile{}
 
 		for i := range portalProfiles {
+			if portalProfiles[i].ProfileID < 195 {
+				continue
+			}
 			promiseID := strconv.Itoa(int(portalProfiles[i].PromiseID.Int64))
 
 			promise := GetCollegePromiseByID(promiseID)
@@ -1060,6 +1059,9 @@ func SyncTransferPortal() {
 		for i := range portalProfiles {
 			roster := rosterMap[portalProfiles[i].ProfileID]
 			tp := teamProfileMap[strconv.Itoa(int(portalProfiles[i].ProfileID))]
+			if portalProfiles[i].ProfileID < 195 {
+				continue
+			}
 			if (len(roster) > 105 && tp.IsFBS) || (len(roster) > 80 && !tp.IsFBS) {
 				continue
 			}

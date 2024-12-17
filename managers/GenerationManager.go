@@ -768,8 +768,8 @@ func createCustomCroot(croot []string, id uint, blob map[string]map[string]map[s
 	lastName := croot[1]
 	position := croot[2]
 	archetype := croot[3]
-	stars := 5
-	// stars := getCustomCrootStarRating()
+	// stars := 5
+	stars := getCustomCrootStarRating()
 	height := util.ConvertStringToInt(croot[4])
 	weight := util.ConvertStringToInt(croot[5])
 	city := croot[6]
@@ -779,6 +779,9 @@ func createCustomCroot(croot []string, id uint, blob map[string]map[string]map[s
 	relativeID := croot[10]
 	relativeType := croot[11]
 	notes := croot[12]
+	affinityOne := croot[13]
+	affinityTwo := croot[14]
+	hasNoAffinities := affinityOne == "" && affinityTwo == ""
 	age := 18
 	footballIQ := getAttributeValue(position, archetype, stars, "Football IQ", blob)
 	speed := getAttributeValue(position, archetype, stars, "Speed", blob)
@@ -810,8 +813,10 @@ func createCustomCroot(croot []string, id uint, blob map[string]map[string]map[s
 	workEthic := util.GetWorkEthic()
 	academicBias := util.GetAcademicBias()
 	potentialGrade := util.GetWeightedPotentialGrade(progression)
-	affinityOne := util.PickAffinity(stars, "", false)
-	affinityTwo := util.PickAffinity(stars, affinityOne, true)
+	if hasNoAffinities {
+		affinityOne = util.PickAffinity(stars, "", false)
+		affinityTwo = util.PickAffinity(stars, affinityOne, true)
+	}
 
 	basePlayer := structs.BasePlayer{
 		FirstName:      firstName,

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math/rand"
 	"sort"
 	"strconv"
 	"strings"
@@ -122,6 +123,12 @@ func GetAllFreeAgentsWithOffers() []models.FreeAgentResponse {
 	faResponseList := make([]models.FreeAgentResponse, len(fas))
 
 	for i, fa := range fas {
+		offers := fa.Offers
+
+		rand.Shuffle(len(offers), func(i, j int) {
+			offers[i], offers[j] = offers[j], offers[i]
+		})
+
 		faResponseList[i] = models.FreeAgentResponse{
 			ID:                fa.ID,
 			PlayerID:          fa.PlayerID,
@@ -182,7 +189,7 @@ func GetAllFreeAgentsWithOffers() []models.FreeAgentResponse {
 			DraftedTeam:       fa.DraftedTeam,
 			ShowLetterGrade:   fa.ShowLetterGrade,
 			SeasonStats:       fa.SeasonStats,
-			Offers:            fa.Offers,
+			Offers:            offers,
 		}
 	}
 

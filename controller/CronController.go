@@ -33,9 +33,16 @@ func SyncAIBoardsViaCron() {
 	}
 }
 
+func RunRESViaCron() {
+	ts := managers.GetTimestamp()
+	if ts.RunCron && !ts.IsOffSeason && !ts.CollegeSeasonOver {
+		managers.SyncRecruitingEfficiency(ts)
+	}
+}
+
 func SyncRecruitingViaCron() {
 	ts := managers.GetTimestamp()
-	if ts.RunCron && !ts.CollegeSeasonOver && !ts.CFBSpringGames && ts.CollegeWeek > 0 && ts.CollegeWeek < 21 {
+	if ts.RunCron && !ts.IsOffSeason && !ts.CollegeSeasonOver && !ts.CFBSpringGames && ts.CollegeWeek > 0 && ts.CollegeWeek < 21 {
 		managers.SyncRecruiting(ts)
 	}
 	if ts.RunCron && ts.IsOffSeason && ts.CollegeSeasonOver && ts.TransferPortalPhase == 3 {
@@ -57,7 +64,7 @@ func SyncFreeAgencyViaCron() {
 func SyncToNextWeekViaCron() {
 	ts := managers.GetTimestamp()
 	if ts.RunCron {
-		if !ts.IsOffSeason || !ts.IsNFLOffSeason {
+		if !ts.IsOffSeason && !ts.IsNFLOffSeason {
 			managers.MoveUpWeek()
 		}
 	}

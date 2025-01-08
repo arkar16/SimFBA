@@ -308,6 +308,9 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/trades/nfl/proposal/reject/{proposalID}", controller.RejectTradeOffer).Methods("GET")
 	apiRouter.HandleFunc("/trades/nfl/proposal/cancel/{proposalID}", controller.CancelTradeOffer).Methods("GET")
 
+	// Training Camp
+	apiRouter.HandleFunc("/nfl/training/camp/upload", controller.UploadTrainingCampCSVData).Methods("GET")
+
 	// Transfer Intentions
 	apiRouter.HandleFunc("/simfba/sync/transfer/intention", controller.ProcessTransferIntention).Methods("GET")
 
@@ -377,6 +380,8 @@ func handleCron() *cron.Cron {
 	c.AddFunc("0 4 * * 3", controller.RunAIGameplanViaCron)
 	// Allocate AI Boards
 	c.AddFunc("0 3 * * 4,6", controller.SyncAIBoardsViaCron)
+	// Run RES
+	c.AddFunc("0 7 * * 4", controller.RunRESViaCron)
 	// Sync Recruiting
 	c.AddFunc("0 16 * * 3", controller.SyncRecruitingViaCron)
 	// Sync Free Agency

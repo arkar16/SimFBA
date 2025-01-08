@@ -218,3 +218,31 @@ func (f *NFLPlayer) MapSeasonStats(seasonStats NFLPlayerSeasonStats) {
 func (f *NFLPlayer) AddTagType(tagType uint8) {
 	f.TagType = tagType
 }
+
+func (np *NFLPlayer) ApplyTrainingCampInfo(attr CollegePlayerProgressions) {
+	np.Agility = attr.Agility
+	np.Speed = attr.Speed
+	np.FootballIQ = attr.FootballIQ
+	np.Carrying = attr.Carrying
+	np.Catching = attr.Catching
+	np.RouteRunning = attr.RouteRunning
+	np.PassBlock = attr.PassBlock
+	np.RunBlock = attr.RunBlock
+	np.PassRush = attr.PassRush
+	np.RunDefense = attr.RunDefense
+	np.Tackle = attr.Tackle
+	np.Strength = attr.Strength
+	np.ManCoverage = attr.ManCoverage
+	np.ZoneCoverage = attr.ZoneCoverage
+	np.KickAccuracy = attr.KickAccuracy
+	np.KickPower = attr.KickPower
+	np.PuntAccuracy = attr.PuntAccuracy
+	np.PuntPower = attr.PuntPower
+	np.ThrowAccuracy = attr.ThrowAccuracy
+	np.ThrowPower = attr.ThrowPower
+	np.IsInjured = attr.WeeksOfRecovery > 0
+	np.WeeksOfRecovery = uint(attr.WeeksOfRecovery)
+	np.InjuryName = attr.InjuryText
+	np.InjuryType = attr.InjuryText
+	np.InjuryReserve = false
+}

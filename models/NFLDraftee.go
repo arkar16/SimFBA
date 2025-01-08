@@ -97,6 +97,7 @@ func (n *NFLDraftee) Map(cp structs.CollegePlayer) {
 	n.AcademicBias = cp.AcademicBias
 	n.PositionTwo = cp.PositionTwo
 	n.ArchetypeTwo = cp.ArchetypeTwo
+	n.PrimeAge = cp.PrimeAge
 }
 
 func (n *NFLDraftee) GetLetterGrades() {

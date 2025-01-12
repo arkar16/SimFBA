@@ -93,8 +93,7 @@ func (cp *CollegePlayer) GetOverall() {
 	} else if cp.Position == "DT" {
 		ovr = (0.15 * float64(cp.FootballIQ)) + (0.05 * float64(cp.Agility)) +
 			(0.25 * float64(cp.RunDefense)) + (0.2 * float64(cp.Strength)) +
-			(0.15 * float64(cp.PassRush)) + (0.2 * float64(cp.Tackle)) +
-			(0.1 * float64(cp.Agility))
+			(0.15 * float64(cp.PassRush)) + (0.2 * float64(cp.Tackle))
 		cp.Overall = int(ovr)
 	} else if cp.Position == "DE" {
 		ovr = (0.15 * float64(cp.FootballIQ)) + (0.1 * float64(cp.Speed)) +

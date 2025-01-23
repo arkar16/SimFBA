@@ -553,7 +553,7 @@ func ImportUDFAs() {
 func ImportCFBGames() {
 	db := dbprovider.GetInstance().GetDB()
 
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024\\2024_games_cfb_bowl.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2025\\2025_cfb_spring_games.csv"
 
 	gamesCSV := util.ReadCSV(path)
 
@@ -643,7 +643,7 @@ func ImportCFBGames() {
 func ImportNFLGames() {
 	db := dbprovider.GetInstance().GetDB()
 
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024\\2024_NFL_Games.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2025\\2025_nfl_games.csv"
 
 	gamesCSV := util.ReadCSV(path)
 
@@ -1112,4 +1112,20 @@ func MigrateCFBGameplansAndDepthChartsForRemainingFCSTeams() {
 	repository.CreateCollegeDCTESTRecordsBatch(db, testDCList, 50)
 	repository.CreateCollegeDCPRecordsBatch(db, dcPList, 200)
 	repository.CreateCollegeDCPTESTRecordsBatch(db, testDCPList, 200)
+}
+
+func FixCollegeDTs() {
+	db := dbprovider.GetInstance().GetDB()
+
+	players := GetAllNFLPlayers()
+
+	for _, p := range players {
+		if p.Position != "DT" {
+			continue
+		}
+
+		p.GetOverall()
+
+		repository.SaveNFLPlayer(p, db)
+	}
 }

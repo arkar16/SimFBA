@@ -74,6 +74,9 @@ func GetGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 
 	ts := GetTimestamp()
 	seasonID := strconv.Itoa(ts.CollegeSeasonID)
+	if ts.IsOffSeason || ts.CollegeWeek == 0 {
+		seasonID = strconv.Itoa(ts.CollegeSeasonID - 1)
+	}
 	opponentID := ""
 	games := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID)
 	for _, g := range games {
@@ -95,7 +98,7 @@ func GetGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 	if opponentID != "" {
 		opponentStats := GetHistoricalTeamStats(opponentID, seasonID)
 		lastGameIdx := len(opponentStats) - 1
-		if ts.CollegeWeek > 1 {
+		if len(opponentStats) > 0 {
 			oppScheme = opponentStats[lastGameIdx].OffensiveScheme
 		}
 		opponentRoster = GetDepthchartByTeamID(opponentID)
@@ -160,6 +163,9 @@ func GetDCTESTByTeamID(teamID string) structs.CollegeTeamDepthChartTEST {
 func GetNFLGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 	ts := GetTimestamp()
 	seasonID := strconv.Itoa(ts.NFLSeasonID)
+	if ts.IsNFLOffSeason || ts.NFLWeek < 2 {
+		seasonID = strconv.Itoa(ts.NFLSeasonID - 1)
+	}
 	gamePlan := GetNFLGameplanByTeamID(teamID)
 	depthChart := GetNFLDepthchartByTeamID(teamID)
 	nflGames := GetNFLGamesByTeamIdAndSeasonId(teamID, seasonID)
@@ -184,7 +190,9 @@ func GetNFLGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 	if opponentID != "" {
 		opponentStats := GetNFLHistoricalTeamStats(opponentID, seasonID)
 		lastGameIdx := len(opponentStats) - 1
-		oppScheme = opponentStats[lastGameIdx].OffensiveScheme
+		if len(opponentStats) > 0 {
+			oppScheme = opponentStats[lastGameIdx].OffensiveScheme
+		}
 
 		opponentRoster = GetNFLDepthchartByTeamID(opponentID)
 		for _, p := range opponentRoster.DepthChartPlayers {

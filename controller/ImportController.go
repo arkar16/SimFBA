@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"encoding/json"
 	"net/http"
 
 	"github.com/CalebRose/SimFBA/managers"
@@ -72,4 +73,9 @@ func ImplementPrimeAge(w http.ResponseWriter, r *http.Request) {
 
 func GenerateCoachesForAITeams(w http.ResponseWriter, r *http.Request) {
 	managers.GenerateCoachesForAITeams()
+}
+
+func FixCollegeDTOVRs(w http.ResponseWriter, r *http.Request) {
+	managers.FixCollegeDTs()
+	json.NewEncoder(w).Encode("Players Fixed")
 }

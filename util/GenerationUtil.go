@@ -253,6 +253,7 @@ func GetPersonality() string {
 		"Outgoing",
 		"Tough",
 		"Paranoid",
+		"Chill",
 		"Stoic",
 		"Dramatic",
 		"Extroverted",
@@ -266,7 +267,8 @@ func GetPersonality() string {
 		"Perfectionist",
 		"Popular",
 		"Jokester",
-		"Narcissist"}
+		"Narcissist",
+		"Laid Back"}
 
 	return PickFromStringList(list)
 }
@@ -298,7 +300,8 @@ func GetAcademicBias() string {
 		"Naturally book smart",
 		"Borderline failing",
 		"Skips classes often",
-		"Didn't come here to play school"}
+		"Didn't come here to play school",
+		"Spends more time on Tiktok than focusing in class"}
 
 	return PickFromStringList(list)
 }
@@ -776,6 +779,9 @@ func PickState() string {
 	if diceRoll < 3256 {
 		return "IL"
 	}
+	if diceRoll < 3372 {
+		return "VA"
+	}
 	if diceRoll < 3484 {
 		return "PA"
 	}
@@ -826,6 +832,9 @@ func PickState() string {
 	}
 	if diceRoll < 4468 {
 		return "AR"
+	}
+	if diceRoll < 4498 {
+		return "CO"
 	}
 	if diceRoll < 4528 {
 		return "KS"
@@ -1029,7 +1038,23 @@ func PickAffinity(stars int, af1 string, pickingAf2 bool) string {
 		return "Close to Home"
 	}
 
-	list := []string{"Academics", "Service", "Religion", "Small School"}
+	list := []string{}
+
+	if af1 != "Academics" {
+		list = append(list, "Academics")
+	}
+
+	if af1 != "Service" {
+		list = append(list, "Service")
+	}
+
+	if af1 != "Religion" {
+		list = append(list, "Religion")
+	}
+
+	if af1 != "Small School" {
+		list = append(list, "Small School")
+	}
 
 	coinFlip := GenerateIntFromRange(1, 2)
 	if coinFlip == 1 && af1 != "Small Town" && af1 != "Big City" {
@@ -1038,10 +1063,10 @@ func PickAffinity(stars int, af1 string, pickingAf2 bool) string {
 		list = append(list, "Big City")
 	}
 
-	if stars > 2 {
+	if stars >= 2 {
 		list = append(list, "Media Spotlight", "Rising Stars")
 	}
-	if stars > 3 {
+	if stars >= 3 {
 		list = append(list, "Frontrunner", "Large Crowds")
 	}
 

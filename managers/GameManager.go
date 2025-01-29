@@ -55,9 +55,11 @@ func GetCollegeGamesBySeasonID(SeasonID string) []structs.CollegeGame {
 func GetNFLGamesByTeamIdAndSeasonId(TeamID string, SeasonID string) []structs.NFLGame {
 	db := dbprovider.GetInstance().GetDB()
 
+	ts := GetTimestamp()
+
 	var games []structs.NFLGame
 
-	db.Order("week_id asc").Where("season_id = ? AND (home_team_id = ? OR away_team_id = ?)", SeasonID, TeamID, TeamID).Find(&games)
+	db.Order("week_id asc").Where("season_id = ? AND (home_team_id = ? OR away_team_id = ?) AND is_preseason_game = ?", SeasonID, TeamID, TeamID, ts.NFLPreseason).Find(&games)
 
 	return games
 }

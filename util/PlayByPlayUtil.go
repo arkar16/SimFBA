@@ -102,10 +102,10 @@ func getPlayTypeMap() map[uint8]string {
 	return map[uint8]string{
 		0: "Run",
 		1: "Pass",
-		2: "FG",
-		3: "XP",
-		4: "Punt",
-		5: "Kickoff",
+		2: "Punt",
+		3: "Kickoff",
+		4: "FG",
+		5: "XP",
 	}
 }
 

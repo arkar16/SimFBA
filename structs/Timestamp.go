@@ -61,7 +61,6 @@ func (t *Timestamp) MoveUpWeekCollege() {
 	if t.CollegeWeek > 3 && t.CFBSpringGames {
 		t.CollegeWeek = 0
 		t.CFBSpringGames = false
-		t.CollegeWeekID -= 4
 	}
 }
 

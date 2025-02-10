@@ -226,7 +226,7 @@ func GetAllCollegeTeamsWithRecruitingProfileAndCoach() []structs.CollegeTeam {
 
 	var teams []structs.CollegeTeam
 
-	db.Preload("CollegeCoach").Preload("RecruitingProfile").Find(&teams)
+	db.Preload("CollegeCoach").Preload("RecruitingProfile.Affinities").Find(&teams)
 
 	return teams
 }

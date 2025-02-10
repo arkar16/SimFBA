@@ -6,6 +6,7 @@ import (
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 )
 
@@ -229,39 +230,23 @@ func GetCFBStandingsByTeamIDAndSeasonID(TeamID string, seasonID string) structs.
 	return standings
 }
 
-func GetAllConferenceStandingsBySeasonID(seasonID string) []structs.CollegeStandings {
-	db := dbprovider.GetInstance().GetDB()
-
-	var standings []structs.CollegeStandings
-
-	db.Where("season_id = ?", seasonID).Order("conference_id asc").Order("conference_losses asc").Order("conference_wins desc").
-		Order("total_losses asc").Order("total_wins desc").Find(&standings)
-
-	return standings
+func GetAllCollegeStandingsBySeasonID(seasonID string) []structs.CollegeStandings {
+	return repository.FindAllCollegeStandingsRecords(repository.StandingsQuery{
+		SeasonID: seasonID,
+	})
 }
 
 func GetAllNFLStandingsBySeasonID(seasonID string) []structs.NFLStandings {
-	db := dbprovider.GetInstance().GetDB()
-
-	var standings []structs.NFLStandings
-
-	db.Where("season_id = ?", seasonID).Order("conference_id asc").Order("total_losses asc").Order("total_wins desc").
-		Order("conference_losses asc").Order("conference_wins desc").Find(&standings)
-
-	return standings
+	return repository.FindAllNFLStandingsRecords(repository.StandingsQuery{
+		SeasonID: seasonID,
+	})
 }
 
 func GetCollegeStandingsRecordByTeamID(id string, seasonID string) structs.CollegeStandings {
-	db := dbprovider.GetInstance().GetDB()
-
-	var standing structs.CollegeStandings
-
-	err := db.Where("team_id = ? AND season_id = ?", id, seasonID).Find(&standing).Error
-	if err != nil {
-		return structs.CollegeStandings{}
-	}
-
-	return standing
+	return repository.FindAllCollegeStandingsRecords(repository.StandingsQuery{
+		TeamID:   id,
+		SeasonID: seasonID,
+	})[0]
 }
 
 func ResetCollegeStandingsRanks() {
@@ -274,7 +259,7 @@ func ResetCollegeStandingsRanks() {
 func GetCollegeStandingsMap(seasonID string) map[uint]structs.CollegeStandings {
 	standingsMap := make(map[uint]structs.CollegeStandings)
 
-	standings := GetAllConferenceStandingsBySeasonID(seasonID)
+	standings := repository.FindAllCollegeStandingsRecords(repository.StandingsQuery{SeasonID: seasonID})
 	for _, stat := range standings {
 		standingsMap[uint(stat.TeamID)] = stat
 	}
@@ -283,13 +268,9 @@ func GetCollegeStandingsMap(seasonID string) map[uint]structs.CollegeStandings {
 }
 
 func GetStandingsHistoryByTeamID(id string) []structs.CollegeStandings {
-	db := dbprovider.GetInstance().GetDB()
-
-	var standings []structs.CollegeStandings
-
-	db.Where("team_id = ?", id).Find(&standings)
-
-	return standings
+	return repository.FindAllCollegeStandingsRecords(repository.StandingsQuery{
+		TeamID: id,
+	})
 }
 
 func GenerateCollegeStandings() {

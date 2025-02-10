@@ -41,15 +41,8 @@ func GetCollegeGamesByTeamIdAndSeasonId(TeamID string, SeasonID string) []struct
 }
 
 func GetCollegeGamesBySeasonID(SeasonID string) []structs.CollegeGame {
-	db := dbprovider.GetInstance().GetDB()
-
 	ts := GetTimestamp()
-
-	var games []structs.CollegeGame
-
-	db.Order("week_id asc").Where("season_id = ? and is_spring_game = ?", SeasonID, ts.CFBSpringGames).Find(&games)
-
-	return games
+	return repository.FindCollegeGamesRecords(SeasonID, ts.CFBSpringGames)
 }
 
 func GetNFLGamesByTeamIdAndSeasonId(TeamID string, SeasonID string) []structs.NFLGame {
@@ -75,15 +68,8 @@ func GetNFLGamesByWeekAndSeasonID(WeekID string, SeasonID string) []structs.NFLG
 }
 
 func GetNFLGamesBySeasonID(SeasonID string) []structs.NFLGame {
-	db := dbprovider.GetInstance().GetDB()
-
 	ts := GetTimestamp()
-
-	var games []structs.NFLGame
-
-	db.Order("week_id asc").Order("time_slot asc").Where("season_id = ? and is_preseason_game = ?", SeasonID, ts.NFLPreseason).Find(&games)
-
-	return games
+	return repository.FindNFLGamesRecords(SeasonID, ts.NFLPreseason)
 }
 
 func GetNFLGamesByTimeslotAndWeekId(id string, timeslot string) []structs.NFLGame {

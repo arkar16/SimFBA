@@ -1300,6 +1300,7 @@ func GenerateCFBPlayByPlayResponse(playByPlays []structs.CollegePlayByPlay, part
 			LBCoverage:         lb,
 			CBCoverage:         cb,
 			SCoverage:          s,
+			PresureID:          p.PressureID,
 		}
 		var result []string
 		if isStream {
@@ -1380,6 +1381,7 @@ func GenerateNFLPlayByPlayResponse(playByPlays []structs.NFLPlayByPlay, particip
 			LBCoverage:         lb,
 			CBCoverage:         cb,
 			SCoverage:          s,
+			PresureID:          p.PressureID,
 		}
 		var result []string
 		if isStream {

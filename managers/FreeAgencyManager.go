@@ -38,6 +38,58 @@ func GetAllWaiverWirePlayers() []structs.NFLPlayer {
 	return fas
 }
 
+func GetAllAvailableNFLPlayersViaChan(TeamID string, ch chan<- models.FreeAgencyResponse) {
+	var wg sync.WaitGroup
+	wg.Add(5)
+	var (
+		FAs           []models.FreeAgentResponse
+		WaiverPlayers []models.WaiverWirePlayerResponse
+		Offers        []structs.FreeAgencyOffer
+		PracticeSquad []models.FreeAgentResponse
+		roster        []structs.NFLPlayer
+	)
+	go func() {
+		defer wg.Done()
+		FAs = GetAllFreeAgentsWithOffers()
+	}()
+	go func() {
+		defer wg.Done()
+		WaiverPlayers = GetAllWaiverWirePlayersFAPage()
+	}()
+	go func() {
+		defer wg.Done()
+		Offers = GetFreeAgentOffersByTeamID(TeamID)
+	}()
+	go func() {
+		defer wg.Done()
+		PracticeSquad = GetAllPracticeSquadPlayersForFAPage()
+
+	}()
+	go func() {
+		defer wg.Done()
+		roster = GetNFLPlayersWithContractsByTeamID(TeamID)
+
+	}()
+	wg.Wait()
+
+	count := 0
+
+	for _, p := range roster {
+		if p.IsPracticeSquad || p.InjuryReserve {
+			continue
+		}
+		count += 1
+	}
+
+	ch <- models.FreeAgencyResponse{
+		FreeAgents:    FAs,
+		WaiverPlayers: WaiverPlayers,
+		PracticeSquad: PracticeSquad,
+		TeamOffers:    Offers,
+		RosterCount:   uint(count),
+	}
+}
+
 func GetAllAvailableNFLPlayers(TeamID string) models.FreeAgencyResponse {
 	var wg sync.WaitGroup
 	wg.Add(5)
@@ -939,26 +991,11 @@ func GetRetiredContracts() []structs.NFLContract {
 
 func getCapsheetMap() map[uint]structs.NFLCapsheet {
 	capsheetMap := make(map[uint]structs.NFLCapsheet)
-	var mu sync.Mutex     // to safely update the map
-	var wg sync.WaitGroup // to wait for all goroutines to finish
-	semaphore := make(chan struct{}, 10)
-	nflTeams := GetAllNFLTeams()
+	capsheets := repository.FindAllNFLCapsheets()
 
-	for _, team := range nflTeams {
-		semaphore <- struct{}{}
-		wg.Add(1)
-		go func(t structs.NFLTeam) {
-			defer wg.Done()
-			capsheet := GetCapsheetByTeamID(strconv.Itoa(int(t.ID)))
-			mu.Lock()
-			capsheetMap[t.ID] = capsheet
-			mu.Unlock()
-
-			<-semaphore
-		}(team)
+	for _, cs := range capsheets {
+		capsheetMap[cs.NFLTeamID] = cs
 	}
 
-	wg.Wait()
-	close(semaphore)
 	return capsheetMap
 }

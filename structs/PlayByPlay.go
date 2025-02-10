@@ -66,6 +66,7 @@ type PlayByPlay struct {
 	IsShort              bool
 	OnOffense            bool
 	KickDistance         int8
+	PressureID           uint
 }
 
 func (p *PlayByPlay) Map(play PlayByPlayDTO) {
@@ -125,6 +126,7 @@ func (p *PlayByPlay) Map(play PlayByPlayDTO) {
 	p.KickDistance = int8(play.KickDistance)
 	p.OnOffense = play.OnOffense
 	p.HomeHasBall = play.HomeHasBall
+	p.PressureID = uint(play.PressureID)
 }
 
 type PlayByPlayDTO struct {
@@ -184,6 +186,7 @@ type PlayByPlayDTO struct {
 	IsShort              bool
 	OnOffense            bool
 	KickDistance         int
+	PressureID           int
 }
 
 type PlayByPlayResponse struct {
@@ -212,6 +215,7 @@ type PlayByPlayResponse struct {
 	BallCarrierID      uint // The player that attains from the result of the acting player. RBs, WRs, DBs, LBs
 	Tackler1ID         uint // ID of the player doing the tackle
 	Tackler2ID         uint
+	PresureID          uint
 	ResultYards        int8
 	Result             string
 	StreamResult       []string

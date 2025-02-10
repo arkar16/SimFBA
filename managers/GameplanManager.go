@@ -238,6 +238,20 @@ func GetGameplanByGameplanID(gameplanID string) structs.CollegeGameplan {
 	return gamePlan
 }
 
+func GetAllCollegeDepthcharts() []structs.CollegeTeamDepthChart {
+	db := dbprovider.GetInstance().GetDB()
+
+	var depthChart []structs.CollegeTeamDepthChart
+
+	// Preload Depth Chart Positions
+	err := db.Preload("DepthChartPlayers.CollegePlayer").Find(&depthChart).Error
+	if err != nil {
+		fmt.Println(err)
+		log.Fatalln("Depthchart does not exist for team.")
+	}
+	return depthChart
+}
+
 func GetDepthchartByTeamID(teamID string) structs.CollegeTeamDepthChart {
 	db := dbprovider.GetInstance().GetDB()
 

@@ -51,7 +51,7 @@ func GetAllCollegeStandings(w http.ResponseWriter, r *http.Request) {
 	if len(seasonID) == 0 {
 		panic("User did not provide enough information")
 	}
-	standings := managers.GetAllConferenceStandingsBySeasonID(seasonID)
+	standings := managers.GetAllCollegeStandingsBySeasonID(seasonID)
 	json.NewEncoder(w).Encode(standings)
 }
 

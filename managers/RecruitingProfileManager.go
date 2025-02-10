@@ -66,6 +66,103 @@ func RecalibrateCrootProfiles() {
 				triggerSave = true
 			}
 
+			crootInfo := recruitInfos[uint(p.RecruitID)]
+
+			for _, affinity := range tp.Affinities {
+				if !affinity.IsApplicable {
+					continue
+				}
+				if crootInfo.HasAcademicAffinity && isAffinityApplicable("Academics", affinity) {
+					triggerSave = true
+					if croot.AffinityOne == "Academics" && !p.AffinityOneEligible {
+						p.ToggleAffinityOne()
+					} else if croot.AffinityTwo == "Academics" && !p.AffinityTwoEligible {
+						p.ToggleAffinityTwo()
+					}
+				}
+
+				if crootInfo.HasFrontRunnerAffinity && isAffinityApplicable("Frontrunner", affinity) {
+					triggerSave = true
+					if croot.AffinityOne == "Frontrunner" && !p.AffinityOneEligible {
+						p.ToggleAffinityOne()
+					} else if croot.AffinityTwo == "Frontrunner" && !p.AffinityTwoEligible {
+						p.ToggleAffinityTwo()
+					}
+				}
+
+				if crootInfo.HasReligionAffinity && isAffinityApplicable("Religion", affinity) {
+					triggerSave = true
+					if croot.AffinityOne == "Religion" && !p.AffinityOneEligible {
+						p.ToggleAffinityOne()
+					} else if croot.AffinityTwo == "Religion" && !p.AffinityTwoEligible {
+						p.ToggleAffinityTwo()
+					}
+				}
+
+				if crootInfo.HasServiceAffinity && isAffinityApplicable("Service", affinity) {
+					triggerSave = true
+					if croot.AffinityOne == "Service" && !p.AffinityOneEligible {
+						p.ToggleAffinityOne()
+					} else if croot.AffinityTwo == "Service" && !p.AffinityTwoEligible {
+						p.ToggleAffinityTwo()
+					}
+				}
+
+				if crootInfo.HasSmallSchoolAffinity && isAffinityApplicable("Small School", affinity) {
+					triggerSave = true
+					if croot.AffinityOne == "Small School" && !p.AffinityOneEligible {
+						p.ToggleAffinityOne()
+					} else if croot.AffinityTwo == "Small School" && !p.AffinityTwoEligible {
+						p.ToggleAffinityTwo()
+					}
+				}
+
+				if crootInfo.HasSmallTownAffinity && isAffinityApplicable("Small Town", affinity) {
+					triggerSave = true
+					if croot.AffinityOne == "Small Town" && !p.AffinityOneEligible {
+						p.ToggleAffinityOne()
+					} else if croot.AffinityTwo == "Small Town" && !p.AffinityTwoEligible {
+						p.ToggleAffinityTwo()
+					}
+				}
+
+				if crootInfo.HasBigCityAffinity && isAffinityApplicable("Big City", affinity) {
+					triggerSave = true
+					if croot.AffinityOne == "Big City" && !p.AffinityOneEligible {
+						p.ToggleAffinityOne()
+					} else if croot.AffinityTwo == "Big City" && !p.AffinityTwoEligible {
+						p.ToggleAffinityTwo()
+					}
+				}
+
+				if crootInfo.HasMediaSpotlightAffinity && isAffinityApplicable("Media Spotlight", affinity) {
+					triggerSave = true
+					if croot.AffinityOne == "Media Spotlight" && !p.AffinityOneEligible {
+						p.ToggleAffinityOne()
+					} else if croot.AffinityTwo == "Media Spotlight" && !p.AffinityTwoEligible {
+						p.ToggleAffinityTwo()
+					}
+				}
+
+				if crootInfo.HasLargeCrowdAffinity && isAffinityApplicable("Large Crowds", affinity) {
+					triggerSave = true
+					if croot.AffinityOne == "Large Crowds" && !p.AffinityOneEligible {
+						p.ToggleAffinityOne()
+					} else if croot.AffinityTwo == "Large Crowds" && !p.AffinityTwoEligible {
+						p.ToggleAffinityTwo()
+					}
+				}
+
+				if crootInfo.HasRisingStars && isAffinityApplicable("Rising Stars", affinity) {
+					triggerSave = true
+					if croot.AffinityOne == "Rising Stars" && !p.AffinityOneEligible {
+						p.ToggleAffinityOne()
+					} else if croot.AffinityTwo == "Rising Stars" && !p.AffinityTwoEligible {
+						p.ToggleAffinityTwo()
+					}
+				}
+			}
+
 			if triggerSave {
 				repository.SaveRecruitProfile(p, db)
 			}

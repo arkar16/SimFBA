@@ -36,7 +36,7 @@ func GetPollSubmission(w http.ResponseWriter, r *http.Request) {
 	seasonID := strconv.Itoa(int(ts.CollegeSeasonID))
 	weekID := strconv.Itoa(int(ts.CollegeWeekID))
 	poll := managers.GetPollSubmissionByUsernameWeekAndSeason(username)
-	conferenceStandings := managers.GetAllConferenceStandingsBySeasonID(seasonID)
+	conferenceStandings := managers.GetAllCollegeStandingsBySeasonID(seasonID)
 	collegeGames := managers.GetCollegeGamesByWeekIdAndSeasonID(weekID, seasonID)
 
 	res := structs.PollDataResponse{
@@ -63,7 +63,7 @@ func GetOfficialPollsBySeasonID(w http.ResponseWriter, r *http.Request) {
 		panic("User did not provide seasonID")
 	}
 	polls := managers.GetOfficialPollBySeasonID(seasonID)
-	conferenceStandings := managers.GetAllConferenceStandingsBySeasonID(seasonID)
+	conferenceStandings := managers.GetAllCollegeStandingsBySeasonID(seasonID)
 	// collegeGames := managers.GetCBBMatchesBySeasonID(seasonID)
 
 	res := structs.PollDataResponse{

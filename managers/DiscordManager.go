@@ -237,7 +237,7 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 	streams := []structs.StreamResponse{}
 
 	for _, game := range games {
-		if !game.GameComplete {
+		if !game.GameComplete || game.ID == 4117 {
 			continue
 		}
 		homeTeam := teamMap[uint(game.HomeTeamID)]

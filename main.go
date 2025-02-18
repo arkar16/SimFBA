@@ -244,7 +244,7 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/requests/all/", controller.GetTeamRequests).Methods("GET")
 	apiRouter.HandleFunc("/requests/create/", controller.CreateTeamRequest).Methods("POST")
 	apiRouter.HandleFunc("/requests/approve/", controller.ApproveTeamRequest).Methods("PUT")
-	apiRouter.HandleFunc("/requests/reject/", controller.RejectTeamRequest).Methods("DELETE")
+	apiRouter.HandleFunc("/requests/reject/", controller.RejectTeamRequest).Methods("POST")
 	apiRouter.HandleFunc("/requests/view/cfb/{teamID}", controller.ViewCFBTeamUponRequest).Methods("GET")
 	apiRouter.HandleFunc("/requests/view/nfl/{teamID}", controller.ViewNFLTeamUponRequest).Methods("GET")
 	apiRouter.HandleFunc("/requests/remove/{teamID}", controller.RemoveUserFromTeam).Methods("PUT")

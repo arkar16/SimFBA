@@ -8,7 +8,6 @@ import (
 	"sync"
 
 	config "github.com/CalebRose/SimFBA/secrets"
-	"github.com/CalebRose/SimFBA/structs"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"golang.org/x/crypto/ssh"
 	"gorm.io/driver/mysql"
@@ -103,7 +102,7 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&models.NFLDraftee{})
 	// db.AutoMigrate(&models.NFLWarRoom{})
 	// db.AutoMigrate(&models.ScoutingProfile{})
-	db.AutoMigrate(&structs.NFLContract{})
+	// db.AutoMigrate(&structs.NFLContract{})
 	// db.AutoMigrate(&structs.NFLDepthChart{})
 	// db.AutoMigrate(&structs.NFLDepthChartPosition{})
 	// db.AutoMigrate(&structs.NFLExtensionOffer{})

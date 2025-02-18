@@ -63,7 +63,7 @@ func (t *TeamStatDTO) GetAbbreviation() string {
 	return t.Abbreviation
 }
 
-func (t *TeamStatDTO) MapToBaseTeamStatsObject() BaseTeamStats {
+func (t *TeamStatDTO) MapToBaseTeamStatsObject(gameType uint8) BaseTeamStats {
 	return BaseTeamStats{
 		PointsScored:           t.Points,
 		PointsAgainst:          t.PointsAllowed,
@@ -120,5 +120,6 @@ func (t *TeamStatDTO) MapToBaseTeamStatsObject() BaseTeamStats {
 		ScoreOT:                t.ScoreOT,
 		OffensiveScheme:        t.OffensiveScheme,
 		DefensiveScheme:        t.DefensiveScheme,
+		GameType:               gameType,
 	}
 }

@@ -72,7 +72,7 @@ func (p *PlayerStatDTO) GetPlayerID() int {
 	return p.PlayerID
 }
 
-func (p *PlayerStatDTO) MapTobasePlayerStatsObject() BasePlayerStats {
+func (p *PlayerStatDTO) MapTobasePlayerStatsObject(gameType uint8) BasePlayerStats {
 	return BasePlayerStats{
 		PassAttempts:         p.PassAttempts,
 		PassingYards:         p.PassYards,
@@ -128,5 +128,6 @@ func (p *PlayerStatDTO) MapTobasePlayerStatsObject() BasePlayerStats {
 		WasInjured:           p.IsInjured,
 		InjuryType:           p.InjuryType,
 		WeeksOfRecovery:      p.WeeksOfRecovery,
+		GameType:             gameType,
 	}
 }

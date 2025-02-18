@@ -590,7 +590,8 @@ func GetAllNFLTeamsWithStatsBySeasonID(seasonID, weekID, viewType, gameType stri
 func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	db := dbprovider.GetInstance().GetDB()
 	fmt.Println("START")
-
+	ts := GetTimestamp()
+	gameType, _ := ts.GetCFBCurrentGameType()
 	var teamStats []structs.CollegeTeamStats
 
 	for _, gameDataDTO := range gameStats {
@@ -632,7 +633,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 			WeekID:        gameRecord.WeekID,
 			SeasonID:      gameRecord.SeasonID,
 			OpposingTeam:  gameDataDTO.AwayTeam.Abbreviation,
-			BaseTeamStats: gameDataDTO.HomeTeam.MapToBaseTeamStatsObject(),
+			BaseTeamStats: gameDataDTO.HomeTeam.MapToBaseTeamStatsObject(uint8(gameType)),
 		}
 
 		teamStats = append(teamStats, homeTeam)
@@ -654,7 +655,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 			WeekID:        gameRecord.WeekID,
 			SeasonID:      gameRecord.SeasonID,
 			OpposingTeam:  gameDataDTO.HomeTeam.Abbreviation,
-			BaseTeamStats: gameDataDTO.AwayTeam.MapToBaseTeamStatsObject(),
+			BaseTeamStats: gameDataDTO.AwayTeam.MapToBaseTeamStatsObject(uint8(gameType)),
 		}
 
 		teamStats = append(teamStats, awayTeam)
@@ -668,7 +669,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				WeekID:          gameRecord.WeekID,
 				SeasonID:        gameRecord.SeasonID,
 				OpposingTeam:    at.TeamAbbr,
-				BasePlayerStats: player.MapTobasePlayerStatsObject(),
+				BasePlayerStats: player.MapTobasePlayerStatsObject(uint8(gameType)),
 				Year:            player.Year,
 				IsRedshirt:      player.IsRedshirt,
 			}
@@ -757,7 +758,7 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				WeekID:          gameRecord.WeekID,
 				SeasonID:        gameRecord.SeasonID,
 				OpposingTeam:    ht.TeamAbbr,
-				BasePlayerStats: player.MapTobasePlayerStatsObject(),
+				BasePlayerStats: player.MapTobasePlayerStatsObject(uint8(gameType)),
 				Year:            player.Year,
 				IsRedshirt:      player.IsRedshirt,
 			}
@@ -864,7 +865,8 @@ func ExportCFBStatisticsFromSim(gameStats []structs.GameStatDTO) {
 func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 	db := dbprovider.GetInstance().GetDB()
 	fmt.Println("START")
-
+	ts := GetTimestamp()
+	gameType, _ := ts.GetNFLCurrentGameType()
 	var teamStats []structs.NFLTeamStats
 
 	for _, gameDataDTO := range gameStats {
@@ -911,22 +913,24 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 		close(awayTeamChn)
 
 		homeTeam := structs.NFLTeamStats{
-			TeamID:        ht.ID,
-			GameID:        gameRecord.ID,
-			WeekID:        uint(gameRecord.WeekID),
-			SeasonID:      uint(gameRecord.SeasonID),
-			OpposingTeam:  at.TeamAbbr,
-			BaseTeamStats: gameDataDTO.HomeTeam.MapToBaseTeamStatsObject(),
+			TeamID:          ht.ID,
+			GameID:          gameRecord.ID,
+			WeekID:          uint(gameRecord.WeekID),
+			SeasonID:        uint(gameRecord.SeasonID),
+			OpposingTeam:    at.TeamAbbr,
+			IsPreseasonGame: ts.NFLPreseason,
+			BaseTeamStats:   gameDataDTO.HomeTeam.MapToBaseTeamStatsObject(uint8(gameType)),
 		}
 
 		teamStats = append(teamStats, homeTeam)
 		awayTeam := structs.NFLTeamStats{
-			TeamID:        at.ID,
-			GameID:        gameRecord.ID,
-			WeekID:        uint(gameRecord.WeekID),
-			SeasonID:      uint(gameRecord.SeasonID),
-			OpposingTeam:  ht.TeamAbbr,
-			BaseTeamStats: gameDataDTO.AwayTeam.MapToBaseTeamStatsObject(),
+			TeamID:          at.ID,
+			GameID:          gameRecord.ID,
+			WeekID:          uint(gameRecord.WeekID),
+			SeasonID:        uint(gameRecord.SeasonID),
+			OpposingTeam:    ht.TeamAbbr,
+			IsPreseasonGame: ts.NFLPreseason,
+			BaseTeamStats:   gameDataDTO.AwayTeam.MapToBaseTeamStatsObject(uint8(gameType)),
 		}
 
 		teamStats = append(teamStats, awayTeam)
@@ -940,7 +944,8 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				WeekID:          gameRecord.WeekID,
 				SeasonID:        gameRecord.SeasonID,
 				OpposingTeam:    gameDataDTO.AwayTeam.Abbreviation,
-				BasePlayerStats: player.MapTobasePlayerStatsObject(),
+				BasePlayerStats: player.MapTobasePlayerStatsObject(uint8(gameType)),
+				IsPreseasonGame: ts.NFLPreseason,
 				Year:            player.Year,
 			}
 			nflPlayerStats.MapTeamInfo(ht.ID, ht.TeamAbbr)
@@ -1028,8 +1033,9 @@ func ExportNFLStatisticsFromSim(gameStats []structs.GameStatDTO) {
 				WeekID:          gameRecord.WeekID,
 				SeasonID:        gameRecord.SeasonID,
 				OpposingTeam:    gameDataDTO.HomeTeam.Abbreviation,
-				BasePlayerStats: player.MapTobasePlayerStatsObject(),
+				BasePlayerStats: player.MapTobasePlayerStatsObject(uint8(gameType)),
 				Year:            player.Year,
+				IsPreseasonGame: ts.NFLPreseason,
 			}
 			nflPlayerStats.MapTeamInfo(at.ID, at.TeamAbbr)
 			snaps := snapMap[player.GetPlayerID()]

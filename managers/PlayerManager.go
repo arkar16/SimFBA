@@ -916,7 +916,7 @@ func GetHeismanList() []models.HeismanWatchModel {
 	for _, team := range teamWithStandings {
 		homeTeamMapper[int(team.ID)] = team.TeamAbbr
 
-		games := GetCollegeGamesByTeamIdAndSeasonId(strconv.Itoa(int(team.ID)), strconv.Itoa(ts.CollegeSeasonID))
+		games := GetCollegeGamesByTeamIdAndSeasonId(strconv.Itoa(int(team.ID)), strconv.Itoa(ts.CollegeSeasonID), false)
 
 		if len(games) == 0 || len(team.TeamStandings) == 0 {
 			continue
@@ -950,7 +950,7 @@ func GetHeismanList() []models.HeismanWatchModel {
 	distinctCollegePlayerIDs := GetCollegePlayerIDs(distinctCollegeStats)
 
 	db.Preload("Stats", func(db *gorm.DB) *gorm.DB {
-		return db.Where("snaps > 0 and season_id = ? and week_id < ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID))
+		return db.Where("snaps > 0 and season_id = ? and week_id < ? and game_type = ?", strconv.Itoa(ts.CollegeSeasonID), strconv.Itoa(ts.CollegeWeekID), "2")
 	}).Where("id IN ?", distinctCollegePlayerIDs).Find(&collegePlayers)
 
 	for _, cp := range collegePlayers {

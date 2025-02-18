@@ -205,7 +205,7 @@ func MigrateCFBTeamSnapsFromPreviousSeason() {
 				postSeasonStats = s
 			}
 		}
-		games := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID)
+		games := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID, ts.CFBSpringGames)
 		teamStats := GetCollegeTeamStatsBySeasonANDTeam(teamID, seasonID)
 		gameMap := make(map[uint]structs.CollegeTeamStats)
 		regularSeasonStats.ResetStats()

@@ -30,12 +30,12 @@ func GetCollegeGamesByTimeslotAndWeekId(id string, timeslot string) []structs.Co
 	return games
 }
 
-func GetCollegeGamesByTeamIdAndSeasonId(TeamID string, SeasonID string) []structs.CollegeGame {
+func GetCollegeGamesByTeamIdAndSeasonId(TeamID string, SeasonID string, isSpringGame bool) []structs.CollegeGame {
 	db := dbprovider.GetInstance().GetDB()
 
 	var games []structs.CollegeGame
 
-	db.Order("week_id asc").Where("season_id = ? AND (home_team_id = ? OR away_team_id = ?)", SeasonID, TeamID, TeamID).Find(&games)
+	db.Order("week_id asc").Where("season_id = ? AND (home_team_id = ? OR away_team_id = ?) AND is_spring_game = ?", SeasonID, TeamID, TeamID, isSpringGame).Find(&games)
 
 	return games
 }
@@ -315,7 +315,7 @@ func FixByeWeekLogic() {
 	// Loop through each team and their games
 	for _, t := range collegeTeams {
 		teamID := strconv.Itoa(int(t.ID))
-		games := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID)
+		games := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID, ts.CFBSpringGames)
 		prevWeek := 0
 		for _, game := range games {
 			diff := game.Week - prevWeek

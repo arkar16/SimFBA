@@ -553,7 +553,7 @@ func ImportUDFAs() {
 func ImportCFBGames() {
 	db := dbprovider.GetInstance().GetDB()
 
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2025\\2025_cfb_spring_games.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2025\\2025_cfb_games.csv"
 
 	gamesCSV := util.ReadCSV(path)
 
@@ -576,7 +576,7 @@ func ImportCFBGames() {
 		season := util.ConvertStringToInt(row[1])
 		seasonID := season - 2020
 		week := util.ConvertStringToInt(row[2])
-		weekID := week + 65 // Week 43 is week 0 of the 2023 Season
+		weekID := week + 88 // Week 43 is week 0 of the 2023 Season
 		homeTeamAbbr := row[3]
 		awayTeamAbbr := row[4]
 		ht := teamMap[homeTeamAbbr]
@@ -585,25 +585,25 @@ func ImportCFBGames() {
 		awayTeamID := at.ID
 		homeTeamCoach := ht.Coach
 		awayTeamCoach := at.Coach
-		timeSlot := row[20]
+		timeSlot := row[16]
 		// Need to implement Stadium ID
-		stadium := row[21]
-		city := row[22]
-		state := row[23]
-		isDomed := util.ConvertStringToBool(row[24])
+		stadium := row[17]
+		city := row[18]
+		state := row[19]
+		isDomed := util.ConvertStringToBool(row[20])
 		// Need to check for if a game is in a domed stadium or not
-		isConferenceGame := util.ConvertStringToBool(row[9])
-		isDivisionGame := util.ConvertStringToBool(row[10])
-		isNeutralSite := util.ConvertStringToBool(row[11])
-		isConferenceChampionship := util.ConvertStringToBool(row[12])
-		isBowlGame := util.ConvertStringToBool(row[13])
-		isPlayoffGame := util.ConvertStringToBool(row[14])
-		isNationalChampionship := util.ConvertStringToBool(row[15])
-		isHomePrevBye := util.ConvertStringToBool(row[16])
-		isAwayPrevBye := util.ConvertStringToBool(row[17])
-		gameTitle := row[25]
-		nextGame := util.ConvertStringToInt(row[27])
-		nextGameHOA := row[28]
+		isConferenceGame := util.ConvertStringToBool(row[5])
+		isDivisionGame := util.ConvertStringToBool(row[6])
+		isNeutralSite := util.ConvertStringToBool(row[7])
+		isConferenceChampionship := util.ConvertStringToBool(row[8])
+		isBowlGame := util.ConvertStringToBool(row[9])
+		isPlayoffGame := util.ConvertStringToBool(row[10])
+		isNationalChampionship := util.ConvertStringToBool(row[11])
+		isHomePrevBye := util.ConvertStringToBool(row[12])
+		isAwayPrevBye := util.ConvertStringToBool(row[13])
+		gameTitle := row[21]
+		nextGame := util.ConvertStringToInt(row[23])
+		nextGameHOA := row[24]
 
 		game := structs.CollegeGame{
 			Model:                    gorm.Model{ID: uint(gameID)},

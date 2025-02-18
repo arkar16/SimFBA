@@ -252,13 +252,13 @@ func SyncRecruitingEfficiency(timestamp structs.Timestamp) {
 
 		// What about previous season?
 		currentSeasonGames := GetCollegeGamesByTeamIdAndSeasonId(
-			strconv.Itoa(teamProfile.TeamID), strconv.Itoa(timestamp.CollegeSeasonID))
+			strconv.Itoa(teamProfile.TeamID), strconv.Itoa(timestamp.CollegeSeasonID), false)
 
 		currentSeasonWins, currentSeasonLosses := GetWinsAndLossesForCollegeGames(currentSeasonGames, teamProfile.TeamID, false)
 		currentConferenceWins, currentConferenceLosses := GetWinsAndLossesForCollegeGames(currentSeasonGames, teamProfile.TeamID, true)
 
 		previousSeasonGames := GetCollegeGamesByTeamIdAndSeasonId(
-			strconv.Itoa(teamProfile.TeamID), strconv.Itoa(timestamp.CollegeSeasonID-1))
+			strconv.Itoa(teamProfile.TeamID), strconv.Itoa(timestamp.CollegeSeasonID-1), false)
 
 		previousSeasonWins, previousSeasonLosses := GetWinsAndLossesForCollegeGames(previousSeasonGames, teamProfile.TeamID, false)
 		previousConferenceWins, previousConferenceLosses := GetWinsAndLossesForCollegeGames(previousSeasonGames, teamProfile.TeamID, true)

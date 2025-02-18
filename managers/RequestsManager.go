@@ -103,7 +103,7 @@ func ApproveTeamRequest(request structs.TeamRequest) structs.TeamRequest {
 
 	team.AssignUserToTeam(coach.CoachName)
 
-	seasonalGames := GetCollegeGamesByTeamIdAndSeasonId(teamId, seasonID)
+	seasonalGames := GetCollegeGamesByTeamIdAndSeasonId(teamId, seasonID, false)
 
 	for _, game := range seasonalGames {
 		if game.Week >= timestamp.CollegeWeek {
@@ -237,7 +237,7 @@ func RemoveUserFromTeam(teamId string) {
 
 	timestamp := GetTimestamp()
 	seasonID := strconv.Itoa(int(timestamp.CollegeSeasonID))
-	seasonalGames := GetCollegeGamesByTeamIdAndSeasonId(teamId, seasonID)
+	seasonalGames := GetCollegeGamesByTeamIdAndSeasonId(teamId, seasonID, false)
 
 	for _, game := range seasonalGames {
 		if game.Week >= timestamp.CollegeWeek {

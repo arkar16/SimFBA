@@ -234,7 +234,7 @@ func SyncCollegePollSubmissionForCurrentWeek(week, weekID, seasonID uint) {
 		teamStandings.AssignRank(rank)
 		db.Save(&teamStandings)
 
-		matches := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonIDStr)
+		matches := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonIDStr, false)
 
 		for _, m := range matches {
 			if m.Week < int(week) {

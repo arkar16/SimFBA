@@ -170,7 +170,7 @@ func GetCFBTeamDataForDiscord(id string) structs.CollegeTeamResponseData {
 
 	team := GetTeamByTeamID(id)
 	standings := GetCollegeStandingsRecordByTeamID(id, seasonId)
-	matches := GetCollegeGamesByTeamIdAndSeasonId(id, seasonId)
+	matches := GetCollegeGamesByTeamIdAndSeasonId(id, seasonId, ts.CFBSpringGames)
 	wins := 0
 	losses := 0
 	confWins := 0

@@ -75,7 +75,7 @@ func GetGameplanDataByTeamID(teamID string) structs.GamePlanResponse {
 	ts := GetTimestamp()
 	seasonID := strconv.Itoa(ts.CollegeSeasonID)
 	opponentID := ""
-	games := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID)
+	games := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID, ts.CFBSpringGames)
 	for _, g := range games {
 		if g.GameComplete {
 			continue
@@ -3180,7 +3180,7 @@ func SetAIGameplan() {
 		gp := gameplanMap[t.ID]
 
 		teamID := strconv.Itoa(int(t.ID))
-		games := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID)
+		games := GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID, ts.CFBSpringGames)
 
 		os := ""
 		for _, g := range games {

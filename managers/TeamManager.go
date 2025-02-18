@@ -326,7 +326,7 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 		defer waitGroup.Done()
 		cG := []structs.CollegeGame{}
 		if isCFB {
-			cG = GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID)
+			cG = GetCollegeGamesByTeamIdAndSeasonId(teamID, seasonID, ts.CFBSpringGames)
 		}
 		cGames <- cG
 	}()

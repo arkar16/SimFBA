@@ -232,7 +232,7 @@ func GetCFBPlayByPlayStreamData(timeslot, week string, isFBS bool) []structs.Str
 		collegeWeekID = ts.CollegeWeekID - diff
 	}
 	teamMap := GetCollegeTeamMap()
-	games := GetCollegeGamesByTimeslotAndWeekId(strconv.Itoa(collegeWeekID), timeslot)
+	games := GetCollegeGamesByTimeslotAndWeekId(strconv.Itoa(collegeWeekID), timeslot, ts.CFBSpringGames)
 
 	streams := []structs.StreamResponse{}
 
@@ -361,7 +361,7 @@ func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse 
 		diff := nflWeek - weekNum
 		nflWeekID = ts.CollegeWeekID - diff
 	}
-	games := GetNFLGamesByTimeslotAndWeekId(strconv.Itoa(nflWeekID), timeslot)
+	games := GetNFLGamesByTimeslotAndWeekId(strconv.Itoa(nflWeekID), timeslot, ts.NFLPreseason)
 
 	streams := []structs.StreamResponse{}
 

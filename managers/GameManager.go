@@ -20,12 +20,12 @@ func GetCollegeGamesByWeekIdAndSeasonID(WeekID string, SeasonID string) []struct
 	return games
 }
 
-func GetCollegeGamesByTimeslotAndWeekId(id string, timeslot string) []structs.CollegeGame {
+func GetCollegeGamesByTimeslotAndWeekId(id, timeslot string, springGames bool) []structs.CollegeGame {
 	db := dbprovider.GetInstance().GetDB()
 
 	var games []structs.CollegeGame
 
-	db.Order("time_slot asc").Where("week_id = ? AND time_slot = ?", id, timeslot).Find(&games)
+	db.Order("time_slot asc").Where("week_id = ? AND time_slot = ? AND is_spring_game = ?", id, timeslot, springGames).Find(&games)
 
 	return games
 }
@@ -72,12 +72,12 @@ func GetNFLGamesBySeasonID(SeasonID string) []structs.NFLGame {
 	return repository.FindNFLGamesRecords(SeasonID, ts.NFLPreseason)
 }
 
-func GetNFLGamesByTimeslotAndWeekId(id string, timeslot string) []structs.NFLGame {
+func GetNFLGamesByTimeslotAndWeekId(id, timeslot string, isPreseason bool) []structs.NFLGame {
 	db := dbprovider.GetInstance().GetDB()
 
 	var games []structs.NFLGame
 
-	db.Order("time_slot asc").Where("week_id = ? AND time_slot = ?", id, timeslot).Find(&games)
+	db.Order("time_slot asc").Where("week_id = ? AND time_slot = ? AND is_preseason_game = ?", id, timeslot, isPreseason).Find(&games)
 
 	return games
 }

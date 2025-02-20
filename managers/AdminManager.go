@@ -96,7 +96,7 @@ func SyncTimeslot(timeslot string) {
 	if isCFB {
 		// Get Games
 		gameIDs := []string{}
-		games := GetCollegeGamesByTimeslotAndWeekId(strconv.Itoa(ts.CollegeWeekID), timeslot)
+		games := GetCollegeGamesByTimeslotAndWeekId(strconv.Itoa(ts.CollegeWeekID), timeslot, ts.CFBSpringGames)
 		seasonStats := GetCollegeSeasonStatsBySeason(strconv.Itoa(ts.CollegeSeasonID), cfbgt)
 		seasonStatsMap := make(map[int]*structs.CollegeTeamSeasonStats)
 		for _, s := range seasonStats {
@@ -342,7 +342,7 @@ func SyncTimeslot(timeslot string) {
 		db.Model(&structs.CollegeTeamStats{}).Where("game_id in (?)", gameIDs).Update("reveal_results", true)
 	} else {
 		// Get Games
-		games := GetNFLGamesByTimeslotAndWeekId(strconv.Itoa(ts.NFLWeekID), timeslot)
+		games := GetNFLGamesByTimeslotAndWeekId(strconv.Itoa(ts.NFLWeekID), timeslot, ts.NFLPreseason)
 
 		// seasonStatsMap := make(map[int]structs.NFLTeamSeasonStats)
 		// for _, s := range seasonStats {

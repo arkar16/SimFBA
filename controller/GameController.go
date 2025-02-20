@@ -37,8 +37,8 @@ func GetCollegeGamesByTimeslotWeekId(w http.ResponseWriter, r *http.Request) {
 	if len(timeSlot) == 0 {
 		panic("No time slot selected!")
 	}
-
-	collegeGames := managers.GetCollegeGamesByTimeslotAndWeekId(weekID, timeSlot)
+	ts := managers.GetTimestamp()
+	collegeGames := managers.GetCollegeGamesByTimeslotAndWeekId(weekID, timeSlot, ts.CFBSpringGames)
 
 	json.NewEncoder(w).Encode(collegeGames)
 }

@@ -548,12 +548,12 @@ func ExportCFBGameResults(w http.ResponseWriter, seasonID, weekID, nflWeekID, ti
 	nflMatchChn := make(chan []structs.NFLGame)
 
 	go func() {
-		matches := GetCollegeGamesByTimeslotAndWeekId(weekID, timeslot)
+		matches := GetCollegeGamesByTimeslotAndWeekId(weekID, timeslot, ts.CFBSpringGames)
 		matchChn <- matches
 	}()
 
 	go func() {
-		nbamatches := GetNFLGamesByTimeslotAndWeekId(nflWeekID, timeslot)
+		nbamatches := GetNFLGamesByTimeslotAndWeekId(nflWeekID, timeslot, ts.NFLPreseason)
 		nflMatchChn <- nbamatches
 	}()
 

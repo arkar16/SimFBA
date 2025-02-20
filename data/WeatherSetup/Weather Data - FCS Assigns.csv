@@ -29,7 +29,6 @@ LAF,PA Southeast
 LEH,PA Southeast
 MER,GA South
 MONT,MT
-MOST,MO West
 MSVU,MS
 MTST,MT
 MUR,TN West
@@ -59,3 +58,72 @@ WIU,MO East
 WOF,NC West
 YALE,CT
 YSU,OH North
+UNA,AL
+CARK,AR
+USD,CA South
+SHU,CT
+CCSU,CT
+HOW,VA East
+DSU,DE
+STET,FL Central
+UWG,GA North
+DRKE,IA
+EIU,IL
+BUT,IN
+VAL,IN
+EKU,KY
+MORE,KY
+MCN,LA South
+NICH,LA South
+NWST,LA North
+SELA,LA South
+MRMK,MA
+STO,MA
+TOW,MD
+MORG,MD
+ME,ME
+STMN,MN
+LIN,MO East
+SEMO,MO East
+CHSO,NC Central
+WEBB,NC West
+CAMP,NC Central
+ELON,NC Central
+NCAT,NC Central
+NCCU,NC Central
+DAV,NC West
+UNH,NH
+MONM,NJ
+ALB,NY North
+STBK,NY South
+LIU,NY South
+WAG,NY South
+MRST,NY South
+DAY,OH North
+VILL,PA Southeast
+DUQ,PA West
+MRCY,PA North
+RMU,PA West
+SFPA,PA West
+BRY,RI
+URI,RI
+SCST,SC
+PRE,SC
+APSU,TN West
+TNST,TN West
+TNTC,TN East
+UTM,TN West
+SFA,TX North
+TAR,TX North
+HCU,TX Coast
+UIW,TX South
+LAM,TX Coast
+ETAM,TX North
+RGV,TX South
+ACU,TX West
+SUU,UT
+UTU,UT
+HAMP,VA East
+RICH,VA East
+W&M,VA East
+NORF,VA East

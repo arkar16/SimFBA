@@ -162,3 +162,8 @@ func GenerateNewGameplans(w http.ResponseWriter, r *http.Request) {
 	managers.MigrateCFBGameplansAndDepthChartsForRemainingFCSTeams()
 	fmt.Println(w, "NFL Stats fixed!")
 }
+
+func SyncRES(w http.ResponseWriter, r *http.Request) {
+	ts := managers.GetTimestamp()
+	managers.SyncRecruitingEfficiency(ts)
+}

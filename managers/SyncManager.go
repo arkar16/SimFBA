@@ -241,15 +241,9 @@ func SyncRecruitingEfficiency(timestamp structs.Timestamp) {
 
 	for _, team := range teams {
 		// Get all games by team within a season
-
-		if team.Coach == "" || team.Coach == "AI" {
-			continue
-		}
-
 		teamProfile := team.RecruitingProfile
 
 		coach := team.CollegeCoach
-
 		// What about previous season?
 		currentSeasonGames := GetCollegeGamesByTeamIdAndSeasonId(
 			strconv.Itoa(teamProfile.TeamID), strconv.Itoa(timestamp.CollegeSeasonID), false)
@@ -298,7 +292,7 @@ func SyncRecruitingEfficiency(timestamp structs.Timestamp) {
 		// Previous Season Win Percentage
 		if previousSeasonWins+previousSeasonLosses > 0 {
 			pswp = float64(previousSeasonWins) / float64(previousSeasonWins+previousSeasonLosses)
-			if team.ConferenceID != 13 {
+			if team.ConferenceID != 13 && previousConferenceWins+previousConferenceLosses > 0 {
 				pcwp = float64(previousConferenceWins) / float64(previousConferenceWins+previousConferenceLosses)
 			}
 		}

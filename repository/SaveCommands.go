@@ -110,6 +110,7 @@ func SaveNFLCapsheet(c structs.NFLCapsheet, db *gorm.DB) {
 }
 
 func SaveRecruitingTeamProfile(profile structs.RecruitingTeamProfile, db *gorm.DB) {
+	profile.Affinities = nil
 	err := db.Save(&profile).Error
 	if err != nil {
 		log.Panicln("Could not save team profile")

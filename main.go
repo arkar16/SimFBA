@@ -71,6 +71,7 @@ func handleRequests() http.Handler {
 	myRouter.HandleFunc("/health", HealthCheck.Handler).Methods("GET")
 
 	// Admin Controls
+	apiRouter.HandleFunc("/admin/generate/ts/models/", controller.CreateTSModelsFile).Methods("GET")
 	apiRouter.HandleFunc("/simfba/get/timestamp/", controller.GetCurrentTimestamp).Methods("GET")
 	apiRouter.HandleFunc("/simfba/sync/timestamp/", controller.SyncTimestamp).Methods("POST")
 	apiRouter.HandleFunc("/simfba/sync/week/", controller.SyncWeek).Methods("GET")

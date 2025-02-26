@@ -5,12 +5,39 @@ import (
 	"log"
 	"sort"
 	"strconv"
+	"sync"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 )
+
+func GetAllFBARequests() structs.TeamRequestsResponse {
+	var wg sync.WaitGroup
+	wg.Add(2)
+
+	var (
+		collegeRequests []structs.TeamRequest
+		proRequests     []structs.NFLRequest
+	)
+
+	go func() {
+		defer wg.Done()
+		collegeRequests = repository.FindAllCFBTeamRequests()
+	}()
+
+	go func() {
+		defer wg.Done()
+		proRequests = repository.FindAllNFLTeamRequests()
+	}()
+
+	wg.Wait()
+	return structs.TeamRequestsResponse{
+		CollegeRequests: collegeRequests,
+		ProRequests:     proRequests,
+	}
+}
 
 func GetAllTeamRequests() []structs.CreateRequestDTO {
 	db := dbprovider.GetInstance().GetDB()
@@ -34,13 +61,7 @@ func GetAllTeamRequests() []structs.CreateRequestDTO {
 }
 
 func GetAllNFLTeamRequests() []structs.NFLRequest {
-	db := dbprovider.GetInstance().GetDB()
-	var NFLTeamRequests []structs.NFLRequest
-
-	//NFL Team Requests
-	db.Where("is_approved = false").Find(&NFLTeamRequests)
-
-	return NFLTeamRequests
+	return repository.FindAllNFLTeamRequests()
 }
 
 func CreateTeamRequest(request structs.TeamRequest) {

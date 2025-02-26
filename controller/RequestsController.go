@@ -10,6 +10,11 @@ import (
 	"github.com/gorilla/mux"
 )
 
+func GetFBARequests(w http.ResponseWriter, r *http.Request) {
+	requests := managers.GetAllFBARequests()
+	json.NewEncoder(w).Encode(requests)
+}
+
 func GetTeamRequests(w http.ResponseWriter, r *http.Request) {
 	requests := managers.GetAllTeamRequests()
 

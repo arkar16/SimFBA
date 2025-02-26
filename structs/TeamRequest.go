@@ -16,3 +16,8 @@ func (r *TeamRequest) ApproveTeamRequest() {
 func (r *TeamRequest) RejectTeamRequest() {
 	r.IsApproved = false
 }
+
+type TeamRequestsResponse struct {
+	CollegeRequests []TeamRequest
+	ProRequests     []NFLRequest
+}

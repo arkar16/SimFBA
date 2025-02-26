@@ -870,7 +870,7 @@ func processRecruitProfile(i int, recruit structs.Recruit, recruitProfiles *[]st
 
 	var curr float64 = 0
 
-	var res float64 = 1 // recruitProfiles[i].RecruitingEfficiencyScore
+	var res float64 = (*recruitProfiles)[i].RecruitingEfficiencyScore
 
 	if (*recruitProfiles)[i].AffinityOneEligible {
 		res += affinityBonus

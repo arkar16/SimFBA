@@ -89,7 +89,7 @@ func GetTeamScheduleForBot(TeamID string, SeasonID string) []models.CollegeGameR
 
 	var games []structs.CollegeGame
 
-	db.Order("week_id asc").Where("season_id = ? AND (home_team_id = ? OR away_team_id = ?)", SeasonID, TeamID, TeamID).Find(&games)
+	db.Order("week_id asc").Where("season_id = ? AND (home_team_id = ? OR away_team_id = ?) AND is_spring_game = ?", SeasonID, TeamID, TeamID, ts.CFBSpringGames).Find(&games)
 
 	var gameResponses []models.CollegeGameResponse
 

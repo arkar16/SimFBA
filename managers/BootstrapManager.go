@@ -8,11 +8,12 @@ import (
 )
 
 type BootstrapData struct {
+	CollegeTeam          structs.CollegeTeam
 	AllCollegeTeams      []structs.CollegeTeam
 	CollegeStandings     []structs.CollegeStandings
 	CollegeRosterMap     map[uint][]structs.CollegePlayer
 	Recruits             []structs.Croot
-	TeamProfileMap       map[uint]structs.RecruitingTeamProfile
+	TeamProfileMap       map[string]*structs.RecruitingTeamProfile
 	PortalPlayers        []structs.CollegePlayer
 	CollegeInjuryReport  []structs.CollegePlayer
 	CollegeNews          []structs.NewsLog
@@ -24,6 +25,7 @@ type BootstrapData struct {
 
 	// Player Profiles by Team?
 	// Portal profiles?
+	ProTeam          structs.NFLTeam
 	AllProTeams      []structs.NFLTeam
 	ProStandings     []structs.NFLStandings
 	ProRosterMap     map[uint][]structs.NFLPlayer
@@ -44,10 +46,11 @@ func GetBootstrapData(collegeID, proID string) BootstrapData {
 
 	// College Data
 	var (
+		collegeTeam           structs.CollegeTeam
 		allCollegeTeams       []structs.CollegeTeam
 		collegeStandings      []structs.CollegeStandings
 		collegePlayerMap      map[uint][]structs.CollegePlayer
-		teamProfileMap        map[uint]structs.RecruitingTeamProfile
+		teamProfileMap        map[string]*structs.RecruitingTeamProfile
 		portalPlayers         []structs.CollegePlayer
 		injuredCollegePlayers []structs.CollegePlayer
 		collegeNews           []structs.NewsLog
@@ -61,6 +64,7 @@ func GetBootstrapData(collegeID, proID string) BootstrapData {
 
 	// Professional Data
 	var (
+		proTeam           structs.NFLTeam
 		allProTeams       []structs.NFLTeam
 		proStandings      []structs.NFLStandings
 		proRosterMap      map[uint][]structs.NFLPlayer
@@ -91,7 +95,12 @@ func GetBootstrapData(collegeID, proID string) BootstrapData {
 	wg.Wait()
 
 	if len(collegeID) > 0 {
-		wg.Add(3)
+		wg.Add(4)
+		go func() {
+			defer wg.Done()
+			collegeTeam = GetTeamByTeamID(collegeID)
+		}()
+
 		go func() {
 			defer wg.Done()
 			collegePlayers := GetAllCollegePlayers()
@@ -110,7 +119,7 @@ func GetBootstrapData(collegeID, proID string) BootstrapData {
 			collegeGames = GetCollegeGamesBySeasonID("")
 		}()
 		wg.Wait()
-		wg.Add(6)
+		wg.Add(3)
 		go func() {
 			defer wg.Done()
 			collegeNews = GetAllNewsLogs()
@@ -119,6 +128,13 @@ func GetBootstrapData(collegeID, proID string) BootstrapData {
 			defer wg.Done()
 			collegeNotifications = GetNotificationByTeamIDAndLeague("CFB", collegeID)
 		}()
+		go func() {
+			defer wg.Done()
+			teamProfileMap = GetTeamProfileMap()
+		}()
+
+		wg.Wait()
+		wg.Add(4)
 
 		go func() {
 			defer wg.Done()
@@ -189,6 +205,7 @@ func GetBootstrapData(collegeID, proID string) BootstrapData {
 		wg.Wait()
 	}
 	return BootstrapData{
+		CollegeTeam:          collegeTeam,
 		AllCollegeTeams:      allCollegeTeams,
 		CollegeStandings:     collegeStandings,
 		CollegeRosterMap:     collegePlayerMap,
@@ -202,8 +219,8 @@ func GetBootstrapData(collegeID, proID string) BootstrapData {
 		Recruits:             recruits,
 		TeamProfileMap:       teamProfileMap,
 		PortalPlayers:        portalPlayers,
-
 		//
+		ProTeam:          proTeam,
 		AllProTeams:      allProTeams,
 		ProStandings:     proStandings,
 		ProRosterMap:     proRosterMap,

@@ -92,9 +92,6 @@ func (ss *NFLPlayerSeasonStats) ResetStats() {
 
 func (ss *NFLPlayerSeasonStats) MapStats(stats []NFLPlayerStats, ts Timestamp) {
 	for _, stat := range stats {
-		if !stat.BasePlayerStats.RevealResults {
-			continue
-		}
 		ss.Snaps = ss.Snaps + stat.Snaps
 		if ss.TeamID == 0 {
 			ss.TeamID = stat.TeamID

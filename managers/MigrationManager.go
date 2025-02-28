@@ -262,7 +262,7 @@ func MigrateCFBTeamSnapsFromPreviousSeason() {
 func MigrateNFLPlayerStatsFromPreviousSeason() {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
-	seasonID2024 := ts.CollegeSeasonID - 2
+	seasonID2024 := ts.CollegeSeasonID
 	seasonID := strconv.Itoa(seasonID2024)
 
 	nflPlayerSeasonStatMap := GetALLNFLPlayerSeasonStatMapBySeason(seasonID)
@@ -323,15 +323,23 @@ func migrateNFLPlayerSeasonStats(nflPlayerSeasonStatMap map[uint][]structs.NFLPl
 			regularSeasonStats.MapStats([]structs.NFLPlayerStats{stat}, ts)
 		}
 	}
-	repository.CreateNFLPlayerSeasonStats(preSeasonStats, db)
-	repository.CreateNFLPlayerSeasonStats(postSeasonStats, db)
-	repository.SaveNFLPlayerSeasonStats(regularSeasonStats, db)
+	if preSeasonStats.SeasonID > 0 {
+		// repository.CreateNFLPlayerSeasonStats(preSeasonStats, db)
+	}
+
+	if postSeasonStats.SeasonID > 0 {
+		// repository.CreateNFLPlayerSeasonStats(postSeasonStats, db)
+	}
+
+	if regularSeasonStats.SeasonID > 0 {
+		repository.SaveNFLPlayerSeasonStats(regularSeasonStats, db)
+	}
 }
 
 func MigrateCFBPlayerStatsFromPreviousSeason() {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
-	seasonID2024 := ts.CollegeSeasonID - 3
+	seasonID2024 := ts.CollegeSeasonID
 	seasonID := strconv.Itoa(seasonID2024)
 	cfbPlayerSeasonStatMap := GetALLCFBPlayerSeasonStatMapBySeason(seasonID)
 	cfbPlayerStatMap := GetCFBPlayerIndividualStatMapBySeason(seasonID)
@@ -394,10 +402,12 @@ func migrateCFBPlayerSeasonStats(cfbPlayerSeasonStatMap map[uint][]structs.Colle
 		}
 	}
 	if preSeasonStats.GamesPlayed > 0 {
-		repository.CreateCFBPlayerSeasonStats(preSeasonStats, db)
+		repository.SaveCollegePlayerSeasonStats(preSeasonStats, db)
 	}
 	if postSeasonStats.GamesPlayed > 0 {
-		repository.CreateCFBPlayerSeasonStats(postSeasonStats, db)
+		repository.SaveCollegePlayerSeasonStats(postSeasonStats, db)
 	}
-	repository.SaveCollegePlayerSeasonStats(regularSeasonStats, db)
+	if regularSeasonStats.ID > 0 {
+		repository.SaveCollegePlayerSeasonStats(regularSeasonStats, db)
+	}
 }

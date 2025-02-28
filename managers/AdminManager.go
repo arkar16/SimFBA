@@ -153,7 +153,7 @@ func SyncTimeslot(timeslot string) {
 				if h.WasInjured {
 					playerRecord := GetCollegePlayerByCollegePlayerId(strconv.Itoa(h.CollegePlayerID))
 					playerRecord.SetIsInjured(h.WasInjured, h.InjuryType, h.WeeksOfRecovery)
-					db.Save(&playerRecord)
+					repository.SaveCFBPlayer(playerRecord, db)
 				}
 				// playerSeasonStat := playerSeasonStatsMap[h.CollegePlayerID]
 				playerSeasonStat := GetCollegeSeasonStatsByPlayerAndSeason(strconv.Itoa(h.CollegePlayerID), strconv.Itoa(int(ts.CollegeSeasonID)), cfbgt)
@@ -179,7 +179,7 @@ func SyncTimeslot(timeslot string) {
 				if a.WasInjured {
 					playerRecord := GetCollegePlayerByCollegePlayerId(strconv.Itoa(a.CollegePlayerID))
 					playerRecord.SetIsInjured(a.WasInjured, a.InjuryType, a.WeeksOfRecovery)
-					db.Save(&playerRecord)
+					repository.SaveCFBPlayer(playerRecord, db)
 				}
 				playerSeasonStat := GetCollegeSeasonStatsByPlayerAndSeason(strconv.Itoa(a.CollegePlayerID), strconv.Itoa(int(ts.CollegeSeasonID)), cfbgt)
 				if playerSeasonStat.ID == 0 {
@@ -380,7 +380,7 @@ func SyncTimeslot(timeslot string) {
 				if h.WasInjured {
 					playerRecord := GetNFLPlayerRecord(strconv.Itoa(h.NFLPlayerID))
 					playerRecord.SetIsInjured(h.WasInjured, h.InjuryType, h.WeeksOfRecovery)
-					db.Save(&playerRecord)
+					repository.SaveNFLPlayer(playerRecord, db)
 				}
 				// playerSeasonStat := playerSeasonStatsMap[h.NFLPlayerID]
 				seasonStats := GetNFLSeasonStatsByPlayerAndSeason(strconv.Itoa(h.NFLPlayerID), strconv.Itoa(int(ts.NFLSeasonID)), nflgt)
@@ -406,7 +406,7 @@ func SyncTimeslot(timeslot string) {
 				if a.WasInjured {
 					playerRecord := GetNFLPlayerRecord(strconv.Itoa(a.NFLPlayerID))
 					playerRecord.SetIsInjured(a.WasInjured, a.InjuryType, a.WeeksOfRecovery)
-					db.Save(&playerRecord)
+					repository.SaveNFLPlayer(playerRecord, db)
 				}
 				// playerSeasonStat := playerSeasonStatsMap[a.NFLPlayerID]
 				seasonStats := GetNFLSeasonStatsByPlayerAndSeason(strconv.Itoa(a.NFLPlayerID), strconv.Itoa(int(ts.NFLSeasonID)), nflgt)

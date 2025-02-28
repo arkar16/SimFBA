@@ -312,6 +312,9 @@ func migrateNFLPlayerSeasonStats(nflPlayerSeasonStatMap map[uint][]structs.NFLPl
 			postSeasonStats = s
 		}
 	}
+	regularSeasonStats.ResetStats()
+	preSeasonStats.ResetStats()
+	postSeasonStats.ResetStats()
 
 	for _, stat := range playerStats {
 		g := gameMap[uint(stat.GameID)]
@@ -324,11 +327,11 @@ func migrateNFLPlayerSeasonStats(nflPlayerSeasonStatMap map[uint][]structs.NFLPl
 		}
 	}
 	if preSeasonStats.SeasonID > 0 {
-		// repository.CreateNFLPlayerSeasonStats(preSeasonStats, db)
+		repository.SaveNFLPlayerSeasonStats(preSeasonStats, db)
 	}
 
 	if postSeasonStats.SeasonID > 0 {
-		// repository.CreateNFLPlayerSeasonStats(postSeasonStats, db)
+		repository.SaveNFLPlayerSeasonStats(postSeasonStats, db)
 	}
 
 	if regularSeasonStats.SeasonID > 0 {
@@ -391,6 +394,11 @@ func migrateCFBPlayerSeasonStats(cfbPlayerSeasonStatMap map[uint][]structs.Colle
 			postSeasonStats = s
 		}
 	}
+
+	regularSeasonStats.ResetStats()
+	preSeasonStats.ResetStats()
+	postSeasonStats.ResetStats()
+
 	for _, stat := range playerStats {
 		g := gameMap[uint(stat.GameID)]
 		if g.IsSpringGame {

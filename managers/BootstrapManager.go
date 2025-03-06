@@ -265,14 +265,11 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapData {
 	// Start concurrent queries
 
 	if len(collegeID) > 0 {
-		wg.Add(1)
+		wg.Add(2)
 		go func() {
 			defer wg.Done()
 			recruits = GetAllRecruits()
 		}()
-		wg.Wait()
-
-		wg.Add(1)
 
 		go func() {
 			defer wg.Done()

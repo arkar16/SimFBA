@@ -266,6 +266,20 @@ func GetDepthchartByTeamID(teamID string) structs.CollegeTeamDepthChart {
 	return depthChart
 }
 
+func GetAllNFLDepthcharts() []structs.NFLDepthChart {
+	db := dbprovider.GetInstance().GetDB()
+
+	var depthChart []structs.NFLDepthChart
+
+	// Preload Depth Chart Positions
+	err := db.Preload("DepthChartPlayers.NFLPlayer").Find(&depthChart).Error
+	if err != nil {
+		fmt.Println(err)
+		log.Fatalln("Depthchart does not exist for team.")
+	}
+	return depthChart
+}
+
 func GetNFLDepthchartByTeamID(teamID string) structs.NFLDepthChart {
 	db := dbprovider.GetInstance().GetDB()
 

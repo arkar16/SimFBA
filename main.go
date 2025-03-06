@@ -75,7 +75,7 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/simfba/get/timestamp/", controller.GetCurrentTimestamp).Methods("GET")
 	apiRouter.HandleFunc("/simfba/sync/timestamp/", controller.SyncTimestamp).Methods("POST")
 	apiRouter.HandleFunc("/simfba/sync/week/", controller.SyncWeek).Methods("GET")
-	// apiRouter.HandleFunc("/simfba/sync/timeslot/{timeslot}", controller.SyncTimeslot).Methods("GET")
+	apiRouter.HandleFunc("/simfba/sync/timeslot/{timeslot}", controller.SyncTimeslot).Methods("GET")
 	// apiRouter.HandleFunc("/simfba/regress/timeslot/{timeslot}", controller.RegressTimeslot).Methods("GET")
 	apiRouter.HandleFunc("/simfba/sync/freeagency/round", controller.SyncFreeAgencyRound).Methods("GET")
 	apiRouter.HandleFunc("/simfba/sync/recruiting/", controller.SyncRecruiting).Methods("GET")
@@ -99,7 +99,8 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/admin/trades/cleanup", controller.CleanUpRejectedTrades).Methods("GET")
 
 	// Bootstrap
-	apiRouter.HandleFunc("/bootstrap/{collegeID}/{proID}", controller.BootstrapFootballData).Methods("GET")
+	apiRouter.HandleFunc("/bootstrap/{collegeID}/{proID}", controller.FirstBootstrapFootballData).Methods("GET")
+	apiRouter.HandleFunc("/bootstrap/two/{collegeID}/{proID}", controller.SecondBootstrapFootballData).Methods("GET")
 
 	// Capsheet Controls
 	apiRouter.HandleFunc("/nfl/capsheet/generate", controller.GenerateCapsheets).Methods("GET")
@@ -381,36 +382,36 @@ func loadEnvs() {
 
 func handleCron() *cron.Cron {
 	c := cron.New()
-	// Fill AI Recruiting Boards
-	c.AddFunc("0 5 * * 4", controller.FillAIBoardsViaCron)
-	// Update AI Gameplans and DCs
-	c.AddFunc("0 1 * * 3", controller.RunAISchemeAndDCViaCron)
-	c.AddFunc("0 4 * * 3", controller.RunAIGameplanViaCron)
-	// Allocate AI Boards
-	c.AddFunc("0 3 * * 4,6", controller.SyncAIBoardsViaCron)
-	// Run RES
-	c.AddFunc("0 7 * * 4", controller.RunRESViaCron)
-	// Sync Recruiting
-	c.AddFunc("0 16 * * 3", controller.SyncRecruitingViaCron)
-	// Sync Free Agency
-	c.AddFunc("0 16 * * 2", controller.SyncFreeAgencyViaCron)
-	// Sync Extension Offers
-	// Run the Games
-	c.AddFunc("0 4 * * 4", controller.RunTheGamesViaCron)
-	// Reveal Timeslot Results
-	c.AddFunc("0 21 * * 4", controller.ShowCFBThursdayViaCron) // Thurs Night
-	c.AddFunc("0 20 * * 4", controller.ShowNFLThursdayViaCron) // Thurs NFL
-	c.AddFunc("0 21 * * 5", controller.ShowCFBFridayViaCron)   // Fri Night
-	c.AddFunc("0 15 * * 6", controller.ShowCFBSatMornViaCron)  // Sat. Morning
-	c.AddFunc("0 17 * * 6", controller.ShowCFBSatAftViaCron)   // Sat. Afternoon
-	c.AddFunc("0 19 * * 6", controller.ShowCFBSatEveViaCron)   // Sat. Evening
-	c.AddFunc("0 21 * * 6", controller.ShowCFBSatNitViaCron)   // Sat. Night
-	c.AddFunc("0 15 * * 0", controller.ShowNFLSunNoonViaCron)  // Sun Noon
-	c.AddFunc("0 17 * * 0", controller.ShowNFLSunAftViaCron)   // Sun Aft
-	c.AddFunc("0 19 * * 0", controller.ShowNFLSunNitViaCron)   // Sun Nit
-	c.AddFunc("0 17 * * 1", controller.ShowNFLMonNitViaCron)   // Mon Nit
-	// Sync Week
-	c.AddFunc("0 18 * * 1", controller.SyncToNextWeekViaCron)
+	// // Fill AI Recruiting Boards
+	// c.AddFunc("0 5 * * 4", controller.FillAIBoardsViaCron)
+	// // Update AI Gameplans and DCs
+	// c.AddFunc("0 1 * * 3", controller.RunAISchemeAndDCViaCron)
+	// c.AddFunc("0 4 * * 3", controller.RunAIGameplanViaCron)
+	// // Allocate AI Boards
+	// c.AddFunc("0 3 * * 4,6", controller.SyncAIBoardsViaCron)
+	// // Run RES
+	// c.AddFunc("0 7 * * 4", controller.RunRESViaCron)
+	// // Sync Recruiting
+	// c.AddFunc("0 16 * * 3", controller.SyncRecruitingViaCron)
+	// // Sync Free Agency
+	// c.AddFunc("0 16 * * 2", controller.SyncFreeAgencyViaCron)
+	// // Sync Extension Offers
+	// // Run the Games
+	// c.AddFunc("0 4 * * 4", controller.RunTheGamesViaCron)
+	// // Reveal Timeslot Results
+	// c.AddFunc("0 21 * * 4", controller.ShowCFBThursdayViaCron) // Thurs Night
+	// c.AddFunc("0 20 * * 4", controller.ShowNFLThursdayViaCron) // Thurs NFL
+	// c.AddFunc("0 21 * * 5", controller.ShowCFBFridayViaCron)   // Fri Night
+	// c.AddFunc("0 15 * * 6", controller.ShowCFBSatMornViaCron)  // Sat. Morning
+	// c.AddFunc("0 17 * * 6", controller.ShowCFBSatAftViaCron)   // Sat. Afternoon
+	// c.AddFunc("0 19 * * 6", controller.ShowCFBSatEveViaCron)   // Sat. Evening
+	// c.AddFunc("0 21 * * 6", controller.ShowCFBSatNitViaCron)   // Sat. Night
+	// c.AddFunc("0 15 * * 0", controller.ShowNFLSunNoonViaCron)  // Sun Noon
+	// c.AddFunc("0 17 * * 0", controller.ShowNFLSunAftViaCron)   // Sun Aft
+	// c.AddFunc("0 19 * * 0", controller.ShowNFLSunNitViaCron)   // Sun Nit
+	// c.AddFunc("0 17 * * 1", controller.ShowNFLMonNitViaCron)   // Mon Nit
+	// // Sync Week
+	// c.AddFunc("0 18 * * 1", controller.SyncToNextWeekViaCron)
 	c.Start()
 
 	return c

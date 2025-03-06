@@ -8,10 +8,18 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func BootstrapFootballData(w http.ResponseWriter, r *http.Request) {
+func FirstBootstrapFootballData(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	collegeID := vars["collegeID"]
 	proID := vars["proID"]
-	data := managers.GetBootstrapData(collegeID, proID)
+	data := managers.GetFirstBootstrapData(collegeID, proID)
+	json.NewEncoder(w).Encode(data)
+}
+
+func SecondBootstrapFootballData(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	collegeID := vars["collegeID"]
+	proID := vars["proID"]
+	data := managers.GetSecondBootstrapData(collegeID, proID)
 	json.NewEncoder(w).Encode(data)
 }

@@ -184,10 +184,6 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 			defer wg.Done()
 			proGameplan = GetNFLGameplanByTeamID(proID)
 		}()
-		go func() {
-			defer wg.Done()
-			proDepthChart = GetNFLDepthchartByTeamID(proID)
-		}()
 		wg.Wait()
 	}
 	return BootstrapData{

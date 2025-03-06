@@ -162,7 +162,7 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		}()
 		go func() {
 			defer wg.Done()
-			proNews = GetAllNFLNewsLogs()
+			proTeam = GetNFLTeamByTeamID(proID)
 		}()
 
 		wg.Wait()
@@ -276,13 +276,18 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapData {
 		wg.Wait()
 	}
 	if len(proID) > 0 {
-		wg.Add(2)
+		wg.Add(3)
 
 		go func() {
 			defer wg.Done()
 			dcs := GetAllNFLDepthcharts()
 			proDepthChartMap = MakeNFLDepthChartMap(dcs)
 		}()
+		go func() {
+			defer wg.Done()
+			proNews = GetAllNFLNewsLogs()
+		}()
+
 		go GetAllAvailableNFLPlayersViaChan(proID, freeAgencyCh)
 		freeAgency = <-freeAgencyCh
 		wg.Wait()

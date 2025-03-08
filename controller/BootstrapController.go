@@ -23,3 +23,11 @@ func SecondBootstrapFootballData(w http.ResponseWriter, r *http.Request) {
 	data := managers.GetSecondBootstrapData(collegeID, proID)
 	json.NewEncoder(w).Encode(data)
 }
+
+func ThirdBootstrapFootballData(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	collegeID := vars["collegeID"]
+	proID := vars["proID"]
+	data := managers.GetThirdBootstrapData(collegeID, proID)
+	json.NewEncoder(w).Encode(data)
+}

@@ -222,7 +222,7 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapData {
 		}()
 		go func() {
 			defer wg.Done()
-			collegeGames = GetCollegeGamesBySeasonID("")
+			collegeGames = GetCollegeGamesBySeasonID(strconv.Itoa(int(ts.CollegeSeasonID)))
 		}()
 		go func() {
 			defer wg.Done()
@@ -238,11 +238,11 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapData {
 		wg.Add(4)
 		go func() {
 			defer wg.Done()
-			proStandings = GetAllNFLStandingsBySeasonID("")
+			proStandings = GetAllNFLStandingsBySeasonID(strconv.Itoa(int(ts.CollegeSeasonID)))
 		}()
 		go func() {
 			defer wg.Done()
-			proGames = GetNFLGamesBySeasonID("")
+			proGames = GetNFLGamesBySeasonID(strconv.Itoa(int(ts.CollegeSeasonID)))
 		}()
 		go func() {
 			defer wg.Done()

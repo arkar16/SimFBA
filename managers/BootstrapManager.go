@@ -362,7 +362,11 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapData {
 			proNews = GetAllNFLNewsLogs()
 		}()
 
-		go GetAllAvailableNFLPlayersViaChan(proID, freeAgencyCh)
+		go func() {
+			defer wg.Done()
+			GetAllAvailableNFLPlayersViaChan(proID, freeAgencyCh)
+		}()
+
 		freeAgency = <-freeAgencyCh
 		wg.Wait()
 	}

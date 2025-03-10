@@ -1,6 +1,7 @@
 package managers
 
 import (
+	"log"
 	"strconv"
 	"sync"
 
@@ -149,6 +150,8 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 }
 
 func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
+	log.Println("GetSecondBootstrapData called with collegeID:", collegeID, "and proID:", proID)
+
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	// College Data
@@ -168,51 +171,71 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 		proGames          []structs.NFLGame
 	)
 	ts := GetTimestamp()
+	log.Println("Timestamp:", ts)
 
 	// Start concurrent queries
 	if len(collegeID) > 0 {
 		wg.Add(4)
 		go func() {
 			defer wg.Done()
+			log.Println("Fetching College News Logs...")
 			collegeNews = GetAllNewsLogs()
+			log.Println("Fetched College News Logs, count:", len(collegeNews))
 		}()
 		go func() {
 			defer wg.Done()
+			log.Println("Fetching College Games for seasonID:", ts.CollegeSeasonID)
 			collegeGames = GetCollegeGamesBySeasonID(strconv.Itoa(int(ts.CollegeSeasonID)))
+			log.Println("Fetched College Games, count:", len(collegeGames))
 		}()
 		go func() {
 			defer wg.Done()
+			log.Println("Fetching Team Profile Map...")
 			teamProfileMap = GetTeamProfileMap()
+			log.Println("Fetched Team Profile Map, count:", len(teamProfileMap))
 		}()
 		go func() {
 			defer wg.Done()
+			log.Println("Fetching College Standings for seasonID:", ts.CollegeSeasonID)
 			collegeStandings = GetAllCollegeStandingsBySeasonID(strconv.Itoa(int(ts.CollegeSeasonID)))
+			log.Println("Fetched College Standings, count:", len(collegeStandings))
 		}()
 		wg.Wait()
+		log.Println("Completed all College data queries.")
+
 	}
 	if len(proID) > 0 {
 		wg.Add(4)
 		go func() {
 			defer wg.Done()
+			log.Println("Fetching NFL Standings for seasonID:", ts.NFLSeasonID)
 			proStandings = GetAllNFLStandingsBySeasonID(strconv.Itoa(int(ts.NFLSeasonID)))
+			log.Println("Fetched NFL Standings, count:", len(proStandings))
 		}()
 		go func() {
 			defer wg.Done()
+			log.Println("Fetching NFL Games for seasonID:", ts.NFLSeasonID)
 			proGames = GetNFLGamesBySeasonID(strconv.Itoa(int(ts.NFLSeasonID)))
+			log.Println("Fetched NFL Games, count:", len(proGames))
 		}()
 		go func() {
 			defer wg.Done()
+			log.Println("Fetching Capsheet Map...")
 			capsheetMap = getCapsheetMap()
+			log.Println("Fetched Capsheet Map, count:", len(capsheetMap))
 		}()
 		go func() {
 			defer wg.Done()
+			log.Println("Fetching NFL Players for roster mapping...")
 			proPlayers := GetAllNFLPlayers()
 			mu.Lock()
 			proRosterMap = MakeNFLPlayerMapByTeamID(proPlayers, true)
 			injuredProPlayers = MakeProInjuryList(proPlayers)
 			mu.Unlock()
+			log.Println("Fetched NFL Players, roster count:", len(proRosterMap), "injured count:", len(injuredProPlayers))
 		}()
 		wg.Wait()
+		log.Println("Completed all Pro data queries.")
 	}
 	return BootstrapDataTwo{
 		CollegeStandings: collegeStandings,

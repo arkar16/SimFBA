@@ -9,6 +9,7 @@ import (
 )
 
 func FirstBootstrapFootballData(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	vars := mux.Vars(r)
 	collegeID := vars["collegeID"]
 	proID := vars["proID"]
@@ -17,6 +18,7 @@ func FirstBootstrapFootballData(w http.ResponseWriter, r *http.Request) {
 }
 
 func SecondBootstrapFootballData(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	vars := mux.Vars(r)
 	collegeID := vars["collegeID"]
 	proID := vars["proID"]
@@ -25,6 +27,7 @@ func SecondBootstrapFootballData(w http.ResponseWriter, r *http.Request) {
 }
 
 func ThirdBootstrapFootballData(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
 	vars := mux.Vars(r)
 	collegeID := vars["collegeID"]
 	proID := vars["proID"]

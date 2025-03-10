@@ -11,34 +11,37 @@ import (
 type BootstrapData struct {
 	CollegeTeam          structs.CollegeTeam
 	AllCollegeTeams      []structs.CollegeTeam
-	CollegeStandings     []structs.CollegeStandings
 	CollegeRosterMap     map[uint][]structs.CollegePlayer
-	Recruits             []structs.Croot
-	TeamProfileMap       map[string]*structs.RecruitingTeamProfile
 	PortalPlayers        []structs.CollegePlayer
 	CollegeInjuryReport  []structs.CollegePlayer
-	CollegeNews          []structs.NewsLog
 	CollegeNotifications []structs.Notification
-	AllCollegeGames      []structs.CollegeGame
 	CollegeGameplan      structs.CollegeGameplan
 	CollegeDepthChart    structs.CollegeTeamDepthChart
-	CollegeDepthChartMap map[uint]structs.CollegeTeamDepthChart
+	ProTeam              structs.NFLTeam
+	AllProTeams          []structs.NFLTeam
+	ProNotifications     []structs.Notification
+	NFLGameplan          structs.NFLGameplan
+	NFLDepthChart        structs.NFLDepthChart
+}
 
-	// Player Profiles by Team?
-	// Portal profiles?
-	ProTeam          structs.NFLTeam
-	AllProTeams      []structs.NFLTeam
+type BootstrapDataTwo struct {
+	CollegeNews      []structs.NewsLog
+	AllCollegeGames  []structs.CollegeGame
+	TeamProfileMap   map[string]*structs.RecruitingTeamProfile
+	CollegeStandings []structs.CollegeStandings
 	ProStandings     []structs.NFLStandings
-	ProRosterMap     map[uint][]structs.NFLPlayer
-	CapsheetMap      map[uint]structs.NFLCapsheet
-	FreeAgency       models.FreeAgencyResponse
-	ProInjuryReport  []structs.NFLPlayer
-	ProNews          []structs.NewsLog
-	ProNotifications []structs.Notification
 	AllProGames      []structs.NFLGame
-	NFLGameplan      structs.NFLGameplan
-	NFLDepthChart    structs.NFLDepthChart
-	NFLDepthChartMap map[uint]structs.NFLDepthChart
+	CapsheetMap      map[uint]structs.NFLCapsheet
+	ProRosterMap     map[uint][]structs.NFLPlayer
+	ProInjuryReport  []structs.NFLPlayer
+}
+
+type BootstrapDataThree struct {
+	Recruits             []structs.Croot
+	CollegeDepthChartMap map[uint]structs.CollegeTeamDepthChart
+	FreeAgency           models.FreeAgencyResponse
+	ProNews              []structs.NewsLog
+	NFLDepthChartMap     map[uint]structs.NFLDepthChart
 }
 
 func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
@@ -49,35 +52,21 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 	var (
 		collegeTeam           structs.CollegeTeam
 		allCollegeTeams       []structs.CollegeTeam
-		collegeStandings      []structs.CollegeStandings
 		collegePlayerMap      map[uint][]structs.CollegePlayer
-		teamProfileMap        map[string]*structs.RecruitingTeamProfile
 		portalPlayers         []structs.CollegePlayer
 		injuredCollegePlayers []structs.CollegePlayer
-		collegeNews           []structs.NewsLog
 		collegeNotifications  []structs.Notification
-		collegeGames          []structs.CollegeGame
-		recruits              []structs.Croot
 		collegeGameplan       structs.CollegeGameplan
 		collegeDepthChart     structs.CollegeTeamDepthChart
-		collegeDepthChartMap  map[uint]structs.CollegeTeamDepthChart
 	)
 
 	// Professional Data
 	var (
-		proTeam           structs.NFLTeam
-		allProTeams       []structs.NFLTeam
-		proStandings      []structs.NFLStandings
-		proRosterMap      map[uint][]structs.NFLPlayer
-		capsheetMap       map[uint]structs.NFLCapsheet
-		freeAgency        models.FreeAgencyResponse
-		injuredProPlayers []structs.NFLPlayer
-		proNews           []structs.NewsLog
-		proNotifications  []structs.Notification
-		proGames          []structs.NFLGame
-		proGameplan       structs.NFLGameplan
-		proDepthChart     structs.NFLDepthChart
-		proDepthChartMap  map[uint]structs.NFLDepthChart
+		proTeam          structs.NFLTeam
+		allProTeams      []structs.NFLTeam
+		proNotifications []structs.Notification
+		proGameplan      structs.NFLGameplan
+		proDepthChart    structs.NFLDepthChart
 	)
 
 	// Start concurrent queries
@@ -145,71 +134,38 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 	return BootstrapData{
 		CollegeTeam:          collegeTeam,
 		AllCollegeTeams:      allCollegeTeams,
-		CollegeStandings:     collegeStandings,
 		CollegeRosterMap:     collegePlayerMap,
 		CollegeInjuryReport:  injuredCollegePlayers,
-		CollegeNews:          collegeNews,
 		CollegeNotifications: collegeNotifications,
 		CollegeGameplan:      collegeGameplan,
 		CollegeDepthChart:    collegeDepthChart,
-		CollegeDepthChartMap: collegeDepthChartMap,
-		AllCollegeGames:      collegeGames,
-		Recruits:             recruits,
-		TeamProfileMap:       teamProfileMap,
 		PortalPlayers:        portalPlayers,
-		//
-		ProTeam:          proTeam,
-		AllProTeams:      allProTeams,
-		ProStandings:     proStandings,
-		ProRosterMap:     proRosterMap,
-		CapsheetMap:      capsheetMap,
-		FreeAgency:       freeAgency,
-		ProInjuryReport:  injuredProPlayers,
-		ProNews:          proNews,
-		ProNotifications: proNotifications,
-		AllProGames:      proGames,
-		NFLGameplan:      proGameplan,
-		NFLDepthChart:    proDepthChart,
-		NFLDepthChartMap: proDepthChartMap,
+		ProTeam:              proTeam,
+		AllProTeams:          allProTeams,
+		ProNotifications:     proNotifications,
+		NFLGameplan:          proGameplan,
+		NFLDepthChart:        proDepthChart,
 	}
 }
 
-func GetSecondBootstrapData(collegeID, proID string) BootstrapData {
+func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	// College Data
 	var (
-		collegeTeam           structs.CollegeTeam
-		allCollegeTeams       []structs.CollegeTeam
-		collegeStandings      []structs.CollegeStandings
-		collegePlayerMap      map[uint][]structs.CollegePlayer
-		teamProfileMap        map[string]*structs.RecruitingTeamProfile
-		portalPlayers         []structs.CollegePlayer
-		injuredCollegePlayers []structs.CollegePlayer
-		collegeNews           []structs.NewsLog
-		collegeNotifications  []structs.Notification
-		collegeGames          []structs.CollegeGame
-		recruits              []structs.Croot
-		collegeGameplan       structs.CollegeGameplan
-		collegeDepthChart     structs.CollegeTeamDepthChart
-		collegeDepthChartMap  map[uint]structs.CollegeTeamDepthChart
+		collegeStandings []structs.CollegeStandings
+		teamProfileMap   map[string]*structs.RecruitingTeamProfile
+		collegeNews      []structs.NewsLog
+		collegeGames     []structs.CollegeGame
 	)
 
 	// Professional Data
 	var (
-		proTeam           structs.NFLTeam
-		allProTeams       []structs.NFLTeam
 		proStandings      []structs.NFLStandings
 		proRosterMap      map[uint][]structs.NFLPlayer
 		capsheetMap       map[uint]structs.NFLCapsheet
-		freeAgency        models.FreeAgencyResponse
 		injuredProPlayers []structs.NFLPlayer
-		proNews           []structs.NewsLog
-		proNotifications  []structs.Notification
 		proGames          []structs.NFLGame
-		proGameplan       structs.NFLGameplan
-		proDepthChart     structs.NFLDepthChart
-		proDepthChartMap  map[uint]structs.NFLDepthChart
 	)
 	ts := GetTimestamp()
 
@@ -258,74 +214,33 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapData {
 		}()
 		wg.Wait()
 	}
-	return BootstrapData{
-		CollegeTeam:          collegeTeam,
-		AllCollegeTeams:      allCollegeTeams,
-		CollegeStandings:     collegeStandings,
-		CollegeRosterMap:     collegePlayerMap,
-		CollegeInjuryReport:  injuredCollegePlayers,
-		CollegeNews:          collegeNews,
-		CollegeNotifications: collegeNotifications,
-		CollegeGameplan:      collegeGameplan,
-		CollegeDepthChart:    collegeDepthChart,
-		CollegeDepthChartMap: collegeDepthChartMap,
-		AllCollegeGames:      collegeGames,
-		Recruits:             recruits,
-		TeamProfileMap:       teamProfileMap,
-		PortalPlayers:        portalPlayers,
-		//
-		ProTeam:          proTeam,
-		AllProTeams:      allProTeams,
+	return BootstrapDataTwo{
+		CollegeStandings: collegeStandings,
+		CollegeNews:      collegeNews,
+		AllCollegeGames:  collegeGames,
+		TeamProfileMap:   teamProfileMap,
 		ProStandings:     proStandings,
 		ProRosterMap:     proRosterMap,
 		CapsheetMap:      capsheetMap,
-		FreeAgency:       freeAgency,
 		ProInjuryReport:  injuredProPlayers,
-		ProNews:          proNews,
-		ProNotifications: proNotifications,
 		AllProGames:      proGames,
-		NFLGameplan:      proGameplan,
-		NFLDepthChart:    proDepthChart,
-		NFLDepthChartMap: proDepthChartMap,
 	}
 }
 
-func GetThirdBootstrapData(collegeID, proID string) BootstrapData {
+func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 	var wg sync.WaitGroup
 	var mu sync.Mutex
 	// College Data
 	var (
-		collegeTeam           structs.CollegeTeam
-		allCollegeTeams       []structs.CollegeTeam
-		collegeStandings      []structs.CollegeStandings
-		collegePlayerMap      map[uint][]structs.CollegePlayer
-		teamProfileMap        map[string]*structs.RecruitingTeamProfile
-		portalPlayers         []structs.CollegePlayer
-		injuredCollegePlayers []structs.CollegePlayer
-		collegeNews           []structs.NewsLog
-		collegeNotifications  []structs.Notification
-		collegeGames          []structs.CollegeGame
-		recruits              []structs.Croot
-		collegeGameplan       structs.CollegeGameplan
-		collegeDepthChart     structs.CollegeTeamDepthChart
-		collegeDepthChartMap  map[uint]structs.CollegeTeamDepthChart
+		recruits             []structs.Croot
+		collegeDepthChartMap map[uint]structs.CollegeTeamDepthChart
 	)
 
 	// Professional Data
 	var (
-		proTeam           structs.NFLTeam
-		allProTeams       []structs.NFLTeam
-		proStandings      []structs.NFLStandings
-		proRosterMap      map[uint][]structs.NFLPlayer
-		capsheetMap       map[uint]structs.NFLCapsheet
-		freeAgency        models.FreeAgencyResponse
-		injuredProPlayers []structs.NFLPlayer
-		proNews           []structs.NewsLog
-		proNotifications  []structs.Notification
-		proGames          []structs.NFLGame
-		proGameplan       structs.NFLGameplan
-		proDepthChart     structs.NFLDepthChart
-		proDepthChartMap  map[uint]structs.NFLDepthChart
+		freeAgency       models.FreeAgencyResponse
+		proNews          []structs.NewsLog
+		proDepthChartMap map[uint]structs.NFLDepthChart
 	)
 
 	freeAgencyCh := make(chan models.FreeAgencyResponse, 1)
@@ -370,34 +285,11 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapData {
 		freeAgency = <-freeAgencyCh
 		wg.Wait()
 	}
-	return BootstrapData{
-		CollegeTeam:          collegeTeam,
-		AllCollegeTeams:      allCollegeTeams,
-		CollegeStandings:     collegeStandings,
-		CollegeRosterMap:     collegePlayerMap,
-		CollegeInjuryReport:  injuredCollegePlayers,
-		CollegeNews:          collegeNews,
-		CollegeNotifications: collegeNotifications,
-		CollegeGameplan:      collegeGameplan,
-		CollegeDepthChart:    collegeDepthChart,
+	return BootstrapDataThree{
 		CollegeDepthChartMap: collegeDepthChartMap,
-		AllCollegeGames:      collegeGames,
 		Recruits:             recruits,
-		TeamProfileMap:       teamProfileMap,
-		PortalPlayers:        portalPlayers,
-		//
-		ProTeam:          proTeam,
-		AllProTeams:      allProTeams,
-		ProStandings:     proStandings,
-		ProRosterMap:     proRosterMap,
-		CapsheetMap:      capsheetMap,
-		FreeAgency:       freeAgency,
-		ProInjuryReport:  injuredProPlayers,
-		ProNews:          proNews,
-		ProNotifications: proNotifications,
-		AllProGames:      proGames,
-		NFLGameplan:      proGameplan,
-		NFLDepthChart:    proDepthChart,
-		NFLDepthChartMap: proDepthChartMap,
+		FreeAgency:           freeAgency,
+		ProNews:              proNews,
+		NFLDepthChartMap:     proDepthChartMap,
 	}
 }

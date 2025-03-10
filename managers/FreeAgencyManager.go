@@ -990,11 +990,15 @@ func GetRetiredContracts() []structs.NFLContract {
 }
 
 func getCapsheetMap() map[uint]structs.NFLCapsheet {
+	var mu sync.Mutex
+
 	capsheetMap := make(map[uint]structs.NFLCapsheet)
 	capsheets := repository.FindAllNFLCapsheets()
 
 	for _, cs := range capsheets {
+		mu.Lock()
 		capsheetMap[cs.NFLTeamID] = cs
+		mu.Unlock()
 	}
 
 	return capsheetMap

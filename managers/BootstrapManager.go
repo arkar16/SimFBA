@@ -292,7 +292,7 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapData {
 
 func GetThirdBootstrapData(collegeID, proID string) BootstrapData {
 	var wg sync.WaitGroup
-
+	var mu sync.Mutex
 	// College Data
 	var (
 		collegeTeam           structs.CollegeTeam
@@ -353,7 +353,9 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapData {
 		go func() {
 			defer wg.Done()
 			dcs := GetAllNFLDepthcharts()
+			mu.Lock()
 			proDepthChartMap = MakeNFLDepthChartMap(dcs)
+			mu.Unlock()
 		}()
 		go func() {
 			defer wg.Done()

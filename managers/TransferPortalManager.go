@@ -1711,11 +1711,15 @@ func getTransferPortalProfileMapByTeamID(id string) map[uint]structs.TransferPor
 }
 
 func GetTeamProfileMap() map[string]*structs.RecruitingTeamProfile {
+	var mu sync.Mutex
+
 	teamRecruitingProfiles := GetRecruitingProfileForRecruitSync()
 
 	teamMap := make(map[string]*structs.RecruitingTeamProfile)
 	for i := 0; i < len(teamRecruitingProfiles); i++ {
+		mu.Lock()
 		teamMap[strconv.Itoa(int(teamRecruitingProfiles[i].ID))] = &teamRecruitingProfiles[i]
+		mu.Unlock()
 	}
 
 	return teamMap

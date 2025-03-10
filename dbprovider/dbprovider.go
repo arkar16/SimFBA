@@ -6,6 +6,7 @@ import (
 	"log"
 	"net"
 	"sync"
+	"time"
 
 	config "github.com/CalebRose/SimFBA/secrets"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
@@ -40,11 +41,23 @@ func (p *Provider) InitDatabase() bool {
 
 	var err error
 	c := config.Config(localPort) // c["cs"]
-	db, err = gorm.Open(mysql.Open(c["cs"]), &gorm.Config{})
+	dsn := c["cs"] + "?timeout=30s&readTimeout=30s&writeTimeout=30s"
+	db, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 		return false
 	}
+
+	// Get the underlying *sql.DB
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Configure the connection pool
+	sqlDB.SetConnMaxLifetime(5 * time.Minute)
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetMaxOpenConns(100)
 
 	// AutoMigrations -- uncomment when needing to update a table
 	//
@@ -150,6 +163,7 @@ func setupSSHTunnel(config *config.SshTunnelConfig) (string, error) {
 		},
 		// CAUTION: In production, you should use a more secure HostKeyCallback.
 		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		Timeout:         30 * time.Second,
 	}
 
 	// Connect to SSH server

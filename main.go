@@ -99,7 +99,7 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/admin/trades/cleanup", controller.CleanUpRejectedTrades).Methods("GET")
 
 	// Bootstrap
-	apiRouter.HandleFunc("/bootstrap/{collegeID}/{proID}", controller.FirstBootstrapFootballData).Methods("GET")
+	apiRouter.HandleFunc("/bootstrap/one/{collegeID}/{proID}", controller.FirstBootstrapFootballData).Methods("GET")
 	apiRouter.HandleFunc("/bootstrap/two/{collegeID}/{proID}", controller.SecondBootstrapFootballData).Methods("GET")
 	apiRouter.HandleFunc("/bootstrap/three/{collegeID}/{proID}", controller.ThirdBootstrapFootballData).Methods("GET")
 

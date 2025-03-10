@@ -194,11 +194,11 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 		wg.Add(4)
 		go func() {
 			defer wg.Done()
-			proStandings = GetAllNFLStandingsBySeasonID(strconv.Itoa(int(ts.CollegeSeasonID)))
+			proStandings = GetAllNFLStandingsBySeasonID(strconv.Itoa(int(ts.NFLSeasonID)))
 		}()
 		go func() {
 			defer wg.Done()
-			proGames = GetNFLGamesBySeasonID(strconv.Itoa(int(ts.CollegeSeasonID)))
+			proGames = GetNFLGamesBySeasonID(strconv.Itoa(int(ts.NFLSeasonID)))
 		}()
 		go func() {
 			defer wg.Done()
@@ -244,8 +244,6 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 	)
 
 	freeAgencyCh := make(chan models.FreeAgencyResponse, 1)
-
-	// Start concurrent queries
 
 	if len(collegeID) > 0 {
 		wg.Add(2)

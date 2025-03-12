@@ -316,7 +316,16 @@ func SyncRecruitingEfficiency(timestamp structs.Timestamp) {
 
 		// RES Calculation
 		// Base of .8
-		teamProfile.AssignRES(res + (totalSum * 0.4))
+		newRes := res + (totalSum * 0.4)
+		teamProfile.AssignRES(newRes)
+
+		playerProfiles := GetOnlyRecruitProfilesByTeamProfileID(strconv.Itoa(teamProfile.TeamID))
+
+		for _, p := range playerProfiles {
+			p.AssignRES(newRes)
+			repository.SaveRecruitProfile(p, db)
+		}
+
 		repository.SaveRecruitingTeamProfile(teamProfile, db)
 		fmt.Println("Saved RES for Team: " + team.TeamAbbr)
 		// teamProfilesToSave = append(teamProfilesToSave, teamProfile)

@@ -84,7 +84,7 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 	wg.Wait()
 
 	if len(collegeID) > 0 {
-		wg.Add(4)
+		wg.Add(5)
 		go func() {
 			defer wg.Done()
 			collegeTeam = GetTeamByTeamID(collegeID)

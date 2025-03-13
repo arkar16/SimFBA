@@ -13,6 +13,8 @@ import (
 func CreateTSModelsFile(w http.ResponseWriter, r *http.Request) {
 	converter := typescriptify.New().
 		Add(managers.BootstrapData{}).
+		Add(managers.BootstrapDataTwo{}).
+		Add(managers.BootstrapDataThree{}).
 		Add(structs.TeamRequestsResponse{}).
 		Add(structs.BasePlayer{}).
 		Add(structs.CollegePlayer{}).

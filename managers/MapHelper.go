@@ -39,6 +39,16 @@ func MakeCollegePlayerMapByTeamID(players []structs.CollegePlayer, excludeUnsign
 	return playerMap
 }
 
+func MakeNFLPlayerMap(players []structs.NFLPlayer) map[uint]structs.NFLPlayer {
+	playerMap := make(map[uint]structs.NFLPlayer)
+
+	for _, p := range players {
+		playerMap[p.ID] = p
+	}
+
+	return playerMap
+}
+
 func MakeNFLPlayerMapByTeamID(players []structs.NFLPlayer, excludeFAs bool) map[uint][]structs.NFLPlayer {
 	playerMap := make(map[uint][]structs.NFLPlayer)
 

@@ -339,3 +339,7 @@ func (cp *CollegePlayer) SignWithNewTeam(teamID int, teamAbbr string) {
 	cp.TeamID = teamID
 	cp.TransferLikeliness = ""
 }
+
+func (cp *CollegePlayer) AddSeasonStats(seasonStats CollegePlayerSeasonStats) {
+	cp.SeasonStats = seasonStats
+}

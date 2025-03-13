@@ -2,17 +2,22 @@ package managers
 
 import (
 	"log"
+	"sort"
 	"strconv"
 	"sync"
 
 	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/CalebRose/SimFBA/util"
 )
 
 type BootstrapData struct {
 	CollegeTeam          structs.CollegeTeam
 	AllCollegeTeams      []structs.CollegeTeam
 	CollegeRosterMap     map[uint][]structs.CollegePlayer
+	TopCFBPassers        []structs.CollegePlayer
+	TopCFBRushers        []structs.CollegePlayer
+	TopCFBReceivers      []structs.CollegePlayer
 	PortalPlayers        []structs.CollegePlayer
 	CollegeInjuryReport  []structs.CollegePlayer
 	CollegeNotifications []structs.Notification
@@ -34,6 +39,9 @@ type BootstrapDataTwo struct {
 	AllProGames      []structs.NFLGame
 	CapsheetMap      map[uint]structs.NFLCapsheet
 	ProRosterMap     map[uint][]structs.NFLPlayer
+	TopNFLPassers    []structs.NFLPlayer
+	TopNFLRushers    []structs.NFLPlayer
+	TopNFLReceivers  []structs.NFLPlayer
 	ProInjuryReport  []structs.NFLPlayer
 }
 
@@ -52,6 +60,7 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 	// College Data
 	var (
 		collegeTeam           structs.CollegeTeam
+		collegePlayers        []structs.CollegePlayer
 		allCollegeTeams       []structs.CollegeTeam
 		collegePlayerMap      map[uint][]structs.CollegePlayer
 		portalPlayers         []structs.CollegePlayer
@@ -59,6 +68,9 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		collegeNotifications  []structs.Notification
 		collegeGameplan       structs.CollegeGameplan
 		collegeDepthChart     structs.CollegeTeamDepthChart
+		topPassers            []structs.CollegePlayer
+		topRushers            []structs.CollegePlayer
+		topReceivers          []structs.CollegePlayer
 	)
 
 	// Professional Data
@@ -69,6 +81,11 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		proGameplan      structs.NFLGameplan
 		proDepthChart    structs.NFLDepthChart
 	)
+
+	ts := GetTimestamp()
+
+	_, gtStr := ts.GetCFBCurrentGameType()
+	seasonID := strconv.Itoa(int(ts.CollegeSeasonID))
 
 	// Start concurrent queries
 	wg.Add(2)
@@ -84,7 +101,7 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 	wg.Wait()
 
 	if len(collegeID) > 0 {
-		wg.Add(5)
+		wg.Add(3)
 		go func() {
 			defer wg.Done()
 			collegeTeam = GetTeamByTeamID(collegeID)
@@ -92,17 +109,34 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 
 		go func() {
 			defer wg.Done()
-			collegePlayers := GetAllCollegePlayers()
+			collegePlayers = GetAllCollegePlayers()
 			mu.Lock()
 			collegePlayerMap = MakeCollegePlayerMapByTeamID(collegePlayers, true)
 			injuredCollegePlayers = MakeCollegeInjuryList(collegePlayers)
 			portalPlayers = MakeCollegePortalList(collegePlayers)
 			mu.Unlock()
+
 		}()
 		go func() {
 			defer wg.Done()
 			collegeNotifications = GetNotificationByTeamIDAndLeague("CFB", collegeID)
 		}()
+
+		wg.Wait()
+
+		wg.Add(3)
+		go func() {
+			defer wg.Done()
+			cfbStats := GetCollegePlayerSeasonStatsBySeason(seasonID, gtStr)
+
+			mu.Lock()
+			collegePlayerMap := MakeCollegePlayerMap(collegePlayers)
+			topPassers = getCFBOrderedListByStatType("PASSING", collegeTeam.ID, cfbStats, collegePlayerMap)
+			topRushers = getCFBOrderedListByStatType("RUSHING", collegeTeam.ID, cfbStats, collegePlayerMap)
+			topReceivers = getCFBOrderedListByStatType("RECEIVING", collegeTeam.ID, cfbStats, collegePlayerMap)
+			mu.Unlock()
+		}()
+
 		go func() {
 			defer wg.Done()
 			collegeGameplan = GetGameplanByTeamID(collegeID)
@@ -146,6 +180,9 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		ProNotifications:     proNotifications,
 		NFLGameplan:          proGameplan,
 		NFLDepthChart:        proDepthChart,
+		TopCFBPassers:        topPassers,
+		TopCFBRushers:        topRushers,
+		TopCFBReceivers:      topReceivers,
 	}
 }
 
@@ -169,10 +206,14 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 		capsheetMap       map[uint]structs.NFLCapsheet
 		injuredProPlayers []structs.NFLPlayer
 		proGames          []structs.NFLGame
+		topPassers        []structs.NFLPlayer
+		topRushers        []structs.NFLPlayer
+		topReceivers      []structs.NFLPlayer
 	)
 	ts := GetTimestamp()
 	log.Println("Timestamp:", ts)
-
+	_, gtStr := ts.GetNFLCurrentGameType()
+	seasonID := strconv.Itoa(int(ts.NFLSeasonID))
 	// Start concurrent queries
 	if len(collegeID) > 0 {
 		wg.Add(4)
@@ -205,6 +246,7 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 
 	}
 	if len(proID) > 0 {
+		nflTeamID := util.ConvertStringToInt(proID)
 		wg.Add(4)
 		go func() {
 			defer wg.Done()
@@ -228,12 +270,19 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 			defer wg.Done()
 			log.Println("Fetching NFL Players for roster mapping...")
 			proPlayers := GetAllNFLPlayers()
+			nflStats := GetNFLPlayerSeasonStatsBySeason(seasonID, gtStr)
+
 			mu.Lock()
+			nflPlayerMap := MakeNFLPlayerMap(proPlayers)
 			proRosterMap = MakeNFLPlayerMapByTeamID(proPlayers, true)
 			injuredProPlayers = MakeProInjuryList(proPlayers)
+			topPassers = getNFLOrderedListByStatType("PASSING", uint(nflTeamID), nflStats, nflPlayerMap)
+			topRushers = getNFLOrderedListByStatType("RUSHING", uint(nflTeamID), nflStats, nflPlayerMap)
+			topReceivers = getNFLOrderedListByStatType("RECEIVING", uint(nflTeamID), nflStats, nflPlayerMap)
 			mu.Unlock()
 			log.Println("Fetched NFL Players, roster count:", len(proRosterMap), "injured count:", len(injuredProPlayers))
 		}()
+
 		wg.Wait()
 		log.Println("Completed all Pro data queries.")
 	}
@@ -247,6 +296,9 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 		CapsheetMap:      capsheetMap,
 		ProInjuryReport:  injuredProPlayers,
 		AllProGames:      proGames,
+		TopNFLPassers:    topPassers,
+		TopNFLRushers:    topRushers,
+		TopNFLReceivers:  topReceivers,
 	}
 }
 
@@ -313,4 +365,90 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		ProNews:              proNews,
 		NFLDepthChartMap:     proDepthChartMap,
 	}
+}
+
+func getCFBOrderedListByStatType(statType string, teamID uint, CollegeStats []structs.CollegePlayerSeasonStats, collegePlayerMap map[uint]structs.CollegePlayer) []structs.CollegePlayer {
+	orderedStats := CollegeStats
+	resultList := []structs.CollegePlayer{}
+	if statType == "PASSING" {
+		sort.Slice(orderedStats[:], func(i, j int) bool {
+			return orderedStats[i].PassingTDs > orderedStats[j].PassingTDs
+		})
+	} else if statType == "RUSHING" {
+		sort.Slice(orderedStats[:], func(i, j int) bool {
+			return orderedStats[i].RushingYards > orderedStats[j].RushingYards
+		})
+	} else if statType == "RECEIVING" {
+		sort.Slice(orderedStats[:], func(i, j int) bool {
+			return orderedStats[i].ReceivingYards > orderedStats[j].ReceivingYards
+		})
+	}
+
+	teamLeaderInTopStats := false
+	for idx, stat := range orderedStats {
+		if idx > 4 {
+			break
+		}
+		player := collegePlayerMap[stat.CollegePlayerID]
+		if stat.TeamID == teamID {
+			teamLeaderInTopStats = true
+		}
+		player.AddSeasonStats(stat)
+		resultList = append(resultList, player)
+	}
+
+	if !teamLeaderInTopStats {
+		for _, stat := range orderedStats {
+			if stat.TeamID == teamID {
+				player := collegePlayerMap[stat.CollegePlayerID]
+				player.AddSeasonStats(stat)
+				resultList = append(resultList, player)
+				break
+			}
+		}
+	}
+	return resultList
+}
+
+func getNFLOrderedListByStatType(statType string, teamID uint, CollegeStats []structs.NFLPlayerSeasonStats, proPlayerMap map[uint]structs.NFLPlayer) []structs.NFLPlayer {
+	orderedStats := CollegeStats
+	resultList := []structs.NFLPlayer{}
+	if statType == "PASSING" {
+		sort.Slice(orderedStats[:], func(i, j int) bool {
+			return orderedStats[i].PassingTDs > orderedStats[j].PassingTDs
+		})
+	} else if statType == "RUSHING" {
+		sort.Slice(orderedStats[:], func(i, j int) bool {
+			return orderedStats[i].RushingYards > orderedStats[j].RushingYards
+		})
+	} else if statType == "RECEIVING" {
+		sort.Slice(orderedStats[:], func(i, j int) bool {
+			return orderedStats[i].ReceivingYards > orderedStats[j].ReceivingYards
+		})
+	}
+
+	teamLeaderInTopStats := false
+	for idx, stat := range orderedStats {
+		if idx > 4 {
+			break
+		}
+		player := proPlayerMap[stat.NFLPlayerID]
+		if stat.TeamID == teamID {
+			teamLeaderInTopStats = true
+		}
+		player.AddSeasonStats(stat)
+		resultList = append(resultList, player)
+	}
+
+	if !teamLeaderInTopStats {
+		for _, stat := range orderedStats {
+			if stat.TeamID == teamID {
+				player := proPlayerMap[stat.NFLPlayerID]
+				player.AddSeasonStats(stat)
+				resultList = append(resultList, player)
+				break
+			}
+		}
+	}
+	return resultList
 }

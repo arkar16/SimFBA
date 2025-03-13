@@ -246,3 +246,7 @@ func (np *NFLPlayer) ApplyTrainingCampInfo(attr CollegePlayerProgressions) {
 	np.InjuryType = attr.InjuryText
 	np.InjuryReserve = false
 }
+
+func (cp *NFLPlayer) AddSeasonStats(seasonStats NFLPlayerSeasonStats) {
+	cp.SeasonStats = seasonStats
+}

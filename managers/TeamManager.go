@@ -448,6 +448,7 @@ func AssignCFBTeamGrades() {
 	db := dbprovider.GetInstance().GetDB()
 	collegeTeams := GetAllCollegeTeams()
 	depthChartMap := GetDepthChartMap()
+	// Include reference to current gameplan
 	for _, t := range collegeTeams {
 		if !t.IsActive {
 			continue

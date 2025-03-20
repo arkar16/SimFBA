@@ -444,11 +444,37 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 	}
 }
 
+// This function should be called weekly, once 2.0 is released.
+// Change to league agnostic?
 func AssignCFBTeamGrades() {
 	db := dbprovider.GetInstance().GetDB()
 	collegeTeams := GetAllCollegeTeams()
 	depthChartMap := GetDepthChartMap()
 	// Include reference to current gameplan
+	// Move the grade calculation to 4 separate functions:
+	// OffenseGrade
+	// DefenseGrade
+	// SpecialTeamsGrade
+	// OverallGrade
+
+	// Follow the following algorithm:
+	// Acquire every team's numerical value for all 4 grades
+	// Determine the mean and standard deviation of each grade across all teams
+	// Assign a letter grade for each grade value by comparing the value to the following:
+	// A+: 2.0+ std dev above the mean
+	// A: between 1.75-2.0 std dev above the mean
+	// A-: between 1.5-1.75 std dev above the mean
+	// B+: between 1.25-1.5 std dev above the mean
+	// B: between 1.0-1.25 std dev above the mean
+	// B-: between .75-1.0 std dev above the mean
+	// C+: between .5-.75 std dev above the mean
+	// C: between +/- .5 std dev from mean
+	// C-: between .5-.75 std dev below the mean
+	// D+: between .75-1.0 std dev below the mean
+	// D: between 1.0-1.5 std dev below the mean
+	// D-: between 1.5-2.0 std dev below the mean
+	// F: 2.0+ std dev below the mean
+
 	for _, t := range collegeTeams {
 		if !t.IsActive {
 			continue

@@ -33,6 +33,7 @@ type FaceData struct {
 	NoseSize        float32 // Range 0.5 to 1.25
 	SmileLine       uint8   // Range - 1 through 5
 	SmileLineSize   float32 // 0.25 to 2.25
+	SkinTone        string
 	SkinColor       uint8
 }
 

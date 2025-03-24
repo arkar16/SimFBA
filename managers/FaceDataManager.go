@@ -12,6 +12,51 @@ import (
 	"github.com/CalebRose/SimFBA/util"
 )
 
+func GetAllFaces() map[uint]structs.FaceDataResponse {
+	faces := repository.FindFaceDataRecords(repository.FaceDataQuery{})
+	faceMap := make(map[uint]structs.FaceDataResponse)
+	faceBlob := getFaceDataBlob()
+
+	for _, face := range faces {
+		faceData := structs.FaceDataResponse{
+			PlayerID:        face.PlayerID,
+			Accessories:     faceBlob["accessories"][face.Accessories],
+			Body:            faceBlob["body"][face.Body],
+			BodySize:        face.BodySize,
+			Ear:             faceBlob["ear"][face.Ear],
+			Eye:             faceBlob["eye"][face.Eye],
+			EyeLine:         faceBlob["eyeLine"][face.EyeLine],
+			Eyebrow:         faceBlob["eyebrow"][face.Eyebrow],
+			FacialHair:      faceBlob["facialHair"][face.FacialHair],
+			Glasses:         faceBlob["glasses"][face.Glasses],
+			Hair:            faceBlob["hair"][face.Hair],
+			HairBG:          faceBlob["hairBg"][face.HairBG],
+			HairFlip:        face.HairFlip,
+			Head:            faceBlob["head"][face.Head],
+			Jersey:          faceBlob["jersey"][face.Jersey],
+			MiscLine:        faceBlob["miscLine"][face.MiscLine],
+			Mouth:           faceBlob["mouth"][face.Mouth],
+			MouthFlip:       face.MouthFlip,
+			Nose:            faceBlob["nose"][face.Nose],
+			NoseFlip:        face.NoseFlip,
+			SmileLine:       faceBlob["smileLine"][face.SmileLine],
+			EarSize:         face.EarSize,
+			EyeAngle:        face.EyeAngle,
+			EyeBrowAngle:    face.EyeBrowAngle,
+			FaceSize:        face.FaceSize,
+			FacialHairShave: faceBlob["facialHairShave"][face.FacialHairShave],
+			NoseSize:        face.NoseSize,
+			SmileLineSize:   face.SmileLineSize,
+			SkinColor:       faceBlob[face.SkinTone+"Skin"][face.SkinColor],
+			HairColor:       faceBlob[face.SkinTone+"Hair"][face.HairColor],
+		}
+
+		faceMap[face.PlayerID] = faceData
+	}
+
+	return faceMap
+}
+
 func MigrateFaceDataToRecruits() {
 	db := dbprovider.GetInstance().GetDB()
 	// Get Recruits
@@ -151,6 +196,7 @@ func getFace(id uint, ethnicity string, faceDataBlob map[string][]string) struct
 		Nose:            uint8(util.GenerateIntFromRange(0, len(faceDataBlob["nose"]))),
 		NoseFlip:        util.GenerateIntFromRange(1, 2) == 1,
 		NoseSize:        float32(util.GenerateFloatFromRange(0.5, 1.25)),
+		SkinTone:        ethnicity,
 		SkinColor:       uint8(util.GenerateIntFromRange(0, len(faceDataBlob[ethnicity+"Skin"]))),
 		SmileLine:       uint8(util.GenerateIntFromRange(0, len(faceDataBlob["smileLine"]))),
 		SmileLineSize:   float32(util.GenerateFloatFromRange(0.25, 2.25)),

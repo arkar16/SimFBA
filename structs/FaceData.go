@@ -20,6 +20,7 @@ type FaceData struct {
 	FacialHairShave uint8   // 1 through 5 (make sure to define like rgba(0,0,0,0.x))
 	Glasses         uint8   // Range - 1 through 7
 	Hair            uint8   // Range - 1 through 49
+	HairColor       uint8   //
 	HairBG          uint8   // Range - 1 through 8 (feminine only?)
 	HairFlip        bool
 	Head            uint8 // Range - 1 through 22
@@ -32,6 +33,7 @@ type FaceData struct {
 	NoseSize        float32 // Range 0.5 to 1.25
 	SmileLine       uint8   // Range - 1 through 5
 	SmileLineSize   float32 // 0.25 to 2.25
+	SkinColor       uint8
 }
 
 // Will need to come up with a range of allowable characteristics for this view.
@@ -65,4 +67,6 @@ type FaceDataResponse struct {
 	FacialHairShave string  // 1 through 5 (make sure to define like rgba(0,0,0,0.x))
 	NoseSize        float32 // Range 0.5 to 1.25
 	SmileLineSize   float32 // 0.25 to 2.25
+	SkinColor       string
+	HairColor       string
 }

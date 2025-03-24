@@ -289,5 +289,22 @@
     "#74453d",
     "#5c3937"
   ],
+  "whiteSkin": ["#f2d6cb", "#ddb7a0"],
+  "whiteHair": [
+    "#272421",
+    "#3D2314",
+    "#5A3825",
+    "#CC9966",
+    "#2C1608",
+    "#B55239",
+    "#e9c67b",
+    "#D7BF91"
+],
+  "asianSkin": ["#fedac7", "#f0c5a3", "#eab687"],
+  "asianHair": ["#272421", "#0f0902"],
+  "brownSkin": ["#bb876f", "#aa816f", "#a67358"],
+  "brownHair": ["#272421", "#1c1008"],
+  "blackSkin": ["#ad6453", "#74453d", "#5c3937"],
+  "blackHair": ["#272421"],
   "smileLine": ["line1", "line2", "line3", "line4", "none"]
 }

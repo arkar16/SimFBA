@@ -29,9 +29,11 @@ type CrootGenerator struct {
 	teamMap           map[uint]structs.CollegeTeam
 	positionList      []string
 	CrootList         []structs.Recruit
+	FacesList         []structs.FaceData
 	GlobalList        []structs.Player
 	attributeBlob     map[string]map[string]map[string]map[string]interface{}
 	crootLocations    map[string][]structs.CrootLocation
+	faceDataBlob      map[string][]string
 	newID             uint
 	count             int
 	requiredPlayers   int
@@ -227,6 +229,13 @@ func (pg *CrootGenerator) generatePlayer() (structs.Recruit, structs.Player) {
 	}
 
 	globalPlayer.AssignID(pg.newID)
+
+	skinColor := getSkinColorByEthnicity(pg.pickedEthnicity)
+
+	face := getFace(pg.newID, skinColor, pg.faceDataBlob)
+
+	pg.FacesList = append(pg.FacesList, face)
+
 	return player, globalPlayer
 }
 
@@ -265,6 +274,11 @@ func (pg *CrootGenerator) generateTwin(player *structs.Recruit) (structs.Recruit
 		NFLPlayerID:     firstTwinRelativeID,
 	}
 	globalPlayer.AssignID(uint(firstTwinRelativeID))
+	skinColor := getSkinColorByEthnicity(pg.pickedEthnicity)
+
+	face := getFace(secondTwinRelativeID, skinColor, pg.faceDataBlob)
+
+	pg.FacesList = append(pg.FacesList, face)
 	return twinPlayer, globalTwinPlayer
 }
 
@@ -380,6 +394,7 @@ func GenerateCroots() {
 		positionList:      util.GetPositionList(),
 		newID:             lastPlayerRecord.ID + 1,
 		requiredPlayers:   util.GenerateIntFromRange(6400, 6601),
+		faceDataBlob:      getFaceDataBlob(),
 		count:             0,
 		star5:             0,
 		star4:             0,
@@ -401,6 +416,7 @@ func GenerateCroots() {
 
 	repository.CreateCFBRecruitRecordsBatch(db, generator.CrootList, 500)
 	repository.CreateGlobalPlayerRecordsBatch(db, generator.GlobalList, 500)
+	repository.CreateFaceRecordsBatch(db, generator.FacesList, 500)
 	ts.ToggleGeneratedCroots()
 	repository.SaveTimestamp(ts, db)
 	AssignAllRecruitRanks()
@@ -1029,7 +1045,7 @@ func pickEthnicity() string {
 	max := 10000
 	num := util.GenerateIntFromRange(min, max)
 
-	if num < 6000 {
+	if num < 5000 {
 		return "Caucasian"
 	} else if num < 7800 {
 		return "African"
@@ -1161,7 +1177,7 @@ func getCrootLocations() map[string][]structs.CrootLocation {
 func getAttributeBlob() map[string]map[string]map[string]map[string]interface{} {
 	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\attributeBlob.json"
 
-	content, err := ioutil.ReadFile(path)
+	content, err := os.ReadFile(path)
 	if err != nil {
 		log.Fatal("Error when opening file: ", err)
 	}
@@ -1176,7 +1192,7 @@ func getAttributeBlob() map[string]map[string]map[string]map[string]interface{} 
 }
 
 func getNameList(ethnicity string, isFirstName bool) [][]string {
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimNBA\\data"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\Last Names"
 	var fileName string
 	if ethnicity == "Caucasian" {
 		if isFirstName {

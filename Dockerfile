@@ -24,6 +24,8 @@ COPY --from=base-builder /app/data/stateMatcher.json ./data/
 COPY --from=base-builder /app/data/regionMatcher.json ./data/
 COPY --from=base-builder /app/data/defaultOffensiveSchemes.json ./data/
 COPY --from=base-builder /app/data/defaultDefensiveSchemes.json ./data/
+COPY --from=base-builder /app/data/faceData.json ./data/
+
 
 ENV PORT 8081
 ENV ROOT=/app

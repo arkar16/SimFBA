@@ -29,7 +29,6 @@ func GetAllFaces() map[uint]structs.FaceDataResponse {
 	eyebrowBlob := faceBlob["eyebrow"]
 	facialHairBlob := faceBlob["facialHair"]
 	glassesBlob := faceBlob["glasses"]
-	hairBlob := faceBlob["hair"]
 	hairBgBlob := faceBlob["hairBg"]
 	headBlob := faceBlob["head"]
 	jerseyBlob := faceBlob["jersey"]
@@ -65,7 +64,8 @@ func GetAllFaces() map[uint]structs.FaceDataResponse {
 				// Precompute dynamic blob lookups.
 				// (Assuming face.SkinTone is a string field.)
 				skinBlob := faceBlob[face.SkinTone+"Skin"]
-				hairColorBlob := faceBlob[face.SkinTone+"Hair"]
+				hairColorBlob := faceBlob[face.SkinTone+"HairColor"]
+				hairBlob := faceBlob[face.SkinTone+"Hair"]
 
 				// Build facialHairShave string using no-allocation methods.
 				buf = buf[:0] // reset buffer
@@ -236,9 +236,9 @@ func MigrateFaceDataToRetiredPlayers() {
 
 func getFace(id uint, ethnicity string, faceDataBlob map[string][]string) structs.FaceData {
 	hairColorIdx := uint8(0)
-	hairColorLen := len(faceDataBlob[ethnicity+"Hair"]) - 1
+	hairColorLen := len(faceDataBlob[ethnicity+"HairColor"]) - 1
 	if hairColorLen > 0 {
-		hairColorIdx = uint8(util.GenerateIntFromRange(0, len(faceDataBlob[ethnicity+"Hair"])-1))
+		hairColorIdx = uint8(util.GenerateIntFromRange(0, len(faceDataBlob[ethnicity+"HairColor"])-1))
 	}
 	skinColorIdx := uint8(0)
 	skinColorLen := len(faceDataBlob[ethnicity+"Skin"]) - 1
@@ -261,7 +261,7 @@ func getFace(id uint, ethnicity string, faceDataBlob map[string][]string) struct
 		FacialHair:      uint8(util.GenerateIntFromRange(0, len(faceDataBlob["facialHair"])-1)),
 		FacialHairShave: uint8(util.GenerateIntFromRange(1, 5)),
 		Glasses:         0,
-		Hair:            uint8(util.GenerateIntFromRange(0, len(faceDataBlob["hair"])-1)),
+		Hair:            uint8(util.GenerateIntFromRange(0, len(faceDataBlob[ethnicity+"Hair"])-1)),
 		HairBG:          getHairBackground(),
 		HairColor:       uint8(hairColorIdx),
 		HairFlip:        util.GenerateIntFromRange(1, 2) == 1,
@@ -283,26 +283,32 @@ func getFace(id uint, ethnicity string, faceDataBlob map[string][]string) struct
 }
 
 func getSkinColor(lastName string, nameMap map[string][][]string) string {
-	skinColor := "asian"
+	skinColorList := []string{}
 	isCaucasian := checkNameInList(lastName, nameMap["Caucasian"])
 	isHispanic := checkNameInList(lastName, nameMap["Hispanic"])
 	isAfrican := checkNameInList(lastName, nameMap["African"])
 	isAsian := checkNameInList(lastName, nameMap["Asian"])
 	isNativeAmerican := checkNameInList(lastName, nameMap["NativeAmerican"])
 	if isCaucasian {
-		skinColor = "white"
-	} else if isHispanic {
-		skinColor = "brown"
-	} else if isAfrican {
-		skinColor = "black"
-	} else if isNativeAmerican {
-		skinColor = "brown"
+		skinColorList = append(skinColorList, "white")
+	}
+	if isHispanic {
+		skinColorList = append(skinColorList, "brown")
+	}
+	if isAfrican {
+		skinColorList = append(skinColorList, "black")
+	}
+	if isNativeAmerican {
+		skinColorList = append(skinColorList, "brown")
+	}
+	if isAsian {
+		skinColorList = append(skinColorList, "asian")
 	}
 	// Edge case for custom players
-	if !isCaucasian && !isHispanic && !isAfrican && !isAsian && !isNativeAmerican {
-		skinColor = util.PickFromStringList([]string{"asian", "black", "brown", "white"})
+	if (!isCaucasian && !isHispanic && !isAfrican && !isAsian && !isNativeAmerican) || len(skinColorList) == 0 {
+		return util.PickFromStringList([]string{"asian", "black", "brown", "white"})
 	}
-	return skinColor
+	return util.PickFromStringList(skinColorList)
 }
 
 func checkNameInList(name string, namesList [][]string) bool {

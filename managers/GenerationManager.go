@@ -406,6 +406,7 @@ func GenerateCroots() {
 		lowestOvr:         100000,
 		CrootList:         []structs.Recruit{},
 		GlobalList:        []structs.Player{},
+		FacesList:         []structs.FaceData{},
 		caser:             cases.Title(language.English),
 		pickedEthnicity:   "",
 	}

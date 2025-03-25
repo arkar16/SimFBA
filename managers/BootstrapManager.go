@@ -28,6 +28,7 @@ type BootstrapData struct {
 	ProNotifications     []structs.Notification
 	NFLGameplan          structs.NFLGameplan
 	NFLDepthChart        structs.NFLDepthChart
+	FaceData             map[uint]structs.FaceDataResponse
 }
 
 type BootstrapDataTwo struct {
@@ -71,6 +72,7 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		topPassers            []structs.CollegePlayer
 		topRushers            []structs.CollegePlayer
 		topReceivers          []structs.CollegePlayer
+		faceDataMap           map[uint]structs.FaceDataResponse
 	)
 
 	// Professional Data
@@ -166,6 +168,15 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		}()
 		wg.Wait()
 	}
+
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		faceDataMap = GetAllFaces()
+	}()
+
+	wg.Wait()
 	return BootstrapData{
 		CollegeTeam:          collegeTeam,
 		AllCollegeTeams:      allCollegeTeams,
@@ -183,6 +194,7 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		TopCFBPassers:        topPassers,
 		TopCFBRushers:        topRushers,
 		TopCFBReceivers:      topReceivers,
+		FaceData:             faceDataMap,
 	}
 }
 

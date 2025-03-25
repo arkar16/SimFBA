@@ -118,6 +118,9 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/nfl/draft/scout/{id}", controller.GetScoutingDataByDraftee).Methods("GET")
 	// apiRouter.HandleFunc("/nfl/draft/boom/bust", controller.BoomOrBust).Methods("GET")
 
+	// Face Controls
+	// apiRouter.HandleFunc("/faces/migrate", controller.MigrateFaceData).Methods("GET")
+
 	// Free Agency Controls
 	apiRouter.HandleFunc("/nfl/extension/create/offer", controller.CreateExtensionOffer).Methods("POST")
 	apiRouter.HandleFunc("/nfl/extension/cancel/offer", controller.CancelExtensionOffer).Methods("POST")

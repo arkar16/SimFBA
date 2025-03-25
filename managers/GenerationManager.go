@@ -8,6 +8,7 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -1192,7 +1193,8 @@ func getAttributeBlob() map[string]map[string]map[string]map[string]interface{} 
 }
 
 func getNameList(ethnicity string, isFirstName bool) [][]string {
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\Last Names"
+	path := filepath.Join(os.Getenv("ROOT"), "data")
+	// path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data"
 	var fileName string
 	if ethnicity == "Caucasian" {
 		if isFirstName {
@@ -1225,7 +1227,11 @@ func getNameList(ethnicity string, isFirstName bool) [][]string {
 			fileName = "LNameH.csv"
 		}
 	}
-	path = path + "\\" + fileName
+	folderStr := "\\First Names\\"
+	if !isFirstName {
+		folderStr = "\\Last Names\\"
+	}
+	path = path + folderStr + fileName
 	f, err := os.Open(path)
 	if err != nil {
 		log.Fatal("Unable to read input file "+path, err)

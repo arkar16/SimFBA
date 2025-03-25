@@ -9,7 +9,6 @@ import (
 	"time"
 
 	config "github.com/CalebRose/SimFBA/secrets"
-	"github.com/CalebRose/SimFBA/structs"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"golang.org/x/crypto/ssh"
 	"gorm.io/driver/mysql"
@@ -133,7 +132,7 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.Affinity{})
 	// db.AutoMigrate(&structs.TeamRequest{})
 	// db.AutoMigrate(&structs.Timestamp{})
-	db.AutoMigrate(&structs.FaceData{})
+	// db.AutoMigrate(&structs.FaceData{})
 	// db.AutoMigrate(&structs.NewsLog{})
 	// db.AutoMigrate(&structs.Notification{})
 	return true

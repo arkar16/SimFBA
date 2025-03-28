@@ -250,7 +250,7 @@
     "#74453d",
     "#5c3937"
   ],
-  "whiteSkin": ["#f2d6cb", "#ddb7a0", "fedac7"],
+  "whiteSkin": ["#f2d6cb", "#ddb7a0", "#fedac7"],
   "whiteHair": [
     "bald",
     "curly2",
@@ -309,7 +309,7 @@
     "tall-fade",
     "spike4"
   ],
-  "asianHairColor": ["#272421", "#0f0902"],
+  "asianHairColor": ["#272421", "#0f0902", "#3D2314"],
   "brownSkin": ["#bb876f", "#aa816f", "#a67358"],
   "brownHair": [
     "bald",
@@ -334,7 +334,7 @@
     "tall-fade",
     "spike4"
   ],
-  "brownHairColor": ["#272421", "#1c1008"],
+  "brownHairColor": ["#272421", "#1c1008", "#3D2314"],
   "blackSkin": ["#ad6453", "#74453d", "#5c3937"],
   "blackHair": [
     "bald",

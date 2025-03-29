@@ -53,7 +53,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 
 	teamMap := make(map[string]*structs.RecruitingTeamProfile)
 
-	for i := 0; i < len(teamRecruitingProfiles); i++ {
+	for i := range teamRecruitingProfiles {
 		teamMap[strconv.Itoa(int(teamRecruitingProfiles[i].ID))] = &teamRecruitingProfiles[i]
 	}
 
@@ -821,10 +821,7 @@ func isHighlyContestedCroot(mod int, teams int, CollegeWeek int) bool {
 
 func allocatePointsToRecruit(recruit structs.Recruit, recruitProfiles *[]structs.RecruitPlayerProfile, pointLimit float64, spendingCountAdjusted *bool, pointsPlaced *bool, timestamp structs.Timestamp, recruitProfilePointsMap *map[string]float64, db *gorm.DB) {
 	// numWorkers := 3
-	numWorkers := runtime.NumCPU()
-	if numWorkers > 3 {
-		numWorkers = 3
-	}
+	numWorkers := min(runtime.NumCPU(), 3)
 	jobs := make(chan int, len(*recruitProfiles))
 	results := make(chan error, len(*recruitProfiles))
 	var m sync.Mutex

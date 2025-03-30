@@ -359,7 +359,7 @@ func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse 
 		// Continue
 	} else {
 		diff := nflWeek - weekNum
-		nflWeekID = ts.CollegeWeekID - diff
+		nflWeekID = ts.NFLWeekID - diff
 	}
 	games := GetNFLGamesByTimeslotAndWeekId(strconv.Itoa(nflWeekID), timeslot, ts.NFLPreseason)
 

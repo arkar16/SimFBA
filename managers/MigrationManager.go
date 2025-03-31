@@ -3,6 +3,7 @@ package managers
 import (
 	"fmt"
 	"log"
+	"sort"
 	"strconv"
 	"time"
 
@@ -417,5 +418,95 @@ func migrateCFBPlayerSeasonStats(cfbPlayerSeasonStatMap map[uint][]structs.Colle
 	}
 	if regularSeasonStats.ID > 0 {
 		repository.SaveCollegePlayerSeasonStats(regularSeasonStats, db)
+	}
+}
+
+func FixSpendingCount() {
+	db := dbprovider.GetInstance().GetDB()
+
+	recruits := GetAllRecruitRecords()
+	unsignedIDs := []string{}
+	for _, r := range recruits {
+		if r.IsSigned {
+			continue
+		}
+		id := strconv.Itoa(int(r.ID))
+		unsignedIDs = append(unsignedIDs, id)
+	}
+
+	allProfiles := []structs.RecruitPlayerProfile{}
+
+	db.Where("recruit_id in (?)", unsignedIDs).Find(&allProfiles)
+
+	profileIDs := []string{}
+	profileMap := make(map[uint][]structs.RecruitPlayerProfile)
+
+	for _, p := range allProfiles {
+		if p.RemovedFromBoard {
+			continue
+		}
+		id := strconv.Itoa(int(p.ProfileID))
+		profileIDs = append(profileIDs, id)
+		if len(profileMap[uint(p.RecruitID)]) == 0 {
+			profileMap[uint(p.RecruitID)] = []structs.RecruitPlayerProfile{p}
+		} else {
+			profileMap[uint(p.RecruitID)] = append(profileMap[uint(p.RecruitID)], p)
+		}
+	}
+
+	allocations := []structs.RecruitPointAllocation{}
+
+	db.Where("team_profile_id in (?)", profileIDs).Find(&allocations)
+
+	allocationMap := make(map[uint][]structs.RecruitPointAllocation)
+
+	for _, a := range allocations {
+		if len(allocationMap[uint(a.RecruitProfileID)]) == 0 {
+			allocationMap[uint(a.RecruitProfileID)] = []structs.RecruitPointAllocation{a}
+		} else {
+			allocationMap[uint(a.RecruitProfileID)] = append(allocationMap[uint(a.RecruitProfileID)], a)
+		}
+	}
+
+	for _, r := range recruits {
+		if r.IsSigned {
+			continue
+		}
+
+		profiles := profileMap[r.ID]
+
+		for _, p := range profiles {
+			spendingCount := 0
+			profileAllocations := allocationMap[uint(p.ID)]
+			weekPointMap := make(map[int]float64)
+
+			for _, a := range profileAllocations {
+				weekPointMap[a.WeekID] += a.Points
+			}
+
+			weeks := []int{}
+			for week := range weekPointMap {
+				weeks = append(weeks, week)
+			}
+			sort.Ints(weeks)
+			prevWeek := -1
+			for _, week := range weeks {
+				points := weekPointMap[week]
+
+				if prevWeek != -1 && week-prevWeek > 1 {
+					// Missed one or more weeks – reset the streak
+					spendingCount = 0
+				}
+
+				if points > 0 {
+					spendingCount++
+				}
+
+				prevWeek = week
+			}
+
+			p.UpdateSpendingCount(spendingCount)
+			repository.SaveRecruitProfile(p, db)
+		}
 	}
 }

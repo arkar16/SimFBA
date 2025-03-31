@@ -86,9 +86,14 @@ func (rp *RecruitPlayerProfile) LockPlayer() {
 	rp.IsLocked = true
 }
 
+func (rp *RecruitPlayerProfile) UpdateSpendingCount(count int) {
+	rp.SpendingCount = count
+}
+
 func (rp *RecruitPlayerProfile) ResetSpendingCount() {
 	rp.SpendingCount = 0
 }
+
 func (rp *RecruitPlayerProfile) ResetTotalPoints() {
 	rp.TotalPoints = 0
 	rp.TeamReachedMax = true

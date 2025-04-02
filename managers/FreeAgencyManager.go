@@ -28,6 +28,26 @@ func GetAllFreeAgents() []structs.NFLPlayer {
 	return fas
 }
 
+func GetContractMap() map[uint]structs.NFLContract {
+	db := dbprovider.GetInstance().GetDB()
+
+	contracts := []structs.NFLContract{}
+
+	db.Where("is_active = ?", true).Find(&contracts)
+
+	return MakeContractMap(contracts)
+}
+
+func GetExtensionMap() map[uint]structs.NFLExtensionOffer {
+	db := dbprovider.GetInstance().GetDB()
+
+	contracts := []structs.NFLExtensionOffer{}
+
+	db.Where("is_active = ?", true).Find(&contracts)
+
+	return MakeExtensionMap(contracts)
+}
+
 func GetAllWaiverWirePlayers() []structs.NFLPlayer {
 	db := dbprovider.GetInstance().GetDB()
 

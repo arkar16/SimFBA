@@ -52,6 +52,8 @@ type BootstrapDataThree struct {
 	FreeAgency           models.FreeAgencyResponse
 	ProNews              []structs.NewsLog
 	NFLDepthChartMap     map[uint]structs.NFLDepthChart
+	ContractMap          map[uint]structs.NFLContract
+	ExtensionMap         map[uint]structs.NFLExtensionOffer
 }
 
 func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
@@ -328,6 +330,8 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		freeAgency       models.FreeAgencyResponse
 		proNews          []structs.NewsLog
 		proDepthChartMap map[uint]structs.NFLDepthChart
+		contractMap      map[uint]structs.NFLContract
+		extensionMap     map[uint]structs.NFLExtensionOffer
 	)
 
 	freeAgencyCh := make(chan models.FreeAgencyResponse, 1)
@@ -367,6 +371,16 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 			GetAllAvailableNFLPlayersViaChan(proID, freeAgencyCh)
 		}()
 
+		go func() {
+			defer wg.Done()
+			contractMap = GetContractMap()
+		}()
+
+		go func() {
+			defer wg.Done()
+			extensionMap = GetExtensionMap()
+		}()
+
 		freeAgency = <-freeAgencyCh
 		wg.Wait()
 	}
@@ -376,6 +390,8 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		FreeAgency:           freeAgency,
 		ProNews:              proNews,
 		NFLDepthChartMap:     proDepthChartMap,
+		ContractMap:          contractMap,
+		ExtensionMap:         extensionMap,
 	}
 }
 

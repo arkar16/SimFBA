@@ -85,3 +85,23 @@ func MakeNFLDepthChartMap(dcs []structs.NFLDepthChart) map[uint]structs.NFLDepth
 
 	return dcMap
 }
+
+func MakeContractMap(contracts []structs.NFLContract) map[uint]structs.NFLContract {
+	contractMap := make(map[uint]structs.NFLContract)
+
+	for _, c := range contracts {
+		contractMap[uint(c.NFLPlayerID)] = c
+	}
+
+	return contractMap
+}
+
+func MakeExtensionMap(extensions []structs.NFLExtensionOffer) map[uint]structs.NFLExtensionOffer {
+	contractMap := make(map[uint]structs.NFLExtensionOffer)
+
+	for _, c := range extensions {
+		contractMap[uint(c.NFLPlayerID)] = c
+	}
+
+	return contractMap
+}

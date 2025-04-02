@@ -4537,7 +4537,7 @@ export class BootstrapData {
   ProNotifications: Notification[];
   NFLGameplan: NFLGameplan;
   NFLDepthChart: NFLDepthChart;
-  FaceData: { [key: number]: FaceDataResponse };
+  FaceData: { [key: uint]: FaceDataResponse };
 
   constructor(source: any = {}) {
     if ("string" === typeof source) source = JSON.parse(source);
@@ -5447,6 +5447,8 @@ export class BootstrapDataThree {
   FreeAgency: FreeAgencyResponse;
   ProNews: NewsLog[];
   NFLDepthChartMap: { [key: uint]: NFLDepthChart };
+  ContractMap: { [key: number]: NFLContract };
+  ExtensionMap: { [key: number]: NFLExtensionOffer };
 
   constructor(source: any = {}) {
     if ("string" === typeof source) source = JSON.parse(source);
@@ -5464,6 +5466,16 @@ export class BootstrapDataThree {
     this.NFLDepthChartMap = this.convertValues(
       source["NFLDepthChartMap"],
       NFLDepthChart,
+      true
+    );
+    this.ContractMap = this.convertValues(
+      source["ContractMap"],
+      NFLContract,
+      true
+    );
+    this.ExtensionMap = this.convertValues(
+      source["ExtensionMap"],
+      NFLExtensionOffer,
       true
     );
   }

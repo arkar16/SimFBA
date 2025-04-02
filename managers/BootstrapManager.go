@@ -352,7 +352,7 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		wg.Wait()
 	}
 	if len(proID) > 0 {
-		wg.Add(3)
+		wg.Add(5)
 
 		go func() {
 			defer wg.Done()

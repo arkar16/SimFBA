@@ -120,6 +120,7 @@ func handleRequests() http.Handler {
 
 	// Face Controls
 	// apiRouter.HandleFunc("/faces/migrate", controller.MigrateFaceData).Methods("GET")
+	// apiRouter.HandleFunc("/spending/count/fix", controller.FixSpendingCount).Methods("GET")
 
 	// Free Agency Controls
 	apiRouter.HandleFunc("/nfl/extension/create/offer", controller.CreateExtensionOffer).Methods("POST")

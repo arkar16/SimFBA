@@ -158,7 +158,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 							SeasonID:    timestamp.CollegeSeasonID,
 							MessageType: "Commitment",
 							League:      "CFB",
-							Message:     recruit.FirstName + " " + recruit.LastName + ", " + strconv.Itoa(recruit.Stars) + " star " + recruit.Position + " from " + recruit.City + ", " + recruit.State + " has signed with " + recruit.College + " with " + strconv.Itoa(int(odds)) + " percent odds.",
+							Message:     strconv.Itoa(int(recruit.ID)) + " " + recruit.FirstName + " " + recruit.LastName + ", " + strconv.Itoa(recruit.Stars) + " star " + recruit.Position + " from " + recruit.City + ", " + recruit.State + " has signed with " + recruit.College + " with " + strconv.Itoa(int(odds)) + " percent odds.",
 						}
 
 						db.Create(&newsLog)
@@ -167,7 +167,7 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 						db.Save(&recruitTeamProfile)
 						fmt.Println("Saved " + recruitTeamProfile.TeamAbbreviation + " profile.")
 
-						for i := 0; i < len(recruitProfiles); i++ {
+						for i := range recruitProfiles {
 							if recruitProfiles[i].ProfileID == winningTeamID {
 								recruitProfiles[i].SignPlayer()
 							} else {
@@ -367,7 +367,7 @@ func SyncTeamRankings() {
 	var max247Score float64 = 0
 	var min247Score float64 = 100000
 
-	for i := 0; i < len(teamRecruitingProfiles); i++ {
+	for i := range teamRecruitingProfiles {
 
 		signedRecruits := GetSignedRecruitsByTeamProfileID(strconv.Itoa(teamRecruitingProfiles[i].TeamID))
 

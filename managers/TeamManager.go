@@ -444,6 +444,78 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 	}
 }
 
+// Returns the CFB team's numerical value for their entire offense
+func OffenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan structs.CollegeGameplan) float32 {
+	// Get overall values for all relevant positions
+	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
+	// Depending on scheme, weight them
+	// Sum them all up
+	// Divide by 11.5 (offense weight normalization value)
+	// return the resulting value
+	return 0.0
+}
+
+// Returns the CFB team's numerical value for their entire offense
+func DefenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan structs.CollegeGameplan) float32 {
+	// Get overall values for all relevant positions
+	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
+	// Depending on scheme, weight them
+	// Sum them all up
+	// Divide by 11 (defense weight normalization value)
+	// return the resulting value
+	return 0.0
+}
+
+// Returns the CFB team's numerical value for their entire offense
+func STGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart) float32 {
+	// Get overall values for all relevant positions
+	// Weight them by position
+	// Sum them all up
+	// Divide by 5 (Special Teams weight normalization value)
+	// return the resulting value
+	return 0.0
+}
+
+// Returns the CFB team's numerical value for their entire offense
+func OffenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.NFLGameplan) float32 {
+	// Get overall values for all relevant positions
+	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
+	// Depending on scheme, weight them
+	// Sum them all up
+	// Divide by 11.5 (offense weight normalization value)
+	// return the resulting value
+	return 0.0
+}
+
+// Returns the CFB team's numerical value for their entire offense
+func DefenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.NFLGameplan) float32 {
+	// Get overall values for all relevant positions
+	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
+	// Depending on scheme, weight them
+	// Sum them all up
+	// Divide by 11 (defense weight normalization value)
+	// return the resulting value
+	return 0.0
+}
+
+// Returns the CFB team's numerical value for their entire offense
+func STGradeNFL(depthChartPlayers structs.NFLDepthChart) float32 {
+	// Get overall values for all relevant positions
+	// Weight them by position
+	// Sum them all up
+	// Divide by 5 (Special Teams weight normalization value)
+	// return the resulting value
+	return 0.0
+}
+
+// League agnostic
+func OveralGrade(offense float32, defense float32, specialTeams float32) float32 {
+	var overallGrade float32 = offense * 0.45
+	overallGrade = overallGrade + (defense * 0.45)
+	overallGrade = overallGrade + (specialTeams * 0.1)
+	return overallGrade
+}
+
 // This function should be called weekly, once 2.0 is released.
 // Change to league agnostic?
 func AssignCFBTeamGrades() {

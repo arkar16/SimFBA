@@ -509,7 +509,7 @@ func STGradeNFL(depthChartPlayers structs.NFLDepthChart) float32 {
 }
 
 // League agnostic
-func OveralGrade(offense float32, defense float32, specialTeams float32) float32 {
+func OverallGrade(offense float32, defense float32, specialTeams float32) float32 {
 	var overallGrade float32 = offense * 0.45
 	overallGrade = overallGrade + (defense * 0.45)
 	overallGrade = overallGrade + (specialTeams * 0.1)
@@ -518,10 +518,48 @@ func OveralGrade(offense float32, defense float32, specialTeams float32) float32
 
 // This function should be called weekly, once 2.0 is released.
 // Change to league agnostic?
-func AssignCFBTeamGrades() {
+func AssignTeamGrades() {
 	db := dbprovider.GetInstance().GetDB()
+
+	// College
 	collegeTeams := GetAllCollegeTeams()
-	depthChartMap := GetDepthChartMap()
+	collegeDepthChartMap := GetDepthChartMap()
+	collegeGameplanMap := GetCollegeGameplanMap()
+	collegeTeamGrades := make(map[uint]structs.TeamGrade)
+
+	for _, t := range collegeTeams {
+		if !t.IsActive {
+			continue
+		}
+		depthChart := collegeDepthChartMap[t.ID]
+		gameplan := collegeGameplanMap[t.ID]
+		offenseGrade := OffenseGradeCFB(depthChart, gameplan)
+		defenseGrade := DefenseGradeCFB(depthChart, gameplan)
+		STGrade := STGradeCFB(depthChart)
+
+		collegeTeamGrades[t.ID] = structs.TeamGrade{
+			OffenseGradeNumber:      offenseGrade,
+			DefenseGradeNumber:      defenseGrade,
+			SpecialTeamsGradeNumber: STGrade,
+			OverallGradeNumber:      OverallGrade(offenseGrade, defenseGrade, STGrade),
+			OffenseGradeLetter:      "",
+			DefenseGradeLetter:      "",
+			SpecialTeamsGradeLetter: "",
+			OverallGradeLetter:      "",
+		}
+	}
+
+	// Determine the mean and std dev for the data set contained in the collegeTeamGrades map
+
+	// Iterate back through the map and set the letter grades based on the number grades' relationship to the mean and std dev of the entire data set for that value
+
+	// Assign those letter grades to that team's grade properties
+
+	// NFL
+	nflTeams := GetAllCollegeTeams()
+	nflDepthChartMap := GetDepthChartMap()
+	nflGameplanMap := GetCollegeGameplanMap()
+
 	// Include reference to current gameplan
 	// Move the grade calculation to 4 separate functions:
 	// OffenseGrade

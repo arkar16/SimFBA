@@ -1,27 +1,28 @@
 package structs
 
 type BaseTeam struct {
-	TeamName         string
-	Mascot           string
-	TeamAbbr         string
-	Coach            string
-	City             string
-	State            string
-	Country          string
-	StadiumID        uint
-	Stadium          string
-	StadiumCapacity  int
-	RecordAttendance int
-	Enrollment       int
-	FirstPlayed      int
-	ColorOne         string
-	ColorTwo         string
-	ColorThree       string
-	DiscordID        string
-	OverallGrade     string
-	OffenseGrade     string
-	DefenseGrade     string
-	PenaltyMarks     uint8
+	TeamName          string
+	Mascot            string
+	TeamAbbr          string
+	Coach             string
+	City              string
+	State             string
+	Country           string
+	StadiumID         uint
+	Stadium           string
+	StadiumCapacity   int
+	RecordAttendance  int
+	Enrollment        int
+	FirstPlayed       int
+	ColorOne          string
+	ColorTwo          string
+	ColorThree        string
+	DiscordID         string
+	OverallGrade      string
+	OffenseGrade      string
+	DefenseGrade      string
+	SpecialTeamsGrade string
+	PenaltyMarks      uint8
 }
 
 func (bt *BaseTeam) RemoveUserFromTeam() {
@@ -44,8 +45,9 @@ func (bt *BaseTeam) ResetMarks() {
 	bt.PenaltyMarks = 0
 }
 
-func (bt *BaseTeam) AssignTeamGrades(ovr, off, def string) {
+func (bt *BaseTeam) AssignTeamGrades(ovr, off, def, st string) {
 	bt.OverallGrade = ovr
 	bt.OffenseGrade = off
 	bt.DefenseGrade = def
+	bt.SpecialTeamsGrade = st
 }

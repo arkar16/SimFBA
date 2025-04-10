@@ -2,6 +2,7 @@ package managers
 
 import (
 	"log"
+	"math"
 	"strconv"
 	"sync"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
-	"github.com/CalebRose/SimFBA/util"
 	"gorm.io/gorm"
 )
 
@@ -445,7 +445,7 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 }
 
 // Returns the CFB team's numerical value for their entire offense
-func OffenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan structs.CollegeGameplan) float32 {
+func OffenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan structs.CollegeGameplan) float64 {
 	// Get overall values for all relevant positions
 	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
 	// Depending on scheme, weight them
@@ -456,7 +456,7 @@ func OffenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan s
 }
 
 // Returns the CFB team's numerical value for their entire offense
-func DefenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan structs.CollegeGameplan) float32 {
+func DefenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan structs.CollegeGameplan) float64 {
 	// Get overall values for all relevant positions
 	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
 	// Depending on scheme, weight them
@@ -467,7 +467,7 @@ func DefenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan s
 }
 
 // Returns the CFB team's numerical value for their entire offense
-func STGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart) float32 {
+func STGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart) float64 {
 	// Get overall values for all relevant positions
 	// Weight them by position
 	// Sum them all up
@@ -477,7 +477,7 @@ func STGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart) float32 {
 }
 
 // Returns the CFB team's numerical value for their entire offense
-func OffenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.NFLGameplan) float32 {
+func OffenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.NFLGameplan) float64 {
 	// Get overall values for all relevant positions
 	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
 	// Depending on scheme, weight them
@@ -488,7 +488,7 @@ func OffenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.N
 }
 
 // Returns the CFB team's numerical value for their entire offense
-func DefenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.NFLGameplan) float32 {
+func DefenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.NFLGameplan) float64 {
 	// Get overall values for all relevant positions
 	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
 	// Depending on scheme, weight them
@@ -499,7 +499,7 @@ func DefenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.N
 }
 
 // Returns the CFB team's numerical value for their entire offense
-func STGradeNFL(depthChartPlayers structs.NFLDepthChart) float32 {
+func STGradeNFL(depthChartPlayers structs.NFLDepthChart) float64 {
 	// Get overall values for all relevant positions
 	// Weight them by position
 	// Sum them all up
@@ -509,15 +509,34 @@ func STGradeNFL(depthChartPlayers structs.NFLDepthChart) float32 {
 }
 
 // League agnostic
-func OverallGrade(offense float32, defense float32, specialTeams float32) float32 {
-	var overallGrade float32 = offense * 0.45
+func OverallGrade(offense float64, defense float64, specialTeams float64) float64 {
+	var overallGrade float64 = offense * 0.45
 	overallGrade = overallGrade + (defense * 0.45)
 	overallGrade = overallGrade + (specialTeams * 0.1)
 	return overallGrade
 }
 
+func TeamLetterGrade(value float64, mean float64, stdDev float64) string {
+	// Follow the following algorithm:
+	// Acquire every team's numerical value for all 4 grades
+	// Determine the mean and standard deviation of each grade across all teams
+	// Assign a letter grade for each grade value by comparing the value to the following:
+	// A+: 2.0+ std dev above the mean
+	// A: between 1.75-2.0 std dev above the mean
+	// A-: between 1.5-1.75 std dev above the mean
+	// B+: between 1.25-1.5 std dev above the mean
+	// B: between 1.0-1.25 std dev above the mean
+	// B-: between .75-1.0 std dev above the mean
+	// C+: between .5-.75 std dev above the mean
+	// C: between +/- .5 std dev from mean
+	// C-: between .5-.75 std dev below the mean
+	// D+: between .75-1.0 std dev below the mean
+	// D: between 1.0-1.5 std dev below the mean
+	// D-: between 1.5-2.0 std dev below the mean
+	// F: 2.0+ std dev below the mean
+}
+
 // This function should be called weekly, once 2.0 is released.
-// Change to league agnostic?
 func AssignTeamGrades() {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -550,87 +569,167 @@ func AssignTeamGrades() {
 	}
 
 	// Determine the mean and std dev for the data set contained in the collegeTeamGrades map
+	offenseMean := 0.0
+	defenseMean := 0.0
+	stMean := 0.0
+	overallMean := 0.0
+	offenseVar := 0.0
+	defenseVar := 0.0
+	stVar := 0.0
+	overallVar := 0.0
+	dataLength := len(collegeTeamGrades)
+
+	// Mean for all values
+	for _, element := range collegeTeamGrades {
+		offenseMean += element.OffenseGradeNumber
+		defenseMean += element.DefenseGradeNumber
+		stMean += element.SpecialTeamsGradeNumber
+		overallMean += element.OverallGradeNumber
+	}
+
+	offenseMean = (offenseMean / float64(dataLength))
+	defenseMean = (defenseMean / float64(dataLength))
+	stMean = (stMean / float64(dataLength))
+	overallMean = (overallMean / float64(dataLength))
+
+	// Variance for all values
+	for _, element := range collegeTeamGrades {
+		offenseDiff := element.OffenseGradeNumber - offenseMean
+		defenseDiff := element.DefenseGradeNumber - defenseMean
+		stDiff := element.SpecialTeamsGradeNumber - stMean
+		overallDiff := element.OffenseGradeNumber - overallMean
+
+		offenseVar += (offenseDiff * offenseDiff)
+		defenseVar += (defenseDiff * defenseDiff)
+		stVar += (stDiff * stDiff)
+		overallVar += (overallDiff * overallDiff)
+	}
+
+	offenseVar = (offenseVar / float64(dataLength-1))
+	defenseVar = (defenseVar / float64(dataLength-1))
+	stVar = (stVar / float64(dataLength-1))
+	overallVar = (overallVar / float64(dataLength-1))
+
+	// Std Dev for all values
+	offenseStdDev := math.Sqrt(offenseVar)
+	defenseStdDev := math.Sqrt(defenseVar)
+	stStdDev := math.Sqrt(stVar)
+	overallStdDev := math.Sqrt(overallVar)
 
 	// Iterate back through the map and set the letter grades based on the number grades' relationship to the mean and std dev of the entire data set for that value
+	for _, collegeTeam := range collegeTeamGrades {
+		collegeTeam.SetOffenseGradeLetter(TeamLetterGrade(collegeTeam.OffenseGradeNumber, offenseMean, offenseStdDev))
+		collegeTeam.SetDefenseGradeLetter(TeamLetterGrade(collegeTeam.DefenseGradeNumber, defenseMean, defenseStdDev))
+		collegeTeam.SetSpecialTeamsGradeLetter(TeamLetterGrade(collegeTeam.SpecialTeamsGradeNumber, stMean, stStdDev))
+		collegeTeam.SetOverallGradeLetter(TeamLetterGrade(collegeTeam.OverallGradeNumber, overallMean, overallStdDev))
+	}
 
 	// Assign those letter grades to that team's grade properties
+	for _, collegeTeam := range collegeTeams {
+		collegeTeam.AssignTeamGrades(collegeTeamGrades[collegeTeam.ID].OverallGradeLetter, collegeTeamGrades[collegeTeam.ID].OffenseGradeLetter,
+			collegeTeamGrades[collegeTeam.ID].DefenseGradeLetter, collegeTeamGrades[collegeTeam.ID].SpecialTeamsGradeLetter)
+
+		repository.SaveCFBTeam(collegeTeam, db)
+	}
 
 	// NFL
-	nflTeams := GetAllCollegeTeams()
-	nflDepthChartMap := GetDepthChartMap()
-	nflGameplanMap := GetCollegeGameplanMap()
+	nflTeams := GetAllNFLTeams()
+	nflDepthChartList := GetAllNFLDepthcharts()
+	nflGameplanList := GetAllNFLGameplans()
+	nflDepthChartMap := make(map[uint]structs.NFLDepthChart)
+	nflGameplanMap := make(map[uint]structs.NFLGameplan)
 
-	// Include reference to current gameplan
-	// Move the grade calculation to 4 separate functions:
-	// OffenseGrade
-	// DefenseGrade
-	// SpecialTeamsGrade
-	// OverallGrade
+	for _, t := range nflDepthChartList {
+		nflDepthChartMap[t.ID] = t
+	}
 
-	// Follow the following algorithm:
-	// Acquire every team's numerical value for all 4 grades
-	// Determine the mean and standard deviation of each grade across all teams
-	// Assign a letter grade for each grade value by comparing the value to the following:
-	// A+: 2.0+ std dev above the mean
-	// A: between 1.75-2.0 std dev above the mean
-	// A-: between 1.5-1.75 std dev above the mean
-	// B+: between 1.25-1.5 std dev above the mean
-	// B: between 1.0-1.25 std dev above the mean
-	// B-: between .75-1.0 std dev above the mean
-	// C+: between .5-.75 std dev above the mean
-	// C: between +/- .5 std dev from mean
-	// C-: between .5-.75 std dev below the mean
-	// D+: between .75-1.0 std dev below the mean
-	// D: between 1.0-1.5 std dev below the mean
-	// D-: between 1.5-2.0 std dev below the mean
-	// F: 2.0+ std dev below the mean
+	for _, t := range nflGameplanList {
+		nflGameplanMap[t.ID] = t
+	}
 
-	for _, t := range collegeTeams {
-		if !t.IsActive {
-			continue
+	nflTeamGrades := make(map[uint]structs.TeamGrade)
+
+	// CHANGE ALL REFERENCES TO COLLEGE TO NFL FROM HERE ON
+	for _, t := range nflTeams {
+		depthChart := nflDepthChartMap[t.ID]
+		gameplan := nflGameplanMap[t.ID]
+		offenseGrade := OffenseGradeNFL(depthChart, gameplan)
+		defenseGrade := DefenseGradeNFL(depthChart, gameplan)
+		STGrade := STGradeNFL(depthChart)
+
+		nflTeamGrades[t.ID] = structs.TeamGrade{
+			OffenseGradeNumber:      offenseGrade,
+			DefenseGradeNumber:      defenseGrade,
+			SpecialTeamsGradeNumber: STGrade,
+			OverallGradeNumber:      OverallGrade(offenseGrade, defenseGrade, STGrade),
+			OffenseGradeLetter:      "",
+			DefenseGradeLetter:      "",
+			SpecialTeamsGradeLetter: "",
+			OverallGradeLetter:      "",
 		}
-		depthChart := depthChartMap[t.ID]
-		players := depthChart.DepthChartPlayers
-		overallScore := 0.0
-		offensiveScore := 0.0
-		defensiveScore := 0.0
-		offenseCount := 0
-		defenseCount := 0
-		totalCount := 0
-		for _, p := range players {
-			if (p.Position == "QB" || p.Position == "RB" || p.Position == "FB" || p.Position == "TE" || p.Position == "C" || p.Position == "MLB" || p.Position == "FS" || p.Position == "SS" || p.Position == "K" || p.Position == "P") &&
-				p.PositionLevel != "1" {
-				continue
-			}
-			if (p.Position == "WR" || p.Position == "OT" || p.Position == "OG" || p.Position == "DT" || p.Position == "DE" || p.Position == "OLB" || p.Position == "CB") &&
-				(p.PositionLevel != "1" && p.PositionLevel != "2") {
-				continue
-			}
-			if p.Position == "KR" || p.Position == "PR" || p.Position == "FG" || p.Position == "STU" {
-				continue
-			}
-			if p.Position == "QB" || p.Position == "RB" || p.Position == "FB" || p.Position == "TE" || p.Position == "C" || p.Position == "WR" || p.Position == "OT" || p.Position == "OG" {
-				offensiveScore += float64(p.CollegePlayer.Overall)
-				offenseCount += 1
-			}
-			if p.Position == "DT" || p.Position == "DE" || p.Position == "OLB" || p.Position == "CB" || p.Position == "MLB" || p.Position == "FS" || p.Position == "SS" {
-				defensiveScore += float64(p.CollegePlayer.Overall)
-				defenseCount += 1
-			}
-			totalCount += 1
-			overallScore += float64(p.CollegePlayer.Overall)
-		}
+	}
 
-		ovrAvg := overallScore / float64(totalCount)
-		offAvg := offensiveScore / float64(offenseCount)
-		defAvg := defensiveScore / float64(defenseCount)
+	// Determine the mean and std dev for the data set contained in the nflTeamGrades map
+	offenseMean = 0.0
+	defenseMean = 0.0
+	stMean = 0.0
+	overallMean = 0.0
+	offenseVar = 0.0
+	defenseVar = 0.0
+	stVar = 0.0
+	overallVar = 0.0
+	dataLength = len(nflTeamGrades)
 
-		ovrGrade := util.GetOverallGrade(int(ovrAvg), 4)
-		offGrade := util.GetOverallGrade(int(offAvg), 4)
-		defGrade := util.GetOverallGrade(int(defAvg), 4)
+	// Mean for all values
+	for _, element := range nflTeamGrades {
+		offenseMean += element.OffenseGradeNumber
+		defenseMean += element.DefenseGradeNumber
+		stMean += element.SpecialTeamsGradeNumber
+		overallMean += element.OverallGradeNumber
+	}
 
-		t.AssignTeamGrades(ovrGrade, offGrade, defGrade)
+	offenseMean = (offenseMean / float64(dataLength))
+	defenseMean = (defenseMean / float64(dataLength))
+	stMean = (stMean / float64(dataLength))
+	overallMean = (overallMean / float64(dataLength))
 
-		repository.SaveCFBTeam(t, db)
+	// Variance for all values
+	for _, element := range nflTeamGrades {
+		offenseDiff := element.OffenseGradeNumber - offenseMean
+		defenseDiff := element.DefenseGradeNumber - defenseMean
+		stDiff := element.SpecialTeamsGradeNumber - stMean
+		overallDiff := element.OffenseGradeNumber - overallMean
+
+		offenseVar += (offenseDiff * offenseDiff)
+		defenseVar += (defenseDiff * defenseDiff)
+		stVar += (stDiff * stDiff)
+		overallVar += (overallDiff * overallDiff)
+	}
+
+	offenseVar = (offenseVar / float64(dataLength-1))
+	defenseVar = (defenseVar / float64(dataLength-1))
+	stVar = (stVar / float64(dataLength-1))
+	overallVar = (overallVar / float64(dataLength-1))
+
+	// Std Dev for all values
+	offenseStdDev = math.Sqrt(offenseVar)
+	defenseStdDev = math.Sqrt(defenseVar)
+	stStdDev = math.Sqrt(stVar)
+	overallStdDev = math.Sqrt(overallVar)
+
+	// Iterate back through the map and set the letter grades based on the number grades' relationship to the mean and std dev of the entire data set for that value
+	for _, nflTeam := range nflTeamGrades {
+		nflTeam.SetOffenseGradeLetter(TeamLetterGrade(nflTeam.OffenseGradeNumber, offenseMean, offenseStdDev))
+		nflTeam.SetDefenseGradeLetter(TeamLetterGrade(nflTeam.DefenseGradeNumber, defenseMean, defenseStdDev))
+		nflTeam.SetSpecialTeamsGradeLetter(TeamLetterGrade(nflTeam.SpecialTeamsGradeNumber, stMean, stStdDev))
+		nflTeam.SetOverallGradeLetter(TeamLetterGrade(nflTeam.OverallGradeNumber, overallMean, overallStdDev))
+	}
+
+	// Assign those letter grades to that team's grade properties
+	for _, nflTeam := range nflTeams {
+		nflTeam.AssignTeamGrades(nflTeamGrades[nflTeam.ID].OverallGradeLetter, nflTeamGrades[nflTeam.ID].OffenseGradeLetter,
+			nflTeamGrades[nflTeam.ID].DefenseGradeLetter, nflTeamGrades[nflTeam.ID].SpecialTeamsGradeLetter)
+
+		repository.SaveNFLTeam(nflTeam, db)
 	}
 }

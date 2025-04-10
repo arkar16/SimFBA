@@ -1,29 +1,29 @@
 package structs
 
 type TeamGrade struct {
-	OffenseGradeNumber      float32
-	DefenseGradeNumber      float32
-	SpecialTeamsGradeNumber float32
-	OverallGradeNumber      float32
+	OffenseGradeNumber      float64
+	DefenseGradeNumber      float64
+	SpecialTeamsGradeNumber float64
+	OverallGradeNumber      float64
 	OffenseGradeLetter      string
 	DefenseGradeLetter      string
 	SpecialTeamsGradeLetter string
 	OverallGradeLetter      string
 }
 
-func (tg *TeamGrade) SetOffenseGradeNumber(grade float32) {
+func (tg *TeamGrade) SetOffenseGradeNumber(grade float64) {
 	tg.OffenseGradeNumber = grade
 }
 
-func (tg *TeamGrade) SetDefenseGradeNumber(grade float32) {
+func (tg *TeamGrade) SetDefenseGradeNumber(grade float64) {
 	tg.DefenseGradeNumber = grade
 }
 
-func (tg *TeamGrade) SetSpecialTeamsGradeNumber(grade float32) {
+func (tg *TeamGrade) SetSpecialTeamsGradeNumber(grade float64) {
 	tg.SpecialTeamsGradeNumber = grade
 }
 
-func (tg *TeamGrade) SetOverallGradeNumber(grade float32) {
+func (tg *TeamGrade) SetOverallGradeNumber(grade float64) {
 	tg.OverallGradeNumber = grade
 }
 
@@ -43,19 +43,19 @@ func (tg *TeamGrade) SetOverallGradeLetter(grade string) {
 	tg.OverallGradeLetter = grade
 }
 
-func (tg *TeamGrade) GetOffenseGradeNumber() float32 {
+func (tg *TeamGrade) GetOffenseGradeNumber() float64 {
 	return tg.OffenseGradeNumber
 }
 
-func (tg *TeamGrade) GetDefenseGradeNumber() float32 {
+func (tg *TeamGrade) GetDefenseGradeNumber() float64 {
 	return tg.DefenseGradeNumber
 }
 
-func (tg *TeamGrade) GetSpecialTeamsGradeNumber() float32 {
+func (tg *TeamGrade) GetSpecialTeamsGradeNumber() float64 {
 	return tg.SpecialTeamsGradeNumber
 }
 
-func (tg *TeamGrade) GetOverallGradeNumber() float32 {
+func (tg *TeamGrade) GetOverallGradeNumber() float64 {
 	return tg.OverallGradeNumber
 }
 

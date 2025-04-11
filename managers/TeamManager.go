@@ -4,6 +4,7 @@ import (
 	"log"
 	"math"
 	"strconv"
+	"strings"
 	"sync"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
@@ -508,6 +509,28 @@ func STGradeNFL(depthChartPlayers structs.NFLDepthChart) float64 {
 	return 0.0
 }
 
+func GetOffensePositionGradeWeight(position string, scheme string) float64 {
+	scheme = strings.ToLower(scheme)
+	switch position {
+	case "QB1":
+		if (strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "spread"))
+		{
+			return 1.5
+		} else if (strings.Contains(scheme, "wing") || strings.Contains(scheme, "bone")) {
+			return 0.5
+		} else {
+			return 1.0
+		}
+	case "RB1":
+		if (strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "double"))
+		{
+			return 0.8
+		} else {
+			return 1.0
+		}
+	}
+}
+
 // League agnostic
 func OverallGrade(offense float64, defense float64, specialTeams float64) float64 {
 	var overallGrade float64 = offense * 0.45
@@ -517,23 +540,47 @@ func OverallGrade(offense float64, defense float64, specialTeams float64) float6
 }
 
 func TeamLetterGrade(value float64, mean float64, stdDev float64) string {
-	// Follow the following algorithm:
-	// Acquire every team's numerical value for all 4 grades
-	// Determine the mean and standard deviation of each grade across all teams
 	// Assign a letter grade for each grade value by comparing the value to the following:
-	// A+: 2.0+ std dev above the mean
-	// A: between 1.75-2.0 std dev above the mean
-	// A-: between 1.5-1.75 std dev above the mean
-	// B+: between 1.25-1.5 std dev above the mean
-	// B: between 1.0-1.25 std dev above the mean
-	// B-: between .75-1.0 std dev above the mean
-	// C+: between .5-.75 std dev above the mean
-	// C: between +/- .5 std dev from mean
-	// C-: between .5-.75 std dev below the mean
-	// D+: between .75-1.0 std dev below the mean
-	// D: between 1.0-1.5 std dev below the mean
-	// D-: between 1.5-2.0 std dev below the mean
-	// F: 2.0+ std dev below the mean
+	if value > (mean + (2 * stdDev)) {
+		// A+: 2.0+ std dev above the mean
+		return "A+"
+	} else if value > (mean + (1.75 * stdDev)) {
+		// A: between 1.75-2.0 std dev above the mean
+		return "A"
+	} else if value > (mean + (1.5 * stdDev)) {
+		// A-: between 1.5-1.75 std dev above the mean
+		return "A-"
+	} else if value > (mean + (1.25 * stdDev)) {
+		// B+: between 1.25-1.5 std dev above the mean
+		return "B+"
+	} else if value > (mean + (1.0 * stdDev)) {
+		// B: between 1.0-1.25 std dev above the mean
+		return "B"
+	} else if value > (mean + (0.75 * stdDev)) {
+		// B-: between .75-1.0 std dev above the mean
+		return "B-"
+	} else if value > (mean + (0.5 * stdDev)) {
+		// C+: between .5-.75 std dev above the mean
+		return "C+"
+	} else if value > (mean - (0.5 * stdDev)) {
+		// C: between +/- .5 std dev from mean
+		return "C"
+	} else if value > (mean - (0.75 * stdDev)) {
+		// C-: between .5-.75 std dev below the mean
+		return "C-"
+	} else if value > (mean - (1.0 * stdDev)) {
+		// D+: between .75-1.0 std dev below the mean
+		return "D+"
+	} else if value > (mean - (1.5 * stdDev)) {
+		// D: between 1.0-1.5 std dev below the mean
+		return "D"
+	} else if value > (mean - (2.0 * stdDev)) {
+		// D-: between 1.5-2.0 std dev below the mean
+		return "D-"
+	} else {
+		// F: 2.0+ std dev below the mean
+		return "F"
+	}
 }
 
 // This function should be called weekly, once 2.0 is released.

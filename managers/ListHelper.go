@@ -34,3 +34,14 @@ func MakeProInjuryList(players []structs.NFLPlayer) []structs.NFLPlayer {
 	}
 	return injuryList
 }
+
+func MakePracticeSquadList(players []structs.NFLPlayer) []structs.NFLPlayer {
+	playerList := []structs.NFLPlayer{}
+
+	for _, p := range players {
+		if p.IsPracticeSquad {
+			playerList = append(playerList, p)
+		}
+	}
+	return playerList
+}

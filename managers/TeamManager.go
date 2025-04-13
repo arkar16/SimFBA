@@ -513,21 +513,161 @@ func GetOffensePositionGradeWeight(position string, scheme string) float64 {
 	scheme = strings.ToLower(scheme)
 	switch position {
 	case "QB1":
-		if (strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "spread"))
-		{
+		if strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "spread") {
 			return 1.5
-		} else if (strings.Contains(scheme, "wing") || strings.Contains(scheme, "bone")) {
+		} else if strings.Contains(scheme, "wing") || strings.Contains(scheme, "bone") {
 			return 0.5
 		} else {
 			return 1.0
 		}
 	case "RB1":
-		if (strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "double"))
-		{
+		if strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "double") {
 			return 0.8
 		} else {
 			return 1.0
 		}
+	case "RB2":
+		if strings.Contains(scheme, "wing-t") || strings.Contains(scheme, "bone") {
+			return 1.0
+		} else if strings.Contains(scheme, "double") {
+			return 0.8
+		} else if strings.Contains(scheme, "spread") {
+			return 0.7
+		} else if strings.Contains(scheme, "raid") {
+			return 0.6
+		} else if strings.Contains(scheme, "shoot") {
+			return 0.4
+		} else {
+			return 0.5
+		}
+	case "RB3":
+		if strings.Contains(scheme, "wing-t") || strings.Contains(scheme, "wishbone") {
+			return 0.1
+		} else if strings.Contains(scheme, "flexbone") {
+			return 0.5
+		} else if strings.Contains(scheme, "double") {
+			return 0.3
+		} else {
+			return 0.0
+		}
+	case "FB1":
+		if strings.Contains(scheme, "wing") || strings.Contains(scheme, "bone") {
+			return 1.0
+		} else if strings.Contains(scheme, "power") {
+			return 0.6
+		} else if strings.Contains(scheme, "vert") || strings.Contains(scheme, "spread") {
+			return 0.2
+		} else if strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") {
+			return 0.0
+		} else {
+			return 0.4
+		}
+	case "TE1":
+		if strings.Contains(scheme, "vert") || strings.Contains(scheme, "west") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "wishbone") {
+			return 0.8
+		} else if strings.Contains(scheme, "spread") || strings.Contains(scheme, "double") || strings.Contains(scheme, "flex") {
+			return 0.6
+		} else if strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") {
+			return 0.4
+		} else {
+			return 1.0
+		}
+	case "TE2":
+		if strings.Contains(scheme, "power") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "double") || strings.Contains(scheme, "bone") {
+			return 0.4
+		} else if strings.Contains(scheme, "shoot") || strings.Contains(scheme, "west") {
+			return 0.0
+		} else {
+			return 0.2
+		}
+	case "WR1":
+		if strings.Contains(scheme, "wing") || strings.Contains(scheme, "wishbone") {
+			return 0.8
+		} else if strings.Contains(scheme, "flexbone") {
+			return 0.6
+		} else {
+			return 1.0
+		}
+	case "WR2":
+		if strings.Contains(scheme, "power") || strings.Contains(scheme, "pistol") {
+			return 0.8
+		} else if strings.Contains(scheme, "wing") || strings.Contains(scheme, "bone") {
+			return 0.4
+		} else {
+			return 1.0
+		}
+	case "WR3":
+		if strings.Contains(scheme, "raid") {
+			return 0.8
+		} else if strings.Contains(scheme, "vert") || strings.Contains(scheme, "west") || strings.Contains(scheme, "spread") {
+			return 0.6
+		} else if strings.Contains(scheme, "power") || strings.Contains(scheme, "double") {
+			return 0.2
+		} else if strings.Contains(scheme, "raid") {
+			return 1.0
+		} else if strings.Contains(scheme, "bone") || strings.Contains(scheme, "wing-t") {
+			return 0.0
+		} else {
+			return 0.4
+		}
+	case "WR4":
+		if strings.Contains(scheme, "shoot") {
+			return 0.6
+		} else if strings.Contains(scheme, "vert") || strings.Contains(scheme, "west") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "spread") || strings.Contains(scheme, "double") {
+			return 0.2
+		} else if strings.Contains(scheme, "raid") {
+			return 0.4
+		} else {
+			return 0.0
+		}
+	case "WR5":
+		if strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") {
+			return 0.3
+		} else {
+			return 0.0
+		}
+	case "LT1":
+		if strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "spread") {
+			return 0.9
+		} else if strings.Contains(scheme, "wing") || strings.Contains(scheme, "bone") {
+			return 1.1
+		} else {
+			return 1.0
+		}
+	case "LG1":
+		if strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "spread") {
+			return 0.9
+		} else if strings.Contains(scheme, "wing") || strings.Contains(scheme, "bone") {
+			return 1.1
+		} else {
+			return 1.0
+		}
+	case "C1":
+		if strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "spread") {
+			return 0.9
+		} else if strings.Contains(scheme, "wing") || strings.Contains(scheme, "bone") {
+			return 1.1
+		} else {
+			return 1.0
+		}
+	case "RG1":
+		if strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "spread") {
+			return 0.9
+		} else if strings.Contains(scheme, "wing") || strings.Contains(scheme, "bone") {
+			return 1.1
+		} else {
+			return 1.0
+		}
+	case "RT1":
+		if strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "spread") {
+			return 0.9
+		} else if strings.Contains(scheme, "wing") || strings.Contains(scheme, "bone") {
+			return 1.1
+		} else {
+			return 1.0
+		}
+	default:
+		return 0.0
 	}
 }
 

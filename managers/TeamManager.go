@@ -509,6 +509,14 @@ func STGradeNFL(depthChartPlayers structs.NFLDepthChart) float64 {
 	return 0.0
 }
 
+// League agnostic
+func OverallGrade(offense float64, defense float64, specialTeams float64) float64 {
+	var overallGrade float64 = offense * 0.45
+	overallGrade = overallGrade + (defense * 0.45)
+	overallGrade = overallGrade + (specialTeams * 0.1)
+	return overallGrade
+}
+
 func GetOffensePositionGradeWeight(position string, scheme string) float64 {
 	scheme = strings.ToLower(scheme)
 	switch position {
@@ -671,12 +679,94 @@ func GetOffensePositionGradeWeight(position string, scheme string) float64 {
 	}
 }
 
-// League agnostic
-func OverallGrade(offense float64, defense float64, specialTeams float64) float64 {
-	var overallGrade float64 = offense * 0.45
-	overallGrade = overallGrade + (defense * 0.45)
-	overallGrade = overallGrade + (specialTeams * 0.1)
-	return overallGrade
+func GetDefensePositionGradeWeight(position string, scheme string) float64 {
+	scheme = strings.ToLower(scheme)
+	switch position {
+	case "LE1":
+		return 1.0
+	case "DT1":
+		if strings.Contains(scheme, "2") {
+			return 0.6
+		} else {
+			return 1.0
+		}
+	case "DT2":
+		if strings.Contains(scheme, "2") || strings.Contains(scheme, "3") {
+			return 0.0
+		} else if strings.Contains(scheme, "multiple") {
+			return 0.6
+		} else {
+			return 1.0
+		}
+	case "RE1":
+		return 1.0
+	case "LOLB1":
+		if strings.Contains(scheme, "4") {
+			return 0.0
+		} else if strings.Contains(scheme, "old") || strings.Contains(scheme, "2") {
+			return 0.8
+		} else {
+			return 0.6
+		}
+	case "MLB1":
+		return 1.0
+	case "MLB2":
+		if strings.Contains(scheme, "2") {
+			return 1.0
+		} else if strings.Contains(scheme, "old") {
+			return 0.6
+		} else if strings.Contains(scheme, "multiple") {
+			return 0.4
+		} else {
+			return 0.0
+		}
+	case "ROLB1":
+		if strings.Contains(scheme, "speed") {
+			return 0.8
+		} else if strings.Contains(scheme, "4") {
+			return 0.6
+		} else {
+			return 1.0
+		}
+	case "CB1":
+		return 1.0
+	case "CB2":
+		return 1.0
+	case "CB3":
+		if strings.Contains(scheme, "3") {
+			return 1.0
+		} else if strings.Contains(scheme, "4") {
+			return 0.6
+		} else if strings.Contains(scheme, "old") {
+			return 0.2
+		} else {
+			return 0.4
+		}
+	case "CB4":
+		if strings.Contains(scheme, "old") || strings.Contains(scheme, "multiple") {
+			return 1.0
+		} else {
+			return 0.2
+		}
+	case "FS1":
+		return 1.0
+	case "SS1":
+		if strings.Contains(scheme, "old") {
+			return 0.4
+		} else {
+			return 1.0
+		}
+	case "SS2":
+		if strings.Contains(scheme, "4") {
+			return 0.6
+		} else if strings.Contains(scheme, "3") {
+			return 0.2
+		} else {
+			return 0.0
+		}
+	default:
+		return 0.0
+	}
 }
 
 func TeamLetterGrade(value float64, mean float64, stdDev float64) string {

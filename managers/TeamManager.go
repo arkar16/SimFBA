@@ -517,6 +517,77 @@ func OverallGrade(offense float64, defense float64, specialTeams float64) float6
 	return overallGrade
 }
 
+func IsSchemeFit(position string, archetype string, scheme string) bool {
+	scheme = strings.ToLower(scheme)
+	archetype = strings.ToLower(archetype)
+	switch position {
+	case "QB":
+		switch archetype {
+		case "scrambler":
+			if strings.Contains(scheme, "option") || strings.Contains(scheme, "flexbone") {
+				return true
+			} else {
+				return false
+			}
+		case "balanced":
+			if strings.Contains(scheme, "wing-t") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "wishbone") {
+				return true
+			} else {
+				return false
+			}
+		case "pocket":
+			if strings.Contains(scheme, "raid") || strings.Contains(scheme, "vert") || strings.Contains(scheme, "pistol") {
+				return true
+			} else {
+				return false
+			}
+		case "field":
+			if strings.Contains(scheme, "west") || strings.Contains(scheme, "shoot") || strings.Contains(scheme, "wish") {
+				return true
+			} else {
+				return false
+			}
+		default:
+			return false
+		}
+	case "RB":
+		switch archetype {
+		case "balanced":
+			if strings.Contains(scheme, "pistol") || strings.Contains(scheme, "wing-t") || strings.Contains(scheme, "wish") {
+				return true
+			} else {
+				return false
+			}
+		case "receiving":
+			if strings.Contains(scheme, "vert") || strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") {
+				return true
+			} else {
+				return false
+			}
+		case "speed":
+			if strings.Contains(scheme, "spread") || strings.Contains(scheme, "shoot") || strings.Contains(scheme, "flex") {
+				return true
+			} else {
+				return false
+			}
+		case "power":
+			if strings.Contains(scheme, "power") || strings.Contains(scheme, "i option") || strings.Contains(scheme, "double") {
+				return true
+			} else {
+				return false
+			}
+		}
+	}
+}
+
+func IsBadFit(position string, archetype string, scheme string) bool {
+	scheme = strings.ToLower(scheme)
+	archetype = strings.ToLower(archetype)
+	switch position {
+	// Insert positions
+	}
+}
+
 func GetOffensePositionGradeWeight(position string, scheme string) float64 {
 	scheme = strings.ToLower(scheme)
 	switch position {

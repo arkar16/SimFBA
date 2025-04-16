@@ -11,6 +11,7 @@ import (
 	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
+	"github.com/CalebRose/SimFBA/util"
 	"gorm.io/gorm"
 )
 
@@ -445,15 +446,109 @@ func GetDashboardByTeamID(isCFB bool, teamID string) structs.DashboardResponseDa
 	}
 }
 
+func GetCollegePlayer(depthChartPlayers structs.CollegeTeamDepthChart, position string, level int) structs.CollegePlayer {
+	for _, player := range depthChartPlayers.DepthChartPlayers {
+		if player.Position == position && util.ConvertStringToInt(player.PositionLevel) == level {
+			return player.CollegePlayer
+		}
+	}
+
+	return structs.CollegePlayer{}
+}
+
+func GetNFLPlayer(depthChartPlayers structs.NFLDepthChart, position string, level int) structs.NFLPlayer {
+	for _, player := range depthChartPlayers.DepthChartPlayers {
+		if player.Position == position && util.ConvertStringToInt(player.PositionLevel) == level {
+			return player.NFLPlayer
+		}
+	}
+
+	return structs.NFLPlayer{}
+}
+
 // Returns the CFB team's numerical value for their entire offense
 func OffenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan structs.CollegeGameplan) float64 {
 	// Get overall values for all relevant positions
+	qb1 := GetCollegePlayer(depthChartPlayers, "QB", 1)
+	log.Println("ERROR DURING TEAM GRADING: QB1 was not found!!! Player ID: " + strconv.Itoa(int(qb1.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	rb1 := GetCollegePlayer(depthChartPlayers, "RB", 1)
+	log.Println("ERROR DURING TEAM GRADING: RB1 was not found!!! Player ID: " + strconv.Itoa(int(rb1.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	rb2 := GetCollegePlayer(depthChartPlayers, "RB", 2)
+	log.Println("ERROR DURING TEAM GRADING: RB2 was not found!!! Player ID: " + strconv.Itoa(int(rb2.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	rb3 := GetCollegePlayer(depthChartPlayers, "RB", 3)
+	log.Println("ERROR DURING TEAM GRADING: RB3 was not found!!! Player ID: " + strconv.Itoa(int(rb3.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	fb1 := GetCollegePlayer(depthChartPlayers, "FB", 1)
+	log.Println("ERROR DURING TEAM GRADING: FB1 was not found!!! Player ID: " + strconv.Itoa(int(fb1.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	te1 := GetCollegePlayer(depthChartPlayers, "TE", 1)
+	log.Println("ERROR DURING TEAM GRADING: TE1 was not found!!! Player ID: " + strconv.Itoa(int(te1.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	te2 := GetCollegePlayer(depthChartPlayers, "TE", 2)
+	log.Println("ERROR DURING TEAM GRADING: TE2 was not found!!! Player ID: " + strconv.Itoa(int(te2.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	wr1 := GetCollegePlayer(depthChartPlayers, "WR", 1)
+	log.Println("ERROR DURING TEAM GRADING: WR1 was not found!!! Player ID: " + strconv.Itoa(int(wr1.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	wr2 := GetCollegePlayer(depthChartPlayers, "WR", 2)
+	log.Println("ERROR DURING TEAM GRADING: WR2 was not found!!! Player ID: " + strconv.Itoa(int(wr2.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	wr3 := GetCollegePlayer(depthChartPlayers, "WR", 3)
+	log.Println("ERROR DURING TEAM GRADING: WR3 was not found!!! Player ID: " + strconv.Itoa(int(wr3.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	wr4 := GetCollegePlayer(depthChartPlayers, "WR", 4)
+	log.Println("ERROR DURING TEAM GRADING: WR4 was not found!!! Player ID: " + strconv.Itoa(int(wr4.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	wr5 := GetCollegePlayer(depthChartPlayers, "WR", 5)
+	log.Println("ERROR DURING TEAM GRADING: WR5 was not found!!! Player ID: " + strconv.Itoa(int(wr5.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	lt1 := GetCollegePlayer(depthChartPlayers, "LT", 1)
+	log.Println("ERROR DURING TEAM GRADING: LT1 was not found!!! Player ID: " + strconv.Itoa(int(lt1.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	lg1 := GetCollegePlayer(depthChartPlayers, "LG", 1)
+	log.Println("ERROR DURING TEAM GRADING: LG1 was not found!!! Player ID: " + strconv.Itoa(int(lg1.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	c1 := GetCollegePlayer(depthChartPlayers, "C", 1)
+	log.Println("ERROR DURING TEAM GRADING: C1 was not found!!! Player ID: " + strconv.Itoa(int(c1.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	rg1 := GetCollegePlayer(depthChartPlayers, "RG", 1)
+	log.Println("ERROR DURING TEAM GRADING: RG1 was not found!!! Player ID: " + strconv.Itoa(int(rg1.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	rt1 := GetCollegePlayer(depthChartPlayers, "RT", 1)
+	log.Println("ERROR DURING TEAM GRADING: RT1 was not found!!! Player ID: " + strconv.Itoa(int(rt1.ID)) + " Team ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+
 	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
+	// ENSURE TO TRANSLATE THEIR POSITION PROPERLY FOR THE SCHEME FIT!!!
+	qb1Overall := ApplySchemeModifiers(float64(qb1.Overall), "QB", qb1.Archetype, gameplan.OffensiveScheme)
+	rb1Overall := ApplySchemeModifiers(float64(rb1.Overall), "RB", rb1.Archetype, gameplan.OffensiveScheme)
+	rb2Overall := ApplySchemeModifiers(float64(rb2.Overall), "RB", rb2.Archetype, gameplan.OffensiveScheme)
+	rb3Overall := ApplySchemeModifiers(float64(rb3.Overall), "RB", rb3.Archetype, gameplan.OffensiveScheme)
+	fb1Overall := ApplySchemeModifiers(float64(fb1.Overall), "FB", fb1.Archetype, gameplan.OffensiveScheme)
+	te1Overall := ApplySchemeModifiers(float64(te1.Overall), "TE", te1.Archetype, gameplan.OffensiveScheme)
+	te2Overall := ApplySchemeModifiers(float64(te2.Overall), "TE", te2.Archetype, gameplan.OffensiveScheme)
+	wr1Overall := ApplySchemeModifiers(float64(wr1.Overall), "WR", wr1.Archetype, gameplan.OffensiveScheme)
+	wr2Overall := ApplySchemeModifiers(float64(wr2.Overall), "WR", wr2.Archetype, gameplan.OffensiveScheme)
+	wr3Overall := ApplySchemeModifiers(float64(wr3.Overall), "WR", wr3.Archetype, gameplan.OffensiveScheme)
+	wr4Overall := ApplySchemeModifiers(float64(wr4.Overall), "WR", wr4.Archetype, gameplan.OffensiveScheme)
+	wr5Overall := ApplySchemeModifiers(float64(wr5.Overall), "WR", wr5.Archetype, gameplan.OffensiveScheme)
+	lt1Overall := ApplySchemeModifiers(float64(lt1.Overall), "OT", lt1.Archetype, gameplan.OffensiveScheme)
+	lg1Overall := ApplySchemeModifiers(float64(lg1.Overall), "OG", lg1.Archetype, gameplan.OffensiveScheme)
+	c1Overall := ApplySchemeModifiers(float64(c1.Overall), "C", c1.Archetype, gameplan.OffensiveScheme)
+	rg1Overall := ApplySchemeModifiers(float64(rg1.Overall), "RG", rg1.Archetype, gameplan.OffensiveScheme)
+	rt1Overall := ApplySchemeModifiers(float64(rt1.Overall), "RT", rt1.Archetype, gameplan.OffensiveScheme)
+
 	// Depending on scheme, weight them
+	qb1Overall = qb1Overall * GetOffensePositionGradeWeight("QB1", gameplan.OffensiveScheme)
+	rb1Overall = rb1Overall * GetOffensePositionGradeWeight("RB1", gameplan.OffensiveScheme)
+	rb2Overall = rb2Overall * GetOffensePositionGradeWeight("RB2", gameplan.OffensiveScheme)
+	rb3Overall = rb3Overall * GetOffensePositionGradeWeight("RB3", gameplan.OffensiveScheme)
+	fb1Overall = fb1Overall * GetOffensePositionGradeWeight("FB1", gameplan.OffensiveScheme)
+	te1Overall = te1Overall * GetOffensePositionGradeWeight("TE1", gameplan.OffensiveScheme)
+	te2Overall = te2Overall * GetOffensePositionGradeWeight("TE2", gameplan.OffensiveScheme)
+	wr1Overall = wr1Overall * GetOffensePositionGradeWeight("WR1", gameplan.OffensiveScheme)
+	wr2Overall = wr2Overall * GetOffensePositionGradeWeight("WR2", gameplan.OffensiveScheme)
+	wr3Overall = wr3Overall * GetOffensePositionGradeWeight("WR3", gameplan.OffensiveScheme)
+	wr4Overall = wr4Overall * GetOffensePositionGradeWeight("WR4", gameplan.OffensiveScheme)
+	wr5Overall = wr5Overall * GetOffensePositionGradeWeight("WR5", gameplan.OffensiveScheme)
+	lt1Overall = lt1Overall * GetOffensePositionGradeWeight("LT1", gameplan.OffensiveScheme)
+	lg1Overall = lg1Overall * GetOffensePositionGradeWeight("LG1", gameplan.OffensiveScheme)
+	c1Overall = c1Overall * GetOffensePositionGradeWeight("C1", gameplan.OffensiveScheme)
+	rg1Overall = rg1Overall * GetOffensePositionGradeWeight("RG1", gameplan.OffensiveScheme)
+	rt1Overall = rt1Overall * GetOffensePositionGradeWeight("RT1", gameplan.OffensiveScheme)
+
 	// Sum them all up
+	grade := qb1Overall + rb1Overall + rb2Overall + rb3Overall + fb1Overall + te1Overall + te2Overall + wr1Overall + wr2Overall + wr3Overall + wr4Overall + wr5Overall + lt1Overall + lg1Overall + c1Overall + rg1Overall + rt1Overall
 	// Divide by 11.5 (offense weight normalization value)
+	grade = grade / 11.5
 	// return the resulting value
-	return 0.0
+	return grade
 }
 
 // Returns the CFB team's numerical value for their entire offense
@@ -464,7 +559,7 @@ func DefenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan s
 	// Sum them all up
 	// Divide by 11 (defense weight normalization value)
 	// return the resulting value
-	return 0.0
+	return
 }
 
 // Returns the CFB team's numerical value for their entire offense
@@ -474,7 +569,7 @@ func STGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart) float64 {
 	// Sum them all up
 	// Divide by 5 (Special Teams weight normalization value)
 	// return the resulting value
-	return 0.0
+	return
 }
 
 // Returns the CFB team's numerical value for their entire offense
@@ -485,7 +580,7 @@ func OffenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.N
 	// Sum them all up
 	// Divide by 11.5 (offense weight normalization value)
 	// return the resulting value
-	return 0.0
+	return
 }
 
 // Returns the CFB team's numerical value for their entire offense
@@ -496,7 +591,7 @@ func DefenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.N
 	// Sum them all up
 	// Divide by 11 (defense weight normalization value)
 	// return the resulting value
-	return 0.0
+	return
 }
 
 // Returns the CFB team's numerical value for their entire offense
@@ -506,7 +601,7 @@ func STGradeNFL(depthChartPlayers structs.NFLDepthChart) float64 {
 	// Sum them all up
 	// Divide by 5 (Special Teams weight normalization value)
 	// return the resulting value
-	return 0.0
+	return
 }
 
 // League agnostic
@@ -515,6 +610,16 @@ func OverallGrade(offense float64, defense float64, specialTeams float64) float6
 	overallGrade = overallGrade + (defense * 0.45)
 	overallGrade = overallGrade + (specialTeams * 0.1)
 	return overallGrade
+}
+
+func ApplySchemeModifiers(overall float64, position string, archetype string, scheme string) float64 {
+	if IsSchemeFit(position, archetype, scheme) {
+		return (overall * 1.05)
+	} else if IsBadFit(position, archetype, scheme) {
+		return (overall * 0.95)
+	} else {
+		return overall
+	}
 }
 
 func IsSchemeFit(position string, archetype string, scheme string) bool {

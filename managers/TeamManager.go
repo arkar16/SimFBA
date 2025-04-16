@@ -480,39 +480,73 @@ func GetPuntReturnOverall(speed int, agility int) float64 {
 func OffenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan structs.CollegeGameplan) float64 {
 	// Get overall values for all relevant positions
 	qb1 := GetCollegePlayer(depthChartPlayers, "QB", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: QB1 was not found!!! Player ID: " + strconv.Itoa(int(qb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if qb1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: QB1 was not found!!! Player ID: " + strconv.Itoa(int(qb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	rb1 := GetCollegePlayer(depthChartPlayers, "RB", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: RB1 was not found!!! Player ID: " + strconv.Itoa(int(rb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if rb1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: RB1 was not found!!! Player ID: " + strconv.Itoa(int(rb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	rb2 := GetCollegePlayer(depthChartPlayers, "RB", 2)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: RB2 was not found!!! Player ID: " + strconv.Itoa(int(rb2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if rb2.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: RB2 was not found!!! Player ID: " + strconv.Itoa(int(rb2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	rb3 := GetCollegePlayer(depthChartPlayers, "RB", 3)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: RB3 was not found!!! Player ID: " + strconv.Itoa(int(rb3.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if rb3.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: RB3 was not found!!! Player ID: " + strconv.Itoa(int(rb3.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	fb1 := GetCollegePlayer(depthChartPlayers, "FB", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: FB1 was not found!!! Player ID: " + strconv.Itoa(int(fb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if fb1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: FB1 was not found!!! Player ID: " + strconv.Itoa(int(fb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	te1 := GetCollegePlayer(depthChartPlayers, "TE", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: TE1 was not found!!! Player ID: " + strconv.Itoa(int(te1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if te1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: TE1 was not found!!! Player ID: " + strconv.Itoa(int(te1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	te2 := GetCollegePlayer(depthChartPlayers, "TE", 2)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: TE2 was not found!!! Player ID: " + strconv.Itoa(int(te2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if te2.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: TE2 was not found!!! Player ID: " + strconv.Itoa(int(te2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	wr1 := GetCollegePlayer(depthChartPlayers, "WR", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: WR1 was not found!!! Player ID: " + strconv.Itoa(int(wr1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if wr1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: WR1 was not found!!! Player ID: " + strconv.Itoa(int(wr1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	wr2 := GetCollegePlayer(depthChartPlayers, "WR", 2)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: WR2 was not found!!! Player ID: " + strconv.Itoa(int(wr2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if wr2.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: WR2 was not found!!! Player ID: " + strconv.Itoa(int(wr2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	wr3 := GetCollegePlayer(depthChartPlayers, "WR", 3)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: WR3 was not found!!! Player ID: " + strconv.Itoa(int(wr3.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if wr3.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: WR3 was not found!!! Player ID: " + strconv.Itoa(int(wr3.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	wr4 := GetCollegePlayer(depthChartPlayers, "WR", 4)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: WR4 was not found!!! Player ID: " + strconv.Itoa(int(wr4.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if wr4.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: WR4 was not found!!! Player ID: " + strconv.Itoa(int(wr4.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	wr5 := GetCollegePlayer(depthChartPlayers, "WR", 5)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: WR5 was not found!!! Player ID: " + strconv.Itoa(int(wr5.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if wr5.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: WR5 was not found!!! Player ID: " + strconv.Itoa(int(wr5.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	lt1 := GetCollegePlayer(depthChartPlayers, "LT", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: LT1 was not found!!! Player ID: " + strconv.Itoa(int(lt1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if lt1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: LT1 was not found!!! Player ID: " + strconv.Itoa(int(lt1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	lg1 := GetCollegePlayer(depthChartPlayers, "LG", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: LG1 was not found!!! Player ID: " + strconv.Itoa(int(lg1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if lg1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: LG1 was not found!!! Player ID: " + strconv.Itoa(int(lg1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	c1 := GetCollegePlayer(depthChartPlayers, "C", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: C1 was not found!!! Player ID: " + strconv.Itoa(int(c1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if c1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: C1 was not found!!! Player ID: " + strconv.Itoa(int(c1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	rg1 := GetCollegePlayer(depthChartPlayers, "RG", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: RG1 was not found!!! Player ID: " + strconv.Itoa(int(rg1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if rg1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: RG1 was not found!!! Player ID: " + strconv.Itoa(int(rg1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	rt1 := GetCollegePlayer(depthChartPlayers, "RT", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: RT1 was not found!!! Player ID: " + strconv.Itoa(int(rt1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if rt1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: RT1 was not found!!! Player ID: " + strconv.Itoa(int(rt1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 
 	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
 	// ENSURE TO TRANSLATE THEIR POSITION PROPERLY FOR THE SCHEME FIT!!!
@@ -565,35 +599,65 @@ func OffenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan s
 func DefenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan structs.CollegeGameplan) float64 {
 	// Get overall values for all relevant positions
 	le1 := GetCollegePlayer(depthChartPlayers, "LE", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: LE1 was not found!!! Player ID: " + strconv.Itoa(int(le1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if le1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: LE1 was not found!!! Player ID: " + strconv.Itoa(int(le1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	dt1 := GetCollegePlayer(depthChartPlayers, "DT", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: DT1 was not found!!! Player ID: " + strconv.Itoa(int(dt1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if dt1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: DT1 was not found!!! Player ID: " + strconv.Itoa(int(dt1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	dt2 := GetCollegePlayer(depthChartPlayers, "DT", 2)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: DT2 was not found!!! Player ID: " + strconv.Itoa(int(dt2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if dt2.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: DT2 was not found!!! Player ID: " + strconv.Itoa(int(dt2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	re1 := GetCollegePlayer(depthChartPlayers, "RE", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: RE1 was not found!!! Player ID: " + strconv.Itoa(int(re1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if re1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: RE1 was not found!!! Player ID: " + strconv.Itoa(int(re1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	lolb1 := GetCollegePlayer(depthChartPlayers, "LOLB", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: LOLB1 was not found!!! Player ID: " + strconv.Itoa(int(lolb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if lolb1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: LOLB1 was not found!!! Player ID: " + strconv.Itoa(int(lolb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	mlb1 := GetCollegePlayer(depthChartPlayers, "MLB", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: MLB1 was not found!!! Player ID: " + strconv.Itoa(int(mlb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if mlb1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: MLB1 was not found!!! Player ID: " + strconv.Itoa(int(mlb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	mlb2 := GetCollegePlayer(depthChartPlayers, "MLB", 2)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: MLB2 was not found!!! Player ID: " + strconv.Itoa(int(mlb2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if mlb2.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: MLB2 was not found!!! Player ID: " + strconv.Itoa(int(mlb2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	rolb1 := GetCollegePlayer(depthChartPlayers, "ROLB", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: ROLB1 was not found!!! Player ID: " + strconv.Itoa(int(rolb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if rolb1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: ROLB1 was not found!!! Player ID: " + strconv.Itoa(int(rolb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	cb1 := GetCollegePlayer(depthChartPlayers, "CB", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: CB1 was not found!!! Player ID: " + strconv.Itoa(int(cb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if cb1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: CB1 was not found!!! Player ID: " + strconv.Itoa(int(cb1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	cb2 := GetCollegePlayer(depthChartPlayers, "CB", 2)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: CB2 was not found!!! Player ID: " + strconv.Itoa(int(cb2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if cb2.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: CB2 was not found!!! Player ID: " + strconv.Itoa(int(cb2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	cb3 := GetCollegePlayer(depthChartPlayers, "CB", 3)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: CB3 was not found!!! Player ID: " + strconv.Itoa(int(cb3.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if cb3.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: CB3 was not found!!! Player ID: " + strconv.Itoa(int(cb3.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	cb4 := GetCollegePlayer(depthChartPlayers, "CB", 4)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: CB4 was not found!!! Player ID: " + strconv.Itoa(int(cb4.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if cb4.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: CB4 was not found!!! Player ID: " + strconv.Itoa(int(cb4.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	fs1 := GetCollegePlayer(depthChartPlayers, "FS", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: FS1 was not found!!! Player ID: " + strconv.Itoa(int(fs1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if fs1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: FS1 was not found!!! Player ID: " + strconv.Itoa(int(fs1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	ss1 := GetCollegePlayer(depthChartPlayers, "SS", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: SS1 was not found!!! Player ID: " + strconv.Itoa(int(ss1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if ss1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: SS1 was not found!!! Player ID: " + strconv.Itoa(int(ss1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	ss2 := GetCollegePlayer(depthChartPlayers, "SS", 2)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: SS2 was not found!!! Player ID: " + strconv.Itoa(int(ss2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if ss2.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: SS2 was not found!!! Player ID: " + strconv.Itoa(int(ss2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 
 	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
 	// ENSURE TO TRANSLATE THEIR POSITION PROPERLY FOR THE SCHEME FIT!!!
@@ -642,19 +706,33 @@ func DefenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan s
 func STGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart) float64 {
 	// Get overall values for all relevant positions
 	k1 := GetCollegePlayer(depthChartPlayers, "K", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: K1 was not found!!! Player ID: " + strconv.Itoa(int(k1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if k1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: K1 was not found!!! Player ID: " + strconv.Itoa(int(k1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	p1 := GetCollegePlayer(depthChartPlayers, "P", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: p1 was not found!!! Player ID: " + strconv.Itoa(int(p1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if p1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: p1 was not found!!! Player ID: " + strconv.Itoa(int(p1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	fg1 := GetCollegePlayer(depthChartPlayers, "FG", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: FG1 was not found!!! Player ID: " + strconv.Itoa(int(fg1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if fg1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: FG1 was not found!!! Player ID: " + strconv.Itoa(int(fg1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	kr1 := GetCollegePlayer(depthChartPlayers, "KR", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: KR1 was not found!!! Player ID: " + strconv.Itoa(int(kr1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if kr1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: KR1 was not found!!! Player ID: " + strconv.Itoa(int(kr1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	kr2 := GetCollegePlayer(depthChartPlayers, "KR", 2)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: KR2 was not found!!! Player ID: " + strconv.Itoa(int(kr2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if kr2.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: KR2 was not found!!! Player ID: " + strconv.Itoa(int(kr2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	pr1 := GetCollegePlayer(depthChartPlayers, "PR", 1)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: PR1 was not found!!! Player ID: " + strconv.Itoa(int(pr1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if pr1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: PR1 was not found!!! Player ID: " + strconv.Itoa(int(pr1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	pr2 := GetCollegePlayer(depthChartPlayers, "PR", 2)
-	log.Println("ERROR DURING COLLEGE TEAM GRADING: PR2 was not found!!! Player ID: " + strconv.Itoa(int(pr2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if pr1.PlayerID == 0 {
+		log.Println("ERROR DURING COLLEGE TEAM GRADING: PR2 was not found!!! Player ID: " + strconv.Itoa(int(pr2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 
 	// Weight them by position
 	k1Overall := float64(k1.Overall)
@@ -677,39 +755,73 @@ func STGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart) float64 {
 func OffenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.NFLGameplan) float64 {
 	// Get overall values for all relevant positions
 	qb1 := GetNFLPlayer(depthChartPlayers, "QB", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: QB1 was not found!!! Player ID: " + strconv.Itoa(int(qb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if qb1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: QB1 was not found!!! Player ID: " + strconv.Itoa(int(qb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	rb1 := GetNFLPlayer(depthChartPlayers, "RB", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: RB1 was not found!!! Player ID: " + strconv.Itoa(int(rb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if rb1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: RB1 was not found!!! Player ID: " + strconv.Itoa(int(rb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	rb2 := GetNFLPlayer(depthChartPlayers, "RB", 2)
-	log.Println("ERROR DURING NFL TEAM GRADING: RB2 was not found!!! Player ID: " + strconv.Itoa(int(rb2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if rb2.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: RB2 was not found!!! Player ID: " + strconv.Itoa(int(rb2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	rb3 := GetNFLPlayer(depthChartPlayers, "RB", 3)
-	log.Println("ERROR DURING NFL TEAM GRADING: RB3 was not found!!! Player ID: " + strconv.Itoa(int(rb3.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if rb3.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: RB3 was not found!!! Player ID: " + strconv.Itoa(int(rb3.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	fb1 := GetNFLPlayer(depthChartPlayers, "FB", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: FB1 was not found!!! Player ID: " + strconv.Itoa(int(fb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if fb1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: FB1 was not found!!! Player ID: " + strconv.Itoa(int(fb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	te1 := GetNFLPlayer(depthChartPlayers, "TE", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: TE1 was not found!!! Player ID: " + strconv.Itoa(int(te1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if te1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: TE1 was not found!!! Player ID: " + strconv.Itoa(int(te1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	te2 := GetNFLPlayer(depthChartPlayers, "TE", 2)
-	log.Println("ERROR DURING NFL TEAM GRADING: TE2 was not found!!! Player ID: " + strconv.Itoa(int(te2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if te2.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: TE2 was not found!!! Player ID: " + strconv.Itoa(int(te2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	wr1 := GetNFLPlayer(depthChartPlayers, "WR", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: WR1 was not found!!! Player ID: " + strconv.Itoa(int(wr1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if wr1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: WR1 was not found!!! Player ID: " + strconv.Itoa(int(wr1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	wr2 := GetNFLPlayer(depthChartPlayers, "WR", 2)
-	log.Println("ERROR DURING NFL TEAM GRADING: WR2 was not found!!! Player ID: " + strconv.Itoa(int(wr2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if wr2.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: WR2 was not found!!! Player ID: " + strconv.Itoa(int(wr2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	wr3 := GetNFLPlayer(depthChartPlayers, "WR", 3)
-	log.Println("ERROR DURING NFL TEAM GRADING: WR3 was not found!!! Player ID: " + strconv.Itoa(int(wr3.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if wr3.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: WR3 was not found!!! Player ID: " + strconv.Itoa(int(wr3.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	wr4 := GetNFLPlayer(depthChartPlayers, "WR", 4)
-	log.Println("ERROR DURING NFL TEAM GRADING: WR4 was not found!!! Player ID: " + strconv.Itoa(int(wr4.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if wr4.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: WR4 was not found!!! Player ID: " + strconv.Itoa(int(wr4.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	wr5 := GetNFLPlayer(depthChartPlayers, "WR", 5)
-	log.Println("ERROR DURING NFL TEAM GRADING: WR5 was not found!!! Player ID: " + strconv.Itoa(int(wr5.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if wr5.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: WR5 was not found!!! Player ID: " + strconv.Itoa(int(wr5.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	lt1 := GetNFLPlayer(depthChartPlayers, "LT", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: LT1 was not found!!! Player ID: " + strconv.Itoa(int(lt1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if lt1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: LT1 was not found!!! Player ID: " + strconv.Itoa(int(lt1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	lg1 := GetNFLPlayer(depthChartPlayers, "LG", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: LG1 was not found!!! Player ID: " + strconv.Itoa(int(lg1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if lg1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: LG1 was not found!!! Player ID: " + strconv.Itoa(int(lg1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	c1 := GetNFLPlayer(depthChartPlayers, "C", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: C1 was not found!!! Player ID: " + strconv.Itoa(int(c1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if c1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: C1 was not found!!! Player ID: " + strconv.Itoa(int(c1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	rg1 := GetNFLPlayer(depthChartPlayers, "RG", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: RG1 was not found!!! Player ID: " + strconv.Itoa(int(rg1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if rg1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: RG1 was not found!!! Player ID: " + strconv.Itoa(int(rg1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	rt1 := GetNFLPlayer(depthChartPlayers, "RT", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: RT1 was not found!!! Player ID: " + strconv.Itoa(int(rt1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if rt1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: RT1 was not found!!! Player ID: " + strconv.Itoa(int(rt1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 
 	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
 	// ENSURE TO TRANSLATE THEIR POSITION PROPERLY FOR THE SCHEME FIT!!!
@@ -762,35 +874,65 @@ func OffenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.N
 func DefenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.NFLGameplan) float64 {
 	// Get overall values for all relevant positions
 	le1 := GetNFLPlayer(depthChartPlayers, "LE", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: LE1 was not found!!! Player ID: " + strconv.Itoa(int(le1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if le1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: LE1 was not found!!! Player ID: " + strconv.Itoa(int(le1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	dt1 := GetNFLPlayer(depthChartPlayers, "DT", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: DT1 was not found!!! Player ID: " + strconv.Itoa(int(dt1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if dt1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: DT1 was not found!!! Player ID: " + strconv.Itoa(int(dt1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	dt2 := GetNFLPlayer(depthChartPlayers, "DT", 2)
-	log.Println("ERROR DURING NFL TEAM GRADING: DT2 was not found!!! Player ID: " + strconv.Itoa(int(dt2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if dt2.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: DT2 was not found!!! Player ID: " + strconv.Itoa(int(dt2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	re1 := GetNFLPlayer(depthChartPlayers, "RE", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: RE1 was not found!!! Player ID: " + strconv.Itoa(int(re1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if re1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: RE1 was not found!!! Player ID: " + strconv.Itoa(int(re1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	lolb1 := GetNFLPlayer(depthChartPlayers, "LOLB", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: LOLB1 was not found!!! Player ID: " + strconv.Itoa(int(lolb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if lolb1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: LOLB1 was not found!!! Player ID: " + strconv.Itoa(int(lolb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	mlb1 := GetNFLPlayer(depthChartPlayers, "MLB", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: MLB1 was not found!!! Player ID: " + strconv.Itoa(int(mlb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if mlb1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: MLB1 was not found!!! Player ID: " + strconv.Itoa(int(mlb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	mlb2 := GetNFLPlayer(depthChartPlayers, "MLB", 2)
-	log.Println("ERROR DURING NFL TEAM GRADING: MLB2 was not found!!! Player ID: " + strconv.Itoa(int(mlb2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if mlb2.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: MLB2 was not found!!! Player ID: " + strconv.Itoa(int(mlb2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	rolb1 := GetNFLPlayer(depthChartPlayers, "ROLB", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: ROLB1 was not found!!! Player ID: " + strconv.Itoa(int(rolb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if rolb1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: ROLB1 was not found!!! Player ID: " + strconv.Itoa(int(rolb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	cb1 := GetNFLPlayer(depthChartPlayers, "CB", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: CB1 was not found!!! Player ID: " + strconv.Itoa(int(cb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if cb1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: CB1 was not found!!! Player ID: " + strconv.Itoa(int(cb1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	cb2 := GetNFLPlayer(depthChartPlayers, "CB", 2)
-	log.Println("ERROR DURING NFL TEAM GRADING: CB2 was not found!!! Player ID: " + strconv.Itoa(int(cb2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if cb2.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: CB2 was not found!!! Player ID: " + strconv.Itoa(int(cb2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	cb3 := GetNFLPlayer(depthChartPlayers, "CB", 3)
-	log.Println("ERROR DURING NFL TEAM GRADING: CB3 was not found!!! Player ID: " + strconv.Itoa(int(cb3.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if cb3.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: CB3 was not found!!! Player ID: " + strconv.Itoa(int(cb3.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	cb4 := GetNFLPlayer(depthChartPlayers, "CB", 4)
-	log.Println("ERROR DURING NFL TEAM GRADING: CB4 was not found!!! Player ID: " + strconv.Itoa(int(cb4.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if cb4.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: CB4 was not found!!! Player ID: " + strconv.Itoa(int(cb4.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	fs1 := GetNFLPlayer(depthChartPlayers, "FS", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: FS1 was not found!!! Player ID: " + strconv.Itoa(int(fs1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if fs1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: FS1 was not found!!! Player ID: " + strconv.Itoa(int(fs1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	ss1 := GetNFLPlayer(depthChartPlayers, "SS", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: SS1 was not found!!! Player ID: " + strconv.Itoa(int(ss1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if ss1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: SS1 was not found!!! Player ID: " + strconv.Itoa(int(ss1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	ss2 := GetNFLPlayer(depthChartPlayers, "SS", 2)
-	log.Println("ERROR DURING NFL TEAM GRADING: SS2 was not found!!! Player ID: " + strconv.Itoa(int(ss2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if ss2.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: SS2 was not found!!! Player ID: " + strconv.Itoa(int(ss2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 
 	// If the player is a scheme fit, give them a bonus, if they are a bad fit, give them a malus
 	// ENSURE TO TRANSLATE THEIR POSITION PROPERLY FOR THE SCHEME FIT!!!
@@ -839,19 +981,33 @@ func DefenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.N
 func STGradeNFL(depthChartPlayers structs.NFLDepthChart) float64 {
 	// Get overall values for all relevant positions
 	k1 := GetNFLPlayer(depthChartPlayers, "K", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: K1 was not found!!! Player ID: " + strconv.Itoa(int(k1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if k1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: K1 was not found!!! Player ID: " + strconv.Itoa(int(k1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	p1 := GetNFLPlayer(depthChartPlayers, "P", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: p1 was not found!!! Player ID: " + strconv.Itoa(int(p1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if p1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: p1 was not found!!! Player ID: " + strconv.Itoa(int(p1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	fg1 := GetNFLPlayer(depthChartPlayers, "FG", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: FG1 was not found!!! Player ID: " + strconv.Itoa(int(fg1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if fg1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: FG1 was not found!!! Player ID: " + strconv.Itoa(int(fg1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	kr1 := GetNFLPlayer(depthChartPlayers, "KR", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: KR1 was not found!!! Player ID: " + strconv.Itoa(int(kr1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if kr1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: KR1 was not found!!! Player ID: " + strconv.Itoa(int(kr1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	kr2 := GetNFLPlayer(depthChartPlayers, "KR", 2)
-	log.Println("ERROR DURING NFL TEAM GRADING: KR2 was not found!!! Player ID: " + strconv.Itoa(int(kr2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if kr2.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: KR2 was not found!!! Player ID: " + strconv.Itoa(int(kr2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	pr1 := GetNFLPlayer(depthChartPlayers, "PR", 1)
-	log.Println("ERROR DURING NFL TEAM GRADING: PR1 was not found!!! Player ID: " + strconv.Itoa(int(pr1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if pr1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: PR1 was not found!!! Player ID: " + strconv.Itoa(int(pr1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 	pr2 := GetNFLPlayer(depthChartPlayers, "PR", 2)
-	log.Println("ERROR DURING NFL TEAM GRADING: PR2 was not found!!! Player ID: " + strconv.Itoa(int(pr2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	if pr1.PlayerID == 0 {
+		log.Println("ERROR DURING NFL TEAM GRADING: PR2 was not found!!! Player ID: " + strconv.Itoa(int(pr2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	}
 
 	// Weight them by position
 	k1Overall := float64(k1.Overall)
@@ -1871,8 +2027,8 @@ func AssignTeamGrades() {
 	overallStdDev := math.Sqrt(overallVar)
 
 	// Iterate back through the map and set the letter grades based on the number grades' relationship to the mean and std dev of the entire data set for that value
-	for _, collegeTeam := range collegeTeamGrades {
-		collegeTeam.SetOffenseGradeLetter(TeamLetterGrade(collegeTeam.OffenseGradeNumber, offenseMean, offenseStdDev))
+	for i := uint(1); i < uint(len(collegeTeams)); i++ {
+		collegeTeamGrades[i].SetOffenseGradeLetter(TeamLetterGrade(collegeTeam.OffenseGradeNumber, offenseMean, offenseStdDev))
 		collegeTeam.SetDefenseGradeLetter(TeamLetterGrade(collegeTeam.DefenseGradeNumber, defenseMean, defenseStdDev))
 		collegeTeam.SetSpecialTeamsGradeLetter(TeamLetterGrade(collegeTeam.SpecialTeamsGradeNumber, stMean, stStdDev))
 		collegeTeam.SetOverallGradeLetter(TeamLetterGrade(collegeTeam.OverallGradeNumber, overallMean, overallStdDev))

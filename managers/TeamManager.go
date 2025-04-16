@@ -1954,7 +1954,7 @@ func AssignTeamGrades() {
 	collegeTeams := GetAllCollegeTeams()
 	collegeDepthChartMap := GetDepthChartMap()
 	collegeGameplanMap := GetCollegeGameplanMap()
-	collegeTeamGrades := make(map[uint]structs.TeamGrade)
+	collegeTeamGrades := make(map[uint]*structs.TeamGrade)
 
 	for _, t := range collegeTeams {
 		if !t.IsActive {
@@ -1966,7 +1966,7 @@ func AssignTeamGrades() {
 		defenseGrade := DefenseGradeCFB(depthChart, gameplan)
 		STGrade := STGradeCFB(depthChart)
 
-		collegeTeamGrades[t.ID] = structs.TeamGrade{
+		collegeTeamGrades[t.ID] = &structs.TeamGrade{
 			OffenseGradeNumber:      offenseGrade,
 			DefenseGradeNumber:      defenseGrade,
 			SpecialTeamsGradeNumber: STGrade,
@@ -2028,10 +2028,13 @@ func AssignTeamGrades() {
 
 	// Iterate back through the map and set the letter grades based on the number grades' relationship to the mean and std dev of the entire data set for that value
 	for i := uint(1); i < uint(len(collegeTeams)); i++ {
-		collegeTeamGrades[i].SetOffenseGradeLetter(TeamLetterGrade(collegeTeam.OffenseGradeNumber, offenseMean, offenseStdDev))
-		collegeTeam.SetDefenseGradeLetter(TeamLetterGrade(collegeTeam.DefenseGradeNumber, defenseMean, defenseStdDev))
-		collegeTeam.SetSpecialTeamsGradeLetter(TeamLetterGrade(collegeTeam.SpecialTeamsGradeNumber, stMean, stStdDev))
-		collegeTeam.SetOverallGradeLetter(TeamLetterGrade(collegeTeam.OverallGradeNumber, overallMean, overallStdDev))
+		_, ok := collegeTeamGrades[i]
+		if ok {
+			collegeTeamGrades[i].SetOffenseGradeLetter(TeamLetterGrade(collegeTeamGrades[i].OffenseGradeNumber, offenseMean, offenseStdDev))
+			collegeTeamGrades[i].SetDefenseGradeLetter(TeamLetterGrade(collegeTeamGrades[i].DefenseGradeNumber, defenseMean, defenseStdDev))
+			collegeTeamGrades[i].SetSpecialTeamsGradeLetter(TeamLetterGrade(collegeTeamGrades[i].SpecialTeamsGradeNumber, stMean, stStdDev))
+			collegeTeamGrades[i].SetOverallGradeLetter(TeamLetterGrade(collegeTeamGrades[i].OverallGradeNumber, overallMean, overallStdDev))
+		}
 	}
 
 	// Assign those letter grades to that team's grade properties
@@ -2057,7 +2060,7 @@ func AssignTeamGrades() {
 		nflGameplanMap[t.ID] = t
 	}
 
-	nflTeamGrades := make(map[uint]structs.TeamGrade)
+	nflTeamGrades := make(map[uint]*structs.TeamGrade)
 
 	// CHANGE ALL REFERENCES TO COLLEGE TO NFL FROM HERE ON
 	for _, t := range nflTeams {
@@ -2067,7 +2070,7 @@ func AssignTeamGrades() {
 		defenseGrade := DefenseGradeNFL(depthChart, gameplan)
 		STGrade := STGradeNFL(depthChart)
 
-		nflTeamGrades[t.ID] = structs.TeamGrade{
+		nflTeamGrades[t.ID] = &structs.TeamGrade{
 			OffenseGradeNumber:      offenseGrade,
 			DefenseGradeNumber:      defenseGrade,
 			SpecialTeamsGradeNumber: STGrade,
@@ -2128,11 +2131,14 @@ func AssignTeamGrades() {
 	overallStdDev = math.Sqrt(overallVar)
 
 	// Iterate back through the map and set the letter grades based on the number grades' relationship to the mean and std dev of the entire data set for that value
-	for _, nflTeam := range nflTeamGrades {
-		nflTeam.SetOffenseGradeLetter(TeamLetterGrade(nflTeam.OffenseGradeNumber, offenseMean, offenseStdDev))
-		nflTeam.SetDefenseGradeLetter(TeamLetterGrade(nflTeam.DefenseGradeNumber, defenseMean, defenseStdDev))
-		nflTeam.SetSpecialTeamsGradeLetter(TeamLetterGrade(nflTeam.SpecialTeamsGradeNumber, stMean, stStdDev))
-		nflTeam.SetOverallGradeLetter(TeamLetterGrade(nflTeam.OverallGradeNumber, overallMean, overallStdDev))
+	for i := uint(1); i < uint(len(nflTeams)); i++ {
+		_, ok := nflTeamGrades[i]
+		if ok {
+			nflTeamGrades[i].SetOffenseGradeLetter(TeamLetterGrade(nflTeamGrades[i].OffenseGradeNumber, offenseMean, offenseStdDev))
+			nflTeamGrades[i].SetDefenseGradeLetter(TeamLetterGrade(nflTeamGrades[i].DefenseGradeNumber, defenseMean, defenseStdDev))
+			nflTeamGrades[i].SetSpecialTeamsGradeLetter(TeamLetterGrade(nflTeamGrades[i].SpecialTeamsGradeNumber, stMean, stStdDev))
+			nflTeamGrades[i].SetOverallGradeLetter(TeamLetterGrade(nflTeamGrades[i].OverallGradeNumber, overallMean, overallStdDev))
+		}
 	}
 
 	// Assign those letter grades to that team's grade properties

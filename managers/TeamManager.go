@@ -576,7 +576,247 @@ func IsSchemeFit(position string, archetype string, scheme string) bool {
 			} else {
 				return false
 			}
+		default:
+			return false
 		}
+	case "FB":
+		switch archetype {
+		case "balanced":
+			if strings.Contains(scheme, "west") || strings.Contains(scheme, "wing-t") || strings.Contains(scheme, "flex") {
+				return true
+			} else {
+				return false
+			}
+		case "receiving":
+			if strings.Contains(scheme, "west") || strings.Contains(scheme, "spread") || strings.Contains(scheme, "vert") {
+				return true
+			} else {
+				return false
+			}
+		case "rushing":
+			if strings.Contains(scheme, "i option") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "double") {
+				return true
+			} else {
+				return false
+			}
+		case "blocking":
+			if strings.Contains(scheme, "power") || strings.Contains(scheme, "double") {
+				return true
+			} else {
+				return false
+			}
+		default:
+			return false
+		}
+	case "WR":
+		switch archetype {
+		case "route runner":
+			if strings.Contains(scheme, "west") || strings.Contains(scheme, "vert") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "spread") {
+				return true
+			} else {
+				return false
+			}
+		case "red zone threat":
+			if strings.Contains(scheme, "power") || strings.Contains(scheme, "double") || strings.Contains(scheme, "bone") {
+				return true
+			} else {
+				return false
+			}
+		case "possession":
+			if strings.Contains(scheme, "option") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "west") {
+				return true
+			} else {
+				return false
+			}
+		case "possesion":
+			if strings.Contains(scheme, "option") || strings.Contains(scheme, "pistol") || strings.Contains(scheme, "west") {
+				return true
+			} else {
+				return false
+			}
+		case "speed":
+			if strings.Contains(scheme, "vert") || strings.Contains(scheme, "shoot") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "wing-t") {
+				return true
+			} else {
+				return false
+			}
+		default:
+			return false
+		}
+	case "TE":
+		switch archetype {
+		case "vertical threat":
+			if strings.Contains(scheme, "vert") || strings.Contains(scheme, "raid") || strings.Contains(scheme, "pistol") {
+				return true
+			} else {
+				return false
+			}
+		case "receiving":
+			if strings.Contains(scheme, "vert") || strings.Contains(scheme, "west") || strings.Contains(scheme, "raid") {
+				return true
+			} else {
+				return false
+			}
+		case "blocking":
+			if strings.Contains(scheme, "power") || strings.Contains(scheme, "double") || strings.Contains(scheme, "i option") {
+				return true
+			} else {
+				return false
+			}
+		default:
+			return false
+		}
+	case "OT":
+		switch archetype {
+		case "run blocking":
+			if strings.Contains(scheme, "power") || strings.Contains(scheme, "double") {
+				return true
+			} else {
+				return false
+			}
+		case "pass blocking":
+			if strings.Contains(scheme, "vert") || strings.Contains(scheme, "raid") {
+				return true
+			} else {
+				return false
+			}
+		default:
+			return false
+		}
+	case "OG":
+		switch archetype {
+		case "run blocking":
+			if strings.Contains(scheme, "power") || strings.Contains(scheme, "double") {
+				return true
+			} else {
+				return false
+			}
+		case "pass blocking":
+			if strings.Contains(scheme, "vert") || strings.Contains(scheme, "raid") {
+				return true
+			} else {
+				return false
+			}
+		default:
+			return false
+		}
+	case "C":
+		switch archetype {
+		case "run blocking":
+			if strings.Contains(scheme, "power") || strings.Contains(scheme, "double") {
+				return true
+			} else {
+				return false
+			}
+		case "pass blocking":
+			if strings.Contains(scheme, "vert") || strings.Contains(scheme, "raid") {
+				return true
+			} else {
+				return false
+			}
+		case "line captain":
+			if strings.Contains(scheme, "west") || strings.Contains(scheme, "shoot") {
+				return true
+			} else {
+				return false
+			}
+		default:
+			return false
+		}
+	case "DE":
+		switch archetype {
+		case "speed rusher":
+			if strings.Contains(scheme, "4") || strings.Contains(scheme, "speed") {
+				return true
+			} else {
+				return false
+			}
+		case "run stopper":
+			if strings.Contains(scheme, "2") || strings.Contains(scheme, "multiple") {
+				return true
+			} else {
+				return false
+			}
+		default:
+			return false
+		}
+	case "DT":
+		switch archetype {
+		case "pass rusher":
+			if strings.Contains(scheme, "4") || strings.Contains(scheme, "speed") {
+				return true
+			} else {
+				return false
+			}
+		case "nose tackle":
+			if strings.Contains(scheme, "2") || strings.Contains(scheme, "3") {
+				return true
+			} else {
+				return false
+			}
+		default:
+			return false
+		}
+	case "OLB":
+		switch archetype {
+		case "pass rush":
+			if strings.Contains(scheme, "2") || strings.Contains(scheme, "3") {
+				return true
+			} else {
+				return false
+			}
+		case "speed":
+			if strings.Contains(scheme, "speed") || strings.Contains(scheme, "multiple") {
+				return true
+			} else {
+				return false
+			}
+		case "coverage":
+			if strings.Contains(scheme, "4") || strings.Contains(scheme, "speed") {
+				return true
+			} else {
+				return false
+			}
+		case "run stopper":
+			if strings.Contains(scheme, "old") || strings.Contains(scheme, "2") {
+				return true
+			} else {
+				return false
+			}
+		default:
+			return false
+		}
+	case "ILB":
+		switch archetype {
+		case "field general":
+			if strings.Contains(scheme, "old") || strings.Contains(scheme, "multiple") {
+				return true
+			} else {
+				return false
+			}
+		case "speed":
+			if strings.Contains(scheme, "speed") || strings.Contains(scheme, "multiple") {
+				return true
+			} else {
+				return false
+			}
+		case "coverage":
+			if strings.Contains(scheme, "4") || strings.Contains(scheme, "3") {
+				return true
+			} else {
+				return false
+			}
+		case "run stopper":
+			if strings.Contains(scheme, "old") || strings.Contains(scheme, "2") {
+				return true
+			} else {
+				return false
+			}
+		default:
+			return false
+		}
+	default:
+		return false
 	}
 }
 

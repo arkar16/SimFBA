@@ -136,7 +136,7 @@ func (c *NFLContract) MapPracticeSquadOffer(f FreeAgencyOffer) {
 	c.CalculateContract()
 	c.IsActive = true
 	c.IsComplete = false
-	c.IsExtended = true
+	c.IsExtended = false
 }
 
 func (c *NFLContract) FixContract(length int, y1s, y1b, y2s, y2b, y3s, y3b, y4s, y4b, y5s, y5b, bonus float64) {

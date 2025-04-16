@@ -466,6 +466,16 @@ func GetNFLPlayer(depthChartPlayers structs.NFLDepthChart, position string, leve
 	return structs.NFLPlayer{}
 }
 
+func GetKickReturnOverall(speed int, agility int) float64 {
+	grade := (float64(speed) * 0.75) + (float64(agility) * 0.25)
+	return grade
+}
+
+func GetPuntReturnOverall(speed int, agility int) float64 {
+	grade := (float64(speed) * 0.25) + (float64(agility) * 0.75)
+	return grade
+}
+
 // Returns the CFB team's numerical value for their entire offense
 func OffenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan structs.CollegeGameplan) float64 {
 	// Get overall values for all relevant positions
@@ -631,11 +641,36 @@ func DefenseGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart, gameplan s
 // Returns the CFB team's numerical value for their entire offense
 func STGradeCFB(depthChartPlayers structs.CollegeTeamDepthChart) float64 {
 	// Get overall values for all relevant positions
+	k1 := GetCollegePlayer(depthChartPlayers, "K", 1)
+	log.Println("ERROR DURING COLLEGE TEAM GRADING: K1 was not found!!! Player ID: " + strconv.Itoa(int(k1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	p1 := GetCollegePlayer(depthChartPlayers, "P", 1)
+	log.Println("ERROR DURING COLLEGE TEAM GRADING: p1 was not found!!! Player ID: " + strconv.Itoa(int(p1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	fg1 := GetCollegePlayer(depthChartPlayers, "FG", 1)
+	log.Println("ERROR DURING COLLEGE TEAM GRADING: FG1 was not found!!! Player ID: " + strconv.Itoa(int(fg1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	kr1 := GetCollegePlayer(depthChartPlayers, "KR", 1)
+	log.Println("ERROR DURING COLLEGE TEAM GRADING: KR1 was not found!!! Player ID: " + strconv.Itoa(int(kr1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	kr2 := GetCollegePlayer(depthChartPlayers, "KR", 2)
+	log.Println("ERROR DURING COLLEGE TEAM GRADING: KR2 was not found!!! Player ID: " + strconv.Itoa(int(kr2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	pr1 := GetCollegePlayer(depthChartPlayers, "PR", 1)
+	log.Println("ERROR DURING COLLEGE TEAM GRADING: PR1 was not found!!! Player ID: " + strconv.Itoa(int(pr1.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	pr2 := GetCollegePlayer(depthChartPlayers, "PR", 2)
+	log.Println("ERROR DURING COLLEGE TEAM GRADING: PR2 was not found!!! Player ID: " + strconv.Itoa(int(pr2.ID)) + " COLLEGE TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+
 	// Weight them by position
+	k1Overall := float64(k1.Overall)
+	p1Overall := float64(p1.Overall)
+	fg1Overall := float64(fg1.Overall)
+	kr1Overall := GetKickReturnOverall(kr1.Speed, kr1.Agility) * 0.5
+	kr2Overall := GetKickReturnOverall(kr2.Speed, kr2.Agility) * 0.5
+	pr1Overall := GetPuntReturnOverall(pr1.Speed, pr1.Agility) * 0.5
+	pr2Overall := GetPuntReturnOverall(pr2.Speed, pr2.Agility) * 0.5
+
 	// Sum them all up
+	grade := k1Overall + p1Overall + fg1Overall + kr1Overall + kr2Overall + pr1Overall + pr2Overall
 	// Divide by 5 (Special Teams weight normalization value)
+	grade = grade / 5.0
 	// return the resulting value
-	return
+	return grade
 }
 
 // Returns the CFB team's numerical value for their entire offense
@@ -803,11 +838,36 @@ func DefenseGradeNFL(depthChartPlayers structs.NFLDepthChart, gameplan structs.N
 // Returns the CFB team's numerical value for their entire offense
 func STGradeNFL(depthChartPlayers structs.NFLDepthChart) float64 {
 	// Get overall values for all relevant positions
+	k1 := GetNFLPlayer(depthChartPlayers, "K", 1)
+	log.Println("ERROR DURING NFL TEAM GRADING: K1 was not found!!! Player ID: " + strconv.Itoa(int(k1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	p1 := GetNFLPlayer(depthChartPlayers, "P", 1)
+	log.Println("ERROR DURING NFL TEAM GRADING: p1 was not found!!! Player ID: " + strconv.Itoa(int(p1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	fg1 := GetNFLPlayer(depthChartPlayers, "FG", 1)
+	log.Println("ERROR DURING NFL TEAM GRADING: FG1 was not found!!! Player ID: " + strconv.Itoa(int(fg1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	kr1 := GetNFLPlayer(depthChartPlayers, "KR", 1)
+	log.Println("ERROR DURING NFL TEAM GRADING: KR1 was not found!!! Player ID: " + strconv.Itoa(int(kr1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	kr2 := GetNFLPlayer(depthChartPlayers, "KR", 2)
+	log.Println("ERROR DURING NFL TEAM GRADING: KR2 was not found!!! Player ID: " + strconv.Itoa(int(kr2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	pr1 := GetNFLPlayer(depthChartPlayers, "PR", 1)
+	log.Println("ERROR DURING NFL TEAM GRADING: PR1 was not found!!! Player ID: " + strconv.Itoa(int(pr1.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+	pr2 := GetNFLPlayer(depthChartPlayers, "PR", 2)
+	log.Println("ERROR DURING NFL TEAM GRADING: PR2 was not found!!! Player ID: " + strconv.Itoa(int(pr2.ID)) + " NFL TEAM ID: " + strconv.Itoa(int(depthChartPlayers.TeamID)))
+
 	// Weight them by position
+	k1Overall := float64(k1.Overall)
+	p1Overall := float64(p1.Overall)
+	fg1Overall := float64(fg1.Overall)
+	kr1Overall := GetKickReturnOverall(kr1.Speed, kr1.Agility) * 0.5
+	kr2Overall := GetKickReturnOverall(kr2.Speed, kr2.Agility) * 0.5
+	pr1Overall := GetPuntReturnOverall(pr1.Speed, pr1.Agility) * 0.5
+	pr2Overall := GetPuntReturnOverall(pr2.Speed, pr2.Agility) * 0.5
+
 	// Sum them all up
+	grade := k1Overall + p1Overall + fg1Overall + kr1Overall + kr2Overall + pr1Overall + pr2Overall
 	// Divide by 5 (Special Teams weight normalization value)
+	grade = grade / 5.0
 	// return the resulting value
-	return
+	return grade
 }
 
 // League agnostic

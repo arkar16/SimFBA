@@ -185,6 +185,7 @@ func handleRequests() http.Handler {
 	// apiRouter.HandleFunc("/import/simfba/import/attributes", controller.ImplementPrimeAge).Methods("GET")
 	// apiRouter.HandleFunc("/import/simcfb/college/standings", controller.CreateCollegeStandings).Methods("GET")
 	// apiRouter.HandleFunc("/fix/simcfb/nfl/dts", controller.FixCollegeDTOVRs).Methods("GET")
+	// apiRouter.HandleFunc("/assign/team/grades", controller.ImportTeamGrades).Methods("GET")
 
 	// News Controls
 	apiRouter.HandleFunc("/cfb/news/all/", controller.GetAllNewsLogsForASeason).Methods("GET")

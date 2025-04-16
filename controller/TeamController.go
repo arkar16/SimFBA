@@ -129,5 +129,5 @@ func GetNFLDashboardByTeamID(w http.ResponseWriter, r *http.Request) {
 }
 
 func AssignCFBTeamGrades(w http.ResponseWriter, r *http.Request) {
-	managers.AssignCFBTeamGrades()
+	managers.AssignTeamGrades()
 }

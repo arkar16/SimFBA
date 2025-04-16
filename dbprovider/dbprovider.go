@@ -9,6 +9,7 @@ import (
 	"time"
 
 	config "github.com/CalebRose/SimFBA/secrets"
+	"github.com/CalebRose/SimFBA/structs"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	"golang.org/x/crypto/ssh"
 	"gorm.io/driver/mysql"
@@ -64,7 +65,7 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.CollegePlayerSeasonSnaps{})
 	// db.AutoMigrate(&structs.CollegePromise{})
 	// db.AutoMigrate(&structs.UnsignedPlayer{})
-	// db.AutoMigrate(&structs.CollegeTeam{})
+	db.AutoMigrate(&structs.CollegeTeam{})
 	// db.AutoMigrate(&structs.CollegeRival{})
 	// db.AutoMigrate(&structs.League{})
 	// db.AutoMigrate(&structs.CollegeConference{})
@@ -120,7 +121,7 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.NFLPlayerGameSnaps{})
 	// db.AutoMigrate(&structs.NFLPlayerSeasonSnaps{})
 	// db.AutoMigrate(&structs.NFLUser{})
-	// db.AutoMigrate(&structs.NFLTeam{})
+	db.AutoMigrate(&structs.NFLTeam{})
 	// db.AutoMigrate(&structs.NFLTeamStats{})
 	// db.AutoMigrate(&structs.NFLTeamSeasonStats{})
 	// db.AutoMigrate(&structs.NFLStandings{})

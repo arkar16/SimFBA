@@ -11,6 +11,10 @@ func ImportCustomCroots(w http.ResponseWriter, r *http.Request) {
 	managers.CreateCustomCroots()
 }
 
+func ImportTeamGrades(w http.ResponseWriter, r *http.Request) {
+	managers.AssignTeamGrades()
+}
+
 func ImportNFLDraftPicks(w http.ResponseWriter, r *http.Request) {
 	managers.ImportNFLDraftPicks()
 }

@@ -2134,7 +2134,7 @@ func AssignTeamGrades() {
 	overallStdDev = math.Sqrt(overallVar)
 
 	// Iterate back through the map and set the letter grades based on the number grades' relationship to the mean and std dev of the entire data set for that value
-	for i := uint(1); i < uint(len(nflTeams)); i++ {
+	for i := uint(1); i < uint(len(nflTeams)+1); i++ {
 		_, ok := nflTeamGrades[i]
 		if ok {
 			nflTeamGrades[i].SetOffenseGradeLetter(TeamLetterGrade(nflTeamGrades[i].OffenseGradeNumber, offenseMean, offenseStdDev))

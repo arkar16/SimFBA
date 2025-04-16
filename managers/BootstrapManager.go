@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/CalebRose/SimFBA/models"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 )
@@ -28,29 +28,34 @@ type BootstrapData struct {
 	ProNotifications     []structs.Notification
 	NFLGameplan          structs.NFLGameplan
 	NFLDepthChart        structs.NFLDepthChart
+	FaceData             map[uint]structs.FaceDataResponse
 }
 
 type BootstrapDataTwo struct {
-	CollegeNews      []structs.NewsLog
-	AllCollegeGames  []structs.CollegeGame
-	TeamProfileMap   map[string]*structs.RecruitingTeamProfile
-	CollegeStandings []structs.CollegeStandings
-	ProStandings     []structs.NFLStandings
-	AllProGames      []structs.NFLGame
-	CapsheetMap      map[uint]structs.NFLCapsheet
-	ProRosterMap     map[uint][]structs.NFLPlayer
-	TopNFLPassers    []structs.NFLPlayer
-	TopNFLRushers    []structs.NFLPlayer
-	TopNFLReceivers  []structs.NFLPlayer
-	ProInjuryReport  []structs.NFLPlayer
+	CollegeNews          []structs.NewsLog
+	AllCollegeGames      []structs.CollegeGame
+	TeamProfileMap       map[string]*structs.RecruitingTeamProfile
+	CollegeStandings     []structs.CollegeStandings
+	ProStandings         []structs.NFLStandings
+	AllProGames          []structs.NFLGame
+	CapsheetMap          map[uint]structs.NFLCapsheet
+	ProRosterMap         map[uint][]structs.NFLPlayer
+	PracticeSquadPlayers []structs.NFLPlayer
+	TopNFLPassers        []structs.NFLPlayer
+	TopNFLRushers        []structs.NFLPlayer
+	TopNFLReceivers      []structs.NFLPlayer
+	ProInjuryReport      []structs.NFLPlayer
 }
 
 type BootstrapDataThree struct {
 	Recruits             []structs.Croot
 	CollegeDepthChartMap map[uint]structs.CollegeTeamDepthChart
-	FreeAgency           models.FreeAgencyResponse
+	FreeAgentOffers      []structs.FreeAgencyOffer
+	WaiverWireOffers     []structs.NFLWaiverOffer
 	ProNews              []structs.NewsLog
 	NFLDepthChartMap     map[uint]structs.NFLDepthChart
+	ContractMap          map[uint]structs.NFLContract
+	ExtensionMap         map[uint]structs.NFLExtensionOffer
 }
 
 func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
@@ -71,6 +76,7 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		topPassers            []structs.CollegePlayer
 		topRushers            []structs.CollegePlayer
 		topReceivers          []structs.CollegePlayer
+		faceDataMap           map[uint]structs.FaceDataResponse
 	)
 
 	// Professional Data
@@ -166,6 +172,15 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		}()
 		wg.Wait()
 	}
+
+	wg.Add(1)
+
+	go func() {
+		defer wg.Done()
+		faceDataMap = GetAllFaces()
+	}()
+
+	wg.Wait()
 	return BootstrapData{
 		CollegeTeam:          collegeTeam,
 		AllCollegeTeams:      allCollegeTeams,
@@ -183,6 +198,7 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		TopCFBPassers:        topPassers,
 		TopCFBRushers:        topRushers,
 		TopCFBReceivers:      topReceivers,
+		FaceData:             faceDataMap,
 	}
 }
 
@@ -201,14 +217,15 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 
 	// Professional Data
 	var (
-		proStandings      []structs.NFLStandings
-		proRosterMap      map[uint][]structs.NFLPlayer
-		capsheetMap       map[uint]structs.NFLCapsheet
-		injuredProPlayers []structs.NFLPlayer
-		proGames          []structs.NFLGame
-		topPassers        []structs.NFLPlayer
-		topRushers        []structs.NFLPlayer
-		topReceivers      []structs.NFLPlayer
+		proStandings         []structs.NFLStandings
+		proRosterMap         map[uint][]structs.NFLPlayer
+		practiceSquadPlayers []structs.NFLPlayer
+		capsheetMap          map[uint]structs.NFLCapsheet
+		injuredProPlayers    []structs.NFLPlayer
+		proGames             []structs.NFLGame
+		topPassers           []structs.NFLPlayer
+		topRushers           []structs.NFLPlayer
+		topReceivers         []structs.NFLPlayer
 	)
 	ts := GetTimestamp()
 	log.Println("Timestamp:", ts)
@@ -276,6 +293,7 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 			nflPlayerMap := MakeNFLPlayerMap(proPlayers)
 			proRosterMap = MakeNFLPlayerMapByTeamID(proPlayers, true)
 			injuredProPlayers = MakeProInjuryList(proPlayers)
+			practiceSquadPlayers = MakePracticeSquadList(proPlayers)
 			topPassers = getNFLOrderedListByStatType("PASSING", uint(nflTeamID), nflStats, nflPlayerMap)
 			topRushers = getNFLOrderedListByStatType("RUSHING", uint(nflTeamID), nflStats, nflPlayerMap)
 			topReceivers = getNFLOrderedListByStatType("RECEIVING", uint(nflTeamID), nflStats, nflPlayerMap)
@@ -287,18 +305,19 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 		log.Println("Completed all Pro data queries.")
 	}
 	return BootstrapDataTwo{
-		CollegeStandings: collegeStandings,
-		CollegeNews:      collegeNews,
-		AllCollegeGames:  collegeGames,
-		TeamProfileMap:   teamProfileMap,
-		ProStandings:     proStandings,
-		ProRosterMap:     proRosterMap,
-		CapsheetMap:      capsheetMap,
-		ProInjuryReport:  injuredProPlayers,
-		AllProGames:      proGames,
-		TopNFLPassers:    topPassers,
-		TopNFLRushers:    topRushers,
-		TopNFLReceivers:  topReceivers,
+		CollegeStandings:     collegeStandings,
+		CollegeNews:          collegeNews,
+		AllCollegeGames:      collegeGames,
+		TeamProfileMap:       teamProfileMap,
+		ProStandings:         proStandings,
+		ProRosterMap:         proRosterMap,
+		PracticeSquadPlayers: practiceSquadPlayers,
+		CapsheetMap:          capsheetMap,
+		ProInjuryReport:      injuredProPlayers,
+		AllProGames:          proGames,
+		TopNFLPassers:        topPassers,
+		TopNFLRushers:        topRushers,
+		TopNFLReceivers:      topReceivers,
 	}
 }
 
@@ -313,12 +332,13 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 
 	// Professional Data
 	var (
-		freeAgency       models.FreeAgencyResponse
 		proNews          []structs.NewsLog
 		proDepthChartMap map[uint]structs.NFLDepthChart
+		contractMap      map[uint]structs.NFLContract
+		extensionMap     map[uint]structs.NFLExtensionOffer
+		freeAgentoffers  []structs.FreeAgencyOffer
+		waiverOffers     []structs.NFLWaiverOffer
 	)
-
-	freeAgencyCh := make(chan models.FreeAgencyResponse, 1)
 
 	if len(collegeID) > 0 {
 		wg.Add(2)
@@ -336,7 +356,7 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		wg.Wait()
 	}
 	if len(proID) > 0 {
-		wg.Add(3)
+		wg.Add(6)
 
 		go func() {
 			defer wg.Done()
@@ -352,18 +372,35 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 
 		go func() {
 			defer wg.Done()
-			GetAllAvailableNFLPlayersViaChan(proID, freeAgencyCh)
+			freeAgentoffers = repository.FindAllFreeAgentOffers(repository.FreeAgencyQuery{IsActive: true})
 		}()
 
-		freeAgency = <-freeAgencyCh
+		go func() {
+			defer wg.Done()
+			waiverOffers = repository.FindAllWaiverOffers(repository.FreeAgencyQuery{IsActive: true})
+		}()
+
+		go func() {
+			defer wg.Done()
+			contractMap = GetContractMap()
+		}()
+
+		go func() {
+			defer wg.Done()
+			extensionMap = GetExtensionMap()
+		}()
+
 		wg.Wait()
 	}
 	return BootstrapDataThree{
 		CollegeDepthChartMap: collegeDepthChartMap,
 		Recruits:             recruits,
-		FreeAgency:           freeAgency,
+		FreeAgentOffers:      freeAgentoffers,
+		WaiverWireOffers:     waiverOffers,
 		ProNews:              proNews,
 		NFLDepthChartMap:     proDepthChartMap,
+		ContractMap:          contractMap,
+		ExtensionMap:         extensionMap,
 	}
 }
 

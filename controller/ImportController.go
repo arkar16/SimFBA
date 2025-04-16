@@ -79,3 +79,8 @@ func FixCollegeDTOVRs(w http.ResponseWriter, r *http.Request) {
 	managers.FixCollegeDTs()
 	json.NewEncoder(w).Encode("Players Fixed")
 }
+
+func FixSpendingCount(w http.ResponseWriter, r *http.Request) {
+	managers.FixSpendingCount()
+	json.NewEncoder(w).Encode("Players Fixed")
+}

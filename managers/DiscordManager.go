@@ -11,7 +11,7 @@ import (
 )
 
 func CompareTwoTeams(t1ID, t2ID string) structs.CFBComparisonModel {
-
+	ts := GetTimestamp()
 	teamOneChan := make(chan structs.CollegeTeam)
 	teamTwoChan := make(chan structs.CollegeTeam)
 
@@ -50,7 +50,14 @@ func CompareTwoTeams(t1ID, t2ID string) structs.CFBComparisonModel {
 	t2LargestMarginScore := ""
 
 	for _, game := range allTeamOneGames {
-		if !game.GameComplete {
+		if !game.GameComplete ||
+			(game.Week == ts.CollegeWeek &&
+				((game.TimeSlot == "Thursday Night" && !ts.ThursdayGames) ||
+					(game.TimeSlot == "Friday Night" && !ts.FridayGames) ||
+					(game.TimeSlot == "Saturday Morning" && !ts.SaturdayMorning) ||
+					(game.TimeSlot == "Saturday Afternoon" && !ts.SaturdayNoon) ||
+					(game.TimeSlot == "Saturday Evening" && !ts.SaturdayEvening) ||
+					(game.TimeSlot == "Saturday Night" && !ts.SaturdayNight))) {
 			continue
 		}
 		doComparison := (game.HomeTeamID == int(teamOne.ID) && game.AwayTeamID == int(teamTwo.ID)) ||
@@ -138,11 +145,7 @@ func CompareTwoTeams(t1ID, t2ID string) structs.CFBComparisonModel {
 	}
 
 	currentStreak := 0
-	if t1CurrentStreak > t2CurrentStreak {
-		currentStreak = t1CurrentStreak
-	} else {
-		currentStreak = t2CurrentStreak
-	}
+	currentStreak = max(t1CurrentStreak, t2CurrentStreak)
 
 	return structs.CFBComparisonModel{
 		TeamOneID:      teamOne.ID,
@@ -359,7 +362,7 @@ func GetNFLPlayByPlayStreamData(timeslot, week string) []structs.StreamResponse 
 		// Continue
 	} else {
 		diff := nflWeek - weekNum
-		nflWeekID = ts.CollegeWeekID - diff
+		nflWeekID = ts.NFLWeekID - diff
 	}
 	games := GetNFLGamesByTimeslotAndWeekId(strconv.Itoa(nflWeekID), timeslot, ts.NFLPreseason)
 

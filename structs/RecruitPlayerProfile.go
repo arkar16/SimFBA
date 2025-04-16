@@ -38,7 +38,7 @@ func (rp *RecruitPlayerProfile) AddCurrentWeekPointsToTotal(CurrentPoints float6
 	// If user spends points on a recruit
 	if CurrentPoints > 0 {
 		rp.TotalPoints += CurrentPoints
-		if rp.SpendingCount < 5 && CurrentPoints >= 1 {
+		if rp.SpendingCount < 5 && rp.CurrentWeeksPoints >= 1 {
 			rp.SpendingCount++
 			// In the event that someone tries to exploit the consistency system with a value between 0.00001 and 0.99999
 		} else if CurrentPoints > 0 && CurrentPoints < 1 {
@@ -86,9 +86,14 @@ func (rp *RecruitPlayerProfile) LockPlayer() {
 	rp.IsLocked = true
 }
 
+func (rp *RecruitPlayerProfile) UpdateSpendingCount(count int) {
+	rp.SpendingCount = count
+}
+
 func (rp *RecruitPlayerProfile) ResetSpendingCount() {
 	rp.SpendingCount = 0
 }
+
 func (rp *RecruitPlayerProfile) ResetTotalPoints() {
 	rp.TotalPoints = 0
 	rp.TeamReachedMax = true

@@ -1108,11 +1108,6 @@ func SyncTransferPortal() {
 
 				if winningTeamID > 0 {
 					winningTeamIDSTR := strconv.Itoa(int(winningTeamID))
-					promise := GetCollegePromiseByCollegePlayerID(strconv.Itoa(int(portalPlayer.ID)), winningTeamIDSTR)
-					if promise.ID > 0 {
-						promise.MakePromise()
-						repository.SaveCollegePromiseRecord(promise, db)
-					}
 
 					teamProfile := teamProfileMap[winningTeamIDSTR]
 					currentRoster := rosterMap[teamProfile.ID]
@@ -1121,6 +1116,11 @@ func SyncTransferPortal() {
 						teamCap = 80
 					}
 					if len(currentRoster) < teamCap {
+						promise := GetCollegePromiseByCollegePlayerID(strconv.Itoa(int(portalPlayer.ID)), winningTeamIDSTR)
+						if promise.ID > 0 {
+							promise.MakePromise()
+							repository.SaveCollegePromiseRecord(promise, db)
+						}
 						portalPlayer.SignWithNewTeam(teamProfile.TeamID, teamProfile.TeamAbbreviation)
 						message := portalPlayer.FirstName + " " + portalPlayer.LastName + ", " + strconv.Itoa(portalPlayer.Stars) + " star " + portalPlayer.Position + " from " + portalPlayer.PreviousTeam + " has signed with " + portalPlayer.TeamAbbr + " with " + strconv.Itoa(int(odds)) + " percent odds."
 						CreateNewsLog("CFB", message, "Transfer Portal", int(winningTeamID), ts)

@@ -231,7 +231,7 @@ func SendScholarshipToRecruit(updateRecruitPointsDto structs.UpdateRecruitPoints
 
 	recruitingProfile := GetOnlyRecruitingProfileByTeamID(strconv.Itoa(updateRecruitPointsDto.ProfileID))
 
-	if recruitingProfile.ScholarshipsAvailable == 0 {
+	if recruitingProfile.ScholarshipsAvailable == 0 && (updateRecruitPointsDto.RewardScholarship || updateRecruitPointsDto.RevokeScholarship) {
 		log.Panicln("\nTeamId: " + strconv.Itoa(updateRecruitPointsDto.ProfileID) + " does not have any availabe scholarships")
 	}
 

@@ -67,6 +67,7 @@ func SyncToNextWeekViaCron() {
 		if !ts.IsOffSeason && !ts.IsNFLOffSeason {
 			managers.MoveUpWeek()
 		}
+		managers.AssignTeamGrades()
 	}
 }
 

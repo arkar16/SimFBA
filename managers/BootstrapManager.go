@@ -104,15 +104,12 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		allProTeams = GetAllNFLTeams()
 	}()
 
-	wg.Wait()
-
 	if len(collegeID) > 0 {
-		wg.Add(3)
+		wg.Add(6)
 		go func() {
 			defer wg.Done()
 			collegeTeam = GetTeamByTeamID(collegeID)
 		}()
-
 		go func() {
 			defer wg.Done()
 			collegePlayers = GetAllCollegePlayers()
@@ -121,16 +118,11 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 			injuredCollegePlayers = MakeCollegeInjuryList(collegePlayers)
 			portalPlayers = MakeCollegePortalList(collegePlayers)
 			mu.Unlock()
-
 		}()
 		go func() {
 			defer wg.Done()
 			collegeNotifications = GetNotificationByTeamIDAndLeague("CFB", collegeID)
 		}()
-
-		wg.Wait()
-
-		wg.Add(3)
 		go func() {
 			defer wg.Done()
 			cfbStats := GetCollegePlayerSeasonStatsBySeason(seasonID, gtStr)
@@ -142,7 +134,6 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 			topReceivers = getCFBOrderedListByStatType("RECEIVING", collegeTeam.ID, cfbStats, collegePlayerMap)
 			mu.Unlock()
 		}()
-
 		go func() {
 			defer wg.Done()
 			collegeGameplan = GetGameplanByTeamID(collegeID)
@@ -152,8 +143,6 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 			collegeDepthChart = GetDepthchartByTeamID(collegeID)
 
 		}()
-
-		wg.Wait()
 	}
 	if len(proID) > 0 {
 		wg.Add(3)
@@ -170,17 +159,15 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 			defer wg.Done()
 			proGameplan = GetNFLGameplanByTeamID(proID)
 		}()
-		wg.Wait()
 	}
 
 	wg.Add(1)
-
 	go func() {
 		defer wg.Done()
 		faceDataMap = GetAllFaces()
 	}()
 
-	wg.Wait()
+	wg.Wait() 
 	return BootstrapData{
 		CollegeTeam:          collegeTeam,
 		AllCollegeTeams:      allCollegeTeams,
@@ -258,8 +245,7 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 			collegeStandings = GetAllCollegeStandingsBySeasonID(strconv.Itoa(int(ts.CollegeSeasonID)))
 			log.Println("Fetched College Standings, count:", len(collegeStandings))
 		}()
-		wg.Wait()
-		log.Println("Completed all College data queries.")
+		log.Println("Initiated all College data queries.")
 
 	}
 	if len(proID) > 0 {
@@ -301,8 +287,9 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 			log.Println("Fetched NFL Players, roster count:", len(proRosterMap), "injured count:", len(injuredProPlayers))
 		}()
 
+		log.Println("Initiated all Pro data queries.")
 		wg.Wait()
-		log.Println("Completed all Pro data queries.")
+		log.Println("Completed all football data queries.")
 	}
 	return BootstrapDataTwo{
 		CollegeStandings:     collegeStandings,
@@ -352,9 +339,8 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 			collegeDCs := GetAllCollegeDepthcharts()
 			collegeDepthChartMap = MakeCollegeDepthChartMap(collegeDCs)
 		}()
-
-		wg.Wait()
 	}
+
 	if len(proID) > 0 {
 		wg.Add(6)
 

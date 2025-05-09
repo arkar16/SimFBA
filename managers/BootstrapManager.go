@@ -105,7 +105,7 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 	}()
 
 	if len(collegeID) > 0 {
-		wg.Add(6)
+		wg.Add(5)
 		go func() {
 			defer wg.Done()
 			collegeTeam = GetTeamByTeamID(collegeID)
@@ -113,8 +113,14 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		go func() {
 			defer wg.Done()
 			collegePlayers = GetAllCollegePlayers()
+			cfbStats := GetCollegePlayerSeasonStatsBySeason(seasonID, gtStr)
+
 			mu.Lock()
 			collegePlayerMap = MakeCollegePlayerMapByTeamID(collegePlayers, true)
+			fullCollegePlayerMap := MakeCollegePlayerMap(collegePlayers)
+			topPassers = getCFBOrderedListByStatType("PASSING", collegeTeam.ID, cfbStats, fullCollegePlayerMap)
+			topRushers = getCFBOrderedListByStatType("RUSHING", collegeTeam.ID, cfbStats, fullCollegePlayerMap)
+			topReceivers = getCFBOrderedListByStatType("RECEIVING", collegeTeam.ID, cfbStats, fullCollegePlayerMap)
 			injuredCollegePlayers = MakeCollegeInjuryList(collegePlayers)
 			portalPlayers = MakeCollegePortalList(collegePlayers)
 			mu.Unlock()
@@ -122,17 +128,6 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		go func() {
 			defer wg.Done()
 			collegeNotifications = GetNotificationByTeamIDAndLeague("CFB", collegeID)
-		}()
-		go func() {
-			defer wg.Done()
-			cfbStats := GetCollegePlayerSeasonStatsBySeason(seasonID, gtStr)
-
-			mu.Lock()
-			collegePlayerMap := MakeCollegePlayerMap(collegePlayers)
-			topPassers = getCFBOrderedListByStatType("PASSING", collegeTeam.ID, cfbStats, collegePlayerMap)
-			topRushers = getCFBOrderedListByStatType("RUSHING", collegeTeam.ID, cfbStats, collegePlayerMap)
-			topReceivers = getCFBOrderedListByStatType("RECEIVING", collegeTeam.ID, cfbStats, collegePlayerMap)
-			mu.Unlock()
 		}()
 		go func() {
 			defer wg.Done()
@@ -167,7 +162,7 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		faceDataMap = GetAllFaces()
 	}()
 
-	wg.Wait() 
+	wg.Wait()
 	return BootstrapData{
 		CollegeTeam:          collegeTeam,
 		AllCollegeTeams:      allCollegeTeams,

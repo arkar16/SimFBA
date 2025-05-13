@@ -1,0 +1,318 @@
+id,rival_1_id,rival_1_team,rival_2_id,rival_2_team,rivalry_name,trophy_name,rival_1_priority,rival_2_priority
+1,1,Air Force,,Navy,,Commander in Chief's Trophy,5,5
+2,1,Air Force,,Colorado State,,,4,4
+3,1,Air Force,,Hawaii,,,4,4
+4,2,Akron,,Kent State,,Wagon Wheel,5,5
+5,2,Akron,,Youngstown State,Steel Tire,,3,5
+6,3,Alabama,,Tennessee,Third Saturday in October,,5,5
+7,3,Alabama,10,Auburn,Iron Bowl,,5,5
+8,3,Alabama,,Penn State,Houndstooth Hoedown,,1,1
+9,3,Alabama,,Florida,,,2,2
+10,3,Alabama,,Georgia,,,3,3
+11,3,Alabama,,Clemson,,,3,3
+12,3,Alabama,,Georgia Tech,,,1,2
+13,188,Alabama A&M,191,Alabama State,Magic City Classic,,5,5
+14,203,Albany,,Stony Brook,Empire Clash,The Golden Apple Trophy,4,4
+15,186,Alcorn State,,Jackson State,Soul Bowl,,4,4
+16,4,Appalachian State,,Georgia Southern,Deeper Than Hate,,5,5
+17,4,Appalachian State,,Marshall,Old Mountain Feud,,5,5
+18,4,Appalachian State,,Western Carolina,Battle for the Old Mountain Jug,,4,5
+19,5,Arizona,6,Arizona State,Duel in the Desert,Territorial Cup,5,5
+20,5,Arizona,,New Mexico,,,1,2
+21,7,Arkansas,,Texas Tech,,,1,1
+22,7,Arkansas,,Missouri,Battle Line Rivalry,Battle Line Trophy,2,2
+23,7,Arkansas,,Texas,,,5,4
+24,7,Arkansas,,Texas A&M,Southwest Classic,,5,5
+25,8,Arkansas State,,Memphis,Paint Bucket Bowl,,2,1
+26,8,Arkansas State,,Louisiana Monroe,,,4,4
+27,9,Army,,Navy,,Commander in Chief's Trophy,5,5
+28,9,Army,1,Air Force,,Commander in Chief's Trophy,5,5
+29,9,Army,,Notre Dame,,,3,2
+30,10,Auburn,,Florida,,,2,2
+31,10,Auburn,,Tennessee,,,2,2
+32,10,Auburn,22,Clemson,,,2,2
+33,10,Auburn,,Georgia,Deep South's Oldest Rivalry,,5,5
+34,10,Auburn,,Tulane,,,1,2
+35,,Ball State,,Northern Illinois,,Bronze Stalk Trophy,5,5
+36,,Ball State,,Indiana State,Blue Key Victory Bell,,3,5
+37,,Baylor,,Houston,,,2,3
+38,,Baylor,,TCU,The Revivalry,,5,5
+39,,Baylor,,Texas Tech,BuTT Bowl,,4,4
+40,,Baylor,,Texas A&M,Battle of the Brazos,,4,2
+41,,Baylor,,Texas,,,4,2
+42,,Bethune-Cookman,,Florida A&M,Florida Classic,,5,5
+43,,Boise State,,Fresno State,,,4,4
+44,,Boise State,,Nevada,,,5,4
+45,,Boise State,,Idaho,,,3,5
+46,14,Boston College,22,Clemson,,O'Rourke-McFadden Trophy,4,4
+47,14,Boston College,85,Pittsburgh,,,3,3
+48,14,Boston College,96,Syracuse,,,4,4
+49,14,Boston College,122,Virginia Tech,,,4,4
+50,14,Boston College,149,Holy Cross,,,1,5
+51,14,Boston College,75,Notre Dame,Holy War,Ireland Trophy,5,4
+52,14,Boston College,113,UMass,,,1,3
+53,,Bowling Green,,Kent State,,Anniversary Award,5,5
+54,,Bowling Green,,Toledo,,,4,4
+55,,Brown,,Rhode Island,,Governor's Cup,3,5
+56,,Butler,,Valparaiso,,Hoosier Helmet Trophy,4,4
+57,,BYU,,Utah State,The Old Wagon Wheel,,3,4
+58,,California,,UCLA,Bear Brawl,,4,4
+59,,Cal Poly,,UC Davis,Battle for the Golden Horseshoe,The Golden Horseshoe,4,4
+60,18,California,96,Stanford,The Big Game,Stanford Axe,5,5
+61,,Central Arkansas,,McNeese,Red Beans and Rice Bowl,50 Pound Iron Pot,4,4
+62,,Central Michigan,,Eastern Michigan,,Michigan MAC Trophy,5,5
+63,,Central Michigan,,Western Michigan,,Michigan MAC Trophy,5,5
+64,,Cincinnati,,UCF,,,3,3
+65,,Cincinnati,,West Virginia,,,3,2
+66,,Cincinnati,,Louisville,The Keg of Nails,,3,3
+67,,Cincinnati,,Miami (OH),Victory Bell,,2,3
+68,,Cincinnati,,Memphis,,,1,1
+69,22,Clemson,32,Florida State,,,4,4
+70,22,Clemson,37,Georgia Tech,,,4,5
+71,22,Clemson,66,NC State,Textile Bowl,,3,4
+72,,Coastal Carolina,,Liberty,,,5,5
+73,,Colgate,,Cornell,,,5,5
+74,,Colorado,,Utah,Rumble in the Rockies,,4,4
+75,,Colorado,,Kansas State,,,3,4
+76,,Colorado,,Colorado State,Rocky Mountain Showdown,,3,5
+77,,Colorado State,,Wyoming,Border War,,5,5
+78,,Columbia,,Fordham,,Liberty Cup,2,3
+79,,Cornell,,Dartmouth,,,3,3
+80,,Cornell,,Pennsylvania,,Trustees' Cup,3,3
+81,,Dartmouth,,Harvard,,,4,2
+82,,Dartmouth,,New Hampshire,Granite Bowl,,3,3
+83,,Dayton,,Drake,,,3,5
+84,,Delaware,,Villanova,Battle of the Blue,,4,4
+85,,Delaware,,Lehigh,,,2,4
+86,,Delaware,,Delaware State,Route 1 Rivalry,,4,5
+87,,Delaware,,William & Mary,,,2,3
+88,,Drake,,Northern Iowa,,,5,5
+89,26,Duke,71,North Carolina,Tobacco Road,Victory Bell,5,5
+90,26,Duke,66,NC State,Tobacco Road,,4,4
+91,26,Duke,123,Wake Forest,Tobacco Road,,3,4
+92,,East Carolina,,Marshall,,,2,3
+93,,Eastern Kentucky,,Western Kentucky,Battle of the Bluegrass,,5,5
+94,,Eastern Kentucky,,Morehead State,,Old Hawg Rifle,3,3
+95,,Eastern Washington,,Portland State,,The Dam Cup,4,4
+96,,Eastern Washington,,Montana,,The Governor's Cup,3,3
+97,,Florida Atlantic,,FIU,Shula Bowl,,5,5
+98,,Florida,,Georgia,,Okefenokee Oar,4,4
+99,,Florida,,Kentucky,,,3,4
+100,,Florida,,LSU,,,2,2
+101,,Florida,,Tennessee,,,3,3
+102,,Florida,57,Miami (FL),,,5,5
+103,,Florida,32,Florida State,,,5,5
+104,32,Florida State,57,Miami (FL),,Florida Cup,5,5
+105,32,Florida State,121,Virginia,,Jefferson-Eppes Trophy,3,4
+106,,Fordham,,Holy Cross,,Ram-Crusader Cup,5,5
+107,,Fresno State,,Hawaii,,,2,2
+108,,Fresno State,,San Diego State,,,3,3
+109,,Fresno State,,San Jose State,,,4,4
+110,,Furman,,Wofford,,,5,5
+111,,Georgia,,South Carolina,,,4,4
+112,,Georgia,,Tennessee,,,3,3
+113,,Georgia,,Clemson,,,4,4
+114,,Georgia,,Georgia Tech,"Clean, Old-Fashioned Hate",,5,5
+115,,Georgia State,,Georgia Southern,Modern Day Hate,,5,5
+116,,Georgia Tech,,Virginia Tech,,,3,3
+117,,Grambling,,Southern Miss,Bayou Classic,,4,2
+118,,Grambling,,Prairie View A&M,State Fair Classic,,4,4
+119,,Hampton,,Norfolk State,Battle of the Bay,,3,3
+120,,Hampton,,Howard,The Real HU,,5,5
+121,,Harvard,,Pennsylvania,,,2,3
+122,,Harvard,,Princeton,,,2,3
+123,,Harvard,,Yale,The Game,,5,5
+124,,Hawaii,,San Jose State,Dick Tomey Legacy Game,,4,4
+125,,Hawaii,,Wyoming,,,1,1
+126,,Houston,,Texas Tech,,,2,2
+127,,Houston,,Rice,,,2,2
+128,,Houston,,SMU,,,2,2
+129,,Houston,,Tulsa,,,2,1
+130,,Howard,,Morgan State,,,3,3
+131,,Idaho,,Idaho State,Battle of the Domes,The Potato State Trophy,5,5
+132,,Idaho,,Montana,,Little Brown Stein,3,2
+133,,Illinois,,Indiana,,,2,2
+134,,Illinois,,Northwestern,,Land of Lincoln Trophy,5,5
+135,,Illinois,,Ohio State,,Illibuck,3,2
+136,,Illinois,,Purdue,,Purdue Cannon,3,3
+137,,Illinois,,Missouri,Arch Rivalry,,1,1
+138,,Illinois State,,Eastern Illinois,Mid-America Classic,,3,3
+139,,Indiana,,Michigan State,,Old Brass Spittoon,2,2
+140,,Indiana,,Purdue,,Old Oaken Bucket,5,5
+141,,Iowa,,Minnesota,,Floyd of Rosedale,5,4
+142,,Iowa,,Wisconsin,,Heartland Trophy,4,4
+143,,Iowa,,Iowa State,,Cy-Hawk Trophy,5,5
+144,,Iowa State,,Kansas State,Farmageddon,,5,4
+145,,Iowa State,,Missouri,,Telephone Trophy,1,1
+146,,Jackson State,,Tennessee State,Southern Heritage Classic,,4,4
+147,,Jackson State,,Southern,BoomBox Classic,,3,3
+148,,Jacksonville State,,Samford,,,3,3
+149,,James Madison,,Old Dominion,Royal Rivalry,The Crown,5,5
+150,,James Madison,,Delaware,,,4,4
+151,,James Madison,,Richmond,,,3,3
+152,,James Madison,,William & Mary,,,3,3
+153,,Kansas,,Kansas State,Sunflower Showdown,,5,5
+154,,Kansas,,Missouri,Border War,,5,5
+155,,Kentucky,,Tennessee,,Beer Barrel,3,2
+156,,Kentucky,,Louisville,Governor's Cup,,5,5
+157,,Lafayette,,Lehigh,The Rivalry,,5,5
+158,,Lamar,,McNeese,Battle of the Border,,4,4
+159,,Louisiana,,Louisiana Monroe,Battle on the Bayou,,5,5
+160,,Louisiana,,Lamar,,Sabine Shoe,2,4
+161,,Louisiana,,Louisiana Tech,,,5,5
+162,,Louisiana,,McNeese,,Cajun Crown,2,4
+163,,Louisiana,,SE Louisiana,,Cypress Mug,1,3
+164,,Louisiana Tech,,Northwestern State,,,2,3
+165,,Louisiana,,Louisiana Monroe,Battle on the Bayou,,5,5
+166,,Louisiana Monroe,,Louisiana Tech,,,5,5
+167,,Louisiana Monroe,,Northwestern State,,,2,4
+168,,Louisville,,Miami (FL),,Schnellenberger Trophy,3,2
+169,,Louisville,,Memphis,,,3,4
+170,,LSU,,Arkansas,Battle for the Golden Boot,Golden Boot,4,4
+171,,LSU,,Alabama,First Saturday in November,,4,4
+172,,LSU,,Auburn,Tiger Bowl,,4,4
+173,,LSU,,Ole Miss,Magnolia Bowl,Magnolia Bowl Trophy,3,3
+174,,LSU,,Tulane,Battle for the Rag,Tiger Rag,2,4
+175,,LSU,,Ole Miss,Magnolia Bowl,,1,3
+176,,LSU,,Texas A&M,,,4,4
+177,,Maine,,New Hampshire,Battle for Brice-Cowell Musket,,5,5
+178,,Marshall,,West Virginia,,Friends of Coal Bowl,3,1
+179,,Marshall,,Ohio,Battle for the Bell,,4,4
+180,,Maryland,,Penn State,,,3,3
+181,,Maryland,,Navy,Crab Bowl Classic,The Crab Bowl,4,4
+182,,Maryland,,Virginia,,,2,2
+183,,Maryland,,West Virginia,,,2,2
+184,,McNeese,,Northwestern State,,,3,3
+185,,Memphis,,UAB,Battle for the Bones,,4,4
+186,,Memphis,,Southern Miss,Black and Blue Bowl,,4,4
+187,,Miami (FL),,Virginia Tech,,,3,4
+188,,Miami (OH),,Ohio,Battle of the Bricks,,5,5
+189,,Michigan,,Michigan State,,Paul Bunyan Trophy,5,5
+190,,Michigan,,Ohio State,The Game,,5,5
+191,,Michigan,,Minnesota,,Little Brown Jug,4,4
+192,,Michigan,,Northwestern,,George Jewett Trophy,1,2
+193,,Michigan,,Notre Dame,,,5,5
+194,,Michigan State,,Penn State,,Land Grant Trophy,4,3
+195,,Michigan State,,Notre Dame,,Megaphone Trophy,3,2
+196,,Middle Tennessee,,Western Kentucky,100 Miles of Hate,,5,5
+197,,Minnesota,,Penn State,,Governor's Victory Bell,1,1
+198,,Minnesota,,Wisconsin,,Paul Bunyan's Axe,5,5
+199,,Mississippi State,,Ole Miss,Egg Bowl,Golden Egg,5,5
+200,,Missouri,,Oklahoma,,Tiger-Sooner Peace Pipe,3,3
+201,,Missouri,,South Carolina,Battle for Columbia,Mayor's Cup,2,2
+202,,Montana,,Montana State,Brawl of the Wild,The Great Divide Trophy,5,5
+203,,Morgan State,,Towson,The Battle for Greater Baltimore,,4,4
+204,,Navy,,Notre Dame,,,4,2
+205,,NC State,,Wake Forest,Tobacco Road,,3,4
+206,,NC State,,East Carolina,,Victory Barrel,2,3
+207,,Nebraska,,Iowa,,Heroes Trophy,5,5
+208,,Nebraska,,Missouri,,Victory Bell,3,3
+209,,Nebraska,,Kansas,,,3,3
+210,,Nebraska,,Kansas State,,,2,2
+211,,Nebraska,,Colorado,,Bison Head Trophy,4,4
+212,,Nebraska,,Oklahoma,,,5,4
+213,,Nebraska,,Wisconsin,,Freedom Trophy,3,3
+214,,Nebraska,,Minnesota,,$5 Bits of Broken Chair Trophy,3,3
+215,,Nebraska,,Miami (FL),,,1,1
+216,,Nevada,,UNLV,,Fremont Cannon,5,5
+217,,New Hampshire,,UMass,Colonial Clash,,5,3
+218,,New Mexico,,New Mexico State,Rio Grade Rivalry,,5,5
+219,,Nicholls,,Northwestern State,NSU Challenge,,5,5
+220,,Nicholls,,SE Louisiana,River Bell Classic,,4,4
+221,,North Carolina A&T,,North Carolina Central,,,5,5
+222,,North Carolina,,NC State,Tobacco Road,,4,5
+223,,North Carolina,,Virginia,South's Oldest Rivalry,,4,4
+224,,North Carolina,,Wake Forest,Tobacco Road,,3,4
+225,,North Carolina A&T,,South Carolina State,,,4,4
+226,,North Dakota,,North Dakota State,,Nickel Trophy,5,5
+227,,North Dakota,,South Dakota,,Sitting Bull Trophy,4,4
+228,,North Dakota State,,South Dakota State,,Dakota Marker,4,4
+229,,Northern Arizona,,Southern Utah,Grand Canyon Rivalry,Hinton Burdick Grand Canyon Trophy,4,4
+230,,Northwestern,,Notre Dame,,Shillelagh,3,2
+231,,Northwestern State,,Stephen F. Austin,Battle for Chief Caddo,,3,3
+232,,Northwestern State,,SE Louisiana,,,5,5
+233,,Notre Dame,,Purdue,,Shillelagh Trophy,2,2
+234,,Notre Dame,,USC,,Jeweled Shillelagh,5,5
+235,,Ohio State,,Penn State,,,3,3
+236,,Oklahoma,,Oklahoma State,Bedlam,,4,5
+237,,Oklahoma State,,Tulsa,,,2,3
+238,,Old Dominion,,Norfolk State,,,3,5
+239,,Old Dominion,,William & Mary,Battle for the Silver Mace,Norfolk Mace,2,5
+240,,Ole Miss,,Memphis,Mid-South Rivalry,,1,2
+241,,Ole Miss,,Tulane,,,1,1
+242,,Oregon,,Oregon State,Civil War,Platypus Trophy,5,3
+243,,Pennsylvania,,Princeton,,,3,2
+244,,Penn State,,Pittsburgh,,,3,4
+245,,Penn State,,Syracuse,,,3,3
+246,,Penn State,,West Virginia,,,3,4
+247,,Pittsburgh,,Syracuse,,,4,4
+248,,Pittsburgh,,Duquesne,City Game,,1,5
+249,,Pittsburgh,,Notre Dame,,,3,3
+250,,Prairie View A&M,,Texas Southern,Labor Day Classic,,4,4
+251,,Princeton,,Yale,,,3,3
+252,,Rhode Island,,UConn,,,4,2
+253,,Rice,,Texas,,,3,1
+254,,Richmond,,William & Mary,,Capital Cup,4,4
+255,,Richmond,,VMI,,,2,3
+256,,Sacramento State,,UC Davis,Causeway Classic,Causeway Trophy,5,5
+257,,Sam Houston State,,Stephen F. Austin,Battle of the Piney Woods,,5,5
+258,,Sam Houston State,,Texas State,,,4,3
+259,,SMU,,Stanford,Boulevard Brawl,,4,3
+260,,SMU,,California,Boulevard Brawl,,4,3
+261,,SMU,,Baylor,,,3,2
+262,,SMU,,Navy,,Gansz Trophy,2,2
+263,,SMU,,North Texas,Safeway Bowl,,1,2
+264,,SMU,,Rice,,,2,2
+265,,SMU,,TCU,Iron Skillet,,5,5
+266,,South Alabama,,Troy,Battle for the Belt,,5,5
+267,,South Carolina,,Tennessee,,,4,4
+268,,South Carolina,,Clemson,Palmetto Bowl,,5,5
+269,,South Carolina,,North Carolina,Carolina Clash,,3,3
+270,,South Dakota,,South Dakota State,South Dakota Showdown,,5,5
+271,,Southern Miss,,Louisiana Tech,Rivalry in Dixie,,4,4
+272,,Southern Miss,,Tulane,Battle for the Bell,,4,3
+273,,Southern Utah,,Weber State,Beehive Bowl,,5,5
+274,,Stanford,,USC,,,3,3
+275,,Stanford,,Notre Dame,,Legends Trophy,5,5
+276,,Stanford,,San Jose State,Bill Walsh Legacy Game,,2,3
+277,,Syracuse,,West Virginia,,Ben Schwartzwalder Trophy,3,3
+278,,Syracuse,,Colgate,,,1,5
+279,,Syracuse,,UConn,,,3,3
+280,,TCU,,Texas Tech,The West Texas Championship,The Saddle Trophy,4,4
+281,,TCU,,Texas,,,4,2
+282,,Tennessee,,Vanderbilt,,,3,5
+283,,Tennessee,,Georgia Tech,,,3,3
+284,,Tennessee State,,Tennessee Tech,,Sgt. York Trophy,5,5
+285,,Tennessee State,,UT Martin,,Sgt. York Trophy,5,5
+286,,Tennessee Tech,,UT Martin,,Sgt. York Trophy,5,5
+287,,Texas,,Texas Tech,,,2,3
+288,,Texas,,Texas A&M,Heart of Texas,,5,5
+289,,Texas A&M,,Texas Tech,,,1,2
+290,,Texas State,,UTSA,I-35 Rivalry,,5,5
+291,,Texas State,,Nicholls,Battle for the Paddle,,2,3
+292,,The Citadel,,VMI,Military Classic of the South,,5,5
+293,,The Citadel,,Furman,,,3,3
+294,,The Citadel,,Wofford,,Big Dog Trophy,3,3
+295,,Troy,,Jacksonville State,Battle for the Ol' School Bell,,4,4
+296,,Troy,,Middle Tennessee,Battle for the Palladium,,4,4
+297,,Tulane,,Southern Miss,Battle for the Bell,,3,3
+298,,UConn,,UMass,,,3,3
+299,,UF,,FSU,,Florida Cup,5,5
+300,,USC,,UCLA,,Victory Bell,4,5
+301,,South Florida,,UCF,War on I-4,,5,5
+302,,Utah,,BYU,Holy War,Beehive Boot,5,5
+303,,Utah,,Utah State,Battle of the Brothers,,3,5
+304,,Utah State,,Wyoming,,,4,4
+305,,UTEP,,New Mexico State,Battle of I-10,,5,5
+306,,Virginia,,Virginia Tech,Commonwealth Clash,Commonwealth Cup,5,5
+307,,Virginia,,Maryland,,,4,4
+308,,Virginia Tech,,VMI,,,1,5
+309,,VMI,,William & Mary,,,3,2
+310,,Washington,,Washington State,Apple Cup,Apple Cup,4,5
+311,,Washington,,Oregon,Border War,,5,5
+312,,Washington State,,Idaho,Battle of the Palouse,,3,5
+313,,Washington State,,Oregon State,,Left Behind Trophy,4,4
+314,,West Virginia,,Pittsburgh,Backyard Brawl,,5,5
+315,,West Virginia,,Virginia Tech,,Black Diamond Trophy,3,3
+316,,Western Kentucky,,Murray State,Battle for the Red Belt,,4,4
+317,,Western Michigan,,Eastern Michigan,,Michigan MAC Trophy,5,5

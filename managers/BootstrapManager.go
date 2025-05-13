@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"sync"
 
+	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
@@ -469,4 +470,235 @@ func getNFLOrderedListByStatType(statType string, teamID uint, CollegeStats []st
 		}
 	}
 	return resultList
+}
+
+type CollegeTeamProfileData struct {
+	CareerStats      []structs.CollegePlayerSeasonStats
+	CollegeStandings []structs.CollegeStandings
+	Rivalries        []structs.FlexComparisonModel
+	PlayerMap        map[uint]structs.CollegePlayer
+}
+
+func GetCollegeTeamProfilePageData(teamID string) CollegeTeamProfileData {
+	ts := GetTimestamp()
+	// Get Career Stats
+	standings := repository.FindAllCollegeStandingsRecords(repository.StandingsQuery{
+		TeamID:   teamID,
+		SeasonID: "",
+	})
+
+	careerStatsList := []structs.CollegePlayerSeasonStats{}
+	seasonStats := GetCollegePlayerSeasonStatsByTeamID(teamID)
+
+	collegePlayers := GetAllCollegePlayersByTeamId(teamID)
+	historicPlayers := GetAllHistoricCollegePlayers()
+
+	for _, player := range historicPlayers {
+		collegePlayerResponse := structs.CollegePlayer{
+			Model:      player.Model,
+			BasePlayer: player.BasePlayer,
+			TeamID:     player.TeamID,
+			TeamAbbr:   player.TeamAbbr,
+			City:       player.City,
+			State:      player.State,
+			Year:       player.Year,
+			IsRedshirt: player.IsRedshirt,
+		}
+		collegePlayers = append(collegePlayers, collegePlayerResponse)
+	}
+
+	collegePlayerMap := MakeCollegePlayerMap(collegePlayers)
+	statsMap := make(map[uint][]structs.CollegePlayerSeasonStats)
+
+	for _, stat := range seasonStats {
+		if len(statsMap[stat.CollegePlayerID]) == 0 {
+			statsMap[stat.CollegePlayerID] = []structs.CollegePlayerSeasonStats{stat}
+		} else {
+			statsMap[stat.CollegePlayerID] = append(statsMap[stat.CollegePlayerID], stat)
+		}
+	}
+
+	for _, player := range collegePlayers {
+		stats := statsMap[player.ID]
+		if len(stats) == 0 {
+			continue
+		}
+		careerStats := structs.CollegePlayerSeasonStats{}
+		careerStats.MapSeasonStats(stats)
+		careerStatsList = append(careerStatsList, careerStats)
+	}
+	collegeTeamMap := GetCollegeTeamMap()
+	rivals := GetRivalriesByTeamID(teamID)
+	games := GetCollegeGamesByTeamId(teamID)
+
+	rivalryModels := []structs.FlexComparisonModel{}
+
+	for _, rivalry := range rivals {
+		t1 := strconv.Itoa(int(rivalry.TeamOneID))
+		team1ID := 0
+		team2ID := 0
+		team1 := structs.CollegeTeam{}
+		team2 := structs.CollegeTeam{}
+		t1Wins := 0
+		t1Losses := 0
+		t1Streak := 0
+		t1CurrentStreak := 0
+		t1LargestMarginSeason := 0
+		t1LargestMarginDiff := 0
+		t1LargestMarginScore := ""
+		t2Wins := 0
+		t2Losses := 0
+		t2Streak := 0
+		t2CurrentStreak := 0
+		latestWin := ""
+		t2LargestMarginSeason := 0
+		t2LargestMarginDiff := 0
+		t2LargestMarginScore := ""
+		if t1 == teamID {
+			team1 = collegeTeamMap[rivalry.TeamOneID]
+			team2 = collegeTeamMap[rivalry.TeamTwoID]
+			team1ID = int(team1.ID)
+			team2ID = int(team2.ID)
+		} else {
+			team1 = collegeTeamMap[rivalry.TeamTwoID]
+			team2 = collegeTeamMap[rivalry.TeamOneID]
+			team1ID = int(team1.ID)
+			team2ID = int(team2.ID)
+		}
+
+		if t1CurrentStreak > 0 && t1CurrentStreak > t1Streak {
+			t1Streak = t1CurrentStreak
+		}
+		if t2CurrentStreak > 0 && t2CurrentStreak > t2Streak {
+			t2Streak = t2CurrentStreak
+		}
+
+		for _, game := range games {
+			if !game.GameComplete ||
+				(game.Week == ts.CollegeWeek &&
+					((game.TimeSlot == "Thursday Night" && !ts.ThursdayGames) ||
+						(game.TimeSlot == "Friday Night" && !ts.FridayGames) ||
+						(game.TimeSlot == "Saturday Morning" && !ts.SaturdayMorning) ||
+						(game.TimeSlot == "Saturday Afternoon" && !ts.SaturdayNoon) ||
+						(game.TimeSlot == "Saturday Evening" && !ts.SaturdayEvening) ||
+						(game.TimeSlot == "Saturday Night" && !ts.SaturdayNight))) {
+				continue
+			}
+			doComparison := (game.HomeTeamID == int(team1ID) && game.AwayTeamID == int(team2ID)) ||
+				(game.HomeTeamID == int(team2ID) && game.AwayTeamID == int(team1ID))
+
+			if !doComparison {
+				continue
+			}
+			homeTeamTeamOne := game.HomeTeamID == int(team1ID)
+			if homeTeamTeamOne {
+				if game.HomeTeamWin {
+					t1Wins += 1
+					t1CurrentStreak += 1
+					latestWin = game.HomeTeam
+					diff := game.HomeTeamScore - game.AwayTeamScore
+					if diff > t1LargestMarginDiff {
+						t1LargestMarginDiff = diff
+						t1LargestMarginSeason = game.SeasonID + 2020
+						t1LargestMarginScore = "" + strconv.Itoa(game.HomeTeamScore) + "-" + strconv.Itoa(game.AwayTeamScore)
+					}
+				} else {
+					t1Streak = t1CurrentStreak
+					t1CurrentStreak = 0
+					t1Losses += 1
+				}
+			} else {
+				if game.HomeTeamWin {
+					t2Wins += 1
+					t2CurrentStreak += 1
+					latestWin = game.HomeTeam
+					diff := game.HomeTeamScore - game.AwayTeamScore
+					if diff > t2LargestMarginDiff {
+						t2LargestMarginDiff = diff
+						t2LargestMarginSeason = game.SeasonID + 2020
+						t2LargestMarginScore = "" + strconv.Itoa(game.HomeTeamScore) + "-" + strconv.Itoa(game.AwayTeamScore)
+					}
+				} else {
+					t2Streak = t2CurrentStreak
+					t2CurrentStreak = 0
+					t2Losses += 1
+				}
+			}
+
+			awayTeamTeamOne := game.AwayTeamID == int(team1ID)
+			if awayTeamTeamOne {
+				if game.AwayTeamWin {
+					t1Wins += 1
+					t1CurrentStreak += 1
+					latestWin = game.AwayTeam
+					diff := game.AwayTeamScore - game.HomeTeamScore
+					if diff > t1LargestMarginDiff {
+						t1LargestMarginDiff = diff
+						t1LargestMarginSeason = game.SeasonID + 2020
+						t1LargestMarginScore = "" + strconv.Itoa(game.AwayTeamScore) + "-" + strconv.Itoa(game.HomeTeamScore)
+					}
+				} else {
+					t1Streak = t1CurrentStreak
+					t1CurrentStreak = 0
+					t1Losses += 1
+				}
+			} else {
+				if game.AwayTeamWin {
+					t2Wins += 1
+					t2CurrentStreak += 1
+					latestWin = game.AwayTeam
+					diff := game.AwayTeamScore - game.HomeTeamScore
+					if diff > t2LargestMarginDiff {
+						t2LargestMarginDiff = diff
+						t2LargestMarginSeason = game.SeasonID + 2020
+						t2LargestMarginScore = "" + strconv.Itoa(game.AwayTeamScore) + "-" + strconv.Itoa(game.HomeTeamScore)
+					}
+				} else {
+					t2Streak = t2CurrentStreak
+					t2CurrentStreak = 0
+					t2Losses += 1
+				}
+			}
+		}
+
+		currentStreak := max(t1CurrentStreak, t2CurrentStreak)
+
+		rivalryModel := structs.FlexComparisonModel{
+			TeamOneID:      uint(team1ID),
+			TeamOne:        team1.TeamAbbr,
+			TeamOneWins:    uint(t1Wins),
+			TeamOneLosses:  uint(t1Losses),
+			TeamOneStreak:  uint(t1Streak),
+			TeamOneMSeason: t1LargestMarginSeason,
+			TeamOneMScore:  t1LargestMarginScore,
+			TeamTwoID:      uint(team2ID),
+			TeamTwo:        team2.TeamAbbr,
+			TeamTwoWins:    uint(t2Wins),
+			TeamTwoLosses:  uint(t2Losses),
+			TeamTwoStreak:  uint(t2Streak),
+			TeamTwoMSeason: t2LargestMarginSeason,
+			TeamTwoMScore:  t2LargestMarginScore,
+			CurrentStreak:  uint(currentStreak),
+			LatestWin:      latestWin,
+		}
+
+		rivalryModels = append(rivalryModels, rivalryModel)
+	}
+
+	return CollegeTeamProfileData{
+		CareerStats:      careerStatsList,
+		CollegeStandings: standings,
+		PlayerMap:        collegePlayerMap,
+		Rivalries:        rivalryModels,
+	}
+}
+
+func GetRivalriesByTeamID(teamID string) []structs.CollegeRival {
+	db := dbprovider.GetInstance().GetDB()
+
+	rivals := []structs.CollegeRival{}
+
+	db.Where("team_one_id = ? OR team_two_id = ?", teamID, teamID).Find(&rivals)
+
+	return rivals
 }

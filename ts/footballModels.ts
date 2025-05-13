@@ -1914,6 +1914,7 @@ export class NFLTeam {
     OverallGrade: string;
     OffenseGrade: string;
     DefenseGrade: string;
+    SpecialTeamsGrade: string;
     PenaltyMarks: number;
     ConferenceID: number;
     Conference: string;
@@ -1964,6 +1965,7 @@ export class NFLTeam {
         this.OverallGrade = source["OverallGrade"];
         this.OffenseGrade = source["OffenseGrade"];
         this.DefenseGrade = source["DefenseGrade"];
+        this.SpecialTeamsGrade = source["SpecialTeamsGrade"];
         this.PenaltyMarks = source["PenaltyMarks"];
         this.ConferenceID = source["ConferenceID"];
         this.Conference = source["Conference"];
@@ -4372,6 +4374,7 @@ export class CollegeTeam {
     OverallGrade: string;
     OffenseGrade: string;
     DefenseGrade: string;
+    SpecialTeamsGrade: string;
     PenaltyMarks: number;
     ConferenceID: number;
     Conference: string;
@@ -4419,6 +4422,7 @@ export class CollegeTeam {
         this.OverallGrade = source["OverallGrade"];
         this.OffenseGrade = source["OffenseGrade"];
         this.DefenseGrade = source["DefenseGrade"];
+        this.SpecialTeamsGrade = source["SpecialTeamsGrade"];
         this.PenaltyMarks = source["PenaltyMarks"];
         this.ConferenceID = source["ConferenceID"];
         this.Conference = source["Conference"];
@@ -4993,6 +4997,76 @@ export class BootstrapDataThree {
 	    return a;
 	}
 }
+export class FlexComparisonModel {
+    TeamOneID: number;
+    TeamOne: string;
+    TeamOneWins: number;
+    TeamOneLosses: number;
+    TeamOneStreak: number;
+    TeamOneMSeason: number;
+    TeamOneMScore: string;
+    TeamTwoID: number;
+    TeamTwo: string;
+    TeamTwoWins: number;
+    TeamTwoLosses: number;
+    TeamTwoStreak: number;
+    TeamTwoMSeason: number;
+    TeamTwoMScore: string;
+    CurrentStreak: number;
+    LatestWin: string;
+
+    constructor(source: any = {}) {
+        if ('string' === typeof source) source = JSON.parse(source);
+        this.TeamOneID = source["TeamOneID"];
+        this.TeamOne = source["TeamOne"];
+        this.TeamOneWins = source["TeamOneWins"];
+        this.TeamOneLosses = source["TeamOneLosses"];
+        this.TeamOneStreak = source["TeamOneStreak"];
+        this.TeamOneMSeason = source["TeamOneMSeason"];
+        this.TeamOneMScore = source["TeamOneMScore"];
+        this.TeamTwoID = source["TeamTwoID"];
+        this.TeamTwo = source["TeamTwo"];
+        this.TeamTwoWins = source["TeamTwoWins"];
+        this.TeamTwoLosses = source["TeamTwoLosses"];
+        this.TeamTwoStreak = source["TeamTwoStreak"];
+        this.TeamTwoMSeason = source["TeamTwoMSeason"];
+        this.TeamTwoMScore = source["TeamTwoMScore"];
+        this.CurrentStreak = source["CurrentStreak"];
+        this.LatestWin = source["LatestWin"];
+    }
+}
+export class CollegeTeamProfileData {
+    CareerStats: CollegePlayerSeasonStats[];
+    CollegeStandings: CollegeStandings[];
+    Rivalries: FlexComparisonModel[];
+    PlayerMap: {[key: uint]: CollegePlayer};
+
+    constructor(source: any = {}) {
+        if ('string' === typeof source) source = JSON.parse(source);
+        this.CareerStats = this.convertValues(source["CareerStats"], CollegePlayerSeasonStats);
+        this.CollegeStandings = this.convertValues(source["CollegeStandings"], CollegeStandings);
+        this.Rivalries = this.convertValues(source["Rivalries"], FlexComparisonModel);
+        this.PlayerMap = this.convertValues(source["PlayerMap"], CollegePlayer, true);
+    }
+
+	convertValues(a: any, classs: any, asMap: boolean = false): any {
+	    if (!a) {
+	        return a;
+	    }
+	    if (Array.isArray(a)) {
+	        return (a as any[]).map(elem => this.convertValues(elem, classs));
+	    } else if ("object" === typeof a) {
+	        if (asMap) {
+	            for (const key of Object.keys(a)) {
+	                a[key] = new classs(a[key]);
+	            }
+	            return a;
+	        }
+	        return new classs(a);
+	    }
+	    return a;
+	}
+}
 
 export class NFLRequest {
     ID: number;
@@ -5247,6 +5321,7 @@ export class BaseTeam {
     OverallGrade: string;
     OffenseGrade: string;
     DefenseGrade: string;
+    SpecialTeamsGrade: string;
     PenaltyMarks: number;
 
     constructor(source: any = {}) {
@@ -5271,6 +5346,7 @@ export class BaseTeam {
         this.OverallGrade = source["OverallGrade"];
         this.OffenseGrade = source["OffenseGrade"];
         this.DefenseGrade = source["DefenseGrade"];
+        this.SpecialTeamsGrade = source["SpecialTeamsGrade"];
         this.PenaltyMarks = source["PenaltyMarks"];
     }
 }

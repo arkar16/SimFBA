@@ -160,7 +160,10 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/gameplan/nfl/depthchart/ai/update/", controller.UpdateNFLAIDepthCharts).Methods("GET")
 
 	// Generation Controls
-	// apiRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")
+	apiRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")
+
+	// History Controls
+	apiRouter.HandleFunc("/history/college/{teamID}", controller.GetCollegeHistoryProfile).Methods("GET")
 
 	// Import Controls
 	// apiRouter.HandleFunc("/admin/import/fcs/gameplans", controller.GenerateNewGameplans).Methods("GET")
@@ -169,6 +172,7 @@ func handleRequests() http.Handler {
 	// apiRouter.HandleFunc("/admin/import/cfb/standings", controller.ImportCFBStandings).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/cfb/coaches", controller.GenerateCoachesForAITeams).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
+	// apiRouter.HandleFunc("/admin/import/cfb/rivals", controller.ImportCFBRivals).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/cfb/teams", controller.ImportCFBTeams).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/nfl/games", controller.ImportNFLGames).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/nfl/warroom", controller.GenerateDraftWarRooms).Methods("GET")

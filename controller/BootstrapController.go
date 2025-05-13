@@ -34,3 +34,11 @@ func ThirdBootstrapFootballData(w http.ResponseWriter, r *http.Request) {
 	data := managers.GetThirdBootstrapData(collegeID, proID)
 	json.NewEncoder(w).Encode(data)
 }
+
+func GetCollegeHistoryProfile(w http.ResponseWriter, r *http.Request) {
+	enableCors(&w)
+	vars := mux.Vars(r)
+	collegeID := vars["teamID"]
+	data := managers.GetCollegeTeamProfilePageData(collegeID)
+	json.NewEncoder(w).Encode(data)
+}

@@ -26,7 +26,7 @@ func GetCollegeConferenceStandings(w http.ResponseWriter, r *http.Request) {
 }
 
 // Flex: Compare Two Program's history against one another
-func CompareTeams(w http.ResponseWriter, r *http.Request) {
+func CompareCFBTeams(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamOneID := vars["teamOneID"]
 	if len(teamOneID) == 0 {
@@ -38,7 +38,24 @@ func CompareTeams(w http.ResponseWriter, r *http.Request) {
 		panic("User did not provide teamID")
 	}
 
-	res := managers.CompareTwoTeams(teamOneID, teamTwoID)
+	res := managers.CompareTwoCFBTeams(teamOneID, teamTwoID)
+
+	json.NewEncoder(w).Encode(res)
+}
+
+func CompareNFLTeams(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	teamOneID := vars["teamOneID"]
+	if len(teamOneID) == 0 {
+		panic("User did not provide teamID")
+	}
+
+	teamTwoID := vars["teamTwoID"]
+	if len(teamTwoID) == 0 {
+		panic("User did not provide teamID")
+	}
+
+	res := managers.CompareTwoNFLTeams(teamOneID, teamTwoID)
 
 	json.NewEncoder(w).Encode(res)
 }

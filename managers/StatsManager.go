@@ -340,6 +340,26 @@ func GetCollegeSeasonStatsBySeason(SeasonID, gameType string) []structs.CollegeT
 	return teamStats
 }
 
+func GetCollegePlayerSeasonStatsByTeamID(TeamID string) []structs.CollegePlayerSeasonStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var teamStats []structs.CollegePlayerSeasonStats
+
+	db.Where("team_id = ?", TeamID).Find(&teamStats)
+
+	return teamStats
+}
+
+func GetCollegeSeasonStatsByTeamID(TeamID string) []structs.CollegeTeamSeasonStats {
+	db := dbprovider.GetInstance().GetDB()
+
+	var teamStats []structs.CollegeTeamSeasonStats
+
+	db.Where("team_id = ?", TeamID).Find(&teamStats)
+
+	return teamStats
+}
+
 func GetALLCollegePlayerSeasonStatsBySeason(SeasonID string) []structs.CollegePlayerSeasonStats {
 	db := dbprovider.GetInstance().GetDB()
 

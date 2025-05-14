@@ -3,6 +3,7 @@ package controller
 import (
 	"encoding/json"
 	"net/http"
+	"os"
 
 	"github.com/CalebRose/SimFBA/managers"
 	"github.com/CalebRose/SimFBA/models"
@@ -10,11 +11,42 @@ import (
 	"github.com/tkrajina/typescriptify-golang-structs/typescriptify"
 )
 
+type Fire struct {
+	Key           string
+	Domain        string
+	DBUrl         string
+	ProjectID     string
+	Bucket        string
+	SenderID      string
+	AppID         string
+	MeasurementID string
+	User          string
+	UserKey       string
+}
+
+func FireItUp(w http.ResponseWriter, r *http.Request) {
+
+	fire := Fire{
+		Key:           os.Getenv("VITE_FIREBASE_API_KEY"),
+		Domain:        os.Getenv("VITE_FIREBASE_AUTH_DOMAIN"),
+		DBUrl:         os.Getenv("VITE_FIREBASE_DATABASE_URL"),
+		ProjectID:     os.Getenv("VITE_FIREBASE_PROJECT_ID"),
+		Bucket:        os.Getenv("VITE_FIREBASE_STORAGE_BUCKET"),
+		SenderID:      os.Getenv("VITE_FIREBASE_MESSAGING_SENDER_ID"),
+		AppID:         os.Getenv("VITE_FIREBASE_APP_ID"),
+		MeasurementID: os.Getenv("VITE_FIREBASE_MEASUREMENT_ID"),
+		User:          os.Getenv("VITE_SIMFBA_KEY"),
+		UserKey:       os.Getenv("VITE_SIMFBA_USER"),
+	}
+	json.NewEncoder(w).Encode(fire)
+}
+
 func CreateTSModelsFile(w http.ResponseWriter, r *http.Request) {
 	converter := typescriptify.New().
 		Add(managers.BootstrapData{}).
 		Add(managers.BootstrapDataTwo{}).
 		Add(managers.BootstrapDataThree{}).
+		Add(managers.CollegeTeamProfileData{}).
 		Add(structs.FaceDataResponse{}).
 		Add(structs.TeamRequestsResponse{}).
 		Add(structs.BasePlayer{}).

@@ -72,6 +72,7 @@ func handleRequests() http.Handler {
 
 	// Admin Controls
 	apiRouter.HandleFunc("/admin/generate/ts/models/", controller.CreateTSModelsFile).Methods("GET")
+	apiRouter.HandleFunc("/admin/fire/it/up/", controller.FireItUp).Methods("GET")
 	apiRouter.HandleFunc("/simfba/get/timestamp/", controller.GetCurrentTimestamp).Methods("GET")
 	apiRouter.HandleFunc("/simfba/sync/timestamp/", controller.SyncTimestamp).Methods("POST")
 	apiRouter.HandleFunc("/simfba/sync/week/", controller.SyncWeek).Methods("GET")
@@ -160,7 +161,10 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/gameplan/nfl/depthchart/ai/update/", controller.UpdateNFLAIDepthCharts).Methods("GET")
 
 	// Generation Controls
-	// apiRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")
+	apiRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")
+
+	// History Controls
+	apiRouter.HandleFunc("/history/college/{teamID}", controller.GetCollegeHistoryProfile).Methods("GET")
 
 	// Import Controls
 	// apiRouter.HandleFunc("/admin/import/fcs/gameplans", controller.GenerateNewGameplans).Methods("GET")
@@ -169,6 +173,7 @@ func handleRequests() http.Handler {
 	// apiRouter.HandleFunc("/admin/import/cfb/standings", controller.ImportCFBStandings).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/cfb/coaches", controller.GenerateCoachesForAITeams).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
+	// apiRouter.HandleFunc("/admin/import/cfb/rivals", controller.ImportCFBRivals).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/cfb/teams", controller.ImportCFBTeams).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/nfl/games", controller.ImportNFLGames).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/nfl/warroom", controller.GenerateDraftWarRooms).Methods("GET")
@@ -363,7 +368,8 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/ds/cfb/croots/class/{teamID}/", controller.GetRecruitingClassByTeamID).Methods("GET")
 	apiRouter.HandleFunc("/ds/cfb/croot/{id}", controller.GetRecruitViaDiscord).Methods("GET")
 	apiRouter.HandleFunc("/schedule/ds/current/week/{league}/", controller.GetCurrentWeekGamesByLeague).Methods("GET")
-	apiRouter.HandleFunc("/ds/cfb/flex/{teamOneID}/{teamTwoID}/", controller.CompareTeams).Methods("GET")
+	apiRouter.HandleFunc("/ds/cfb/flex/{teamOneID}/{teamTwoID}/", controller.CompareCFBTeams).Methods("GET")
+	apiRouter.HandleFunc("/ds/nfl/flex/{teamOneID}/{teamTwoID}/", controller.CompareNFLTeams).Methods("GET")
 	apiRouter.HandleFunc("/ds/cfb/conference/{conference}/", controller.GetCollegeConferenceStandings).Methods("GET")
 	apiRouter.HandleFunc("/ds/cfb/fbs/stream/{timeslot}/{week}/", controller.GetFBSGameStreams).Methods("GET")
 	apiRouter.HandleFunc("/ds/cfb/fcs/stream/{timeslot}/{week}/", controller.GetFCSGameStreams).Methods("GET")

@@ -1129,3 +1129,61 @@ func FixCollegeDTs() {
 		repository.SaveNFLPlayer(p, db)
 	}
 }
+
+func ImportCFBRivals() {
+	db := dbprovider.GetInstance().GetDB()
+
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2025\\rivalries.csv"
+
+	rivalsCSV := util.ReadCSV(path)
+
+	teamMap := make(map[string]structs.CollegeTeam)
+
+	allCollegeTeams := GetAllCollegeTeams()
+
+	for _, t := range allCollegeTeams {
+		teamMap[t.TeamName] = t
+	}
+
+	for idx, row := range rivalsCSV {
+		if idx < 314 {
+			continue
+		}
+
+		id := util.ConvertStringToInt(row[0])
+		rival1 := row[2]
+		rival2 := row[4]
+		if len(rival1) == 0 && len(rival2) == 0 {
+			break
+		}
+		rivalryName := row[5]
+		trophyName := row[6]
+		priority1 := util.ConvertStringToInt(row[7])
+		priority2 := util.ConvertStringToInt(row[8])
+
+		team1, ok := teamMap[rival1]
+		if !ok {
+			fmt.Println("FIX!!!")
+		}
+
+		team2, ok2 := teamMap[rival2]
+		if !ok2 {
+			fmt.Println("FIX!!!")
+		}
+
+		rivalry := structs.CollegeRival{
+			Model: gorm.Model{
+				ID: uint(id),
+			},
+			RivalryName:     rivalryName,
+			TrophyName:      trophyName,
+			TeamOneID:       team1.ID,
+			TeamTwoID:       team2.ID,
+			HasTrophy:       len(trophyName) > 0,
+			TeamOnePriority: uint(priority1),
+			TeamTwoPriority: uint(priority2),
+		}
+
+		db.Create(&rivalry)
+	}
+}

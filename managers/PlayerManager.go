@@ -1456,3 +1456,13 @@ func GetAllNFLPlayersMap() map[uint]structs.NFLPlayer {
 
 	return MapNFLPlayers(nflPlayers)
 }
+
+func GetHistoricCollegePlayersByTeamID(teamID string) []structs.HistoricCollegePlayer {
+	db := dbprovider.GetInstance().GetDB()
+
+	var CollegePlayers []structs.HistoricCollegePlayer
+
+	db.Where("team_id = ?").Find(&CollegePlayers)
+
+	return CollegePlayers
+}

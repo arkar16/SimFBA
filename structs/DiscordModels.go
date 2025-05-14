@@ -1,6 +1,6 @@
 package structs
 
-type CFBComparisonModel struct {
+type FlexComparisonModel struct {
 	TeamOneID      uint
 	TeamOne        string
 	TeamOneWins    uint

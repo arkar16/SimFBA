@@ -581,9 +581,19 @@ func GetCollegeTeamProfilePageData() map[uint]CollegeTeamProfileData {
 		collegePlayers := collegePlayerMap[team.ID]
 		careerStatsList := make([]structs.CollegePlayerSeasonStats, 0, len(collegePlayers))
 		playerMap := MakeCollegePlayerMap(collegePlayers)
+		teamCareerStats := statsMap[team.ID]
+
+		rosterStatsMap := make(map[uint][]structs.CollegePlayerSeasonStats)
+		for _, s := range teamCareerStats {
+			if len(rosterStatsMap[s.CollegePlayerID]) > 0 {
+				rosterStatsMap[s.CollegePlayerID] = append(rosterStatsMap[s.CollegePlayerID], s)
+			} else {
+				rosterStatsMap[s.CollegePlayerID] = []structs.CollegePlayerSeasonStats{s}
+			}
+		}
 
 		for _, player := range collegePlayers {
-			stats := statsMap[player.ID]
+			stats := rosterStatsMap[player.ID]
 			if len(stats) == 0 {
 				continue
 			}

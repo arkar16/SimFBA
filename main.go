@@ -164,7 +164,7 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")
 
 	// History Controls
-	apiRouter.HandleFunc("/history/college/{teamID}", controller.GetCollegeHistoryProfile).Methods("GET")
+	apiRouter.HandleFunc("/history/college", controller.GetCollegeHistoryProfile).Methods("GET")
 
 	// Import Controls
 	// apiRouter.HandleFunc("/admin/import/fcs/gameplans", controller.GenerateNewGameplans).Methods("GET")

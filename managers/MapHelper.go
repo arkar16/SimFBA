@@ -105,3 +105,84 @@ func MakeExtensionMap(extensions []structs.NFLExtensionOffer) map[uint]structs.N
 
 	return contractMap
 }
+
+func MakeHistoricCollegeStandingsMapByTeamID(standings []structs.CollegeStandings) map[uint][]structs.CollegeStandings {
+	standingsMap := make(map[uint][]structs.CollegeStandings)
+
+	for _, p := range standings {
+		if p.TeamID == 0 {
+			continue
+		}
+		if len(standingsMap[uint(p.TeamID)]) > 0 {
+			standingsMap[uint(p.TeamID)] = append(standingsMap[uint(p.TeamID)], p)
+		} else {
+			standingsMap[uint(p.TeamID)] = []structs.CollegeStandings{p}
+		}
+	}
+
+	return standingsMap
+}
+
+func MakeHistoricCollegeSeasonStatsMapByTeamID(stats []structs.CollegePlayerSeasonStats) map[uint][]structs.CollegePlayerSeasonStats {
+	statsMap := make(map[uint][]structs.CollegePlayerSeasonStats)
+
+	for _, p := range stats {
+		if p.TeamID == 0 {
+			continue
+		}
+		if len(statsMap[uint(p.TeamID)]) > 0 {
+			statsMap[uint(p.TeamID)] = append(statsMap[uint(p.TeamID)], p)
+		} else {
+			statsMap[uint(p.TeamID)] = []structs.CollegePlayerSeasonStats{p}
+		}
+	}
+
+	return statsMap
+}
+
+/*
+Where("team_one_id = ? OR team_two_id = ?", teamID, teamID)
+*/
+func MakeHistoricRivalriesMapByTeamID(rivals []structs.CollegeRival) map[uint][]structs.CollegeRival {
+	statsMap := make(map[uint][]structs.CollegeRival)
+
+	for _, r := range rivals {
+		if r.TeamOneID == 0 || r.TeamTwoID == 0 {
+			continue
+		}
+		if len(statsMap[uint(r.TeamOneID)]) > 0 {
+			statsMap[uint(r.TeamOneID)] = append(statsMap[uint(r.TeamOneID)], r)
+		} else {
+			statsMap[uint(r.TeamOneID)] = []structs.CollegeRival{r}
+		}
+		if len(statsMap[uint(r.TeamTwoID)]) > 0 {
+			statsMap[uint(r.TeamTwoID)] = append(statsMap[uint(r.TeamTwoID)], r)
+		} else {
+			statsMap[uint(r.TeamTwoID)] = []structs.CollegeRival{r}
+		}
+	}
+
+	return statsMap
+}
+
+func MakeHistoricGamesMapByTeamID(games []structs.CollegeGame) map[uint][]structs.CollegeGame {
+	gamesMap := make(map[uint][]structs.CollegeGame)
+
+	for _, r := range games {
+		if r.HomeTeamID == 0 || r.AwayTeamID == 0 {
+			continue
+		}
+		if len(gamesMap[uint(r.HomeTeamID)]) > 0 {
+			gamesMap[uint(r.HomeTeamID)] = append(gamesMap[uint(r.HomeTeamID)], r)
+		} else {
+			gamesMap[uint(r.HomeTeamID)] = []structs.CollegeGame{r}
+		}
+		if len(gamesMap[uint(r.AwayTeamID)]) > 0 {
+			gamesMap[uint(r.AwayTeamID)] = append(gamesMap[uint(r.AwayTeamID)], r)
+		} else {
+			gamesMap[uint(r.AwayTeamID)] = []structs.CollegeGame{r}
+		}
+	}
+
+	return gamesMap
+}

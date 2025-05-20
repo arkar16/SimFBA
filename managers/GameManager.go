@@ -182,6 +182,16 @@ func GetNFLCurrentWeekSchedule() []structs.NFLGame {
 	return games
 }
 
+func GetAllCollegeGames() []structs.CollegeGame {
+	db := dbprovider.GetInstance().GetDB()
+
+	var games []structs.CollegeGame
+
+	db.Order("week_id asc").Find(&games)
+
+	return games
+}
+
 func GetCollegeGamesByTeamId(TeamID string) []structs.CollegeGame {
 	db := dbprovider.GetInstance().GetDB()
 

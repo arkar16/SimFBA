@@ -345,7 +345,13 @@ func GetCollegePlayerSeasonStatsByTeamID(TeamID string) []structs.CollegePlayerS
 
 	var teamStats []structs.CollegePlayerSeasonStats
 
-	db.Where("team_id = ?", TeamID).Find(&teamStats)
+	query := db.Model(&teamStats)
+
+	if len(TeamID) > 0 {
+		query = query.Where("team_id = ?", TeamID)
+	}
+
+	query.Find(&teamStats)
 
 	return teamStats
 }

@@ -523,7 +523,7 @@ func GetCollegeTeamProfilePageData(teamID string) CollegeTeamProfileData {
 		if len(stats) == 0 {
 			continue
 		}
-		careerStats := structs.CollegePlayerSeasonStats{}
+		careerStats := structs.CollegePlayerSeasonStats{CollegePlayerID: player.ID, SeasonID: uint(ts.CollegeSeasonID)}
 		careerStats.MapSeasonStats(stats)
 		careerStatsList = append(careerStatsList, careerStats)
 	}

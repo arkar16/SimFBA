@@ -612,9 +612,9 @@ func GetCollegeTeamProfilePageData() map[uint]CollegeTeamProfileData {
 			} else {
 				opp = rival.TeamOneID
 			}
-			team1ID := 0
-			team2ID := 0
 			team1, team2 := teamMap[rival.TeamOneID], teamMap[rival.TeamTwoID]
+			team1ID := team1.ID
+			team2ID := team2.ID
 			t1Wins := 0
 			t1Losses := 0
 			t1Streak := 0

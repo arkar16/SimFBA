@@ -19,6 +19,21 @@ type CollegeStandings struct {
 	BaseStandings
 }
 
+func (ns *CollegeStandings) CalculatePercentages() {
+	totalGames := ns.TotalWins + ns.TotalLosses
+	totalConfGames := ns.ConferenceWins + ns.ConferenceLosses
+	if totalGames > 0 {
+		ns.TotalWinPercentage = float32(ns.TotalWins) / float32(totalGames)
+	} else {
+		ns.TotalWinPercentage = 0
+	}
+	if totalConfGames > 0 {
+		ns.ConfWinPercentage = float32(ns.TotalWins) / float32(totalConfGames)
+	} else {
+		ns.ConfWinPercentage = 0
+	}
+}
+
 func (cs *CollegeStandings) UpdateCollegeStandings(game CollegeGame) {
 	isAway := cs.TeamID == game.AwayTeamID
 	winner := (!isAway && game.HomeTeamWin) || (isAway && game.AwayTeamWin)
@@ -47,6 +62,8 @@ func (cs *CollegeStandings) UpdateCollegeStandings(game CollegeGame) {
 		cs.PointsFor += game.HomeTeamScore
 		cs.PointsAgainst += game.AwayTeamScore
 	}
+
+	cs.CalculatePercentages()
 }
 
 func (cs *CollegeStandings) SubtractCollegeStandings(game CollegeGame) {
@@ -77,6 +94,7 @@ func (cs *CollegeStandings) SubtractCollegeStandings(game CollegeGame) {
 		cs.PointsFor -= game.HomeTeamScore
 		cs.PointsAgainst -= game.AwayTeamScore
 	}
+	cs.CalculatePercentages()
 }
 
 func (cs *CollegeStandings) ResetCFBStandings() {
@@ -92,6 +110,7 @@ func (cs *CollegeStandings) ResetCFBStandings() {
 	cs.AwayWins = 0
 	cs.RankedWins = 0
 	cs.RankedLosses = 0
+	cs.CalculatePercentages()
 }
 
 func (cs *CollegeStandings) SetCoach(coach string) {

@@ -79,6 +79,22 @@ func (ns *NFLStandings) UpdateNFLStandings(game NFLGame) {
 		ns.PointsFor += game.HomeTeamScore
 		ns.PointsAgainst += game.AwayTeamScore
 	}
+	ns.CalculatePercentages()
+}
+
+func (ns *NFLStandings) CalculatePercentages() {
+	totalGames := ns.TotalWins + ns.TotalLosses + int(ns.TotalTies)
+	totalConfGames := ns.ConferenceWins + ns.ConferenceLosses + int(ns.ConferenceTies)
+	if totalGames > 0 {
+		ns.TotalWinPercentage = float32(ns.TotalWins) / float32(totalGames)
+	} else {
+		ns.TotalWinPercentage = 0
+	}
+	if totalConfGames > 0 {
+		ns.ConfWinPercentage = float32(ns.TotalWins) / float32(totalConfGames)
+	} else {
+		ns.ConfWinPercentage = 0
+	}
 }
 
 func (ns *NFLStandings) ReduceNFLStandings(game NFLGame) {
@@ -136,6 +152,7 @@ func (ns *NFLStandings) ReduceNFLStandings(game NFLGame) {
 		ns.PointsFor -= game.HomeTeamScore
 		ns.PointsAgainst -= game.AwayTeamScore
 	}
+	ns.CalculatePercentages()
 }
 
 func (ns *NFLStandings) ResetNFLStandings() {
@@ -154,4 +171,6 @@ func (ns *NFLStandings) ResetNFLStandings() {
 	ns.PointsAgainst = 0
 	ns.HomeWins = 0
 	ns.AwayWins = 0
+	ns.TotalWinPercentage = 0
+	ns.ConfWinPercentage = 0
 }

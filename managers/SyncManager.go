@@ -535,7 +535,6 @@ func FillAIRecruitingBoards() {
 	}
 
 	fmt.Println("Loaded all unsigned recruits.")
-	coachMap := getCoachMap()
 
 	boardCount := 75
 
@@ -545,7 +544,6 @@ func FillAIRecruitingBoards() {
 			continue
 		}
 		fmt.Println("Iterating through " + team.Team + ".")
-		collegeCoach := coachMap[team.ID]
 		existingBoard := GetOnlyRecruitProfilesByTeamProfileID(strconv.Itoa(int(team.ID)))
 		teamNeeds := GetRecruitingNeeds(strconv.Itoa(int(team.ID)))
 		offBadFits := GetFitsByScheme(team.OffensiveScheme, true)
@@ -613,7 +611,7 @@ func FillAIRecruitingBoards() {
 			}
 
 			closeToHome := util.IsCrootCloseToHome(croot.State, croot.City, team.State, team.TeamAbbreviation, stateMatcher, regionMatcher)
-			oddsObject := getRecruitingOdds(ts, croot, team, collegeCoach, closeToHome, recruitInfos)
+			oddsObject := getRecruitingOdds(ts, croot, team, closeToHome, recruitInfos)
 
 			chance := util.GenerateIntFromRange(1, 100)
 
@@ -638,7 +636,7 @@ func FillAIRecruitingBoards() {
 				RecruitingEfficiencyScore: 1,
 				IsSigned:                  false,
 				IsLocked:                  false,
-				Recruiter:                 collegeCoach.CoachName,
+				Recruiter:                 team.Recruiter,
 			}
 
 			repository.CreateRecruitProfileRecord(playerProfile, db)
@@ -995,7 +993,7 @@ func updateTeamRankings(teamRecruitingProfiles []structs.RecruitingTeamProfile, 
 	}
 }
 
-func getRecruitingOdds(ts structs.Timestamp, croot structs.Recruit, team structs.RecruitingTeamProfile, coach structs.CollegeCoach, closeToHome bool, recruitInfos map[uint]structs.RecruitInfo) structs.OddsAndAffinities {
+func getRecruitingOdds(ts structs.Timestamp, croot structs.Recruit, team structs.RecruitingTeamProfile, closeToHome bool, recruitInfos map[uint]structs.RecruitInfo) structs.OddsAndAffinities {
 	odds := 5
 	affinityMod := 0
 	if ts.CollegeWeek > 5 {
@@ -1015,24 +1013,6 @@ func getRecruitingOdds(ts structs.Timestamp, croot structs.Recruit, team structs
 
 	affinityOneApplicable := false
 	affinityTwoApplicable := false
-
-	if coach.ID > 0 {
-		if croot.Stars == 5 {
-			odds += coach.Odds5
-		} else if croot.Stars == 4 {
-			odds += coach.Odds4
-		} else if croot.Stars == 3 {
-			odds += coach.Odds3
-		} else if croot.Stars == 2 {
-			odds += coach.Odds2
-		} else if croot.Stars == 1 {
-			odds += coach.Odds1
-		}
-
-		if croot.Position == coach.PositionOne || croot.Position == coach.PositionTwo || croot.Position == coach.PositionThree {
-			odds += 5
-		}
-	}
 
 	offensiveSchemeFitList := GetFitsByScheme(team.OffensiveScheme, false)
 	defSchemeFitList := GetFitsByScheme(team.DefensiveScheme, false)

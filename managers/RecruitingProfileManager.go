@@ -53,7 +53,7 @@ func RecalibrateCrootProfiles() {
 		for _, p := range profiles {
 			croot := crootMap[uint(p.RecruitID)]
 			closeToHome := util.IsCrootCloseToHome(croot.State, croot.City, t.State, t.TeamAbbr, stateMatcher, regionMatcher)
-			oddsObject := getRecruitingOdds(ts, croot, tp, t.CollegeCoach, closeToHome, recruitInfos)
+			oddsObject := getRecruitingOdds(ts, croot, tp, closeToHome, recruitInfos)
 
 			triggerSave := false
 			if oddsObject.Af1 && !p.AffinityOneEligible {

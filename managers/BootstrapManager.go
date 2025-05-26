@@ -477,6 +477,7 @@ type CollegeTeamProfileData struct {
 	CollegeStandings []structs.CollegeStandings
 	Rivalries        []structs.FlexComparisonModel
 	PlayerMap        map[uint]structs.CollegePlayer
+	CollegeGames     []structs.CollegeGame
 }
 
 func GetCollegeTeamProfilePageData() map[uint]CollegeTeamProfileData {
@@ -491,6 +492,7 @@ func GetCollegeTeamProfilePageData() map[uint]CollegeTeamProfileData {
 		teams            []structs.CollegeTeam
 		teamMap          map[uint]structs.CollegeTeam
 		rivalryMap       map[uint][]structs.CollegeRival
+		gameMap          map[uint][]structs.CollegeGame
 	)
 
 	gamesByPair := make(map[uint]map[uint][]structs.CollegeGame)
@@ -569,6 +571,20 @@ func GetCollegeTeamProfilePageData() map[uint]CollegeTeamProfileData {
 				gamesByPair[away] = make(map[uint][]structs.CollegeGame)
 			}
 			gamesByPair[away][home] = append(gamesByPair[away][home], g)
+		}
+		gameMap = make(map[uint][]structs.CollegeGame)
+		for _, g := range games {
+			home, away := uint(g.HomeTeamID), uint(g.AwayTeamID)
+			if len(gameMap[home]) > 0 {
+				gameMap[home] = append(gameMap[home], g)
+			} else {
+				gameMap[home] = []structs.CollegeGame{g}
+			}
+			if len(gameMap[away]) > 0 {
+				gameMap[away] = append(gameMap[away], g)
+			} else {
+				gameMap[away] = []structs.CollegeGame{g}
+			}
 		}
 		mu.Unlock()
 	}()
@@ -755,6 +771,7 @@ func GetCollegeTeamProfilePageData() map[uint]CollegeTeamProfileData {
 			CollegeStandings: standingsMap[team.ID],
 			PlayerMap:        playerMap,
 			Rivalries:        rivalryModels,
+			CollegeGames:     gameMap[team.ID],
 		}
 		result[team.ID] = data
 	}

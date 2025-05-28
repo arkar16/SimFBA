@@ -24,6 +24,7 @@ type NFLPlayer struct {
 	NegotiationRound  uint
 	SigningRound      uint
 	MinimumValue      float64
+	AAV               float64
 	DraftedTeamID     uint
 	DraftedTeam       string
 	DraftedRound      uint
@@ -68,8 +69,9 @@ func (np *NFLPlayer) AssignMissingValues(pr int, aca string, fa string, per stri
 	np.RecruitingBias = rec
 }
 
-func (np *NFLPlayer) AssignMinimumValue(val float64) {
+func (np *NFLPlayer) AssignMinimumValue(val, aav float64) {
 	np.MinimumValue = val
+	np.AAV = aav
 }
 
 func (np *NFLPlayer) ShowRealAttributeValue() {

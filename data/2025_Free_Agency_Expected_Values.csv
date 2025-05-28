@@ -1,0 +1,369 @@
+﻿Player ID,Name,Archetype,Position,Age,Ovr, Yrs Left ,Value Expect,AAV Expect,Team
+156,Jake Campos,Ball Hawk,FS,25,65, 1 , 7.28 , 2.91 ,ARI
+204,Terry Jackson,Blocking,FB,25,67, 1 , 4.80 , 1.92 ,ARI
+255,Addison Crosby,Balanced,QB,25,64, 1 , 4.57 , 1.83 ,ARI
+273,D.J. Baylis,Pass Blocking,OG,25,64, 1 , 4.64 , 1.86 ,ARI
+383,Damien Shead,Balanced,FB,25,67, 1 , 4.80 , 1.92 ,ARI
+1825,Matt Wallace,Balanced,DE,25,59, 1 , 0.74 , 0.50 ,ARI
+11233,Ryan McBride,Accuracy,K,23,51, 1 , 0.70 , 0.50 ,ARI
+63823,James Reed,Line Captain,C,29,66, 1 , 3.76 , 1.50 ,ARI
+119,Ulrick Phillips,Pass Blocking,OT,25,69, 1 , 25.62 , 10.25 ,ATL
+147,Adonis President,Man Coverage,CB,25,65, 1 , 7.35 , 2.94 ,ATL
+666,Nathan McKinney,Ball Hawk,CB,25,63, 1 , 4.36 , 1.74 ,ATL
+46106,Shawn Talley,Run Blocking,OT,32,72, 1 , 13.42 , 5.37 ,ATL
+60116,Wade Hires,Run Stopper,FS,29,74, 1 , 17.90 , 7.16 ,ATL
+60809,Michael Fulmer,Balanced,RB,29,76, 1 , 10.90 , 4.36 ,ATL
+65877,Todd Brumlow,Pass Blocking,C,28,77, 1 , 19.68 , 7.87 ,ATL
+4,Clinton Gregerson,Nose Tackle,DT,25,69, 1 , 13.96 , 5.58 ,BAL
+5,James Taylor,Balanced,RB,25,70, 1 , 15.57 , 6.23 ,BAL
+205,Patrick Viola,Coverage,OLB,25,69, 1 , 20.76 , 8.31 ,BAL
+244,Zack Ellington,Run Stopper,SS,25,65, 1 , 5.39 , 2.15 ,BAL
+296,Niles Bell,Run Stopper,OLB,25,64, 1 , 6.97 , 2.79 ,BAL
+349,Matt Perez,Zone Coverage,FS,25,71, 1 , 22.11 , 8.85 ,BAL
+372,Ehire Pouncey,Speed Rusher,DE,25,60, 1 , 6.51 , 2.60 ,BAL
+760,Jordan Albers,Possession,WR,25,62, 1 , 2.89 , 1.16 ,BAL
+56818,Kevin Clark,Power,P,30,58, 1 , 0.70 , 0.50 ,BAL
+60863,Thomas Gupta,Coverage,ILB,29,68, 1 , 5.64 , 2.26 ,BAL
+61597,Ronald Bergeron,Speed,OLB,29,71, 1 , 16.81 , 6.72 ,BAL
+63026,Wayne Jones,Balanced,OG,29,70, 1 , 5.38 , 2.15 ,BAL
+63526,Patrick Green,Speed,ILB,29,71, 1 , 16.81 , 6.72 ,BAL
+67141,Jesus Casillas,Zone Coverage,CB,28,69, 1 , 6.30 , 2.52 ,BAL
+15,Kyle Banjo,Pass Rush,OLB,25,63, 1 , 7.14 , 2.86 ,BUF
+47,Andrew Martin,Zone Coverage,CB,25,66, 1 , 11.53 , 4.61 ,BUF
+198,Brian Ford,Nose Tackle,DT,25,60, 1 , 0.74 , 0.50 ,BUF
+285,Marquez Allen,Balanced,OT,25,70, 1 , 25.62 , 10.25 ,BUF
+366,John Hollis-Jefferson,Power,K,25,65, 1 , 1.68 , 0.67 ,BUF
+387,Yusei Asencio,Pocket,QB,25,71, 1 , 17.12 , 6.85 ,BUF
+397,Franklin Hezonja,Speed,WR,25,65, 1 , 6.35 , 2.54 ,BUF
+1404,DeAngelo Cook,Pass Blocking,OT,25,62, 1 , 4.28 , 1.71 ,BUF
+40150,Louis Perez,Pass Blocking,OG,33,78, 1 , 8.75 , 3.50 ,BUF
+56215,Adam Grier,Zone Coverage,FS,30,79, 1 , 21.12 , 8.45 ,BUF
+61471,Jan Summers,Vertical Threat,TE,29,77, 1 , 11.97 , 4.79 ,BUF
+67924,Mark Tran,Balanced,DT,28,73, 1 , 11.96 , 4.78 ,BUF
+28,Dekoda Link,Pocket,QB,25,74, 1 , 37.17 , 14.87 ,CAR
+61372,Daniel Degitz,Pocket,QB,29,66, 1 , 4.13 , 1.65 ,CAR
+61562,Steven Kapfhammer,Balanced,DT,29,78, 1 , 25.93 , 10.37 ,CAR
+61682,Gordon Polak,Man Coverage,CB,29,67, 1 , 3.53 , 1.41 ,CAR
+62146,Kyle Taylor,Speed,OLB,29,69, 1 , 5.64 , 2.26 ,CAR
+62344,Michael Naccarato,Coverage,OLB,29,71, 1 , 16.81 , 6.72 ,CAR
+62531,Jose Maldonado,Speed,WR,29,68, 1 , 4.88 , 1.95 ,CAR
+62603,Gilberto Santana,Man Coverage,CB,29,70, 1 , 9.33 , 3.73 ,CAR
+64448,Dwaine Pitchford,Red Zone Threat,WR,29,65, 1 , 2.34 , 0.94 ,CAR
+64606,Michael Rausch,Receiving,TE,29,63, 1 , 1.10 , 0.50 ,CAR
+65814,Aaron Stokes,Balanced,DE,28,86, 1 , 32.67 , 13.07 ,CAR
+70385,Michael Rogers,Accuracy,K,27,70, 1 , 1.60 , 0.64 ,CAR
+31,Jehu Ginn,Run Stopper,ILB,25,78, 1 , 35.52 , 14.21 ,CHI
+321,Mike Turner,Ball Hawk,CB,25,71, 1 , 23.82 , 9.53 ,CHI
+1644,John Canady,Ball Hawk,CB,25,66, 1 , 11.53 , 4.61 ,CHI
+5613,Henry Blackson,Run Stopper,OLB,24,55, 1 , 0.70 , 0.50 ,CHI
+5787,Jon Cracraft,Run Stopper,ILB,24,55, 1 , 0.70 , 0.50 ,CHI
+11605,Dwyane Black,Ball Hawk,SS,23,58, 1 , 0.83 , 0.50 ,CHI
+64492,Alejandro Roman,Possession,WR,29,61, 1 , 0.73 , 0.50 ,CHI
+69192,David George,Possession,WR,28,67, 1 , 2.48 , 0.99 ,CHI
+70724,William Ruhl,Pass Blocking,OT,27,73, 1 , 23.18 , 9.27 ,CHI
+8,Jameill Lopez,Accuracy,K,25,67, 1 , 1.68 , 0.67 ,CIN
+9,Darren Johnson,Man Coverage,SS,25,63, 1 , 5.39 , 2.15 ,CIN
+76,Alec Cozens,Run Blocking,OG,25,66, 1 , 6.64 , 2.66 ,CIN
+168,Jevoni Rosenberg,Blocking,FB,25,71, 1 , 9.67 , 3.87 ,CIN
+242,Dustin Blackley,Balanced,DE,25,66, 1 , 7.82 , 3.13 ,CIN
+390,Chris Frazier,Balanced,QB,25,70, 1 , 15.34 , 6.14 ,CIN
+10367,Garrett Segovia,Pass Blocking,OT,23,57, 1 , 0.70 , 0.50 ,CIN
+10434,Phillip Hill,Red Zone Threat,WR,23,57, 1 , 0.99 , 0.50 ,CIN
+36385,Mark Stern,Balanced,OG,34,68, 1 , 1.11 , 0.50 ,CIN
+40441,Ronnie Jefferson,Receiving,RB,33,72, 1 , 1.56 , 0.62 ,CIN
+67090,Herbert Pergerson,Ball Hawk,CB,28,70, 1 , 9.88 , 3.95 ,CIN
+71292,Manuel Bonilla,Balanced,P,27,72, 1 , 1.82 , 0.73 ,CIN
+240,JC Oliveros,Ball Hawk,SS,25,64, 1 , 5.39 , 2.15 ,CLE
+337,Kolton Hayes,Man Coverage,CB,25,73, 1 , 28.25 , 11.30 ,CLE
+1393,Lou Hechavarria,Man Coverage,CB,25,64, 1 , 7.35 , 2.94 ,CLE
+10225,Al Solis,Man Coverage,CB,23,59, 1 , 4.77 , 1.91 ,CLE
+10848,Harold Burke,Possession,WR,23,59, 1 , 3.16 , 1.27 ,CLE
+45484,Robert Smith,Run Blocking,C,32,80, 1 , 12.03 , 4.81 ,CLE
+46863,James Rivera,Field General,QB,32,79, 1 , 28.32 , 11.33 ,CLE
+65772,Thomas Kaschalk,Balanced,RB,28,62, 1 , 1.50 , 0.60 ,CLE
+65905,Abel Chapa,Power,K,28,70, 1 , 1.52 , 0.61 ,CLE
+67039,Philippe Conner,Balanced,QB,28,68, 1 , 4.13 , 1.65 ,CLE
+67480,Michael King,Pass Blocking,OT,28,65, 1 , 3.67 , 1.47 ,CLE
+71463,Robert Summers,Run Stopper,FS,27,60, 1 , 2.06 , 0.82 ,CLE
+282,Amara Rodriguez,Man Coverage,CB,25,76, 1 , 36.17 , 14.47 ,DAL
+412,Steven Labissiere,Possession,WR,25,69, 1 , 11.39 , 4.56 ,DAL
+419,Michael Dyson,Speed Rusher,DE,25,73, 1 , 28.09 , 11.24 ,DAL
+541,Jon Pinto,Run Blocking,OT,25,66, 1 , 7.46 , 2.98 ,DAL
+616,Gerald Murphy,Route Runner,WR,25,63, 1 , 2.89 , 1.16 ,DAL
+1209,Austin Iglesias,Pass Blocking,OT,25,65, 1 , 7.46 , 2.98 ,DAL
+5342,Foley Liriano,Ball Hawk,CB,24,58, 1 , 4.57 , 1.83 ,DAL
+5400,Rocky Rosario,Man Coverage,CB,24,59, 1 , 4.57 , 1.83 ,DAL
+61753,Harlan Pitman,Receiving,TE,29,61, 1 , 0.77 , 0.50 ,DAL
+62121,Roberto Duenez,Receiving,TE,29,66, 1 , 5.25 , 2.10 ,DAL
+62348,Luis Smith,Man Coverage,SS,29,68, 1 , 4.36 , 1.74 ,DAL
+62569,Lee Kenney,Speed Rusher,DE,29,65, 1 , 5.27 , 2.11 ,DAL
+63243,Jose Foster,Balanced,DT,29,61, 1 , 0.70 , 0.50 ,DAL
+63296,Peter Fergurson,Power,P,29,63, 1 , 1.54 , 0.62 ,DAL
+186,Jason West,Man Coverage,SS,25,67, 1 , 7.74 , 3.10 ,DEN
+233,Cooper McGough,Receiving,RB,25,64, 1 , 8.50 , 3.40 ,DEN
+45290,Wayne Sutton,Power,P,32,75, 1 , 5.03 , 2.01 ,DEN
+60291,Daryl Lee,Man Coverage,SS,29,88, 1 , 38.48 , 15.39 ,DEN
+64932,Jared Wethington,Coverage,OLB,29,65, 1 , 1.76 , 0.71 ,DEN
+106,Russell Latimer,Scrambler,QB,25,67, 1 , 4.57 , 1.83 ,DET
+150,Mike Pressly,Zone Coverage,CB,25,68, 1 , 11.53 , 4.61 ,DET
+274,Matt Brown,Possession,WR,25,70, 1 , 23.94 , 9.58 ,DET
+348,Trea Taumoepenu,Speed Rusher,DE,25,64, 1 , 7.14 , 2.86 ,DET
+1288,Oswaldo Urrutia,Speed,WR,25,63, 1 , 2.89 , 1.16 ,DET
+1614,Tanner Lake,Receiving,RB,25,63, 1 , 8.50 , 3.40 ,DET
+40312,Robert Smith,Ball Hawk,CB,33,75, 1 , 9.07 , 3.63 ,DET
+40894,Robert Richbow,Balanced,P,33,79, 1 , 3.66 , 1.46 ,DET
+41457,Victor Villamar,Speed,WR,33,73, 1 , 4.34 , 1.74 ,DET
+61650,Luis Moreno,Pass Rush,OLB,29,66, 1 , 5.27 , 2.11 ,DET
+62106,Joshua Herman,Red Zone Threat,WR,29,66, 1 , 2.34 , 0.94 ,DET
+65965,Richard Harsch,Speed,WR,28,67, 1 , 2.48 , 0.99 ,DET
+65981,Carl White,Receiving,TE,28,66, 1 , 5.56 , 2.23 ,DET
+66693,Uma Nguyen,Balanced,OT,28,65, 1 , 3.67 , 1.47 ,DET
+68275,Luis Garcia,Zone Coverage,CB,28,65, 1 , 3.74 , 1.49 ,DET
+70379,Juan Goldberg,Man Coverage,SS,27,68, 1 , 4.87 , 1.95 ,DET
+70759,George Brush,Blocking,FB,27,64, 1 , 4.08 , 1.63 ,DET
+71732,Josh Benson,Nose Tackle,DT,27,68, 1 , 6.08 , 2.43 ,DET
+309,Steve Lucas,Run Stopper,DE,25,67, 1 , 12.24 , 4.90 ,GB
+393,Joe Perez,Zone Coverage,CB,25,68, 1 , 11.53 , 4.61 ,GB
+676,Junior Ogbah,Route Runner,WR,25,69, 1 , 11.39 , 4.56 ,GB
+6427,Abraham Devey,Zone Coverage,FS,24,62, 1 , 2.52 , 1.01 ,GB
+60117,Robert Smith,Balanced,OG,29,89, 1 , 27.46 , 10.98 ,GB
+60790,Benjamin Hanbury,Pass Rush,OLB,29,76, 1 , 22.74 , 9.10 ,GB
+62720,Roger Wise,Run Stopper,ILB,29,65, 1 , 1.76 , 0.71 ,GB
+64475,Juan Santiago,Pass Blocking,OG,29,67, 1 , 3.76 , 1.50 ,GB
+21,Elijhaa Rader,Run Blocking,OT,25,79, 1 , 36.05 , 14.42 ,HOU
+33,Ryan Johnson,Rushing/Balanced,FB,25,77, 1 , 25.38 , 10.15 ,HOU
+41485,Tracey Borders,Possession,WR,33,71, 1 , 3.48 , 1.39 ,HOU
+42401,Richard Roshell,Red Zone Threat,WR,33,74, 1 , 9.12 , 3.65 ,HOU
+45912,James Berendes,Possession,WR,32,75, 1 , 12.54 , 5.02 ,HOU
+60700,Samuel Henry,Blocking,TE,29,66, 1 , 5.25 , 2.10 ,HOU
+61310,Jose Delabra,Speed,ILB,29,68, 1 , 5.64 , 2.26 ,HOU
+62523,Antonio Frank,Power,K,29,70, 1 , 1.52 , 0.61 ,HOU
+63,Elijah Ellis,Man Coverage,CB,25,68, 1 , 11.53 , 4.61 ,IND
+30539,Gary Freitag,Scrambler,QB,35,76, 1 , 14.16 , 5.66 ,IND
+36802,Enrique Nunes,Red Zone Threat,WR,34,70, 1 , 2.18 , 0.87 ,IND
+48595,Melvin Nelson,Power,P,32,58, 1 , 0.70 , 0.50 ,IND
+61305,William Webber,Power,RB,29,66, 1 , 4.06 , 1.63 ,IND
+61977,Dennis Coutu,Route Runner,WR,29,65, 1 , 2.34 , 0.94 ,IND
+62107,Glenn Brandt,Accuracy,K,29,69, 1 , 1.52 , 0.61 ,IND
+62283,John Osman,Pass Rush,OLB,29,68, 1 , 5.78 , 2.31 ,IND
+62882,Lorne Davis,Coverage,OLB,29,69, 1 , 5.64 , 2.26 ,IND
+63431,Ryan Schumacher,Blocking,TE,29,60, 1 , 0.77 , 0.50 ,IND
+63484,Raymond Teague,Ball Hawk,SS,29,70, 1 , 4.36 , 1.74 ,IND
+64676,Roger Wnek,Balanced,OG,29,68, 1 , 3.76 , 1.50 ,IND
+65915,Enrique Rodriguez,Receiving,TE,28,73, 1 , 12.67 , 5.07 ,IND
+66389,Timothy Stimac,Coverage,OLB,28,69, 1 , 5.98 , 2.39 ,IND
+66409,Stephen Gibson,Pass Blocking,OG,28,69, 1 , 5.69 , 2.28 ,IND
+66715,Joe Griffin,Field General,ILB,28,69, 1 , 5.98 , 2.39 ,IND
+68261,Hipolito Campos,Man Coverage,SS,28,69, 1 , 4.62 , 1.85 ,IND
+70138,Monty Turner,Scrambler,QB,27,67, 1 , 4.35 , 1.74 ,IND
+70366,Ray Quintana,Ball Hawk,CB,27,68, 1 , 6.65 , 2.66 ,IND
+10,Matt Howard,Pocket,QB,25,67, 1 , 4.57 , 1.83 ,JAX
+17,Phil O'Malley,Coverage,OLB,25,65, 1 , 6.97 , 2.79 ,JAX
+287,Akrum Robinson,Speed,WR,25,65, 1 , 6.35 , 2.54 ,JAX
+290,Quincy Wile,Pass Blocking,OG,25,73, 1 , 22.96 , 9.19 ,JAX
+46157,David Powers,Field General,ILB,32,71, 1 , 10.88 , 4.35 ,JAX
+63993,Geoffrey Leonard,Balanced,FB,29,63, 1 , 3.36 , 1.34 ,JAX
+66478,Phillip Giffen,Run Stopper,OLB,28,68, 1 , 5.98 , 2.39 ,JAX
+66562,Ramon Munoz,Receiving,RB,28,63, 1 , 1.50 , 0.60 ,JAX
+68328,Franklin Kirchner,Man Coverage,CB,28,67, 1 , 3.74 , 1.49 ,JAX
+19,Luis Van Slyke,Receiving,TE,25,70, 1 , 14.78 , 5.91 ,KC
+284,Justin Peterson,Balanced,DE,25,65, 1 , 7.62 , 3.05 ,KC
+404,Roc Barnett,Ball Hawk,FS,25,64, 1 , 7.28 , 2.91 ,KC
+418,Mike Betances,Speed,OLB,25,60, 1 , 2.18 , 0.87 ,KC
+421,Trey McMillan,Zone Coverage,CB,25,70, 1 , 23.82 , 9.53 ,KC
+444,Andres Harrison,Speed Rusher,DE,25,67, 1 , 8.03 , 3.21 ,KC
+65547,Rodolfo Chavez,Possession,WR,28,69, 1 , 5.44 , 2.18 ,KC
+66176,Robert Jackson,Pass Rusher,DT,28,66, 1 , 3.06 , 1.22 ,KC
+26,Andrew Richards,Red Zone Threat,WR,25,74, 1 , 24.24 , 9.70 ,LV
+399,Pedro Ekeler,Speed,WR,25,65, 1 , 6.35 , 2.54 ,LV
+411,David Ni,Receiving,RB,25,62, 1 , 5.81 , 2.32 ,LV
+587,Josh Holloway,Pass Blocking,OT,25,67, 1 , 7.46 , 2.98 ,LV
+60872,Nicholas Sarno,Speed Rusher,DE,29,81, 1 , 23.04 , 9.21 ,LV
+66795,Brian Kelly,Balanced,P,28,71, 1 , 1.63 , 0.65 ,LV
+68434,Sylvester White,Balanced,DT,28,70, 1 , 6.70 , 2.68 ,LV
+69977,Clarence Hobson,Pocket,QB,27,66, 1 , 4.35 , 1.74 ,LV
+80,Matt Kelly,Man Coverage,CB,25,61, 1 , 4.36 , 1.74 ,LAC
+187,Kyle Dickson,Pass Blocking,C,25,65, 1 , 6.64 , 2.66 ,LAC
+215,Nathan Burke,Field General,ILB,25,69, 1 , 20.76 , 8.31 ,LAC
+317,Rey Easton,Speed Rusher,DE,25,69, 1 , 27.62 , 11.05 ,LAC
+345,Diego Johnson,Balanced,OG,25,71, 1 , 22.96 , 9.19 ,LAC
+699,Drew Reed,Receiving,RB,25,63, 1 , 8.50 , 3.40 ,LAC
+1085,Brian Wanamaker,Route Runner,WR,25,63, 1 , 2.89 , 1.16 ,LAC
+1170,Amir Webb,Man Coverage,CB,25,61, 1 , 4.36 , 1.74 ,LAC
+1652,Michael Atchison,Man Coverage,CB,25,64, 1 , 7.35 , 2.94 ,LAC
+47103,Javier Sanchez,Balanced,P,32,66, 1 , 1.00 , 0.50 ,LAC
+50134,John Warnock,Ball Hawk,CB,31,79, 1 , 20.07 , 8.03 ,LAC
+55200,Gordon Wilburn,Field General,ILB,30,82, 1 , 27.06 , 10.82 ,LAC
+60310,Miguel Aguilera,Scrambler,QB,29,84, 1 , 47.19 , 18.88 ,LAC
+60448,Jesus Gonzalez,Pass Rusher,DT,29,85, 1 , 30.86 , 12.34 ,LAC
+60812,Francis Barmore,Accuracy,K,29,72, 1 , 2.26 , 0.90 ,LAC
+70147,Michael Price,Field General,ILB,27,71, 1 , 18.79 , 7.51 ,LAC
+70269,Anthony Riddle,Run Stopper,ILB,27,64, 1 , 1.97 , 0.79 ,LAC
+11,Bruce Dawson,Receiving,RB,25,72, 1 , 15.57 , 6.23 ,LAR
+23,Ramon Newton,Man Coverage,CB,25,71, 1 , 23.82 , 9.53 ,LAR
+32,Carlos Bostick,Balanced,DE,25,68, 1 , 13.96 , 5.58 ,LAR
+1128,Brandon Ramczyk,Pass Rush,OLB,25,58, 1 , 0.70 , 0.50 ,LAR
+41875,Donald Vereeke,Balanced,OT,33,81, 1 , 13.73 , 5.49 ,LAR
+6,Aaron Lengel,Power,RB,25,65, 1 , 15.57 , 6.23 ,MIA
+53,Jeremy Moreland,Zone Coverage,CB,25,69, 1 , 23.82 , 9.53 ,MIA
+58,Shabazz Foreman,Coverage,OLB,25,61, 1 , 2.18 , 0.87 ,MIA
+35741,Michael Berger,Speed,ILB,34,74, 1 , 6.73 , 2.69 ,MIA
+41718,David Buchheit,Balanced,DT,33,81, 1 , 12.20 , 4.88 ,MIA
+64405,Rudolph Lewis,Speed Rusher,DE,29,67, 1 , 5.78 , 2.31 ,MIA
+65796,David Helgeson,Pass Rusher,DT,28,69, 1 , 6.53 , 2.61 ,MIA
+70910,Michael Bryant,Zone Coverage,CB,27,66, 1 , 3.94 , 1.58 ,MIA
+71201,Ketan Cheng,Receiving,TE,27,68, 1 , 6.17 , 2.47 ,MIA
+43,Marquis Rudolph,Receiving,TE,25,64, 1 , 6.82 , 2.73 ,MIN
+46,Dustin Woodson-Luster,Pass Blocking,C,25,66, 1 , 6.64 , 2.66 ,MIN
+409,DeAndre Carle,Speed Rusher,DE,25,66, 1 , 8.03 , 3.21 ,MIN
+1083,Adam Ijalana,Man Coverage,CB,25,69, 1 , 23.82 , 9.53 ,MIN
+1661,Adrian Daniels,Speed,WR,25,65, 1 , 6.35 , 2.54 ,MIN
+5238,Jared Simon,Pass Blocking,OG,24,59, 1 , 1.38 , 0.55 ,MIN
+48444,Michael Vega,Receiving,TE,32,73, 1 , 7.74 , 3.10 ,MIN
+60927,Darren Willard,Line Captain,C,29,80, 1 , 18.59 , 7.44 ,MIN
+65680,Rigoberto Pascual,Balanced,DT,28,67, 1 , 3.06 , 1.22 ,MIN
+66216,Joseph Willis,Zone Coverage,FS,28,67, 1 , 6.24 , 2.49 ,MIN
+66721,Joseph Jones,Route Runner,WR,28,67, 1 , 2.48 , 0.99 ,MIN
+24,Rashaan Lyons,Pocket,QB,25,70, 1 , 15.34 , 6.14 ,NE
+69,Quinterrius Parsons,Pass Blocking,C,25,64, 1 , 4.64 , 1.86 ,NE
+145,Bruce Puello,Zone Coverage,FS,25,71, 1 , 22.11 , 8.85 ,NE
+332,Ariel Calderon,Field General,ILB,25,65, 1 , 6.97 , 2.79 ,NE
+381,Vincent Allen,Possession,WR,25,64, 1 , 6.03 , 2.41 ,NE
+392,Darin Edwards,Nose Tackle,DT,25,65, 1 , 7.62 , 3.05 ,NE
+408,Fish Liggins,Receiving,RB,25,63, 1 , 8.50 , 3.40 ,NE
+574,Jimmy Aumont,Pass Blocking,OT,25,66, 1 , 7.46 , 2.98 ,NE
+715,Tye Gardewine,Zone Coverage,CB,25,65, 1 , 7.35 , 2.94 ,NE
+40289,Dustin Phillips,Zone Coverage,CB,33,68, 1 , 2.80 , 1.12 ,NE
+60145,Huey Ashe,Zone Coverage,CB,29,88, 1 , 32.21 , 12.88 ,NE
+66454,Vernon Bly,Scrambler,QB,28,67, 1 , 4.13 , 1.65 ,NE
+328,Duane DePaula,Balanced,DT,25,68, 1 , 13.96 , 5.58 ,NO
+443,Ryan Wilson,Receiving,RB,25,68, 1 , 15.57 , 6.23 ,NO
+35843,Erik Schaefer,Speed Rusher,DE,34,77, 1 , 6.69 , 2.68 ,NO
+40307,Preston Smith,Pass Blocking,OT,33,75, 1 , 9.76 , 3.90 ,NO
+41888,Christopher Richardson,Route Runner,WR,33,72, 1 , 3.48 , 1.39 ,NO
+64821,Kenneth Wheat,Man Coverage,CB,29,72, 1 , 9.33 , 3.73 ,NO
+65074,Arthur Medrano,Man Coverage,CB,28,85, 1 , 34.11 , 13.64 ,NO
+66047,Andres Smith,Vertical Threat,TE,28,66, 1 , 5.56 , 2.23 ,NO
+66238,Milton Evans,Power,RB,28,71, 1 , 12.46 , 4.98 ,NO
+70000,Christopher Demoss,Pass Rush,OLB,27,67, 1 , 6.46 , 2.58 ,NO
+73386,William Miller,Run Blocking,OG,27,68, 1 , 4.20 , 1.68 ,NO
+7,Jhan Peters,Power,RB,25,71, 1 , 15.57 , 6.23 ,NYJ
+68114,Marty Ferguson,Run Blocking,OG,28,71, 1 , 15.84 , 6.34 ,NYJ
+400,Bruce Allen,Balanced,OT,25,66, 1 , 7.46 , 2.98 ,NYG
+423,Matt Bass,Run Stopper,SS,25,74, 1 , 26.09 , 10.44 ,NYG
+5131,DeAngelo Bolles,Run Stopper,SS,24,57, 1 , 0.70 , 0.50 ,NYG
+5252,Andrew Cruceta,Field General,ILB,24,57, 1 , 0.70 , 0.50 ,NYG
+5429,Darrel Chapman,Run Blocking,OT,24,61, 1 , 4.48 , 1.79 ,NYG
+5979,Praise Simonson,Run Stopper,DE,24,59, 1 , 0.77 , 0.50 ,NYG
+6065,Jack Gonzalez,Speed,OLB,24,57, 1 , 0.70 , 0.50 ,NYG
+6179,Khris Davis,Pass Rush,OLB,24,56, 1 , 0.70 , 0.50 ,NYG
+6558,L.J. Campos,Balanced,DT,24,58, 1 , 0.77 , 0.50 ,NYG
+10213,Steven Pankey,Blocking,TE,23,51, 1 , 0.70 , 0.50 ,NYG
+10285,Coty Mager,Accuracy,P,23,52, 1 , 0.70 , 0.50 ,NYG
+10311,Dirk Grossman,Field General,ILB,23,56, 1 , 0.70 , 0.50 ,NYG
+10397,Luis Terdoslavich,Power,K,23,57, 1 , 0.70 , 0.50 ,NYG
+11159,Alex Layne,Pass Blocking,C,23,55, 1 , 0.70 , 0.50 ,NYG
+416,Jose Smith,Run Blocking,OG,23,53, 1 , 0.70 , 0.50 ,NYG
+11764,Antonio Campbell,Balanced,OT,23,52, 1 , 0.70 , 0.50 ,NYG
+12075,Justin Tupou,Ball Hawk,CB,23,55, 1 , 4.77 , 1.91 ,NYG
+50462,William Do,Balanced,OG,31,81, 1 , 17.22 , 6.89 ,NYG
+61884,Glenn Lloyd,Blocking,TE,29,76, 1 , 11.97 , 4.79 ,NYG
+62453,Michael Waldo,Run Stopper,DE,29,71, 1 , 9.91 , 3.96 ,NYG
+70045,Erik Arredondo,Run Stopper,ILB,27,72, 1 , 18.79 , 7.51 ,NYG
+12,Ryan Reininger,Run Stopper,SS,25,71, 1 , 7.74 , 3.10 ,PHI
+29,Mark Soto,Pass Rush,OLB,25,72, 1 , 28.09 , 11.24 ,PHI
+135,Jake Moore,Run Stopper,DE,25,64, 1 , 6.72 , 2.69 ,PHI
+159,Jake Miranda,Speed,ILB,25,61, 1 , 2.18 , 0.87 ,PHI
+414,David Thomas,Pass Blocking,OG,25,68, 1 , 18.48 , 7.39 ,PHI
+424,Lucas Mihalik,Speed,RB,25,62, 1 , 5.81 , 2.32 ,PHI
+30070,Kenneth Draper,Balanced,OT,35,74, 1 , 2.44 , 0.98 ,PHI
+36022,John Raigoza,Accuracy,K,34,75, 1 , 5.42 , 2.17 ,PHI
+55351,Emory Hightower,Pass Rush,OLB,30,80, 1 , 21.68 , 8.67 ,PHI
+61859,Jose Ramos,Accuracy,P,29,68, 1 , 1.54 , 0.62 ,PHI
+71330,Keith Weise,Pass Blocking,OT,27,64, 1 , 0.70 , 0.50 ,PHI
+71846,Jamie Gooley,Nose Tackle,DT,27,66, 1 , 3.23 , 1.29 ,PHI
+25,Alex Williams III,Possession,WR,25,74, 1 , 24.24 , 9.70 ,PIT
+335,Marcell Cain,Man Coverage,FS,25,65, 1 , 7.28 , 2.91 ,PIT
+441,Devontae McKinney,Receiving,TE,25,69, 1 , 14.78 , 5.91 ,PIT
+680,Kenny Fisher,Zone Coverage,CB,25,65, 1 , 7.35 , 2.94 ,PIT
+1620,Simeon Rea,Field General,ILB,25,63, 1 , 6.54 , 2.62 ,PIT
+5318,Eric Lundblade,Ball Hawk,SS,24,57, 1 , 0.70 , 0.50 ,PIT
+5365,Jerome Dyson,Scrambler,QB,24,56, 1 , 0.70 , 0.50 ,PIT
+5631,Jermey Longoria,Speed,RB,24,58, 1 , 1.96 , 0.78 ,PIT
+5955,Andrew Jack,Vertical Threat,TE,24,57, 1 , 0.99 , 0.50 ,PIT
+6193,William Bergstrom,Run Stopper,DE,24,58, 1 , 0.77 , 0.50 ,PIT
+6336,Darren Bjelica,Run Blocking,C,24,59, 1 , 1.38 , 0.55 ,PIT
+6588,Tyrice Matthews,Zone Coverage,CB,24,59, 1 , 4.57 , 1.83 ,PIT
+7499,Dan Clevinger,Run Stopper,DE,24,57, 1 , 0.77 , 0.50 ,PIT
+10066,David Hernandez,Man Coverage,FS,23,57, 1 , 2.50 , 1.00 ,PIT
+10394,Brian Holmes,Run Stopper,DE,23,56, 1 , 0.70 , 0.50 ,PIT
+55600,Robert Morris,Scrambler,QB,30,80, 1 , 40.64 , 16.26 ,PIT
+59374,Brad Canter,Balanced,P,30,65, 1 , 1.45 , 0.58 ,PIT
+60771,Segundo Garcia,Run Stopper,DE,29,67, 1 , 2.89 , 1.16 ,PIT
+62645,Robert Garcia,Zone Coverage,CB,29,67, 1 , 3.53 , 1.41 ,PIT
+62988,Richard Martin,Route Runner,WR,29,68, 1 , 4.88 , 1.95 ,PIT
+64005,Willy Jimenez,Pass Rush,OLB,29,70, 1 , 6.50 , 2.60 ,PIT
+66755,Garrick Wells,Pass Rush,OLB,28,69, 1 , 6.12 , 2.45 ,PIT
+70154,Michael Abukhdeir,Nose Tackle,DT,27,66, 1 , 3.23 , 1.29 ,PIT
+212,Genesis Pelham,Speed,WR,25,64, 1 , 6.03 , 2.41 ,SF
+249,Carlos Ramos,Speed,WR,25,71, 1 , 23.94 , 9.58 ,SF
+533,Zack Hicks,Run Blocking,OG,25,64, 1 , 4.64 , 1.86 ,SF
+5243,Giorgio Walford,Run Blocking,OT,24,60, 1 , 0.78 , 0.50 ,SF
+10423,Jerome Turner,Man Coverage,FS,23,58, 1 , 2.50 , 1.00 ,SF
+60660,Victor Gonzalez,Field General,ILB,29,65, 1 , 1.76 , 0.71 ,SF
+61669,Jason Holbrook,Receiving,TE,29,70, 1 , 5.70 , 2.28 ,SF
+62047,Everardo Gastelum,Zone Coverage,CB,29,65, 1 , 3.53 , 1.41 ,SF
+62640,Michael Hamman,Speed Rusher,DE,29,69, 1 , 5.78 , 2.31 ,SF
+62673,Steve Olson,Speed,ILB,29,65, 1 , 1.76 , 0.71 ,SF
+63312,Eric Pritchard,Balanced,DT,29,65, 1 , 2.89 , 1.16 ,SF
+63656,William Rojo,Ball Hawk,SS,29,68, 1 , 4.36 , 1.74 ,SF
+39,Yacksel Knox,Balanced,RB,25,65, 1 , 15.57 , 6.23 ,SEA
+89,Mike Hargreaves,Man Coverage,CB,25,68, 1 , 11.53 , 4.61 ,SEA
+99,DeMarcus Hagens,Balanced,OT,25,63, 1 , 7.46 , 2.98 ,SEA
+142,Godwin Johnson,Zone Coverage,FS,25,70, 1 , 22.11 , 8.85 ,SEA
+231,Kenneth Woods,Run Stopper,FS,25,58, 1 , 2.28 , 0.91 ,SEA
+438,Evan Cooper,Balanced,QB,25,57, 1 , 0.70 , 0.50 ,SEA
+1340,Jason Stites,Line Captain,C,25,66, 1 , 6.64 , 2.66 ,SEA
+1430,Rasul Miller,Ball Hawk,CB,25,67, 1 , 11.53 , 4.61 ,SEA
+1817,Christian Carter,Field General,ILB,25,69, 1 , 20.76 , 8.31 ,SEA
+40378,John Woodward,Balanced,RB,33,70, 1 , 1.56 , 0.62 ,SEA
+60553,Zachary Willwerth,Balanced,DE,29,70, 1 , 6.33 , 2.53 ,SEA
+62065,Gerald Brouillette,Pass Rush,OLB,29,63, 1 , 5.27 , 2.11 ,SEA
+62311,Brent Stover,Coverage,ILB,29,68, 1 , 5.64 , 2.26 ,SEA
+62737,Matthew Spada,Blocking,FB,29,63, 1 , 3.36 , 1.34 ,SEA
+62930,Steven Hughes,Run Blocking,OG,29,67, 1 , 3.76 , 1.50 ,SEA
+63654,Arthur Stuart,Balanced,DT,29,68, 1 , 5.44 , 2.18 ,SEA
+64814,Carlton Mathews,Run Blocking,OG,29,68, 1 , 3.76 , 1.50 ,SEA
+209,Luis Wong,Ball Hawk,CB,25,69, 1 , 23.82 , 9.53 ,TB
+394,Riley Okeke,Scrambler,QB,25,60, 1 , 1.42 , 0.57 ,TB
+442,Wil Carter,Possession,WR,25,66, 1 , 9.14 , 3.66 ,TB
+494,Mitch Rivers,Balanced,DE,25,62, 1 , 3.57 , 1.43 ,TB
+40852,Jarred Stone,Zone Coverage,FS,33,78, 1 , 8.42 , 3.37 ,TB
+53244,Matthew Zimmer,Balanced,DT,31,77, 1 , 15.61 , 6.24 ,TB
+3,Tommy Marimon,Speed Rusher,DE,25,69, 1 , 27.62 , 11.05 ,TEN
+128,Nick Mazzaro,Field General,QB,25,62, 1 , 4.57 , 1.83 ,TEN
+336,Kendal Shaffer,Ball Hawk,CB,25,66, 1 , 11.53 , 4.61 ,TEN
+1233,Josh Aquino,Possession,WR,25,65, 1 , 6.35 , 2.54 ,TEN
+5149,Steve Webb,Receiving,TE,24,57, 1 , 0.99 , 0.50 ,TEN
+5732,Adam Boyle,Balanced,C,24,60, 1 , 1.38 , 0.55 ,TEN
+5782,Matt Paddack,Blocking,TE,24,57, 1 , 0.99 , 0.50 ,TEN
+6000,Shane Armenteros,Speed,WR,24,60, 1 , 3.03 , 1.21 ,TEN
+35105,Edward Koch,Run Blocking,OT,34,76, 1 , 6.10 , 2.44 ,TEN
+35215,Raul Salazar,Run Blocking,C,34,74, 1 , 5.47 , 2.19 ,TEN
+36871,Gregory Charpentier,Balanced,DE,34,69, 1 , 1.81 , 0.73 ,TEN
+51540,Nicolas Conti,Run Blocking,OG,31,75, 1 , 15.31 , 6.12 ,TEN
+60519,Joseph Cale,Power,RB,29,77, 1 , 10.90 , 4.36 ,TEN
+61338,Raymond Anderson,Receiving,TE,29,61, 1 , 0.77 , 0.50 ,TEN
+62290,Thomas Pursell,Blocking,FB,29,61, 1 , 0.70 , 0.50 ,TEN
+63575,Todd Bengel,Man Coverage,CB,29,65, 1 , 3.53 , 1.41 ,TEN
+63692,Ronald Jones,Ball Hawk,CB,29,65, 1 , 3.53 , 1.41 ,TEN
+64314,Ricardo Gonzalez,Balanced,OG,29,65, 1 , 3.76 , 1.50 ,TEN
+64546,James Kenyon,Run Blocking,OT,29,69, 1 , 6.04 , 2.41 ,TEN
+65197,Wayne Reimer,Field General,QB,28,74, 1 , 13.88 , 5.55 ,TEN
+67217,Michael Vance,Speed,RB,28,62, 1 , 1.50 , 0.60 ,TEN
+70123,Brian Holder,Speed,ILB,27,70, 1 , 18.79 , 7.51 ,TEN
+70662,Jaime Perez,Receiving,TE,27,73, 1 , 13.38 , 5.35 ,TEN
+1,Angel Loe,Pass Blocking,OG,25,74, 1 , 22.96 , 9.19 ,WAS
+125,Phillip Calhoun,Balanced,DE,25,67, 1 , 12.24 , 4.90 ,WAS
+44252,Brian Rowland,Ball Hawk,CB,33,71, 1 , 4.39 , 1.76 ,WAS
+50295,Lucio Escarcega,Zone Coverage,FS,31,79, 1 , 18.48 , 7.39 ,WAS

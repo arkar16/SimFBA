@@ -24,6 +24,7 @@ type NFLRetiredPlayer struct {
 	NegotiationRound  uint
 	SigningRound      uint
 	MinimumValue      float64
+	AAV               float64
 	DraftedTeamID     uint
 	DraftedTeam       string
 	DraftedRound      uint

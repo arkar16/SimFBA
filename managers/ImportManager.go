@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
@@ -273,9 +274,11 @@ func ImportNFLDraftPicks() {
 
 func ImportMinimumFAValues() {
 	db := dbprovider.GetInstance().GetDB()
-	playerPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2024_Free_Agency_Expected_Values.csv"
+	playerPath := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2025_Free_Agency_Expected_Values.csv"
 
 	nflCSV := util.ReadCSV(playerPath)
+
+	nflPlayerMap := GetAllNFLPlayersMap()
 
 	for idx, row := range nflCSV {
 		if idx < 1 {
@@ -283,14 +286,18 @@ func ImportMinimumFAValues() {
 		}
 
 		playerID := row[0]
-		value := util.ConvertStringToFloat(row[5])
+		id := util.ConvertStringToInt(playerID)
+		valueStr := strings.TrimSpace(row[7])
+		aavStr := strings.TrimSpace(row[8])
+		value := util.ConvertStringToFloat(valueStr)
+		aav := util.ConvertStringToFloat(aavStr)
 
-		NFLPlayerRecord := GetNFLPlayerRecord(playerID)
+		NFLPlayerRecord := nflPlayerMap[uint(id)]
 		if NFLPlayerRecord.ID == 0 {
-			log.Fatalln("Something is wrong, this player was not uploaded.")
+			continue
 		}
 
-		NFLPlayerRecord.AssignMinimumValue(value)
+		NFLPlayerRecord.AssignMinimumValue(value, aav)
 
 		repository.SaveNFLPlayer(NFLPlayerRecord, db)
 	}

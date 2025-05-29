@@ -1,5 +1,10 @@
 package structs
 
+type JerseyDTO struct {
+	TeamID     string
+	JerseyType uint8
+}
+
 type BaseTeam struct {
 	TeamName          string
 	Mascot            string
@@ -23,6 +28,7 @@ type BaseTeam struct {
 	DefenseGrade      string
 	SpecialTeamsGrade string
 	PenaltyMarks      uint8
+	JerseyType        uint8
 }
 
 func (bt *BaseTeam) RemoveUserFromTeam() {
@@ -43,6 +49,10 @@ func (bt *BaseTeam) MarkTeamForPenalty() {
 
 func (bt *BaseTeam) ResetMarks() {
 	bt.PenaltyMarks = 0
+}
+
+func (bt *BaseTeam) AdjustJerseyType(jersey uint8) {
+	bt.JerseyType = jersey
 }
 
 func (bt *BaseTeam) AssignTeamGrades(ovr, off, def, st string) {

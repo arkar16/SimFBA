@@ -2152,3 +2152,23 @@ func AssignTeamGrades() {
 		repository.SaveNFLTeam(nflTeam, db)
 	}
 }
+
+func UpdateCFBJersey(jersey structs.JerseyDTO) {
+	db := dbprovider.GetInstance().GetDB()
+
+	team := GetTeamByTeamID(jersey.TeamID)
+
+	team.AdjustJerseyType(jersey.JerseyType)
+
+	repository.SaveCollegeTeamRecord(team, db)
+}
+
+func UpdateNFLJersey(jersey structs.JerseyDTO) {
+	db := dbprovider.GetInstance().GetDB()
+
+	team := GetNFLTeamByTeamID(jersey.TeamID)
+
+	team.AdjustJerseyType(jersey.JerseyType)
+
+	repository.SaveNFLTeamRecord(team, db)
+}

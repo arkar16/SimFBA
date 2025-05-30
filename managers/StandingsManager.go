@@ -84,7 +84,7 @@ func GetHistoricalRecordsByTeamID(TeamID string) models.TeamRecordResponse {
 	bowlLosses := 0
 
 	for _, game := range historicGames {
-		if !game.GameComplete || (game.GameComplete && game.SeasonID == timestamp.CollegeSeasonID && game.WeekID == timestamp.CollegeWeekID) {
+		if !game.GameComplete || (game.GameComplete && game.SeasonID == timestamp.CollegeSeasonID && game.WeekID == timestamp.CollegeWeekID) || game.IsSpringGame {
 			continue
 		}
 		winningSeason := game.SeasonID + 2020
@@ -165,7 +165,7 @@ func GetHistoricalNFLRecordsByTeamID(TeamID string) models.TeamRecordResponse {
 	bowlLosses := 0
 
 	for _, game := range historicGames {
-		if !game.GameComplete || (game.GameComplete && game.SeasonID == timestamp.CollegeSeasonID && game.WeekID == timestamp.CollegeWeekID) {
+		if !game.GameComplete || (game.GameComplete && game.SeasonID == timestamp.CollegeSeasonID && game.WeekID == timestamp.CollegeWeekID) || game.IsPreseasonGame {
 			continue
 		}
 		gameSeason := game.SeasonID + 2020

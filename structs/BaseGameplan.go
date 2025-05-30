@@ -125,9 +125,11 @@ func (bg *BaseGameplan) UpdateCollegeGameplan(dto CollegeGameplan) {
 	bg.PassQuick = dto.PassQuick
 	bg.PassShort = dto.PassShort
 	bg.PassLong = dto.PassLong
+	bg.PassDeep = dto.PassDeep
 	bg.PassScreen = dto.PassScreen
 	bg.PassPAShort = dto.PassPAShort
 	bg.PassPALong = dto.PassPALong
+	bg.PassPADeep = dto.PassPADeep
 	bg.LeftVsRight = dto.LeftVsRight
 	bg.ChoiceOutside = dto.ChoiceOutside
 	bg.ChoiceInside = dto.ChoiceInside
@@ -263,9 +265,11 @@ func (bg *BaseGameplan) UpdateNFLGameplan(dto NFLGameplan) {
 	bg.PassQuick = dto.PassQuick
 	bg.PassShort = dto.PassShort
 	bg.PassLong = dto.PassLong
+	bg.PassDeep = dto.PassDeep
 	bg.PassScreen = dto.PassScreen
 	bg.PassPAShort = dto.PassPAShort
 	bg.PassPALong = dto.PassPALong
+	bg.PassPADeep = dto.PassPADeep
 	bg.LeftVsRight = dto.LeftVsRight
 	bg.ChoiceOutside = dto.ChoiceOutside
 	bg.ChoiceInside = dto.ChoiceInside
@@ -403,9 +407,11 @@ type OffensiveFormation struct {
 	PassQuick                    int
 	PassShort                    int
 	PassLong                     int
+	PassDeep                     int
 	PassScreen                   int
 	PassPAShort                  int
 	PassPALong                   int
+	PassPADeep                   int
 	LeftVsRight                  int
 	ChoiceOutside                int
 	ChoiceInside                 int
@@ -521,9 +527,11 @@ func (bg *BaseGameplan) UpdateCollegeGameplanTEST(dto CollegeGameplanTEST) {
 	bg.PassQuick = dto.PassQuick
 	bg.PassShort = dto.PassShort
 	bg.PassLong = dto.PassLong
+	bg.PassDeep = dto.PassDeep
 	bg.PassScreen = dto.PassScreen
 	bg.PassPAShort = dto.PassPAShort
 	bg.PassPALong = dto.PassPALong
+	bg.PassPADeep = dto.PassPADeep
 	bg.LeftVsRight = dto.LeftVsRight
 	bg.ChoiceOutside = dto.ChoiceOutside
 	bg.ChoiceInside = dto.ChoiceInside

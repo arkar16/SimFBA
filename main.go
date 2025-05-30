@@ -304,6 +304,8 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/teams/nfl/team/{teamID}/", controller.GetNFLTeamByTeamID).Methods("GET")
 	apiRouter.HandleFunc("/teams/college/conference/{conferenceID}/", controller.GetTeamsByConferenceID).Methods("GET")
 	apiRouter.HandleFunc("/teams/college/division/{divisionID}/", controller.GetTeamsByDivisionID).Methods("GET")
+	apiRouter.HandleFunc("/teams/college/update/jersey/", controller.UpdateCFBJersey).Methods("POST")
+	apiRouter.HandleFunc("/teams/nfl/update/jersey/", controller.UpdateNFLJersey).Methods("POST")
 
 	// ENGINE CONTROLS
 	apiRouter.HandleFunc("/teams/college/sim/{gameID}/", controller.GetHomeAndAwayTeamData).Methods("GET")

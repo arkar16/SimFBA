@@ -105,7 +105,7 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		allProTeams = GetAllNFLTeams()
 	}()
 
-	if len(collegeID) > 0 {
+	if len(collegeID) > 0 && collegeID != "0" {
 		wg.Add(5)
 		go func() {
 			defer wg.Done()
@@ -140,7 +140,7 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 
 		}()
 	}
-	if len(proID) > 0 {
+	if len(proID) > 0 && proID != "0" {
 		wg.Add(3)
 		go func() {
 			defer wg.Done()
@@ -215,7 +215,7 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 	_, gtStr := ts.GetNFLCurrentGameType()
 	seasonID := strconv.Itoa(int(ts.NFLSeasonID))
 	// Start concurrent queries
-	if len(collegeID) > 0 {
+	if len(collegeID) > 0 && collegeID != "0" {
 		wg.Add(4)
 		go func() {
 			defer wg.Done()
@@ -244,7 +244,7 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 		log.Println("Initiated all College data queries.")
 
 	}
-	if len(proID) > 0 {
+	if len(proID) > 0 && proID != "0" {
 		nflTeamID := util.ConvertStringToInt(proID)
 		wg.Add(4)
 		go func() {
@@ -323,7 +323,7 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		waiverOffers     []structs.NFLWaiverOffer
 	)
 
-	if len(collegeID) > 0 {
+	if len(collegeID) > 0 && collegeID != "0" {
 		wg.Add(2)
 		go func() {
 			defer wg.Done()
@@ -337,7 +337,7 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		}()
 	}
 
-	if len(proID) > 0 {
+	if len(proID) > 0 && proID != "0" {
 		wg.Add(6)
 
 		go func() {

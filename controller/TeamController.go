@@ -2,9 +2,11 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/CalebRose/SimFBA/managers"
+	"github.com/CalebRose/SimFBA/structs"
 	"github.com/gorilla/mux"
 )
 
@@ -130,4 +132,34 @@ func GetNFLDashboardByTeamID(w http.ResponseWriter, r *http.Request) {
 
 func AssignCFBTeamGrades(w http.ResponseWriter, r *http.Request) {
 	managers.AssignTeamGrades()
+}
+
+func UpdateCFBJersey(w http.ResponseWriter, r *http.Request) {
+	// Create DTO for College Recruit
+	var jerseyDTO structs.JerseyDTO
+	err := json.NewDecoder(r.Body).Decode(&jerseyDTO)
+	if err != nil {
+		fmt.Println("CANNOT DECODE BODY!")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.UpdateCFBJersey(jerseyDTO)
+
+	fmt.Println(w, "Game Jersey Updated")
+}
+
+func UpdateNFLJersey(w http.ResponseWriter, r *http.Request) {
+	// Create DTO for College Recruit
+	var jerseyDTO structs.JerseyDTO
+	err := json.NewDecoder(r.Body).Decode(&jerseyDTO)
+	if err != nil {
+		fmt.Println("CANNOT DECODE BODY!")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	managers.UpdateNFLJersey(jerseyDTO)
+
+	fmt.Println(w, "Game Jersey Updated")
 }

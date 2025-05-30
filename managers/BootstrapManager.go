@@ -59,6 +59,31 @@ type BootstrapDataThree struct {
 	ExtensionMap         map[uint]structs.NFLExtensionOffer
 }
 
+func GetTeamsBootstrap() BootstrapData {
+	var wg sync.WaitGroup
+
+	var (
+		allCollegeTeams []structs.CollegeTeam
+		allProTeams     []structs.NFLTeam
+	)
+
+	wg.Add(2)
+	go func() {
+		defer wg.Done()
+		allCollegeTeams = GetAllCollegeTeams()
+	}()
+	go func() {
+		defer wg.Done()
+		allProTeams = GetAllNFLTeams()
+	}()
+	wg.Wait()
+
+	return BootstrapData{
+		AllCollegeTeams: allCollegeTeams,
+		AllProTeams:     allProTeams,
+	}
+}
+
 func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 	var wg sync.WaitGroup
 	var mu sync.Mutex
@@ -67,7 +92,6 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 	var (
 		collegeTeam           structs.CollegeTeam
 		collegePlayers        []structs.CollegePlayer
-		allCollegeTeams       []structs.CollegeTeam
 		collegePlayerMap      map[uint][]structs.CollegePlayer
 		portalPlayers         []structs.CollegePlayer
 		injuredCollegePlayers []structs.CollegePlayer
@@ -83,7 +107,6 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 	// Professional Data
 	var (
 		proTeam          structs.NFLTeam
-		allProTeams      []structs.NFLTeam
 		proNotifications []structs.Notification
 		proGameplan      structs.NFLGameplan
 		proDepthChart    structs.NFLDepthChart
@@ -95,15 +118,6 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 	seasonID := strconv.Itoa(int(ts.CollegeSeasonID))
 
 	// Start concurrent queries
-	wg.Add(2)
-	go func() {
-		defer wg.Done()
-		allCollegeTeams = GetAllCollegeTeams()
-	}()
-	go func() {
-		defer wg.Done()
-		allProTeams = GetAllNFLTeams()
-	}()
 
 	if len(collegeID) > 0 && collegeID != "0" {
 		wg.Add(5)
@@ -166,7 +180,6 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 	wg.Wait()
 	return BootstrapData{
 		CollegeTeam:          collegeTeam,
-		AllCollegeTeams:      allCollegeTeams,
 		CollegeRosterMap:     collegePlayerMap,
 		CollegeInjuryReport:  injuredCollegePlayers,
 		CollegeNotifications: collegeNotifications,
@@ -174,7 +187,6 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		CollegeDepthChart:    collegeDepthChart,
 		PortalPlayers:        portalPlayers,
 		ProTeam:              proTeam,
-		AllProTeams:          allProTeams,
 		ProNotifications:     proNotifications,
 		NFLGameplan:          proGameplan,
 		NFLDepthChart:        proDepthChart,

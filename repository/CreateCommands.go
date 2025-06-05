@@ -359,3 +359,33 @@ func CreateNFLContractRecordsBatch(db *gorm.DB, gps []structs.NFLContract, batch
 	}
 	return nil
 }
+
+func CreateHistoricCFBRecordsBatch(db *gorm.DB, gps []structs.HistoricCollegePlayer, batchSize int) error {
+	total := len(gps)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(gps[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateCFBPlayerSeasonStatsRecordsBatch(db *gorm.DB, gps []structs.CollegePlayerSeasonStats, batchSize int) error {
+	total := len(gps)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(gps[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}

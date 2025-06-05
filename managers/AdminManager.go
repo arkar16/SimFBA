@@ -282,14 +282,16 @@ func SyncTimeslot(timeslot string) {
 							stadiumID = int(awayTeam.StadiumID)
 							isDomed = stadiumRecord.IsDomed
 						}
-						nextGame.AddLocation(stadiumID, stadium, city, state, isDomed)
+						if game.NextGameHOA == "H" && (nextGame.City == "" || nextGame.City == "N/A") {
+							nextGame.AddLocation(stadiumID, stadium, city, state, isDomed)
+						}
 					}
 
 					// Updating matchup for playoff game!
-					db.Save(&nextGame)
+					repository.SaveCFBGameRecord(nextGame, db)
 				}
-				db.Save(&homeTeamStandings)
-				db.Save(&awayTeamStandings)
+				repository.SaveCFBStandingsRecord(homeTeamStandings, db)
+				repository.SaveCFBStandingsRecord(awayTeamStandings, db)
 			}
 			repository.SaveCFBTeamSeasonStats(homeTeamSeasonStats, db)
 			repository.SaveCFBTeamSeasonStats(awayTeamSeasonStats, db)
@@ -512,13 +514,13 @@ func SyncTimeslot(timeslot string) {
 					}
 
 					// Updating matchup for playoff game!
-					db.Save(&nextGame)
+					repository.SaveNFLGameRecord(nextGame, db)
 				}
 
 				repository.SaveNFLTeamSeasonStats(homeTeamSeasonStats, db)
 				repository.SaveNFLTeamSeasonStats(awayTeamSeasonStats, db)
-				db.Save(&homeTeamStandings)
-				db.Save(&awayTeamStandings)
+				repository.SaveNFLStandingsRecord(homeTeamStandings, db)
+				repository.SaveNFLStandingsRecord(awayTeamStandings, db)
 			}
 		}
 

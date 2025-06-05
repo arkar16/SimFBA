@@ -1,0 +1,31 @@
+GameID,Season,Week,Home Team,Away Team,Conference Game,Division Game,Neutral Site,Conference Champ,Bowl Game,Playoff,National Champ,home bye,prev bye,Listed Coach,Other Coach,TimeSlot,Stadium,City,State,Domed Stadium,GameTitle,Info,NextGame,NextGameHOA
+5321,2025,15,FSU,MIAF,1,0,0,1,0,0,0,0,0,Kirby,Dearden,Saturday Morning,Bobby Bowden Field at Doak S. Campbell Stadium,Tallahassee,FL,0,2025 ACC Semifinals,,5323,H
+5322,2025,15,CUSE,UVA,1,0,0,1,0,0,0,0,0,taffyowner,Wahoo,Saturday Afternoon,Carrier Dome,Syracuse,NY,1,2025 ACC Semifinals,,5323,A
+5323,2025,16,,,1,0,1,1,0,0,0,0,0,#N/A,#N/A,Saturday Afternoon,Bank of America Stadium,Charlotte,NC,0,2025 ACC Championship,,0,
+5324,2025,15,UTAH,UHOU,1,0,0,1,0,0,0,0,0,SageBow,mahrowkeen,Saturday Morning,Rice-Eccles Stadium,Salt Lake City,UT,0,2025 Big 12 Semifinals,,5326,H
+5325,2025,15,WVU,BAYL,1,0,0,1,0,0,0,0,0,smackemz3,Vivid,Saturday Afternoon,Mountaineer Field at Milan Puskar Stadium,Morgantown,WV,0,2025 Big 12 Semifinals,,5326,A
+5326,2025,16,,,1,0,1,1,0,0,0,0,0,#N/A,#N/A,Saturday Morning,AT&T Stadium,Arlington,TX,1,2025 Big 12 Championship,,0,
+5327,2025,15,PNST,MINN,1,0,0,1,0,0,0,0,0,Rocketcan,Minnow,Saturday Morning,Beaver Stadium,University Park,PA,0,2025 Big Ten Semifinals,,5329,H
+5328,2025,15,WISC,IND,1,0,0,1,0,0,0,0,0,JC,Piercewise1,Saturday Afternoon,Camp Randall Stadium,Madison,WI,0,2025 Big Ten Semifinals,,5329,A
+5329,2025,16,,,1,0,1,1,0,0,0,0,0,#N/A,#N/A,Saturday Evening,Lucas Oil Stadium,Indianapolis,IN,0,2025 Big Ten Championship,,0,
+5330,2025,15,TENN,ARK,1,0,0,1,0,0,0,0,0,tsweezy,kwheeler,Saturday Afternoon,Neyland Stadium,Knoxville,TN,0,2025 SEC Semifinals,,5332,H
+5331,2025,15,LSU,UGA,1,0,0,1,0,0,0,0,0,Jumbo,Sarge,Saturday Evening,Tiger Stadium,Baton Rouge,LA,0,2025 SEC Semifinals,,5332,A
+5332,2025,16,,,1,0,1,1,0,0,0,0,0,#N/A,#N/A,Saturday Evening,Mercedes-Benz Stadium,Atlanta,GA,1,2025 SEC Championship,,0,
+5333,2025,15,TULS,TLNE,1,0,0,1,0,0,0,0,0,acewulf,kgreene829,Thursday Night,Skelly Field at H. A. Chapman Stadium,Tulsa,OK,0,2025 American Semifinals,,5335,H
+5334,2025,15,UNT,NAVY,1,0,0,1,0,0,0,0,0,AI,Syndakyt,Friday Night,Apogee Stadium,Denton,TX,0,2025 American Semifinals,,5335,A
+5335,2025,16,,,1,0,1,1,0,0,0,0,0,#N/A,#N/A,Saturday Afternoon,#N/A,#N/A,#N/A,#N/A,2025 American Championship,,0,
+5336,2025,15,WMU,TLDO,1,0,0,1,0,0,0,0,0,Jieret,ArmTheSharks,Thursday Night,Waldo Stadium,Kalamazoo,MI,0,2025 MAC Semifinals,,5338,H
+5337,2025,15,BGSU,BALL,1,0,0,1,0,0,0,0,0,PoopyRhinoPickle,npklemm,Friday Night,Doyt L. Perry Stadium,Bowling Green,OH,0,2025 MAC Semifinals,,5338,A
+5338,2025,16,,,1,0,1,1,0,0,0,0,0,#N/A,#N/A,Saturday Morning,Ford Field,Detroit,MI,1,2025 MAC Championship,,0,
+5339,2025,15,NMSU,SHSU,1,0,0,1,0,0,0,0,0,Rabbit,AI,Thursday Night,Aggie Memorial Stadium,Las Cruces,NM,0,2025 C-USA Semifinals,,5341,H
+5340,2025,15,UTEP,MOST,1,0,0,1,0,0,0,0,0,AI,AI,Friday Night,Sun Bowl Stadium,El Paso,TX,0,2025 C-USA Semifinals,,5341,A
+5341,2025,16,,,1,0,1,1,0,0,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,2025 C-USA Championship,,0,
+5342,2025,15,UNLV,CSU,1,0,0,1,0,0,0,0,0,rabidsnowman,Bellwood,Friday Night,Allegient Stadium,Las Vegas,NV,0,2025 Mountain West Semifinals,,5344,H
+5343,2025,15,UNM,USAF,1,0,0,1,0,0,0,0,0,DarthJarJar,valentino,Saturday Morning,Dreamstyle Stadium,Albuquerque,NM,0,2025 Mountain West Semifinals,,5344,A
+5344,2025,16,,,1,0,1,1,0,0,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,0,2025 Mountain West Championship,,0,
+5345,2025,15,MRSH,JMU,1,0,0,1,0,0,0,0,0,Newkbomb,AI,Friday Night,Joan C. Edwards Stadium,Huntington,WV,0,2025 Sunbelt Semifinals,,5347,H
+5346,2025,15,TXST,USM,1,0,0,1,0,0,0,0,0,checkman,AI,Saturday Morning,Jim Wacker Field at Bobcat Stadium,San Marcos,TX,0,2025 Sunbelt Semifinals,,5347,A
+5347,2025,16,,,1,0,1,1,0,0,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,2025 Sunbelt Championship,,0,
+5348,2025,15,ALCN,GRAM,0,0,0,1,0,0,0,0,0,AI,AI,Thursday Night,Spinks-Casem Stadium,Lorman,MS,0,2025 SWAC Semifinals,,5350,H
+5349,2025,15,SOU,FAMU,0,0,0,1,0,0,0,0,0,AI,AI,Thursday Night,A.W. Mumford Stadium,Baton Rouge,LA,0,2025 SWAC Semifinals,,5350,A
+5350,2025,16,,,0,0,1,1,0,0,0,0,0,#N/A,#N/A,Friday Night,Mississippi Veterans Memorial Stadium,Jackson,MS,0,2025 SWAC Championship,,0,

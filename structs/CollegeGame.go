@@ -50,6 +50,7 @@ type CollegeGame struct {
 	NextGameHOA              string
 	HomePreviousBye          bool
 	AwayPreviousBye          bool
+	ConferenceID             uint
 }
 
 func (cg *CollegeGame) UpdateScore(HomeScore int, AwayScore int) {

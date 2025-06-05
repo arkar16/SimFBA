@@ -135,6 +135,7 @@ func (r *RecruitingTeamProfile) ApplyCaughtCheating() {
 func (r *RecruitingTeamProfile) ActivateAI() {
 	r.IsAI = true
 	r.IsUserTeam = false
+	r.AIAutoOfferscholarships = true
 }
 
 func (r *RecruitingTeamProfile) DeactivateAI() {

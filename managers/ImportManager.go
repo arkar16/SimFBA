@@ -560,7 +560,7 @@ func ImportUDFAs() {
 func ImportCFBGames() {
 	db := dbprovider.GetInstance().GetDB()
 
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2025\\2025_cfb_games.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2025\\2025_cfb_games_conf.csv"
 
 	gamesCSV := util.ReadCSV(path)
 
@@ -599,8 +599,12 @@ func ImportCFBGames() {
 		state := row[19]
 		isDomed := util.ConvertStringToBool(row[20])
 		// Need to check for if a game is in a domed stadium or not
-		isConferenceGame := util.ConvertStringToBool(row[5])
-		isDivisionGame := util.ConvertStringToBool(row[6])
+		isConferenceGame := ht.ConferenceID == at.ConferenceID
+		isDivisionGame := isConferenceGame && ht.DivisionID == at.DivisionID && ht.DivisionID > 0
+		conferenceID := 0
+		if isConferenceGame {
+			conferenceID = ht.ConferenceID
+		}
 		isNeutralSite := util.ConvertStringToBool(row[7])
 		isConferenceChampionship := util.ConvertStringToBool(row[8])
 		isBowlGame := util.ConvertStringToBool(row[9])
@@ -641,10 +645,12 @@ func ImportCFBGames() {
 			NextGameHOA:              nextGameHOA,
 			HomePreviousBye:          isHomePrevBye,
 			AwayPreviousBye:          isAwayPrevBye,
+			ConferenceID:             uint(conferenceID),
 		}
 
 		db.Create(&game)
 	}
+	GenerateWeatherForGames()
 }
 
 func ImportNFLGames() {
@@ -1193,4 +1199,248 @@ func ImportCFBRivals() {
 
 		db.Create(&rivalry)
 	}
+}
+
+func MigrateRetiredAndNFLPlayersToHistoricCFBTable() {
+	db := dbprovider.GetInstance().GetDB()
+
+	historicPlayersToUpload := []structs.HistoricCollegePlayer{}
+
+	historicPlayers := GetAllHistoricCollegePlayers()
+	collegePlayers := []structs.CollegePlayer{}
+	for _, player := range historicPlayers {
+		collegePlayerResponse := structs.CollegePlayer{
+			Model:      player.Model,
+			BasePlayer: player.BasePlayer,
+			TeamID:     player.TeamID,
+			TeamAbbr:   player.TeamAbbr,
+			City:       player.City,
+			State:      player.State,
+			Year:       player.Year,
+			IsRedshirt: player.IsRedshirt,
+		}
+		collegePlayers = append(collegePlayers, collegePlayerResponse)
+	}
+	collegePlayerMap := MakeCollegePlayerMap(collegePlayers)
+
+	nflPlayers := GetAllNFLPlayers()
+	retiredPlayers := GetAllRetiredPlayers()
+
+	for _, p := range nflPlayers {
+		historicRecord := collegePlayerMap[p.ID]
+
+		if historicRecord.ID > 0 {
+			continue
+		}
+
+		playerRecord := structs.HistoricCollegePlayer{
+			Model:        p.Model,
+			BasePlayer:   p.BasePlayer,
+			TeamID:       int(p.CollegeID),
+			TeamAbbr:     p.College,
+			HasGraduated: true,
+		}
+
+		historicPlayersToUpload = append(historicPlayersToUpload, playerRecord)
+	}
+
+	for _, p := range retiredPlayers {
+		historicRecord := collegePlayerMap[p.ID]
+
+		if historicRecord.ID > 0 {
+			continue
+		}
+
+		playerRecord := structs.HistoricCollegePlayer{
+			Model:        p.Model,
+			BasePlayer:   p.BasePlayer,
+			TeamID:       int(p.CollegeID),
+			TeamAbbr:     p.College,
+			HasGraduated: true,
+		}
+
+		historicPlayersToUpload = append(historicPlayersToUpload, playerRecord)
+	}
+
+	repository.CreateHistoricCFBRecordsBatch(db, historicPlayersToUpload, 200)
+
+}
+
+func ImportCFB2021PlayerStats() {
+	db := dbprovider.GetInstance().GetDB()
+
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2021\\2021_cfb_player_stats.csv"
+
+	statsCSV := util.ReadCSV(path)
+
+	collegePlayers := GetAllCollegePlayers()
+	historicPlayers := GetAllHistoricCollegePlayers()
+	for _, player := range historicPlayers {
+		collegePlayerResponse := structs.CollegePlayer{
+			Model:      player.Model,
+			BasePlayer: player.BasePlayer,
+			TeamID:     player.TeamID,
+			TeamAbbr:   player.TeamAbbr,
+			City:       player.City,
+			State:      player.State,
+			Year:       player.Year,
+			IsRedshirt: player.IsRedshirt,
+		}
+		collegePlayers = append(collegePlayers, collegePlayerResponse)
+	}
+	collegePlayerMap := make(map[string]structs.CollegePlayer)
+
+	for _, p := range collegePlayers {
+		key := p.Position + p.Archetype + p.FirstName + p.LastName
+		collegePlayerMap[key] = p
+	}
+
+	seasonStats := []structs.CollegePlayerSeasonStats{}
+
+	for idx, row := range statsCSV {
+		if idx == 0 {
+			continue
+		}
+
+		pos := row[51]
+		arch := row[52]
+		fn := row[53]
+		ln := row[54]
+		key := pos + arch + fn + ln
+		player := collegePlayerMap[key]
+		id := player.ID
+		if player.ID == 0 {
+			continue
+		}
+		if player.ID == 10 {
+			fmt.Println("MATT HOWARD??")
+		}
+		passAttempts := util.ConvertStringToInt(row[1])
+		passCompletions := util.ConvertStringToInt(row[2])
+		passYards := util.ConvertStringToInt(row[3])
+		passTDs := util.ConvertStringToInt(row[4])
+		interceptionsthrown := util.ConvertStringToInt(row[5])
+		longestPass := util.ConvertStringToInt(row[6])
+		sacksTaken := util.ConvertStringToInt(row[7])
+		rushAttempts := util.ConvertStringToInt(row[8])
+		rushYards := util.ConvertStringToInt(row[9])
+		rushTDs := util.ConvertStringToInt(row[10])
+		fumbles := util.ConvertStringToInt(row[11])
+		longestRush := util.ConvertStringToInt(row[12])
+		targets := util.ConvertStringToInt(row[13])
+		catches := util.ConvertStringToInt(row[14])
+		receivingYards := util.ConvertStringToInt(row[15])
+		receivingTDs := util.ConvertStringToInt(row[16])
+		longestCatch := util.ConvertStringToInt(row[17])
+		soloTackles := util.ConvertStringToInt(row[18])
+		assTackles := util.ConvertStringToInt(row[19])
+		tacklesForLoss := util.ConvertStringToInt(row[20])
+		sacksMade := util.ConvertStringToInt(row[21])
+		forcedFumbles := util.ConvertStringToInt(row[22])
+		fumblesRecovered := util.ConvertStringToInt(row[23])
+		passDeflections := util.ConvertStringToInt(row[24])
+		intsCaught := util.ConvertStringToInt(row[25])
+		safeties := util.ConvertStringToInt(row[26])
+		defensiveTDs := util.ConvertStringToInt(row[27])
+		fgMade := util.ConvertStringToInt(row[28])
+		fgAttempts := util.ConvertStringToInt(row[29])
+		longestFG := util.ConvertStringToInt(row[30])
+		xpMade := util.ConvertStringToInt(row[31])
+		xpAttempts := util.ConvertStringToInt(row[32])
+		kickoffTBs := util.ConvertStringToInt(row[33])
+		punts := util.ConvertStringToInt(row[34])
+		puntTBs := util.ConvertStringToInt(row[35])
+		puntsInside20 := util.ConvertStringToInt(row[36])
+		kickReturns := util.ConvertStringToInt(row[37])
+		kickReturnYards := util.ConvertStringToInt(row[38])
+		kickReturnTDs := util.ConvertStringToInt(row[39])
+		puntReturns := util.ConvertStringToInt(row[40])
+		puntReturnYards := util.ConvertStringToInt(row[41])
+		puntReturnTDs := util.ConvertStringToInt(row[43])
+		stSoloTackles := util.ConvertStringToInt(row[44])
+		stassTackles := util.ConvertStringToInt(row[45])
+		puntsblocked := util.ConvertStringToInt(row[46])
+		fgBlocked := util.ConvertStringToInt(row[47])
+		snaps := util.ConvertStringToInt(row[48])
+		gamesPlayed := util.ConvertStringToInt(row[49])
+		yearStr := row[50]
+		year := 1
+		if yearStr == "Sr." {
+			year = 4
+		} else if yearStr == "Jr." {
+			year = 3
+		} else if yearStr == "So." {
+			year = 2
+		}
+
+		seasonStat := structs.CollegePlayerSeasonStats{
+			CollegePlayerID: uint(id),
+			SeasonID:        1,
+			Year:            uint(year),
+			IsRedshirt:      false,
+			GamesPlayed:     gamesPlayed,
+			Tackles:         float64(soloTackles) + float64(stSoloTackles) + (float64(assTackles) * 0.5) + (float64(stassTackles) * 0.5),
+			RushingAvg:      (float64(rushYards) / float64(rushAttempts)),
+			PassingAvg:      float64(passYards) / float64(passCompletions),
+			ReceivingAvg:    float64(receivingYards) / float64(catches),
+			Completion:      float64(passCompletions) / float64(passAttempts),
+			BasePlayerStats: structs.BasePlayerStats{
+				PassingYards:         passYards,
+				PassAttempts:         passAttempts,
+				PassCompletions:      passCompletions,
+				PassingTDs:           passTDs,
+				Interceptions:        interceptionsthrown,
+				LongestPass:          longestPass,
+				Sacks:                sacksTaken,
+				RushAttempts:         rushAttempts,
+				RushingTDs:           rushTDs,
+				Fumbles:              fumbles,
+				LongestRush:          longestRush,
+				Targets:              targets,
+				Catches:              catches,
+				ReceivingYards:       receivingYards,
+				ReceivingTDs:         receivingTDs,
+				LongestReception:     longestCatch,
+				SoloTackles:          float64(soloTackles),
+				AssistedTackles:      float64(assTackles),
+				TacklesForLoss:       float64(tacklesForLoss),
+				SacksMade:            float64(sacksMade),
+				ForcedFumbles:        forcedFumbles,
+				RecoveredFumbles:     fumblesRecovered,
+				PassDeflections:      passDeflections,
+				InterceptionsCaught:  intsCaught,
+				Safeties:             safeties,
+				DefensiveTDs:         defensiveTDs,
+				FGMade:               fgMade,
+				FGAttempts:           fgAttempts,
+				LongestFG:            longestFG,
+				ExtraPointsMade:      xpMade,
+				ExtraPointsAttempted: xpAttempts,
+				KickoffTouchbacks:    kickoffTBs,
+				Punts:                punts,
+				GrossPuntDistance:    0,
+				NetPuntDistance:      0,
+				PuntTouchbacks:       puntTBs,
+				PuntsInside20:        puntsInside20,
+				KickReturns:          kickReturns,
+				KickReturnTDs:        kickReturnTDs,
+				KickReturnYards:      kickReturnYards,
+				STSoloTackles:        float64(stSoloTackles),
+				STAssistedTackles:    float64(stassTackles),
+				PuntsBlocked:         puntsblocked,
+				FGBlocked:            fgBlocked,
+				Snaps:                snaps,
+				GameType:             2,
+				PuntReturns:          puntReturns,
+				PuntReturnYards:      puntReturnYards,
+				PuntReturnTDs:        puntReturnTDs,
+				TeamID:               uint(player.TeamID),
+				Team:                 player.TeamAbbr,
+			},
+		}
+
+		seasonStats = append(seasonStats, seasonStat)
+	}
+
+	repository.CreateCFBPlayerSeasonStatsRecordsBatch(db, seasonStats, 200)
 }

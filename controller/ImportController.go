@@ -92,3 +92,8 @@ func FixSpendingCount(w http.ResponseWriter, r *http.Request) {
 func ImportCFBRivals(w http.ResponseWriter, r *http.Request) {
 	managers.ImportCFBRivals()
 }
+
+func Import2021CFBStats(w http.ResponseWriter, r *http.Request) {
+	// managers.MigrateRetiredAndNFLPlayersToHistoricCFBTable()
+	managers.ImportCFB2021PlayerStats()
+}

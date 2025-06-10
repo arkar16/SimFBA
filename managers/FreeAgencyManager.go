@@ -687,7 +687,12 @@ func SyncExtensionOffers() {
 					} else if !validation && player.FreeAgency != "Average" {
 						minimumValueMultiplier = 1.15
 					}
-					percentage := ((e.ContractValue / (min * minimumValueMultiplier)) * 100)
+					minValPercentage := ((e.ContractValue / (min * minimumValueMultiplier)) * 100)
+					aavPercentage := ((e.AAV / (player.AAV * minimumValueMultiplier)) * 100)
+					percentage := minValPercentage
+					if aavPercentage > minValPercentage {
+						percentage = aavPercentage
+					}
 					odds := getExtensionPercentageOdds(percentage)
 					// Run Check on the Extension
 

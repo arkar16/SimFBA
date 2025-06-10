@@ -18,6 +18,7 @@ type FreeAgencyOfferDTO struct {
 	Y4Bonus        float64
 	Y5BaseSalary   float64
 	Y5Bonus        float64
+	AAV            float64
 }
 
 type FreeAgencyOffer struct {
@@ -40,6 +41,7 @@ type FreeAgencyOffer struct {
 	TotalSalary     float64
 	ContractValue   float64
 	BonusPercentage float64
+	AAV             float64
 	IsActive        bool
 }
 
@@ -117,6 +119,7 @@ type NFLExtensionOffer struct {
 	TotalSalary     float64
 	ContractValue   float64
 	BonusPercentage float64
+	AAV             float64
 	Rejections      int
 	IsAccepted      bool
 	IsActive        bool
@@ -143,6 +146,7 @@ func (f *NFLExtensionOffer) CalculateOffer(offer FreeAgencyOfferDTO) {
 	f.Y5BaseSalary = offer.Y5BaseSalary
 	f.Y5Bonus = offer.Y5Bonus
 	f.IsActive = true
+	f.AAV = offer.AAV
 
 	// Calculate Value
 	y1SalaryVal := f.Y1BaseSalary * 0.8

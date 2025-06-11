@@ -338,7 +338,7 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 	)
 
 	if len(collegeID) > 0 && collegeID != "0" {
-		wg.Add(2)
+		wg.Add(3)
 		go func() {
 			defer wg.Done()
 			recruits = GetAllRecruits()

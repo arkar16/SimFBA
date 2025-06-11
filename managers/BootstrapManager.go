@@ -50,6 +50,7 @@ type BootstrapDataTwo struct {
 
 type BootstrapDataThree struct {
 	Recruits             []structs.Croot
+	RecruitProfiles      []structs.RecruitPlayerProfile
 	CollegeDepthChartMap map[uint]structs.CollegeTeamDepthChart
 	FreeAgentOffers      []structs.FreeAgencyOffer
 	WaiverWireOffers     []structs.NFLWaiverOffer
@@ -322,6 +323,7 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 	// College Data
 	var (
 		recruits             []structs.Croot
+		recruitProfiles      []structs.RecruitPlayerProfile
 		collegeDepthChartMap map[uint]structs.CollegeTeamDepthChart
 	)
 
@@ -346,6 +348,10 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 			defer wg.Done()
 			collegeDCs := GetAllCollegeDepthcharts()
 			collegeDepthChartMap = MakeCollegeDepthChartMap(collegeDCs)
+		}()
+		go func() {
+			defer wg.Done()
+			recruitProfiles = repository.FindRecruitPlayerProfileRecords(collegeID, "", false, false, true)
 		}()
 	}
 
@@ -389,6 +395,7 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 	return BootstrapDataThree{
 		CollegeDepthChartMap: collegeDepthChartMap,
 		Recruits:             recruits,
+		RecruitProfiles:      recruitProfiles,
 		FreeAgentOffers:      freeAgentoffers,
 		WaiverWireOffers:     waiverOffers,
 		ProNews:              proNews,

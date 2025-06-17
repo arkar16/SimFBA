@@ -4177,6 +4177,16 @@ export class RecruitingTeamProfile {
     OffensiveScheme: string;
     DefensiveScheme: string;
     Recruiter: string;
+    AcademicsAffinity: boolean;
+    FrontrunnerAffinity: boolean;
+    LargeCrowdsAffinity: boolean;
+    ReligionAffinity: boolean;
+    ServiceAffinity: boolean;
+    SmallSchoolAffinity: boolean;
+    SmallTownAffinity: boolean;
+    BigCityAffinity: boolean;
+    MediaSpotlightAffinity: boolean;
+    RisingStarsAffinity: boolean;
     Recruits: RecruitPlayerProfile[];
     Affinities: ProfileAffinity[];
 
@@ -4227,6 +4237,16 @@ export class RecruitingTeamProfile {
         this.OffensiveScheme = source["OffensiveScheme"];
         this.DefensiveScheme = source["DefensiveScheme"];
         this.Recruiter = source["Recruiter"];
+        this.AcademicsAffinity = source["AcademicsAffinity"];
+        this.FrontrunnerAffinity = source["FrontrunnerAffinity"];
+        this.LargeCrowdsAffinity = source["LargeCrowdsAffinity"];
+        this.ReligionAffinity = source["ReligionAffinity"];
+        this.ServiceAffinity = source["ServiceAffinity"];
+        this.SmallSchoolAffinity = source["SmallSchoolAffinity"];
+        this.SmallTownAffinity = source["SmallTownAffinity"];
+        this.BigCityAffinity = source["BigCityAffinity"];
+        this.MediaSpotlightAffinity = source["MediaSpotlightAffinity"];
+        this.RisingStarsAffinity = source["RisingStarsAffinity"];
         this.Recruits = this.convertValues(source["Recruits"], RecruitPlayerProfile);
         this.Affinities = this.convertValues(source["Affinities"], ProfileAffinity);
     }

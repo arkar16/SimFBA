@@ -45,7 +45,17 @@ type RecruitingTeamProfile struct {
 	AIAutoOfferscholarships   bool
 	OffensiveScheme           string
 	DefensiveScheme           string
-	Recruiter                 string                 // Username
+	Recruiter                 string // Username
+	AcademicsAffinity         bool
+	FrontrunnerAffinity       bool
+	LargeCrowdsAffinity       bool
+	ReligionAffinity          bool
+	ServiceAffinity           bool
+	SmallSchoolAffinity       bool
+	SmallTownAffinity         bool
+	BigCityAffinity           bool
+	MediaSpotlightAffinity    bool
+	RisingStarsAffinity       bool
 	Recruits                  []RecruitPlayerProfile `gorm:"foreignKey:ProfileID"`
 	Affinities                []ProfileAffinity      `gorm:"foreignKey:ProfileID"`
 }

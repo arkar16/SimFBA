@@ -104,8 +104,6 @@ func CreateRecruitPlayerProfile(w http.ResponseWriter, r *http.Request) {
 	recruitingProfile := managers.AddRecruitToBoard(recruitPointsDto)
 
 	json.NewEncoder(w).Encode(recruitingProfile)
-
-	fmt.Fprintf(w, "New Recruiting Profile Created")
 }
 
 // CreateRecruitingPointsProfileForRecruit
@@ -135,9 +133,9 @@ func SendScholarshipToRecruit(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recruitingPointsProfile, recruitingProfile := managers.SendScholarshipToRecruit(updateRecruitPointsDto)
-	fmt.Printf("\nScholarship allocated to player " + strconv.Itoa(recruitingPointsProfile.RecruitID) + ". Record saved")
-	fmt.Printf("\nProfile: " + strconv.Itoa(recruitingProfile.TeamID) + " Saved")
+	recruitProfile, _ := managers.SendScholarshipToRecruit(updateRecruitPointsDto)
+	json.NewEncoder(w).Encode(recruitProfile)
+
 }
 
 // RevokeScholarshipToRecruit
@@ -165,9 +163,8 @@ func RemoveRecruitFromBoard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	recruitingPointsProfile := managers.RemoveRecruitFromBoard(updateRecruitPointsDto)
-
-	fmt.Printf("\nPlayer " + strconv.Itoa(recruitingPointsProfile.RecruitID) + " removed from board.")
+	recruitingProfile := managers.RemoveRecruitFromBoard(updateRecruitPointsDto)
+	json.NewEncoder(w).Encode(recruitingProfile)
 }
 
 // SaveRecruitingBoard

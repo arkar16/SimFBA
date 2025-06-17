@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"gorm.io/gorm"
 )
@@ -240,15 +241,15 @@ func SendScholarshipToRecruit(updateRecruitPointsDto structs.UpdateRecruitPoints
 		strconv.Itoa(updateRecruitPointsDto.ProfileID),
 	)
 
-	crootProfile.ToggleScholarship(updateRecruitPointsDto.RewardScholarship, updateRecruitPointsDto.RevokeScholarship)
+	crootProfile.ToggleScholarship()
 	if !crootProfile.ScholarshipRevoked {
 		recruitingProfile.SubtractScholarshipsAvailable()
 	} else {
 		recruitingProfile.ReallocateScholarship()
 	}
 
-	db.Save(&crootProfile)
-	db.Save(&recruitingProfile)
+	repository.SaveRecruitProfile(crootProfile, db)
+	repository.SaveRecruitingTeamProfile(recruitingProfile, db)
 
 	return crootProfile, recruitingProfile
 }
@@ -271,8 +272,8 @@ func RevokeScholarshipFromRecruit(updateRecruitPointsDto structs.UpdateRecruitPo
 	// recruitingPointsProfile.ToggleScholarship()
 	recruitingProfile.ReallocateScholarship()
 
-	db.Save(&recruitingPointsProfile)
-	db.Save(&recruitingProfile)
+	repository.SaveRecruitProfile(recruitingPointsProfile, db)
+	repository.SaveRecruitingTeamProfile(recruitingProfile, db)
 
 	return recruitingPointsProfile, recruitingProfile
 }

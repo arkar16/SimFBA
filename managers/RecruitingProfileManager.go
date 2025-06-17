@@ -472,5 +472,5 @@ func SaveAIBehavior(profile structs.RecruitingTeamProfile) {
 	TeamID := strconv.Itoa(int(profile.TeamID))
 	recruitingProfile := GetOnlyRecruitingProfileByTeamID(TeamID)
 	recruitingProfile.UpdateAIBehavior(profile.IsAI, profile.AIAutoOfferscholarships, profile.AIStarMax, profile.AIStarMin, profile.AIMinThreshold, profile.AIMaxThreshold, profile.OffensiveScheme, profile.DefensiveScheme)
-	db.Save(&recruitingProfile)
+	repository.SaveRecruitingTeamProfile(recruitingProfile, db)
 }

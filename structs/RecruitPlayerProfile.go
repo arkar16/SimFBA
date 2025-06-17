@@ -66,9 +66,13 @@ func (rp *RecruitPlayerProfile) ToggleRemoveFromBoard() {
 	rp.CurrentWeeksPoints = 0
 }
 
-func (rp *RecruitPlayerProfile) ToggleScholarship(rewardScholarship bool, revokeScholarship bool) {
-	rp.Scholarship = rewardScholarship
-	rp.ScholarshipRevoked = revokeScholarship
+func (rp *RecruitPlayerProfile) ToggleScholarship() {
+	if !rp.Scholarship && !rp.ScholarshipRevoked {
+		rp.Scholarship = true
+	} else {
+		rp.Scholarship = false
+		rp.ScholarshipRevoked = true
+	}
 }
 
 func (rp *RecruitPlayerProfile) SetWinningTeamAbbreviation(team string) {

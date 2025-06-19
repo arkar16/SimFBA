@@ -173,7 +173,7 @@ func handleRequests() http.Handler {
 	// apiRouter.HandleFunc("/admin/import/nfl/draft", controller.Import2023DraftedPlayers).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/cfb/standings", controller.ImportCFBStandings).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/cfb/coaches", controller.GenerateCoachesForAITeams).Methods("GET")
-	// apiRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
+	apiRouter.HandleFunc("/admin/import/cfb/games", controller.ImportCFBGames).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/cfb/rivals", controller.ImportCFBRivals).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/cfb/teams", controller.ImportCFBTeams).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/nfl/games", controller.ImportNFLGames).Methods("GET")
@@ -289,6 +289,8 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/statistics/injured/players/", controller.GetInjuryReport).Methods("GET")
 	apiRouter.HandleFunc("/statistics/interface/cfb/{seasonID}/{weekID}/{viewType}/{gameType}", controller.GetStatsPageContentForSeason).Methods("GET")
 	apiRouter.HandleFunc("/statistics/interface/nfl/{seasonID}/{weekID}/{viewType}/{gameType}", controller.GetNFLStatsPageContent).Methods("GET")
+	apiRouter.HandleFunc("/statistics/interface/v2/cfb/{seasonID}/{weekID}/{viewType}/{gameType}", controller.GetCFBStatsPageContent).Methods("GET")
+	apiRouter.HandleFunc("/statistics/interface/v2/nfl/{seasonID}/{weekID}/{viewType}/{gameType}", controller.GetProStatsPageContent).Methods("GET")
 	// apiRouter.HandleFunc("/statistics/reset/cfb/season/", controller.ResetCFBSeasonalStats).Methods("GET")
 	// apiRouter.HandleFunc("/statistics/reset/nfl/season/", controller.ResetNFLSeasonalStats).Methods("GET")
 

@@ -123,3 +123,14 @@ type ScoreBoard struct {
 	AwayOffensiveScheme string
 	AwayDefensiveScheme string
 }
+
+type SearchStatsResponse struct {
+	CFBPlayerGameStats   []CollegePlayerStats
+	CFBPlayerSeasonStats []CollegePlayerSeasonStats
+	CFBTeamGameStats     []CollegeTeamStats
+	CFBTeamSeasonStats   []CollegeTeamSeasonStats
+	NFLPlayerGameStats   []NFLPlayerStats
+	NFLPlayerSeasonStats []NFLPlayerSeasonStats
+	NFLTeamGameStats     []NFLTeamStats
+	NFLTeamSeasonStats   []NFLTeamSeasonStats
+}

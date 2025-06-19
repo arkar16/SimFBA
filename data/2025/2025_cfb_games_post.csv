@@ -1,0 +1,61 @@
+GameID,Season,Week,Home Team,Away Team,Conference Game,Division Game,Neutral Site,Conference Champ,Bowl Game,Playoff,National Champ,home bye,prev bye,Listed Coach,Other Coach,TimeSlot,Stadium,City,State,Domed Stadium,GameTitle,Info,NextGame,NextGameHOA
+5351,2025,17,MINN,OKST,0,0,1,0,1,0,0,1,1,Minnow,AI,Thursday Night,Wrigley Field,Chicago,IL,0,State Farm Ivy Bowl,,0,
+5352,2025,17,TTU,ARK,0,0,1,0,1,0,0,1,1,rcarlson77,kwheeler,Thursday Night,"Donald W. Reynolds Razorback Stadium, Frank Broyles Field",Fayetteville,AR,0,Tyson Foods Not a Taco Bowl,,0,
+5353,2025,17,CMU,SJSU,0,0,1,0,1,0,0,1,1,AI,Chandler1,Friday Night,Independence Stadium,Shreveport,LA,0,Independence Bowl,,0,
+5354,2025,17,OREG,NIU,0,0,1,0,1,0,0,1,1,AI,Ape,Friday Night,Fenway Park,Boston,MA,0,Fenway Bowl,,0,
+5355,2025,17,STAN,USC,0,0,1,0,1,0,0,1,1,Ricky Campbell,Dr_Novella,Saturday Morning,FAU Stadium,Boca Raton,FL,0,Boca Raton Bowl,,0,
+5356,2025,17,MRSH,TULS,0,0,0,0,1,1,0,1,1,Newkbomb,acewulf,Saturday Morning,Joan C. Edwards Stadium,Huntington,WV,0,2025 FBS Playoffs Round 1,,5370,A
+5357,2025,17,BOIS,OHIO,0,0,1,0,1,0,0,1,1,AI,Traith Kreios,Saturday Morning,Liberty Bowl Memorial Stadium,Memphis,TN,0,Liberty Bowl,,0,
+5358,2025,17,OKLA,SMU,0,0,1,0,1,0,0,1,1,Duckal,jw1952tx,Saturday Afternoon,TIAA Bank Field,Jacksonville,FL,0,Gator Bowl,,0,
+5359,2025,17,PNST,WMU,0,0,0,0,1,1,0,1,1,Rocketcan,Jieret,Saturday Afternoon,Beaver Stadium,University Park,PA,0,2025 FBS Playoffs Round 1,,5372,A
+5360,2025,17,WASH,TEX,0,0,1,0,1,0,0,1,1,CoachCartier,Dean,Saturday Evening,Camping World Stadium,Orlando,FL,0,Citrus Bowl,,0,
+5361,2025,17,UTAH,MIAF,0,0,0,0,1,1,0,0,1,SageBow,Dearden,Saturday Evening,Rice-Eccles Stadium,Salt Lake City,UT,0,2025 FBS Playoffs Round 1,,5375,A
+5362,2025,17,SDSU,WKU,0,0,1,0,1,0,0,1,1,SittingDuck07,AI,Saturday Night,Aloha Stadium,Honolulu,HI,0,Hawai'i Bowl,,0,
+5363,2025,17,WVU,CUSE,0,0,0,0,1,1,0,1,0,smackemz3,taffyowner,Saturday Night,Mountaineer Field at Milan Puskar Stadium,Morgantown,WV,0,2025 FBS Playoffs Round 1,,5377,A
+5364,2025,18,CSU,TLDO,0,0,1,0,1,0,0,1,1,Bellwood,ArmTheSharks,Thursday Night,Navy-Marine Corps Memorial Stadium,Annapolis,MD,0,Military Bowl,,0,
+5365,2025,18,KANS,MIZZ,0,0,1,0,1,0,0,1,1,bundy,AI,Thursday Night,Camp Randall Stadium,Madison,WI,0,Duluth Trading Co. Northern Lights Bowl,,0,
+5366,2025,18,MOST,TLNE,0,0,1,0,1,0,0,1,1,AI,kgreene829,Friday Night,Sun Bowl,El Paso,TX,0,Sun Bowl,,0,
+5367,2025,18,ND,UGA,0,0,1,0,1,0,0,1,1,LordLittlebutt,Sarge,Friday Night,SoFi Stadium,Inglewood,CA,1,Huy Fong Foods Sriracha Bowl,,0,
+5368,2025,18,KENT,USM,0,0,1,0,1,0,0,1,1,AI,AI,Saturday Morning,Raymond James Stadium,Tampa,FL,0,Gasparilla Bowl,,0,
+5369,2025,18,USAF,GASO,0,0,1,0,1,0,0,1,1,AI,miller,Saturday Morning,Yankee Stadium,The Bronx,NY,0,New Era Pinstripe Bowl,,0,
+5370,2025,18,FSU,,0,0,1,0,1,1,0,1,0,Kirby,#N/A,Saturday Morning,AT&T Stadium,Arlington,TX,1,Cotton Bowl,,5391,H
+5371,2025,18,UNT,UTEP,0,0,1,0,1,0,0,1,1,EmeraldSeasSunshine,AI,Saturday Afternoon,Protective Stadium,Birmingham,AL,0,Birmingham Bowl,,0,
+5372,2025,18,TENN,,0,0,1,0,1,1,0,1,0,tsweezy,#N/A,Saturday Afternoon,Hard Rock Stadium,Miami Gardens,FL,0,Orange Bowl,,5391,A
+5373,2025,18,UNM,JMU,0,0,1,0,1,0,0,1,1,DarthJarJar,askfortea,Saturday Evening,NRG Stadium,Houston,TX,0,Texas Bowl,,0,
+5374,2025,18,TAMU,TXST,0,0,1,0,1,0,0,1,1,sleuthofbears,NillaWafer,Saturday Evening,Svalbard Stadium,Longyearbyen,NO,0,Far North Bowl,,0,
+5375,2025,18,BAYL,,0,0,1,0,1,1,0,1,0,Vivid,#N/A,Saturday Evening,Rose Bowl,Pasadena,CA,0,Rose Bowl,,5393,A
+5376,2025,18,UHOU,BGSU,0,0,1,0,1,0,0,1,1,mahrowkeen,PoopyRhinoPickle,Saturday Night,Albertsons Stadium,Boise,ID,0,Famous Idaho Potato Bowl,,0,
+5377,2025,18,LSU,,0,0,1,0,1,1,0,1,0,Jumbo,#N/A,Saturday Night,Caesars Superdome,New Orleans,LA,1,Sugar Bowl,,5393,H
+5378,2025,19,NAVY,PURD,0,0,1,0,1,0,0,1,1,Syndakyt,MasonAsher,Thursday Night,Camping World Stadium,Orlando,FL,0,Cheez-It Bowl,,0,
+5379,2025,19,UNC,MICH,0,0,1,0,1,0,0,1,1,Tryggr,subsequent,Thursday Night,Nissan Stadium,Nashville,TN,0,Music City Bowl,,0,
+5380,2025,19,NMSU,CONN,0,0,1,0,1,0,0,1,1,Rabbit,AI,Friday Night,Thomas Robinson Stadium,Nassau,BS,0,Bahamas Bowl,,0,
+5381,2025,19,NEB,UNLV,0,0,1,0,1,0,0,1,1,alexfall862,AI,Friday Night,Bank of America Stadium,Charlotte,NC,0,Duke's Mayo Bowl,,0,
+5382,2025,19,ULM,ECU,0,0,1,0,1,0,0,1,1,AI,ObliviousLAX,Saturday Morning,Arizona Stadium,Tucson,AZ,0,Snoop Dogg Arizona Bowl,,0,
+5383,2025,19,ILLI,GT,0,0,1,0,1,0,0,1,1,nemolee.exe,ATonOfLaw,Saturday Morning,Raymond James Stadium,Tampa,FL,0,ReliaQuest Bowl,,0,
+5384,2025,19,UTST,MEMP,0,0,1,0,1,0,0,1,1,Ewade,AI,Saturday Morning,Chase Field,Phoenix,AZ,1,Rate Bowl,,0,
+5385,2025,19,BALL,UCLA,0,0,1,0,1,0,0,1,1,npklemm,jmjacobs,Saturday Morning,Ford Field,Detroit,MI,1,Meijer's/Hostess Twinkie Ice Cream Bowl,,0,
+5386,2025,19,NCST,ZONA,0,0,1,0,1,0,0,1,1,Matty460,pizzly,Saturday Afternoon,Alamodome,San Antonio,TX,1,Alamo Bowl,,0,
+5387,2025,19,JST,TROY,0,0,1,0,1,0,0,1,1,AI,AI,Saturday Afternoon,Exploria Stadium,Orlando,FL,0,The Cure Bowl,,0,
+5388,2025,19,IND,LOU,0,0,1,0,1,0,0,1,1,Piercewise1,Sandmanlost,Saturday Afternoon,Camping World Stadium,Orlando,FL,0,Cheez-It Bowl,,0,
+5389,2025,19,WAST,UKEN,0,0,1,0,1,0,0,1,1,TuscanSota,Ezaco,Saturday Evening,Milan Puskar Stadium,Morgantown,WV,0,"Big Timber Brewing Almost Heaven, West Virginia Bowl",,0,
+5390,2025,19,UVA,WISC,0,0,1,0,1,0,0,1,1,Wahoo,JC,Saturday Evening,Pitbull Stadium,Miami,FL,0,The PitBowl,,0,
+5391,2025,19,,,0,0,1,0,1,1,0,0,0,#N/A,#N/A,Saturday Evening,State Farm Stadium,Glendale,AZ,1,Fiesta Bowl,,5395,H
+5392,2025,19,CLEM,BYU,0,0,1,0,1,0,0,1,1,Spoof,AI,Saturday Night,Wembley Stadium,London,GB,0,Weetabix Bowl,,0,
+5393,2025,19,,,0,0,1,0,1,1,0,0,0,#N/A,#N/A,Saturday Night,Mercedes-Benz Stadium,Atlanta,GA,1,Peach Bowl,,5395,A
+5394,2025,20,WAKE,NW,0,0,1,0,1,0,0,1,1,Qupax,T007disney,Saturday Morning,The Kibbie Dome,Moscow,ID,1,The Toilet Bowl,,0,
+5395,2025,20,,,0,0,1,0,1,1,1,0,0,#N/A,#N/A,Saturday Morning,NRG Stadium,Houston,TX,1,2025 College Football Playoff National Championship Game,,0,
+5396,2025,17,MONT,SAM,0,0,0,0,0,1,0,1,1,AI,AI,Saturday Morning,Washington-Grizzly Stadium,Missoula,MT,0,FCS Playoffs First Round,,5404,H
+5397,2025,17,NDSU,MTST,0,0,0,0,0,1,0,1,1,AI,AI,Saturday Morning,Fargodome,Fargo,ND,1,FCS Playoffs First Round,,5405,H
+5398,2025,17,SIU,PV,0,0,0,0,0,1,0,1,1,AI,AI,Saturday Morning,Saluki Stadium,Carbondale,IL,0,FCS Playoffs First Round,,5406,H
+5399,2025,17,ALCN,COLG,0,0,0,0,0,1,0,1,1,AI,AI,Saturday Morning,Spinks-Casem Stadium,Lorman,MS,0,FCS Playoffs First Round,,5407,H
+5400,2025,17,BCU,WIU,0,0,0,0,0,1,0,1,1,AI,AI,Saturday Morning,Daytona Stadium,Daytona Beach,FL,0,FCS Playoffs First Round,,5407,A
+5401,2025,17,SDAK,ILST,0,0,0,0,0,1,0,1,1,AI,AI,Saturday Morning,DakotaDome,Vermillion,SD,1,FCS Playoffs First Round,,5406,A
+5402,2025,17,FOR,IDHO,0,0,0,0,0,1,0,1,1,AI,AI,Saturday Morning,Jack Coffey Field,Bronx,NY,0,FCS Playoffs First Round,,5405,A
+5403,2025,17,SSU,SOU,0,0,0,0,0,1,0,1,1,AI,AI,Saturday Morning,Hornet Stadium,Sacramento,CA,0,FCS Playoffs First Round,,5404,A
+5404,2025,18,FCS #1/16,FCS #8/9,0,0,0,0,0,1,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS Playoffs Quarterfinals,,5408,H
+5405,2025,18,FCS #2/15,FCS #7/10,0,0,0,0,0,1,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS Playoffs Quarterfinals,,5409,H
+5406,2025,18,FCS #3/14,FCS #6/11,0,0,0,0,0,1,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS Playoffs Quarterfinals,,5409,A
+5407,2025,18,FCS #4/13,FCS #5/12,0,0,0,0,0,1,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS Playoffs Quarterfinals,,5408,A
+5408,2025,19,FCS #1/8/9/16,FCS #4/5/12/13,0,0,0,0,0,1,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS Playoffs Semifinals,,5410,H
+5409,2025,19,FCS #3/6/11/14,FCS #2/7/10/15,0,0,0,0,0,1,0,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS Playoffs Semifinals,,5410,A
+5410,2025,20,FCS #1/2/7/8/9/10/15/16,FCS #3/4/5/6/11/12/13/14,0,0,0,0,0,1,1,0,0,#N/A,#N/A,Saturday Morning,#N/A,#N/A,#N/A,#N/A,FCS National Championship Game,,0,

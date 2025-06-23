@@ -4,6 +4,7 @@ import "github.com/CalebRose/SimFBA/models"
 
 type PreDraftEvent struct {
 	Name      string
+	EventID   uint
 	IsCombine bool
 	// List of draftees participating
 	Participants []models.NFLDraftee
@@ -12,8 +13,6 @@ type PreDraftEvent struct {
 }
 
 type EventResults struct {
-	EventID          uint
-	Name             string
 	IsCombine        bool
 	PlayerID         uint
 	FourtyYardDash   float32

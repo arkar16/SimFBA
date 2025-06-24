@@ -18,6 +18,10 @@ func ExportDrafteesToCSV(w http.ResponseWriter, r *http.Request) {
 	managers.ExportDrafteesToCSV(w)
 }
 
+func RunPreDraftEvents(w http.ResponseWriter, r *http.Request) {
+	managers.RunPreDraftEvents()
+}
+
 func GetDraftPageData(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	teamID := vars["teamID"]

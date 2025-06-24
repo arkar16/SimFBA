@@ -1,7 +1,10 @@
 package managers
 
 import (
-	"github.com/CalebRose/SimFBA/structs"
+	"fmt"
+
+	"github.com/CalebRose/SimFBA/models"
+	"github.com/CalebRose/SimFBA/util"
 )
 
 func RunPreDraftEvents() {
@@ -10,15 +13,45 @@ func RunPreDraftEvents() {
 	// Create a list of events (Pro Days and Combines)
 	eventList := GenerateTypicalListOfEvents()
 
-	// Create a list of players invited to each event (Read in json)
+	// Add the participants to each list
+	eventList = AddParticipants(util.GetParticipantIDS(), eventList, draftees)
+
 	// For each event, go through each ID in the participant IDs and grab the corresponding draftee and add it to the event
+
 	// For each event, create a result for each player
 	// For some % of draftees, create results based on their advertised grades, not their real grades.
 }
 
-func GenerateTypicalListOfEvents() []structs.PreDraftEvent {
-	var tempList []structs.PreDraftEvent
-	var tempEvent structs.PreDraftEvent
+func AddParticipants(json map[string][]uint, events []models.PreDraftEvent, players []models.NFLDraftee) []models.PreDraftEvent {
+	// For each event, find that events list of players, and get that player from the draftee list and add to participants
+	for _, event := range events {
+		for _, player := range json[event.Name] {
+			participant, found := FindParticipant(player, players)
+
+			if found {
+				event.Participants = append(event.Participants, participant)
+			} else {
+				// Participant not found
+				fmt.Println("EVENT PARTICIPANT NOT FOUND!!!")
+			}
+		}
+	}
+
+	return events
+}
+
+func FindParticipant(x uint, list []models.NFLDraftee) (models.NFLDraftee, bool) {
+	for _, n := range list {
+		if x == uint(n.PlayerID) {
+			return n, true
+		}
+	}
+	return models.NFLDraftee{}, false
+}
+
+func GenerateTypicalListOfEvents() []models.PreDraftEvent {
+	var tempList []models.PreDraftEvent
+	var tempEvent models.PreDraftEvent
 	tempEvent.Name = "AAC Pro Day"
 	tempEvent.IsCombine = false
 	tempList = append(tempList, tempEvent)

@@ -193,6 +193,7 @@ func handleRequests() http.Handler {
 	// apiRouter.HandleFunc("/import/simcfb/2021/stats", controller.Import2021CFBStats).Methods("GET")
 	// apiRouter.HandleFunc("/fix/simcfb/nfl/dts", controller.FixCollegeDTOVRs).Methods("GET")
 	// apiRouter.HandleFunc("/assign/team/grades", controller.ImportTeamGrades).Methods("GET")
+	apiRouter.HandleFunc("/run/predraft/events", controller.RunPreDraftEvents).Methods("GET")
 
 	// News Controls
 	apiRouter.HandleFunc("/cfb/news/all/", controller.GetAllNewsLogsForASeason).Methods("GET")

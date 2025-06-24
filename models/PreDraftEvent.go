@@ -1,7 +1,6 @@
-package structs
+package models
 
 import (
-	"github.com/CalebRose/SimFBA/models"
 	"gorm.io/gorm"
 )
 
@@ -9,7 +8,7 @@ type PreDraftEvent struct {
 	Name      string
 	IsCombine bool
 	// List of draftees participating
-	Participants []models.NFLDraftee
+	Participants []NFLDraftee
 	// Event Results struct
 	Results []EventResults
 }

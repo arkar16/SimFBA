@@ -1,10 +1,12 @@
 package structs
 
-import "github.com/CalebRose/SimFBA/models"
+import (
+	"github.com/CalebRose/SimFBA/models"
+	"gorm.io/gorm"
+)
 
 type PreDraftEvent struct {
 	Name      string
-	EventID   uint
 	IsCombine bool
 	// List of draftees participating
 	Participants []models.NFLDraftee
@@ -13,6 +15,8 @@ type PreDraftEvent struct {
 }
 
 type EventResults struct {
+	gorm.Model
+	Name             string
 	IsCombine        bool
 	PlayerID         uint
 	FourtyYardDash   float32

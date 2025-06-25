@@ -27,6 +27,9 @@ func RunPreDraftEvents() {
 			player = RunEvents(player, hidePerformance)
 		}
 	}
+
+	// Export the results
+	blah
 }
 
 // Set % of draftees that only perform based on their advertised grades, not real grades
@@ -44,6 +47,20 @@ func ShouldHidePerformance() bool {
 }
 
 func RunEvents(draftee models.NFLDraftee, shouldHidePerformance bool) models.NFLDraftee {
+	draftee = RunUniversalEvents(draftee, shouldHidePerformance)
+	draftee = RunPositionEvents(draftee, shouldHidePerformance)
+	return draftee
+}
+
+func RunUniversalEvents(draftee models.NFLDraftee, shouldHidePerformance bool) models.NFLDraftee {
+
+}
+
+func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool) models.NFLDraftee {
+
+}
+
+func Run40YardDash(speed uint) float32 {
 
 }
 

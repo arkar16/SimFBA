@@ -54,6 +54,8 @@ type BootstrapDataThree struct {
 	CollegeDepthChartMap map[uint]structs.CollegeTeamDepthChart
 	FreeAgentOffers      []structs.FreeAgencyOffer
 	WaiverWireOffers     []structs.NFLWaiverOffer
+	FreeAgents           []structs.NFLPlayer
+	WaiverPlayers        []structs.NFLPlayer
 	ProNews              []structs.NewsLog
 	NFLDepthChartMap     map[uint]structs.NFLDepthChart
 	ContractMap          map[uint]structs.NFLContract
@@ -333,6 +335,8 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		proDepthChartMap map[uint]structs.NFLDepthChart
 		contractMap      map[uint]structs.NFLContract
 		extensionMap     map[uint]structs.NFLExtensionOffer
+		freeAgents       []structs.NFLPlayer
+		waiverPlayers    []structs.NFLPlayer
 		freeAgentoffers  []structs.FreeAgencyOffer
 		waiverOffers     []structs.NFLWaiverOffer
 	)
@@ -356,7 +360,7 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 	}
 
 	if len(proID) > 0 && proID != "0" {
-		wg.Add(6)
+		wg.Add(8)
 
 		go func() {
 			defer wg.Done()
@@ -389,6 +393,15 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 			defer wg.Done()
 			extensionMap = GetExtensionMap()
 		}()
+		go func() {
+			defer wg.Done()
+			freeAgents = GetAllFreeAgents()
+		}()
+
+		go func() {
+			defer wg.Done()
+			waiverPlayers = GetAllWaiverWirePlayers()
+		}()
 
 		wg.Wait()
 	}
@@ -402,6 +415,8 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		NFLDepthChartMap:     proDepthChartMap,
 		ContractMap:          contractMap,
 		ExtensionMap:         extensionMap,
+		FreeAgents:           freeAgents,
+		WaiverPlayers:        waiverPlayers,
 	}
 }
 

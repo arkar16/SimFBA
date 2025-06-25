@@ -2,6 +2,7 @@ package managers
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/util"
@@ -16,10 +17,34 @@ func RunPreDraftEvents() {
 	// Add the participants to each list
 	eventList = AddParticipants(util.GetParticipantIDS(), eventList, draftees)
 
-	// For each event, go through each ID in the participant IDs and grab the corresponding draftee and add it to the event
-
 	// For each event, create a result for each player
-	// For some % of draftees, create results based on their advertised grades, not their real grades.
+	for _, event := range eventList {
+		for _, player := range event.Participants {
+			// For some % of draftees, create results based on their advertised grades, not their real grades.
+			hidePerformance := ShouldHidePerformance()
+
+			// Run events on them
+			player = RunEvents(player, hidePerformance)
+		}
+	}
+}
+
+// Set % of draftees that only perform based on their advertised grades, not real grades
+func ShouldHidePerformance() bool {
+	// 10% chance
+	chance := 10
+
+	roll := rand.Intn(100)
+
+	if roll < chance {
+		return true
+	} else {
+		return false
+	}
+}
+
+func RunEvents(draftee models.NFLDraftee, shouldHidePerformance bool) models.NFLDraftee {
+
 }
 
 func AddParticipants(json map[string][]uint, events []models.PreDraftEvent, players []models.NFLDraftee) []models.PreDraftEvent {

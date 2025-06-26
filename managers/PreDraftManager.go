@@ -172,8 +172,14 @@ func RunBroadJump(agility uint, strength uint, weight uint, isCombine bool) uint
 	return uint8(temp)
 }
 
-func RunWonderlic() uint8 {
-
+func RunWonderlic(fbIQ uint) uint8 {
+	delta := GetDelta(true)
+	temp := float64(fbIQ) + delta
+	temp = temp - 130.0
+	temp = math.Pow(temp, 2)
+	temp = temp / 25000.0
+	temp = temp + 51.0
+	return uint8(temp)
 }
 
 func GetDelta(isCombine bool) float64 {

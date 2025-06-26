@@ -108,6 +108,9 @@ func RunBenchPress(strength uint, isCombine bool, position string) uint8 {
 	} else {
 		temp = float64(strength) + delta
 	}
+	if temp > 99.0 {
+		temp = 99.0
+	}
 	temp = 185.0 - temp
 	temp = math.Pow(temp, 2)
 	temp = temp / 600.0
@@ -120,6 +123,9 @@ func RunShuttle(agility uint, isCombine bool) float32 {
 	delta := GetDelta(isCombine)
 
 	temp := float64(agility) + delta
+	if temp > 99.0 {
+		temp = 99.0
+	}
 	temp = 100.0 - temp
 	temp = math.Pow(temp, 2)
 	temp = temp / 6000.0
@@ -127,16 +133,43 @@ func RunShuttle(agility uint, isCombine bool) float32 {
 	return float32(temp)
 }
 
-func Run3Cone() float32 {
+func Run3Cone(agility uint, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
 
+	temp := float64(agility) + delta
+	if temp > 99.0 {
+		temp = 99.0
+	}
+	temp = 100.0 - temp
+	temp = math.Pow(temp, 2)
+	temp = temp / 4200.0
+	temp = temp + 6.28
+	return float32(temp)
 }
 
-func RunVertJump() uint8 {
-
+func RunVertJump(agility uint, strength uint, weight uint, isCombine bool) uint8 {
+	delta := GetDelta(isCombine)
+	newStrength := float64(strength) + delta
+	delta = GetDelta(isCombine)
+	newAgility := float64(agility) + delta
+	temp := ((newStrength + newAgility) / float64(weight))
+	temp = 1500 * temp
+	temp = math.Sqrt(temp)
+	temp = temp + 11.0
+	return uint8(temp)
 }
 
-func RunBroadJump() uint8 {
-
+func RunBroadJump(agility uint, strength uint, weight uint, isCombine bool) uint8 {
+	delta := GetDelta(isCombine)
+	newStrength := float64(strength) + delta
+	delta = GetDelta(isCombine)
+	newAgility := float64(agility) + delta
+	temp := ((newStrength + newAgility) / float64(weight))
+	temp = 20000 * temp
+	temp = math.Sqrt(temp)
+	temp = temp / 2.0
+	temp = temp + 79.0
+	return uint8(temp)
 }
 
 func RunWonderlic() uint8 {

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"strings"
 
 	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/util"
@@ -27,7 +28,7 @@ func RunPreDraftEvents() {
 			playerEvents := GenerateEvent(player, event)
 
 			// Run events on them
-			player = RunEvents(player, hidePerformance, playerEvents)
+			playerEvents = RunEvents(player, hidePerformance, playerEvents)
 		}
 	}
 
@@ -57,13 +58,13 @@ func GenerateEvent(draftee models.NFLDraftee, event models.PreDraftEvent) models
 	return newEvent
 }
 
-func RunEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.NFLDraftee {
-	draftee = RunUniversalEvents(draftee, shouldHidePerformance, event)
-	draftee = RunPositionEvents(draftee, shouldHidePerformance, event)
-	return draftee
+func RunEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.EventResults {
+	event = RunUniversalEvents(draftee, shouldHidePerformance, event)
+	event = RunPositionEvents(draftee, shouldHidePerformance, event)
+	return event
 }
 
-func RunUniversalEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.NFLDraftee {
+func RunUniversalEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.EventResults {
 	event.FourtyYardDash = Run40YardDash(uint(draftee.Speed), event.IsCombine)
 	event.BenchPress = RunBenchPress()
 	event.Shuttle = RunShuttle()
@@ -76,23 +77,12 @@ func RunUniversalEvents(draftee models.NFLDraftee, shouldHidePerformance bool, e
 	}
 }
 
-func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.NFLDraftee {
-
+func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.EventResults {
+	// CREATE POSITIONAL EVENTS
 }
 
 func Run40YardDash(speed uint, isCombine bool) float32 {
-	min := 0
-	max := 0
-
-	if isCombine {
-		min = -10
-		max = 10
-	} else {
-		min = -5
-		max = 15
-	}
-
-	delta := GetDelta(max, min)
+	delta := GetDelta(isCombine)
 
 	temp := float64(speed) + delta
 
@@ -108,8 +98,22 @@ func Run40YardDash(speed uint, isCombine bool) float32 {
 	return float32(temp)
 }
 
-func RunBenchPress() uint8 {
+func RunBenchPress(strength uint, isCombine bool, position string) uint8 {
+	delta := GetDelta(isCombine)
 
+	temp := 0.0
+
+	if strings.Contains(strings.ToLower(position), strings.ToLower("FB")) {
+		temp = float64(strength) + delta - 10.0
+	} else {
+		temp = float64(strength) + delta
+	}
+	temp = 185.0 - temp
+	temp = math.Pow(temp, 2)
+	temp = temp / 600.0
+	temp = temp * -1.0
+	temp = temp + 66.0
+	return uint8(temp)
 }
 
 func RunShuttle() float32 {
@@ -132,8 +136,19 @@ func RunWonderlic() uint8 {
 
 }
 
-func GetDelta(maximum int, minimum int) float64 {
-	return float64(rand.Intn((maximum - minimum) + minimum))
+func GetDelta(isCombine bool) float64 {
+	min := 0
+	max := 0
+
+	if isCombine {
+		min = -10
+		max = 10
+	} else {
+		min = -5
+		max = 15
+	}
+
+	return float64(rand.Intn((max - min) + min))
 }
 
 func AddParticipants(json map[string][]uint, events []models.PreDraftEvent, players []models.NFLDraftee) []models.PreDraftEvent {

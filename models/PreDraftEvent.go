@@ -24,6 +24,7 @@ type EventResults struct {
 	VerticalJump     uint8
 	BroadJump        uint8
 	BenchPress       uint8
+	Wonderlic        uint8
 	ThrowingAccuracy float32
 	ThrowingDistance float32
 	Catching         float32

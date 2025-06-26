@@ -24,8 +24,10 @@ func RunPreDraftEvents() {
 			// For some % of draftees, create results based on their advertised grades, not their real grades.
 			hidePerformance := ShouldHidePerformance()
 
+			playerEvents := GenerateEvent(player, event)
+
 			// Run events on them
-			player = RunEvents(player, hidePerformance)
+			player = RunEvents(player, hidePerformance, playerEvents)
 		}
 	}
 
@@ -47,17 +49,34 @@ func ShouldHidePerformance() bool {
 	}
 }
 
-func RunEvents(draftee models.NFLDraftee, shouldHidePerformance bool) models.NFLDraftee {
-	draftee = RunUniversalEvents(draftee, shouldHidePerformance)
-	draftee = RunPositionEvents(draftee, shouldHidePerformance)
+func GenerateEvent(draftee models.NFLDraftee, event models.PreDraftEvent) models.EventResults {
+	var newEvent models.EventResults
+	newEvent.PlayerID = uint(draftee.PlayerID)
+	newEvent.IsCombine = event.IsCombine
+	newEvent.Name = event.Name
+	return newEvent
+}
+
+func RunEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.NFLDraftee {
+	draftee = RunUniversalEvents(draftee, shouldHidePerformance, event)
+	draftee = RunPositionEvents(draftee, shouldHidePerformance, event)
 	return draftee
 }
 
-func RunUniversalEvents(draftee models.NFLDraftee, shouldHidePerformance bool) models.NFLDraftee {
+func RunUniversalEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.NFLDraftee {
+	event.FourtyYardDash = Run40YardDash(uint(draftee.Speed), event.IsCombine)
+	event.BenchPress = RunBenchPress()
+	event.Shuttle = RunShuttle()
+	event.ThreeCone = Run3Cone()
+	event.VerticalJump = RunVertJump()
+	event.BroadJump = RunBroadJump()
 
+	if event.IsCombine {
+		event.Wonderlic = RunWonderlic()
+	}
 }
 
-func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool) models.NFLDraftee {
+func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.NFLDraftee {
 
 }
 
@@ -87,6 +106,30 @@ func Run40YardDash(speed uint, isCombine bool) float32 {
 	temp = temp + 4.3
 
 	return float32(temp)
+}
+
+func RunBenchPress() uint8 {
+
+}
+
+func RunShuttle() float32 {
+
+}
+
+func Run3Cone() float32 {
+
+}
+
+func RunVertJump() uint8 {
+
+}
+
+func RunBroadJump() uint8 {
+
+}
+
+func RunWonderlic() uint8 {
+
 }
 
 func GetDelta(maximum int, minimum int) float64 {

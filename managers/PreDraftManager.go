@@ -2,6 +2,7 @@ package managers
 
 import (
 	"fmt"
+	"math"
 	"math/rand"
 
 	"github.com/CalebRose/SimFBA/models"
@@ -60,8 +61,36 @@ func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool) mo
 
 }
 
-func Run40YardDash(speed uint) float32 {
+func Run40YardDash(speed uint, isCombine bool) float32 {
+	min := 0
+	max := 0
 
+	if isCombine {
+		min = -10
+		max = 10
+	} else {
+		min = -5
+		max = 15
+	}
+
+	delta := GetDelta(max, min)
+
+	temp := float64(speed) + delta
+
+	if temp > 99.0 {
+		temp = 99.0
+	}
+
+	temp = 100 - temp
+	temp = math.Pow(temp, 2)
+	temp = temp / 4000
+	temp = temp + 4.3
+
+	return float32(temp)
+}
+
+func GetDelta(maximum int, minimum int) float64 {
+	return float64(rand.Intn((maximum - minimum) + minimum))
 }
 
 func AddParticipants(json map[string][]uint, events []models.PreDraftEvent, players []models.NFLDraftee) []models.PreDraftEvent {

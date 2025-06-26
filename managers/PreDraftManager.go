@@ -65,23 +65,26 @@ func RunEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event mode
 }
 
 func RunUniversalEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.EventResults {
-	event.FourtyYardDash = Run40YardDash(uint(draftee.Speed), event.IsCombine)
-	event.BenchPress = RunBenchPress()
-	event.Shuttle = RunShuttle()
-	event.ThreeCone = Run3Cone()
-	event.VerticalJump = RunVertJump()
-	event.BroadJump = RunBroadJump()
+	event.FourtyYardDash = Run40YardDash(draftee.Speed, event.IsCombine)
+	event.BenchPress = RunBenchPress(draftee.Strength, event.IsCombine, draftee.Position)
+	event.Shuttle = RunShuttle(draftee.Agility, event.IsCombine)
+	event.ThreeCone = Run3Cone(draftee.Agility, event.IsCombine)
+	event.VerticalJump = RunVertJump(draftee.Agility, draftee.Strength, draftee.Weight, event.IsCombine)
+	event.BroadJump = RunBroadJump(draftee.Agility, draftee.Strength, draftee.Weight, event.IsCombine)
 
 	if event.IsCombine {
-		event.Wonderlic = RunWonderlic()
+		event.Wonderlic = RunWonderlic(draftee.FootballIQ)
 	}
+
+	return event
 }
 
 func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.EventResults {
 	// CREATE POSITIONAL EVENTS
+	event.ThrowingAccuracy
 }
 
-func Run40YardDash(speed uint, isCombine bool) float32 {
+func Run40YardDash(speed int, isCombine bool) float32 {
 	delta := GetDelta(isCombine)
 
 	temp := float64(speed) + delta
@@ -98,7 +101,7 @@ func Run40YardDash(speed uint, isCombine bool) float32 {
 	return float32(temp)
 }
 
-func RunBenchPress(strength uint, isCombine bool, position string) uint8 {
+func RunBenchPress(strength int, isCombine bool, position string) uint8 {
 	delta := GetDelta(isCombine)
 
 	temp := 0.0
@@ -119,7 +122,7 @@ func RunBenchPress(strength uint, isCombine bool, position string) uint8 {
 	return uint8(temp)
 }
 
-func RunShuttle(agility uint, isCombine bool) float32 {
+func RunShuttle(agility int, isCombine bool) float32 {
 	delta := GetDelta(isCombine)
 
 	temp := float64(agility) + delta
@@ -133,7 +136,7 @@ func RunShuttle(agility uint, isCombine bool) float32 {
 	return float32(temp)
 }
 
-func Run3Cone(agility uint, isCombine bool) float32 {
+func Run3Cone(agility int, isCombine bool) float32 {
 	delta := GetDelta(isCombine)
 
 	temp := float64(agility) + delta
@@ -147,11 +150,17 @@ func Run3Cone(agility uint, isCombine bool) float32 {
 	return float32(temp)
 }
 
-func RunVertJump(agility uint, strength uint, weight uint, isCombine bool) uint8 {
+func RunVertJump(agility int, strength int, weight int, isCombine bool) uint8 {
 	delta := GetDelta(isCombine)
 	newStrength := float64(strength) + delta
+	if newStrength > 99.0 {
+		newStrength = 99.0
+	}
 	delta = GetDelta(isCombine)
 	newAgility := float64(agility) + delta
+	if newAgility > 99.0 {
+		newAgility = 99.0
+	}
 	temp := ((newStrength + newAgility) / float64(weight))
 	temp = 1500 * temp
 	temp = math.Sqrt(temp)
@@ -159,11 +168,17 @@ func RunVertJump(agility uint, strength uint, weight uint, isCombine bool) uint8
 	return uint8(temp)
 }
 
-func RunBroadJump(agility uint, strength uint, weight uint, isCombine bool) uint8 {
+func RunBroadJump(agility int, strength int, weight int, isCombine bool) uint8 {
 	delta := GetDelta(isCombine)
 	newStrength := float64(strength) + delta
+	if newStrength > 99.0 {
+		newStrength = 99.0
+	}
 	delta = GetDelta(isCombine)
 	newAgility := float64(agility) + delta
+	if newAgility > 99.0 {
+		newAgility = 99.0
+	}
 	temp := ((newStrength + newAgility) / float64(weight))
 	temp = 20000 * temp
 	temp = math.Sqrt(temp)
@@ -172,14 +187,30 @@ func RunBroadJump(agility uint, strength uint, weight uint, isCombine bool) uint
 	return uint8(temp)
 }
 
-func RunWonderlic(fbIQ uint) uint8 {
+func RunWonderlic(fbIQ int) uint8 {
 	delta := GetDelta(true)
 	temp := float64(fbIQ) + delta
+	if temp > 99.0 {
+		temp = 99.0
+	}
 	temp = temp - 130.0
 	temp = math.Pow(temp, 2)
 	temp = temp / 25000.0
 	temp = temp + 51.0
 	return uint8(temp)
+}
+
+func RunQBAccuracy(throwAcc int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+
+	temp := float64(throwAcc) + delta
+	// Make sure they can't score more than 10.00
+	if temp > 80.0 {
+		temp = 80.0
+	}
+	temp = temp / 80.0
+	temp = temp * 10.0
+	return float32(temp)
 }
 
 func GetDelta(isCombine bool) float64 {

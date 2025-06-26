@@ -116,8 +116,15 @@ func RunBenchPress(strength uint, isCombine bool, position string) uint8 {
 	return uint8(temp)
 }
 
-func RunShuttle() float32 {
+func RunShuttle(agility uint, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
 
+	temp := float64(agility) + delta
+	temp = 100.0 - temp
+	temp = math.Pow(temp, 2)
+	temp = temp / 6000.0
+	temp = temp + 3.7
+	return float32(temp)
 }
 
 func Run3Cone() float32 {

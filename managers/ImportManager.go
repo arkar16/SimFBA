@@ -656,7 +656,7 @@ func ImportCFBGames() {
 func ImportNFLGames() {
 	db := dbprovider.GetInstance().GetDB()
 
-	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2025\\2025_nfl_games.csv"
+	path := "C:\\Users\\ctros\\go\\src\\github.com\\CalebRose\\SimFBA\\data\\2025\\2025_nfl_postseason_games.csv"
 
 	gamesCSV := util.ReadCSV(path)
 
@@ -681,7 +681,7 @@ func ImportNFLGames() {
 		week := util.ConvertStringToInt(row[2])
 		weekID := week + 23 // Week 43 is week 0 of the 2024 Season
 		if gameID > 381 {
-			weekID = week + 26
+			weekID = week + 51
 		}
 		homeTeamAbbr := row[3]
 		awayTeamAbbr := row[4]
@@ -750,6 +750,8 @@ func ImportNFLGames() {
 
 		db.Create(&game)
 	}
+
+	GenerateWeatherForGames()
 }
 
 func ImportCFBTeams() {

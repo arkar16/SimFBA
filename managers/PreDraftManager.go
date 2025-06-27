@@ -80,8 +80,23 @@ func RunUniversalEvents(draftee models.NFLDraftee, shouldHidePerformance bool, e
 }
 
 func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.EventResults {
-	// CREATE POSITIONAL EVENTS
-	event.ThrowingAccuracy
+	// WHAT ABOUT DUAL POSITIONS????
+
+	if strings.Contains(strings.ToLower(draftee.Position), strings.ToLower("QB")) {
+		event.ThrowingDistance = RunQBDistance(draftee.ThrowPower, event.IsCombine)
+		event.ThrowingAccuracy = RunQBAccuracy(draftee.ThrowAccuracy, event.IsCombine)
+	} else if strings.Contains(strings.ToLower(draftee.Position), strings.ToLower("RB")) {
+		event.InsideRun = RunInsideRun(draftee.Speed, draftee.Strength, event.IsCombine)
+		event.OutsideRun = RunOutsideRun(draftee.Speed, draftee.Agility, event.IsCombine)
+		event.Catching = RunCatching(draftee.Catching, event.IsCombine)
+		event.RouteRunning = RunRouteRunning(draftee.RouteRunning, event.IsCombine)
+	} else if strings.Contains(strings.ToLower(draftee.Position), strings.ToLower("FB")) {
+		event.InsideRun = RunInsideRun(draftee.Speed, draftee.Strength, event.IsCombine)
+		event.OutsideRun = RunOutsideRun(draftee.Speed, draftee.Agility, event.IsCombine)
+		event.Catching = RunCatching(draftee.Catching, event.IsCombine)
+		event.RouteRunning = RunRouteRunning(draftee.RouteRunning, event.IsCombine)
+		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, draftee.Position)
+	}
 }
 
 func Run40YardDash(speed int, isCombine bool) float32 {

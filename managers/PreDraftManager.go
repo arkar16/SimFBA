@@ -213,6 +213,111 @@ func RunQBAccuracy(throwAcc int, isCombine bool) float32 {
 	return float32(temp)
 }
 
+func RunQBDistance(throwPow int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+
+	temp := float64(throwPow) + delta
+	// Make sure they can't score more than 10.00
+	if temp > 85.0 {
+		temp = 85.0
+	}
+	temp = temp / 85.0
+	temp = temp * 10.0
+	return float32(temp)
+}
+
+func RunInsideRun(speed int, strength int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+	newSpeed := float64(speed) + delta
+	delta = GetDelta(isCombine)
+	newStrength := float64(strength) + delta
+	temp := newSpeed + newStrength
+	// Make sure they can't score more than 10.00
+	if temp > 170.0 {
+		temp = 170.0
+	}
+	temp = temp / 170.0
+	temp = temp * 10.0
+	return float32(temp)
+}
+
+func RunOutsideRun(speed int, agility int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+	newSpeed := float64(speed) + delta
+	delta = GetDelta(isCombine)
+	newAgility := float64(agility) + delta
+	temp := newSpeed + newAgility
+	// Make sure they can't score more than 10.00
+	if temp > 180.0 {
+		temp = 180.0
+	}
+	temp = temp / 180.0
+	temp = temp * 10.0
+	return float32(temp)
+}
+
+func RunCatching(catching int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+	temp := float64(catching) + delta
+	// Make sure they can't score more than 10.00
+	if temp > 80.0 {
+		temp = 80.0
+	}
+	temp = temp / 80.0
+	temp = temp * 10.0
+	return float32(temp)
+}
+
+func RunRouteRunning(routeRun int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+	temp := float64(routeRun) + delta
+	// Make sure they can't score more than 10.00
+	if temp > 65.0 {
+		temp = 65.0
+	}
+	temp = temp / 65.0
+	temp = temp * 10.0
+	return float32(temp)
+}
+
+func RunRunBlocking(runBlock int, isCombine bool, position string) float32 {
+	delta := GetDelta(isCombine)
+	temp := 0.0
+	// Make sure they can't score more than 10.00
+	if strings.Contains(strings.ToLower(position), strings.ToLower("FB")) {
+		temp = float64(runBlock) + delta - 15.0
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("TE")) {
+		temp = float64(runBlock) + delta - 8.0
+	} else {
+		temp = float64(runBlock) + delta
+	}
+	if temp > 85.0 {
+		temp = 85.0
+	}
+	temp = temp / 85.0
+	temp = temp * 10.0
+	return float32(temp)
+}
+
+func RunPassBlocking(passBlock int, isCombine bool, position string) float32 {
+	delta := GetDelta(isCombine)
+	temp := 0.0
+	// Make sure they can't score more than 10.00
+	if strings.Contains(strings.ToLower(position), strings.ToLower("FB")) {
+		temp = float64(passBlock) + delta - 15.0
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("TE")) {
+		temp = float64(passBlock) + delta - 8.0
+	} else {
+		temp = float64(passBlock) + delta
+	}
+	if temp > 85.0 {
+		temp = 85.0
+	}
+	temp = temp / 85.0
+	temp = temp * 10.0
+	return float32(temp)
+}
+
 func GetDelta(isCombine bool) float64 {
 	min := 0
 	max := 0

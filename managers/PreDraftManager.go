@@ -318,6 +318,119 @@ func RunPassBlocking(passBlock int, isCombine bool, position string) float32 {
 	return float32(temp)
 }
 
+func RunRunStop(runDef int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+	temp := float64(runDef) + delta
+	// Make sure they can't score more than 10.00
+	if temp > 85.0 {
+		temp = 85.0
+	}
+	temp = temp / 85.0
+	temp = temp * 10.0
+	return float32(temp)
+}
+
+func RunPassRush(PassRush int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+	temp := float64(PassRush) + delta
+	// Make sure they can't score more than 10.00
+	if temp > 80.0 {
+		temp = 80.0
+	}
+	temp = temp / 80.0
+	temp = temp * 10.0
+	return float32(temp)
+}
+
+func RunLBCoverage(manCov int, zonCov int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+	newManCov := float64(manCov) + delta
+	delta = GetDelta(isCombine)
+	newZonCov := float64(zonCov) + delta
+	temp := newManCov + newZonCov
+	if temp > 150.0 {
+		temp = 150.0
+	}
+	temp = temp / 150.0
+	temp = temp * 10
+	return float32(temp)
+}
+
+func RunManCoverage(manCov int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+	temp := float64(manCov) + delta
+	if temp > 90.0 {
+		temp = 90.0
+	}
+	temp = temp / 90.0
+	temp = temp * 10
+	return float32(temp)
+}
+
+func RunZoneCoverage(zonCov int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+	temp := float64(zonCov) + delta
+	if temp > 80.0 {
+		temp = 80.0
+	}
+	temp = temp / 80.0
+	temp = temp * 10
+	return float32(temp)
+}
+
+func RunKickoffDrill(kickPow int, puntPow int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+
+	// Get larger of the two kicking values
+	temp := math.Max(float64(kickPow), float64(puntPow)) + delta
+	if temp > 75.0 {
+		temp = 75.0
+	}
+	temp = temp / 75.0
+	temp = temp * 10
+	return float32(temp)
+}
+
+func RunFieldGoalDrill(kickPow int, kickAcc int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+	newKickPow := float64(kickPow) + delta
+	delta = GetDelta(isCombine)
+	newKickAcc := float64(kickAcc) + delta
+	temp := newKickPow + newKickAcc
+	if temp > 155.0 {
+		temp = 155.0
+	}
+	temp = temp / 155.0
+	temp = temp * 10
+	return float32(temp)
+}
+
+func RunPuntDistance(puntPow int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+
+	// Get larger of the two kicking values
+	temp := float64(puntPow) + delta
+	if temp > 60.0 {
+		temp = 60.0
+	}
+	temp = temp / 60.0
+	temp = temp * 10
+	return float32(temp)
+}
+
+func RunCoffinPunt(puntAcc int, isCombine bool) float32 {
+	delta := GetDelta(isCombine)
+
+	// Get larger of the two kicking values
+	temp := float64(puntAcc) + delta
+	if temp > 66.0 {
+		temp = 66.0
+	}
+	temp = temp / 66.0
+	temp = temp * 10
+	return float32(temp)
+}
+
 func GetDelta(isCombine bool) float64 {
 	min := 0
 	max := 0

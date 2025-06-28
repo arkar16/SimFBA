@@ -23,7 +23,7 @@ func GetAllFreeAgents() []structs.NFLPlayer {
 
 	fas := []structs.NFLPlayer{}
 
-	db.Where("is_free_agent = ?", true).Find(&fas)
+	db.Order("minimum_value desc").Where("is_free_agent = ?", true).Find(&fas)
 
 	return fas
 }

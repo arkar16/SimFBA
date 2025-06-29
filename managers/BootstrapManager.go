@@ -315,6 +315,7 @@ func GetSecondBootstrapData(collegeID, proID string) BootstrapDataTwo {
 func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 	var wg sync.WaitGroup
 	var mu sync.Mutex
+
 	// College Data
 	var (
 		recruits             []structs.Croot

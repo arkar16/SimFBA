@@ -60,6 +60,7 @@ type BootstrapDataThree struct {
 	NFLDepthChartMap     map[uint]structs.NFLDepthChart
 	ContractMap          map[uint]structs.NFLContract
 	ExtensionMap         map[uint]structs.NFLExtensionOffer
+	FaceData             map[uint]structs.FaceDataResponse
 }
 
 func GetTeamsBootstrap() BootstrapData {
@@ -104,7 +105,6 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		topPassers            []structs.CollegePlayer
 		topRushers            []structs.CollegePlayer
 		topReceivers          []structs.CollegePlayer
-		faceDataMap           map[uint]structs.FaceDataResponse
 	)
 
 	// Professional Data
@@ -174,12 +174,6 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		}()
 	}
 
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		faceDataMap = GetAllFaces()
-	}()
-
 	wg.Wait()
 	return BootstrapData{
 		CollegeTeam:          collegeTeam,
@@ -196,7 +190,6 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		TopCFBPassers:        topPassers,
 		TopCFBRushers:        topRushers,
 		TopCFBReceivers:      topReceivers,
-		FaceData:             faceDataMap,
 	}
 }
 
@@ -327,6 +320,7 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		recruits             []structs.Croot
 		recruitProfiles      []structs.RecruitPlayerProfile
 		collegeDepthChartMap map[uint]structs.CollegeTeamDepthChart
+		faceDataMap          map[uint]structs.FaceDataResponse
 	)
 
 	// Professional Data
@@ -403,8 +397,16 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 			waiverPlayers = GetAllWaiverWirePlayers()
 		}()
 
-		wg.Wait()
 	}
+
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		faceDataMap = GetAllFaces()
+	}()
+
+	wg.Wait()
+
 	return BootstrapDataThree{
 		CollegeDepthChartMap: collegeDepthChartMap,
 		Recruits:             recruits,
@@ -417,21 +419,23 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		ExtensionMap:         extensionMap,
 		FreeAgents:           freeAgents,
 		WaiverPlayers:        waiverPlayers,
+		FaceData:             faceDataMap,
 	}
 }
 
 func getCFBOrderedListByStatType(statType string, teamID uint, CollegeStats []structs.CollegePlayerSeasonStats, collegePlayerMap map[uint]structs.CollegePlayer) []structs.CollegePlayer {
 	orderedStats := CollegeStats
 	resultList := []structs.CollegePlayer{}
-	if statType == "PASSING" {
+	switch statType {
+	case "PASSING":
 		sort.Slice(orderedStats[:], func(i, j int) bool {
 			return orderedStats[i].PassingTDs > orderedStats[j].PassingTDs
 		})
-	} else if statType == "RUSHING" {
+	case "RUSHING":
 		sort.Slice(orderedStats[:], func(i, j int) bool {
 			return orderedStats[i].RushingYards > orderedStats[j].RushingYards
 		})
-	} else if statType == "RECEIVING" {
+	case "RECEIVING":
 		sort.Slice(orderedStats[:], func(i, j int) bool {
 			return orderedStats[i].ReceivingYards > orderedStats[j].ReceivingYards
 		})
@@ -466,15 +470,16 @@ func getCFBOrderedListByStatType(statType string, teamID uint, CollegeStats []st
 func getNFLOrderedListByStatType(statType string, teamID uint, CollegeStats []structs.NFLPlayerSeasonStats, proPlayerMap map[uint]structs.NFLPlayer) []structs.NFLPlayer {
 	orderedStats := CollegeStats
 	resultList := []structs.NFLPlayer{}
-	if statType == "PASSING" {
+	switch statType {
+	case "PASSING":
 		sort.Slice(orderedStats[:], func(i, j int) bool {
 			return orderedStats[i].PassingTDs > orderedStats[j].PassingTDs
 		})
-	} else if statType == "RUSHING" {
+	case "RUSHING":
 		sort.Slice(orderedStats[:], func(i, j int) bool {
 			return orderedStats[i].RushingYards > orderedStats[j].RushingYards
 		})
-	} else if statType == "RECEIVING" {
+	case "RECEIVING":
 		sort.Slice(orderedStats[:], func(i, j int) bool {
 			return orderedStats[i].ReceivingYards > orderedStats[j].ReceivingYards
 		})

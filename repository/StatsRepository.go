@@ -20,7 +20,7 @@ func FindProPlayerSeasonStatsRecords(SeasonID, gameType string) []structs.NFLPla
 
 	var playerStats []structs.NFLPlayerSeasonStats
 
-	db.Order("points desc").Where("season_id = ? AND game_type = ?", SeasonID, gameType).Find(&playerStats)
+	db.Where("season_id = ? AND game_type = ?", SeasonID, gameType).Find(&playerStats)
 
 	return playerStats
 }

@@ -61,6 +61,7 @@ func (f *FreeAgencyOffer) CalculateOffer(offer FreeAgencyOfferDTO) {
 	f.Y5BaseSalary = offer.Y5BaseSalary
 	f.Y5Bonus = offer.Y5Bonus
 	f.IsActive = true
+	f.AAV = offer.AAV
 
 	// Calculate Value
 	y1SalaryVal := f.Y1BaseSalary * 0.8

@@ -10,7 +10,7 @@ func FindCollegePlayerSeasonStatsRecords(SeasonID, gameType string) []structs.Co
 
 	var playerStats []structs.CollegePlayerSeasonStats
 
-	db.Order("points desc").Where("season_id = ? AND game_type = ?", SeasonID, gameType).Find(&playerStats)
+	db.Where("season_id = ? AND game_type = ?", SeasonID, gameType).Find(&playerStats)
 
 	return playerStats
 }

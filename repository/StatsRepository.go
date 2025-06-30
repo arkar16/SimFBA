@@ -43,7 +43,7 @@ func FindCollegePlayerGameStatsRecords(SeasonID, GameType, GameID string) []stru
 		query = query.Where("game_id = ?", GameID)
 	}
 
-	query.Order("points desc").Find(&playerStats)
+	query.Find(&playerStats)
 
 	return playerStats
 }
@@ -65,7 +65,7 @@ func FindProPlayerGameStatsRecords(SeasonID, GameType, GameID string) []structs.
 		query = query.Where("game_id = ?", GameID)
 	}
 
-	query.Order("points desc").Find(&playerStats)
+	query.Find(&playerStats)
 
 	return playerStats
 }
@@ -75,7 +75,7 @@ func FindCollegeTeamSeasonStatsRecords(SeasonID, gameType string) []structs.Coll
 
 	var teamStats []structs.CollegeTeamSeasonStats
 
-	db.Order("points desc").Where("season_id = ? AND game_type = ?", SeasonID, gameType).Find(&teamStats)
+	db.Where("season_id = ? AND game_type = ?", SeasonID, gameType).Find(&teamStats)
 
 	return teamStats
 }
@@ -85,7 +85,7 @@ func FindProTeamSeasonStatsRecords(SeasonID, gameType string) []structs.NFLTeamS
 
 	var teamStats []structs.NFLTeamSeasonStats
 
-	db.Order("points desc").Where("season_id = ? AND game_type = ?", SeasonID, gameType).Find(&teamStats)
+	db.Where("season_id = ? AND game_type = ?", SeasonID, gameType).Find(&teamStats)
 
 	return teamStats
 }
@@ -95,7 +95,7 @@ func FindCollegeTeamGameStatsRecords(SeasonID, gameType string) []structs.Colleg
 
 	var teamStats []structs.CollegeTeamStats
 
-	db.Order("points desc").Where("season_id = ? AND game_type = ?", SeasonID, gameType).Find(&teamStats)
+	db.Where("season_id = ? AND game_type = ?", SeasonID, gameType).Find(&teamStats)
 
 	return teamStats
 }
@@ -105,7 +105,7 @@ func FindProTeamGameStatsRecords(SeasonID, gameType string) []structs.NFLTeamSta
 
 	var teamStats []structs.NFLTeamStats
 
-	db.Order("points desc").Where("season_id = ? AND game_type = ?", SeasonID, gameType).Find(&teamStats)
+	db.Where("season_id = ? AND game_type = ?", SeasonID, gameType).Find(&teamStats)
 
 	return teamStats
 }
@@ -115,7 +115,7 @@ func FindCollegeTeamStatsRecordByGame(gameID, teamID string) structs.CollegeTeam
 
 	var teamStats structs.CollegeTeamStats
 
-	db.Order("points desc").Where("game_id = ? AND team_id = ?", gameID, teamID).Find(&teamStats)
+	db.Where("game_id = ? AND team_id = ?", gameID, teamID).Find(&teamStats)
 
 	return teamStats
 }
@@ -125,7 +125,7 @@ func FindProTeamStatsRecordByGame(gameID, teamID string) structs.NFLTeamStats {
 
 	var teamStats structs.NFLTeamStats
 
-	db.Order("points desc").Where("game_id = ? AND team_id = ?", gameID, teamID).Find(&teamStats)
+	db.Where("game_id = ? AND team_id = ?", gameID, teamID).Find(&teamStats)
 
 	return teamStats
 }
@@ -135,7 +135,7 @@ func FindCollegePlayerStatsRecordByGame(gameID string) []structs.CollegePlayerSt
 
 	var playerStats []structs.CollegePlayerStats
 
-	db.Order("points desc").Where("game_id = ?", gameID).Find(&playerStats)
+	db.Where("game_id = ?", gameID).Find(&playerStats)
 
 	return playerStats
 }
@@ -145,7 +145,7 @@ func FindProPlayerStatsRecordByGame(gameID string) []structs.NFLPlayerStats {
 
 	var playerStats []structs.NFLPlayerStats
 
-	db.Order("points desc").Where("game_id = ?", gameID).Find(&playerStats)
+	db.Where("game_id = ?", gameID).Find(&playerStats)
 
 	return playerStats
 }

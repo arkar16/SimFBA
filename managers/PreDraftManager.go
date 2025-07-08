@@ -19,6 +19,11 @@ func RunPreDraftEvents() {
 	// Add the participants to each list
 	eventList = AddParticipants(util.GetParticipantIDS(), eventList, draftees)
 
+	// Attribute means
+	// Use standard letter grade conversion to know how many standard deviations from the mean
+	// With the mean and standard deviations, we can calculate a number to run drills for all of the skills
+	attributeMeans := config.AttributeMeans()
+
 	// For each event, create a result for each player
 	for _, event := range eventList {
 		for _, player := range event.Participants {
@@ -33,6 +38,7 @@ func RunPreDraftEvents() {
 	}
 
 	// Export the results
+
 	blah
 }
 

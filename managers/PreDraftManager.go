@@ -7,10 +7,16 @@ import (
 	"strings"
 
 	"github.com/CalebRose/SimFBA/models"
+	config "github.com/CalebRose/SimFBA/secrets"
+	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 )
 
 func RunPreDraftEvents() {
+	//db := dbprovider.GetInstance().GetDB()
+	ts := GetTimestamp()
+	// SET ALL EVENTS TO THIS SEASON ID
+
 	draftees := GetAllNFLDraftees()
 
 	// Create a list of events (Pro Days and Combines)
@@ -19,10 +25,7 @@ func RunPreDraftEvents() {
 	// Add the participants to each list
 	eventList = AddParticipants(util.GetParticipantIDS(), eventList, draftees)
 
-	// Attribute means
-	// Use standard letter grade conversion to know how many standard deviations from the mean
-	// With the mean and standard deviations, we can calculate a number to run drills for all of the skills
-	attributeMeans := config.AttributeMeans()
+	globalEventResults := []models.EventResults{}
 
 	// For each event, create a result for each player
 	for _, event := range eventList {
@@ -30,16 +33,18 @@ func RunPreDraftEvents() {
 			// For some % of draftees, create results based on their advertised grades, not their real grades.
 			hidePerformance := ShouldHidePerformance()
 
-			playerEvents := GenerateEvent(player, event)
+			playerEvents := GenerateEvent(player, event, ts)
 
 			// Run events on them
 			playerEvents = RunEvents(player, hidePerformance, playerEvents)
+
+			// Append the results to the global event list that will be written to the database
+			globalEventResults = append(globalEventResults, playerEvents)
 		}
 	}
 
 	// Export the results
-
-	blah
+	//repository.CreatePreDraftEventResultsBatch(db, globalEventResults, 200)
 }
 
 // Set % of draftees that only perform based on their advertised grades, not real grades
@@ -56,8 +61,9 @@ func ShouldHidePerformance() bool {
 	}
 }
 
-func GenerateEvent(draftee models.NFLDraftee, event models.PreDraftEvent) models.EventResults {
+func GenerateEvent(draftee models.NFLDraftee, event models.PreDraftEvent, timestamp structs.Timestamp) models.EventResults {
 	var newEvent models.EventResults
+	newEvent.SeasonID = uint(timestamp.NFLSeasonID)
 	newEvent.PlayerID = uint(draftee.PlayerID)
 	newEvent.IsCombine = event.IsCombine
 	newEvent.Name = event.Name
@@ -65,8 +71,16 @@ func GenerateEvent(draftee models.NFLDraftee, event models.PreDraftEvent) models
 }
 
 func RunEvents(draftee models.NFLDraftee, shouldHidePerformance bool, event models.EventResults) models.EventResults {
-	event = RunUniversalEvents(draftee, shouldHidePerformance, event)
-	event = RunPositionEvents(draftee, shouldHidePerformance, event)
+	// If we should hide the performance, we should create a dummy draftee based on the original draftee, but change their actual attributes to the correct values
+	// for a player of that letter grade
+	if shouldHidePerformance {
+		dummy := GetDummyDraftee(draftee)
+		event = RunUniversalEvents(dummy, shouldHidePerformance, event)
+		event = RunPositionEvents(dummy, shouldHidePerformance, event)
+	} else {
+		event = RunUniversalEvents(draftee, shouldHidePerformance, event)
+		event = RunPositionEvents(draftee, shouldHidePerformance, event)
+	}
 	return event
 }
 
@@ -107,7 +121,6 @@ func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool, ev
 	archetype := CombineArchetypeStr(draftee.Archetype, draftee.ArchetypeTwo)
 
 	// Must handle whether player's true attributes should be hidden
-
 	if strings.Contains(position, strings.ToLower("QB")) {
 		event.ThrowingDistance = RunQBDistance(draftee.ThrowPower, event.IsCombine)
 		event.ThrowingAccuracy = RunQBAccuracy(draftee.ThrowAccuracy, event.IsCombine)
@@ -178,6 +191,82 @@ func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool, ev
 		event.CoffinPunt = RunCoffinPunt(draftee.PuntAccuracy, event.IsCombine)
 	} else {
 		fmt.Println("WHAT THE HECK KIND OF POSITION DO YOU HAVE???")
+	}
+
+	return event
+}
+
+func GetDummyDraftee(orginalDraftee models.NFLDraftee) models.NFLDraftee {
+	// Attribute means
+	// Use standard letter grade conversion to know how many standard deviations from the mean
+	// With the mean and standard deviations, we can calculate a number to run drills for all of the skills
+	attributeMeans := config.AttributeMeans()
+
+	tempDraftee := orginalDraftee
+	tempDraftee.Speed = int(GetNewAttributeRating(tempDraftee.SpeedGrade, attributeMeans, "Speed", (tempDraftee.Position)))
+	tempDraftee.Agility = int(GetNewAttributeRating(tempDraftee.AgilityGrade, attributeMeans, "Agility", (tempDraftee.Position)))
+	tempDraftee.Strength = int(GetNewAttributeRating(tempDraftee.StrengthGrade, attributeMeans, "Strength", (tempDraftee.Position)))
+	tempDraftee.ThrowPower = int(GetNewAttributeRating(tempDraftee.ThrowPowerGrade, attributeMeans, "ThrowPower", (tempDraftee.Position)))
+	tempDraftee.ThrowAccuracy = int(GetNewAttributeRating(tempDraftee.ThrowAccuracyGrade, attributeMeans, "ThrowAccuracy", (tempDraftee.Position)))
+	tempDraftee.Catching = int(GetNewAttributeRating(tempDraftee.CarryingGrade, attributeMeans, "Catching", (tempDraftee.Position)))
+	tempDraftee.RouteRunning = int(GetNewAttributeRating(tempDraftee.RouteRunningGrade, attributeMeans, "RouteRunning", (tempDraftee.Position)))
+	tempDraftee.RunBlock = int(GetNewAttributeRating(tempDraftee.RunBlockGrade, attributeMeans, "RunBlock", (tempDraftee.Position)))
+	tempDraftee.PassBlock = int(GetNewAttributeRating(tempDraftee.PassBlockGrade, attributeMeans, "PassBlock", (tempDraftee.Position)))
+	tempDraftee.RunDefense = int(GetNewAttributeRating(tempDraftee.RunDefenseGrade, attributeMeans, "RunDefense", (tempDraftee.Position)))
+	tempDraftee.PassRush = int(GetNewAttributeRating(tempDraftee.PassRushGrade, attributeMeans, "PassRush", (tempDraftee.Position)))
+	tempDraftee.ManCoverage = int(GetNewAttributeRating(tempDraftee.ManCoverageGrade, attributeMeans, "ManCoverage", (tempDraftee.Position)))
+	tempDraftee.ZoneCoverage = int(GetNewAttributeRating(tempDraftee.ZoneCoverageGrade, attributeMeans, "ZoneCoverage", (tempDraftee.Position)))
+	tempDraftee.KickPower = int(GetNewAttributeRating(tempDraftee.KickPowerGrade, attributeMeans, "KickPower", (tempDraftee.Position)))
+	tempDraftee.KickAccuracy = int(GetNewAttributeRating(tempDraftee.KickAccuracyGrade, attributeMeans, "KickAccuracy", (tempDraftee.Position)))
+	tempDraftee.PuntPower = int(GetNewAttributeRating(tempDraftee.PuntPowerGrade, attributeMeans, "PuntPower", (tempDraftee.Position)))
+	tempDraftee.PuntAccuracy = int(GetNewAttributeRating(tempDraftee.PuntAccuracyGrade, attributeMeans, "PuntAccuracy", (tempDraftee.Position)))
+	tempDraftee.FootballIQ = int(GetNewAttributeRating(tempDraftee.FootballIQGrade, attributeMeans, "FootballIQ", (tempDraftee.Position)))
+
+	return tempDraftee
+}
+
+func GetMeanForAttribute(mapping map[string]map[string]map[string]float32, attribute string, position string) float32 {
+	return mapping[attribute][position]["mean"]
+}
+
+func GetStdDevForAttribute(mapping map[string]map[string]map[string]float32, attribute string, position string) float32 {
+	return mapping[attribute][position]["stddev"]
+}
+
+func GetNewAttributeRating(grade string, mapping map[string]map[string]map[string]float32, position string, attribute string) uint {
+	mean := GetMeanForAttribute(mapping, attribute, position)
+	stddev := GetMeanForAttribute(mapping, attribute, position)
+
+	return uint(mean + (stddev * TranslateLetterGradeToStdDevs(grade)))
+}
+
+func TranslateLetterGradeToStdDevs(grade string) float32 {
+	if grade == "A+" {
+		return 2.5
+	} else if grade == "A" {
+		return 2
+	} else if grade == "A-" {
+		return 1.75
+	} else if grade == "B+" {
+		return 1.5
+	} else if grade == "B" {
+		return 1
+	} else if grade == "B-" {
+		return 0.75
+	} else if grade == "C+" {
+		return 0.5
+	} else if grade == "C" {
+		return 0
+	} else if grade == "C-" {
+		return -0.5
+	} else if grade == "D+" {
+		return -0.75
+	} else if grade == "D" {
+		return -1
+	} else if grade == "D-" {
+		return -1.5
+	} else { // F
+		return -2
 	}
 }
 

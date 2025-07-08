@@ -15,6 +15,7 @@ type PreDraftEvent struct {
 
 type EventResults struct {
 	gorm.Model
+	SeasonID         uint
 	Name             string
 	IsCombine        bool
 	PlayerID         uint

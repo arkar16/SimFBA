@@ -90,6 +90,7 @@ func (np *NFLPlayer) ToggleIsFreeAgent() {
 	np.IsPracticeSquad = false
 	np.Rejections = 0
 	np.IsWaived = false
+	np.Rejections = 0
 }
 
 func (np *NFLPlayer) SignPlayer(TeamID int, Abbr string) {
@@ -100,6 +101,7 @@ func (np *NFLPlayer) SignPlayer(TeamID int, Abbr string) {
 	np.IsAcceptingOffers = false
 	np.IsNegotiating = false
 	np.IsPracticeSquad = false
+	np.Rejections = 0
 }
 
 func (np *NFLPlayer) ToggleIsPracticeSquad() {
@@ -211,6 +213,7 @@ func (np *NFLPlayer) Progress(attr CollegePlayerProgressions) {
 	if len(attr.PotentialGrade) > 0 {
 		np.PotentialGrade = attr.PotentialGrade
 	}
+	np.Rejections = 0
 }
 
 func (f *NFLPlayer) MapSeasonStats(seasonStats NFLPlayerSeasonStats) {

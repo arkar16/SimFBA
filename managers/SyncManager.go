@@ -737,7 +737,7 @@ func AllocatePointsToAIBoards() {
 
 			if removeCrootFromBoard || (team.ScholarshipsAvailable == 0 && !croot.Scholarship) {
 				if croot.Scholarship {
-					croot.ToggleScholarship(false, true)
+					croot.ToggleScholarship()
 					team.ReallocateScholarship()
 				}
 				croot.ToggleRemoveFromBoard()
@@ -752,7 +752,7 @@ func AllocatePointsToAIBoards() {
 
 			croot.AllocateCurrentWeekPoints(num)
 			if !croot.Scholarship && team.ScholarshipsAvailable > 0 && team.AIAutoOfferscholarships {
-				croot.ToggleScholarship(true, false)
+				croot.ToggleScholarship()
 				team.SubtractScholarshipsAvailable()
 			}
 

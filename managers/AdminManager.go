@@ -269,10 +269,13 @@ func SyncTimeslot(timeslot string) {
 						isDomed := false
 
 						if game.HomeTeamWin {
-							stadium = game.Stadium
-							city = game.City
-							state = game.State
-							stadiumID = int(game.StadiumID)
+							homeTeam := GetTeamByTeamID(strconv.Itoa(homeTeamID))
+							stadiumRecord := GetStadiumByStadiumID(strconv.Itoa(int(homeTeam.StadiumID)))
+							stadium = homeTeam.Stadium
+							city = homeTeam.City
+							state = homeTeam.State
+							stadiumID = int(homeTeam.StadiumID)
+							isDomed = stadiumRecord.IsDomed
 						} else {
 							awayTeam := GetTeamByTeamID(strconv.Itoa(awayTeamID))
 							stadiumRecord := GetStadiumByStadiumID(strconv.Itoa(int(awayTeam.StadiumID)))
@@ -282,7 +285,7 @@ func SyncTimeslot(timeslot string) {
 							stadiumID = int(awayTeam.StadiumID)
 							isDomed = stadiumRecord.IsDomed
 						}
-						if game.NextGameHOA == "H" && (nextGame.City == "" || nextGame.City == "N/A") {
+						if game.NextGameHOA == "H" && !nextGame.IsNationalChampionship && !nextGame.IsNeutral {
 							nextGame.AddLocation(stadiumID, stadium, city, state, isDomed)
 						}
 					}

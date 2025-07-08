@@ -23,7 +23,7 @@ func GetAllFreeAgents() []structs.NFLPlayer {
 
 	fas := []structs.NFLPlayer{}
 
-	db.Where("is_free_agent = ?", true).Find(&fas)
+	db.Order("minimum_value desc").Where("is_free_agent = ?", true).Find(&fas)
 
 	return fas
 }
@@ -367,11 +367,26 @@ func GetFreeAgentOfferByOfferID(OfferID string) structs.FreeAgencyOffer {
 	return offer
 }
 
+func GetFreeAgentOfferByTeamIDAndPlayerID(playerID, teamID string) structs.FreeAgencyOffer {
+	db := dbprovider.GetInstance().GetDB()
+
+	offer := structs.FreeAgencyOffer{}
+
+	err := db.Where("nfl_player_id = ? AND team_id = ?", playerID, teamID).Find(&offer).Error
+	if err != nil {
+		return offer
+	}
+
+	return offer
+}
+
 func CreateFAOffer(offer structs.FreeAgencyOfferDTO) structs.FreeAgencyOffer {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
-	freeAgentOffer := GetFreeAgentOfferByOfferID(strconv.Itoa(int(offer.ID)))
-	player := GetNFLPlayerRecord(strconv.Itoa(int(offer.NFLPlayerID)))
+	playerID := strconv.Itoa(int(offer.NFLPlayerID))
+	teamID := strconv.Itoa(int(offer.TeamID))
+	freeAgentOffer := GetFreeAgentOfferByTeamIDAndPlayerID(playerID, teamID)
+	player := GetNFLPlayerRecord(playerID)
 
 	if freeAgentOffer.ID == 0 {
 		id := GetLatestFreeAgentOfferInDB(db)
@@ -687,7 +702,12 @@ func SyncExtensionOffers() {
 					} else if !validation && player.FreeAgency != "Average" {
 						minimumValueMultiplier = 1.15
 					}
-					percentage := ((e.ContractValue / (min * minimumValueMultiplier)) * 100)
+					minValPercentage := ((e.ContractValue / (min * minimumValueMultiplier)) * 100)
+					aavPercentage := ((e.AAV / (player.AAV * minimumValueMultiplier)) * 100)
+					percentage := minValPercentage
+					if aavPercentage > minValPercentage {
+						percentage = aavPercentage
+					}
 					odds := getExtensionPercentageOdds(percentage)
 					// Run Check on the Extension
 

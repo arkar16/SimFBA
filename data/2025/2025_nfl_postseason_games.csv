@@ -1,0 +1,14 @@
+GameID,Season,Week,Home Team,Away Team,Listed Win,Other Win,Listed Score,Other Score,Conference Game,Division Game,Neutral Site,PreSeason,Conference Champ,Playoff,National Champ,Listed Coach,Other Coach,TimeSlot,Stadium,City,State,GameTitle,Info,NextGameID,HoA
+987,2025,19,IND,PIT,0,0,0,0,0,0,0,0,0,1,0,npklemm,smackemz3,Sunday Noon,Lucas Oil Stadium,Indianapolis,IN,AFC Wildcard,,993,A
+988,2025,19,DEN,TEN,0,0,0,0,0,0,0,0,0,1,0,alexfall861,Paradoxic,Sunday Noon,Empower Field at Mile High,Denver,CO,AFC Wildcard,,994,H
+989,2025,19,CLE,JAX,0,0,0,0,0,0,0,0,0,1,0,Piercewise1,Weeze,Sunday Afternoon,FirstEnergy Stadium,Cleveland,OH,AFC Wildcard,,994,A
+990,2025,19,GB,DAL,0,0,0,0,0,0,0,0,0,1,0,JC,Rocketcan,Sunday Noon,Lambeau Field,Green Bay,WI,NFC Wildcard,,995,A
+991,2025,19,ATL,CAR,0,0,0,0,0,0,0,0,0,1,0,mahrowkeen,Sarge,Sunday Noon,Mercedes-Benz Stadium,Atlanta,GA,NFC Wildcard,,996,H
+992,2025,19,LAR,PHI,0,0,0,0,0,0,0,0,0,1,0,Vivid,acewulf,Sunday Afternoon,SoFi Stadium,Inglewood,CA,NFC Wildcard,,996,A
+993,2025,20,MIA,,0,0,0,0,0,0,0,0,0,1,0,TheLiberator,#N/A,Sunday Noon,Hard Rock Stadium,Miami Gardens,FL,AFC Division Round,,997,H
+994,2025,20,,,0,0,0,0,0,0,0,0,0,1,0,#N/A,#N/A,Sunday Afternoon,#N/A,#N/A,#N/A,AFC Division Round,,997,A
+995,2025,20,WAS,,0,0,0,0,0,0,0,0,0,1,0,Ewade,#N/A,Sunday Noon,FedExField,Landover,MD,NFC Division Round,,998,H
+996,2025,20,,,0,0,0,0,0,0,0,0,0,1,0,#N/A,#N/A,Sunday Afternoon,#N/A,#N/A,#N/A,NFC Division Round,,998,A
+997,2025,21,,,0,0,0,0,0,0,0,0,0,1,0,#N/A,#N/A,Sunday Noon,#N/A,#N/A,#N/A,2024 AFC Championship,,999,H
+998,2025,21,,,0,0,0,0,0,0,0,0,0,1,0,#N/A,#N/A,Sunday Afternoon,#N/A,#N/A,#N/A,2024 NFC Championship,,999,A
+999,2025,22,,,0,0,0,0,0,0,1,0,0,1,1,#N/A,#N/A,Sunday Night,#N/A,#N/A,#N/A,2024 SimNFL Super Bowl,,0,

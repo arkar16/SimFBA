@@ -125,6 +125,7 @@ func handleRequests() http.Handler {
 	// apiRouter.HandleFunc("/spending/count/fix", controller.FixSpendingCount).Methods("GET")
 
 	// Free Agency Controls
+	// apiRouter.HandleFunc("/nfl/extensions/sync", controller.SyncExtensions).Methods("GET")
 	apiRouter.HandleFunc("/nfl/extension/create/offer", controller.CreateExtensionOffer).Methods("POST")
 	apiRouter.HandleFunc("/nfl/extension/cancel/offer", controller.CancelExtensionOffer).Methods("POST")
 	apiRouter.HandleFunc("/nfl/freeagency/create/offer", controller.CreateFreeAgencyOffer).Methods("POST")
@@ -184,7 +185,7 @@ func handleRequests() http.Handler {
 	// apiRouter.HandleFunc("/admin/import/missing/draftees", controller.ImportMissingDraftees).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/missing/cfb/stats", controller.ImportMissingStats).Methods("GET")
 	// apiRouter.HandleFunc("/admin/import/preferences", controller.ImportTradePreferences).Methods("GET")
-	apiRouter.HandleFunc("/import/custom/croots", controller.ImportCustomCroots).Methods("GET")
+	// apiRouter.HandleFunc("/import/custom/croots", controller.ImportCustomCroots).Methods("GET")
 	// apiRouter.HandleFunc("/import/simnfl/updated/values", controller.ImportSimNFLMinimumValues).Methods("GET")
 	// apiRouter.HandleFunc("/import/simfba/draft/picks", controller.ImportNFLDraftPicks).Methods("GET")
 	// apiRouter.HandleFunc("/import/simfba/updated/picks", controller.UpdateDraftPicksForDraft).Methods("GET")
@@ -230,7 +231,7 @@ func handleRequests() http.Handler {
 
 	// Rankings Controls
 	// apiRouter.HandleFunc("/simfba/cfb/croots/generate/", controller.GenerateRecruits).Methods("GET")
-	// apiRouter.HandleFunc("/rankings/assign/all/croots/", controller.AssignAllRecruitRanks).Methods("GET")
+	apiRouter.HandleFunc("/rankings/assign/all/croots/", controller.AssignAllRecruitRanks).Methods("GET")
 
 	// Recruiting Controls
 	apiRouter.HandleFunc("/recruiting/overview/dashboard/{teamID}", controller.GetRecruitingProfileForDashboardByTeamID).Methods("GET")

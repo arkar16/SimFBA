@@ -126,9 +126,11 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		wg.Add(5)
 		go func() {
 			defer wg.Done()
+			mu.Lock()
 			collegeTeam = GetTeamByTeamID(collegeID)
 			collegeTeam.UpdateLatestInstance()
 			repository.SaveCFBTeam(collegeTeam, dbprovider.GetInstance().GetDB())
+			mu.Unlock()
 		}()
 		go func() {
 			defer wg.Done()
@@ -163,9 +165,11 @@ func GetFirstBootstrapData(collegeID, proID string) BootstrapData {
 		wg.Add(3)
 		go func() {
 			defer wg.Done()
+			mu.Lock()
 			proTeam = GetNFLTeamByTeamID(proID)
 			proTeam.UpdateLatestInstance()
 			repository.SaveNFLTeam(proTeam, dbprovider.GetInstance().GetDB())
+			mu.Unlock()
 		}()
 
 		go func() {

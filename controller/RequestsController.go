@@ -36,6 +36,8 @@ func CreateTeamRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.CreateTeamRequest(request)
+
+	json.NewEncoder(w).Encode(request)
 }
 
 func ApproveTeamRequest(w http.ResponseWriter, r *http.Request) {
@@ -48,6 +50,8 @@ func ApproveTeamRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.ApproveTeamRequest(request)
+	json.NewEncoder(w).Encode(request)
+
 }
 
 func RejectTeamRequest(w http.ResponseWriter, r *http.Request) {
@@ -60,6 +64,8 @@ func RejectTeamRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.RejectTeamRequest(request)
+	json.NewEncoder(w).Encode(request)
+
 }
 
 func RemoveUserFromTeam(w http.ResponseWriter, r *http.Request) {
@@ -70,6 +76,8 @@ func RemoveUserFromTeam(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.RemoveUserFromTeam(teamID)
+	json.NewEncoder(w).Encode(true)
+
 }
 
 func ViewCFBTeamUponRequest(w http.ResponseWriter, r *http.Request) {
@@ -106,6 +114,7 @@ func CreateNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.CreateNFLTeamRequest(request)
+	json.NewEncoder(w).Encode(request)
 
 }
 
@@ -119,6 +128,7 @@ func ApproveNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.ApproveNFLTeamRequest(request)
+	json.NewEncoder(w).Encode(request)
 
 }
 
@@ -132,6 +142,8 @@ func RejectNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.RejectNFLTeamRequest(request)
+	json.NewEncoder(w).Encode(request)
+
 }
 
 func RemoveNFLUserFromNFLTeam(w http.ResponseWriter, r *http.Request) {
@@ -145,5 +157,5 @@ func RemoveNFLUserFromNFLTeam(w http.ResponseWriter, r *http.Request) {
 
 	managers.RemoveUserFromNFLTeam(request)
 
-	// json.NewEncoder(w).Encode(team)
+	json.NewEncoder(w).Encode(true)
 }

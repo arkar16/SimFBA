@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/CalebRose/SimFBA/managers"
@@ -37,8 +36,6 @@ func CreateTeamRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.CreateTeamRequest(request)
-
-	fmt.Fprintf(w, "Request Successfully Created")
 }
 
 func ApproveTeamRequest(w http.ResponseWriter, r *http.Request) {
@@ -51,8 +48,6 @@ func ApproveTeamRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.ApproveTeamRequest(request)
-
-	fmt.Fprintf(w, "Request: %+v", request)
 }
 
 func RejectTeamRequest(w http.ResponseWriter, r *http.Request) {
@@ -112,7 +107,6 @@ func CreateNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
 
 	managers.CreateNFLTeamRequest(request)
 
-	fmt.Fprintf(w, "Request Successfully Created")
 }
 
 func ApproveNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +120,6 @@ func ApproveNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
 
 	managers.ApproveNFLTeamRequest(request)
 
-	fmt.Fprintf(w, "Request: %+v", request)
 }
 
 func RejectNFLTeamRequest(w http.ResponseWriter, r *http.Request) {

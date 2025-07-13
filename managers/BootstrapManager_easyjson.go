@@ -5116,8 +5116,12 @@ func easyjson83226b63DecodeGithubComCalebRoseSimFBAStructs17(in *jlexer.Lexer, o
 			out.BonusPercentage = float64(in.Float64())
 		case "AAV":
 			out.AAV = float64(in.Float64())
+		case "Syncs":
+			out.Syncs = uint8(in.Uint8())
 		case "IsActive":
 			out.IsActive = bool(in.Bool())
+		case "IsRejected":
+			out.IsRejected = bool(in.Bool())
 		case "ID":
 			out.ID = uint(in.Uint())
 		case "CreatedAt":
@@ -5250,9 +5254,19 @@ func easyjson83226b63EncodeGithubComCalebRoseSimFBAStructs17(out *jwriter.Writer
 		out.Float64(float64(in.AAV))
 	}
 	{
+		const prefix string = ",\"Syncs\":"
+		out.RawString(prefix)
+		out.Uint8(uint8(in.Syncs))
+	}
+	{
 		const prefix string = ",\"IsActive\":"
 		out.RawString(prefix)
 		out.Bool(bool(in.IsActive))
+	}
+	{
+		const prefix string = ",\"IsRejected\":"
+		out.RawString(prefix)
+		out.Bool(bool(in.IsRejected))
 	}
 	{
 		const prefix string = ",\"ID\":"
@@ -12649,6 +12663,10 @@ func easyjson83226b63DecodeGithubComCalebRoseSimFBAStructs33(in *jlexer.Lexer, o
 			out.PenaltyMarks = uint8(in.Uint8())
 		case "JerseyType":
 			out.JerseyType = uint8(in.Uint8())
+		case "LastLogin":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.LastLogin).UnmarshalJSON(data))
+			}
 		case "ID":
 			out.ID = uint(in.Uint())
 		case "CreatedAt":
@@ -12964,6 +12982,11 @@ func easyjson83226b63EncodeGithubComCalebRoseSimFBAStructs33(out *jwriter.Writer
 		const prefix string = ",\"JerseyType\":"
 		out.RawString(prefix)
 		out.Uint8(uint8(in.JerseyType))
+	}
+	{
+		const prefix string = ",\"LastLogin\":"
+		out.RawString(prefix)
+		out.Raw((in.LastLogin).MarshalJSON())
 	}
 	{
 		const prefix string = ",\"ID\":"
@@ -15825,6 +15848,10 @@ func easyjson83226b63DecodeGithubComCalebRoseSimFBAStructs30(in *jlexer.Lexer, o
 			out.PenaltyMarks = uint8(in.Uint8())
 		case "JerseyType":
 			out.JerseyType = uint8(in.Uint8())
+		case "LastLogin":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.LastLogin).UnmarshalJSON(data))
+			}
 		case "ID":
 			out.ID = uint(in.Uint())
 		case "CreatedAt":
@@ -16092,6 +16119,11 @@ func easyjson83226b63EncodeGithubComCalebRoseSimFBAStructs30(out *jwriter.Writer
 		const prefix string = ",\"JerseyType\":"
 		out.RawString(prefix)
 		out.Uint8(uint8(in.JerseyType))
+	}
+	{
+		const prefix string = ",\"LastLogin\":"
+		out.RawString(prefix)
+		out.Raw((in.LastLogin).MarshalJSON())
 	}
 	{
 		const prefix string = ",\"ID\":"

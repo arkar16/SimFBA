@@ -782,11 +782,12 @@ func createWalkon(position string, firstNameList [][]string, lastNameList [][]st
 	basePlayer.GetOverall()
 
 	return structs.Recruit{
-		BasePlayer: basePlayer,
-		City:       city,
-		HighSchool: highSchool,
-		State:      state,
-		IsSigned:   true,
+		BasePlayer:      basePlayer,
+		City:            city,
+		HighSchool:      highSchool,
+		State:           state,
+		IsSigned:        true,
+		TopRankModifier: 1,
 	}
 }
 

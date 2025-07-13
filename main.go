@@ -93,7 +93,7 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/admin/ai/sync/boards", controller.SyncAIBoards).Methods("GET")
 	apiRouter.HandleFunc("/admin/fix/affinities", controller.RecalibrateCrootProfiles).Methods("GET")
 	apiRouter.HandleFunc("/admin/run/the/games/", controller.RunTheGames).Methods("GET")
-	// apiRouter.HandleFunc("/admin/overall/progressions/next/season", controller.ProgressToNextSeason).Methods("GET")
+	apiRouter.HandleFunc("/admin/overall/progressions/next/season", controller.ProgressToNextSeason).Methods("GET")
 	// apiRouter.HandleFunc("/admin/overall/progressions/nfl", controller.ProgressNFL).Methods("GET")
 	apiRouter.HandleFunc("/admin/trades/accept/sync/{proposalID}", controller.SyncAcceptedTrade).Methods("GET")
 	apiRouter.HandleFunc("/admin/trades/veto/sync/{proposalID}", controller.VetoAcceptedTrade).Methods("GET")

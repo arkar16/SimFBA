@@ -81,14 +81,14 @@ func CFBProgressionMain() {
 					}
 
 					// Generate Tier
-					if diceRoll == 1 {
+					if diceRoll == 1 && player.ID != 24984 {
 						boomBustStatus = "Bust"
 						enableBoomBust = true
 						// Bust
 
 						draftee.AssignBoomBustStatus(boomBustStatus)
 
-					} else if diceRoll == 20 {
+					} else if diceRoll == 20 || player.ID == 24984 {
 						enableBoomBust = true
 						// Boom
 
@@ -1172,10 +1172,12 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		// If David Ross
 		if cp.ID == 24984 {
 			ThrowPower = PrimaryProgression(cp.Progression, cp.ThrowPower, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Throw Power", cp.IsRedshirting)
+			FootballIQ = PrimaryProgression(cp.Progression, cp.FootballIQ, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Football IQ", cp.IsRedshirting)
 			ThrowAccuracy = PrimaryProgression(cp.Progression, cp.ThrowAccuracy, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Throw Accuracy", cp.IsRedshirting)
 		} else {
 			ThrowPower = SecondaryProgression(cp.Progression, cp.ThrowPower)
 			ThrowAccuracy = SecondaryProgression(cp.Progression, cp.ThrowAccuracy)
+			FootballIQ = SecondaryProgression(cp.Progression, cp.FootballIQ)
 		}
 		// Primary Progressions
 		PuntPower = PrimaryProgression(cp.Progression, cp.PuntPower, mostPlayedPosition, cp.Archetype, SnapsPerGame, "Punt Power", cp.IsRedshirting)
@@ -1196,7 +1198,6 @@ func ProgressCollegePlayer(cp structs.CollegePlayer, SeasonID string, stats []st
 		Strength = SecondaryProgression(cp.Progression, cp.Strength)
 		Speed = SecondaryProgression(cp.Progression, cp.Speed)
 		Agility = SecondaryProgression(cp.Progression, cp.Agility)
-		FootballIQ = SecondaryProgression(cp.Progression, cp.FootballIQ)
 	}
 
 	progressions := structs.CollegePlayerProgressions{

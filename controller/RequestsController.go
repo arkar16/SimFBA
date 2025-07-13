@@ -65,8 +65,6 @@ func RejectTeamRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.RejectTeamRequest(request)
-
-	fmt.Fprintf(w, "Request: %+v", request)
 }
 
 func RemoveUserFromTeam(w http.ResponseWriter, r *http.Request) {
@@ -77,8 +75,6 @@ func RemoveUserFromTeam(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.RemoveUserFromTeam(teamID)
-
-	// json.NewEncoder(w).Encode(team)
 }
 
 func ViewCFBTeamUponRequest(w http.ResponseWriter, r *http.Request) {
@@ -143,8 +139,6 @@ func RejectNFLTeamRequest(w http.ResponseWriter, r *http.Request) {
 	}
 
 	managers.RejectNFLTeamRequest(request)
-
-	fmt.Fprintf(w, "Request: %+v", request)
 }
 
 func RemoveNFLUserFromNFLTeam(w http.ResponseWriter, r *http.Request) {

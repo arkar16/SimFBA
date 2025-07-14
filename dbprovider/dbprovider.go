@@ -101,6 +101,7 @@ func (p *Provider) InitDatabase() bool {
 	// db.AutoMigrate(&structs.NFLCapsheet{})
 	// db.AutoMigrate(&structs.NFLDraftPick{})
 	// db.AutoMigrate(&models.NFLDraftee{})
+	// db.AutoMigrate(&models.EventResults{})
 	// db.AutoMigrate(&models.NFLWarRoom{})
 	// db.AutoMigrate(&models.ScoutingProfile{})
 	// db.AutoMigrate(&structs.NFLContract{})

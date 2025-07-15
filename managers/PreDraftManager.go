@@ -6,14 +6,16 @@ import (
 	"math/rand"
 	"strings"
 
+	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/models"
+	"github.com/CalebRose/SimFBA/repository"
 	config "github.com/CalebRose/SimFBA/secrets"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
 )
 
 func RunPreDraftEvents() {
-	//db := dbprovider.GetInstance().GetDB()
+	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
 	// SET ALL EVENTS TO THIS SEASON ID
 
@@ -44,7 +46,7 @@ func RunPreDraftEvents() {
 	}
 
 	// Export the results
-	//repository.CreatePreDraftEventResultsBatch(db, globalEventResults, 200)
+	repository.CreatePreDraftEventResultsBatch(db, globalEventResults, 200)
 }
 
 // Set % of draftees that only perform based on their advertised grades, not real grades
@@ -121,70 +123,70 @@ func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool, ev
 	archetype := CombineArchetypeStr(draftee.Archetype, draftee.ArchetypeTwo)
 
 	// Must handle whether player's true attributes should be hidden
-	if strings.Contains(position, strings.ToLower("QB")) {
+	if strings.Contains(strings.ToLower(position), strings.ToLower("QB")) {
 		event.ThrowingDistance = RunQBDistance(draftee.ThrowPower, event.IsCombine)
 		event.ThrowingAccuracy = RunQBAccuracy(draftee.ThrowAccuracy, event.IsCombine)
-	} else if strings.Contains(position, strings.ToLower("RB")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("RB")) {
 		event.InsideRun = RunInsideRun(draftee.Speed, draftee.Strength, event.IsCombine)
 		event.OutsideRun = RunOutsideRun(draftee.Speed, draftee.Agility, event.IsCombine)
 		event.Catching = RunCatching(draftee.Catching, event.IsCombine)
 		event.RouteRunning = RunRouteRunning(draftee.RouteRunning, event.IsCombine)
-	} else if strings.Contains(position, strings.ToLower("WR")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("WR")) {
 		event.Catching = RunCatching(draftee.Catching, event.IsCombine)
 		event.RouteRunning = RunRouteRunning(draftee.RouteRunning, event.IsCombine)
-	} else if strings.Contains(position, strings.ToLower("TE")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("TE")) {
 		event.Catching = RunCatching(draftee.Catching, event.IsCombine)
 		event.RouteRunning = RunRouteRunning(draftee.RouteRunning, event.IsCombine)
 		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, position)
-	} else if strings.Contains(position, strings.ToLower("FB")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("FB")) {
 		event.InsideRun = RunInsideRun(draftee.Speed, draftee.Strength, event.IsCombine)
 		event.OutsideRun = RunOutsideRun(draftee.Speed, draftee.Agility, event.IsCombine)
 		event.Catching = RunCatching(draftee.Catching, event.IsCombine)
 		event.RouteRunning = RunRouteRunning(draftee.RouteRunning, event.IsCombine)
 		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, position)
-	} else if strings.Contains(position, strings.ToLower("TE")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("TE")) {
 		event.Catching = RunCatching(draftee.Catching, event.IsCombine)
 		event.RouteRunning = RunRouteRunning(draftee.RouteRunning, event.IsCombine)
 		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, position)
-	} else if strings.Contains(position, strings.ToLower("OT")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("OT")) {
 		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, position)
 		event.PassBlocking = RunPassBlocking(draftee.PassBlock, event.IsCombine, position)
-	} else if strings.Contains(position, strings.ToLower("OG")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("OG")) {
 		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, position)
 		event.PassBlocking = RunPassBlocking(draftee.PassBlock, event.IsCombine, position)
-	} else if strings.Contains(position, strings.ToLower("C")) && !strings.Contains(position, strings.ToLower("CB")) { // Special case so we don't get CBs in here.
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("C")) && !strings.Contains(strings.ToLower(position), strings.ToLower("CB")) { // Special case so we don't get CBs in here.
 		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, position)
 		event.PassBlocking = RunPassBlocking(draftee.PassBlock, event.IsCombine, position)
-	} else if strings.Contains(position, strings.ToLower("DT")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("DT")) {
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.PassRush = RunPassRush(draftee.PassRush, event.IsCombine)
-	} else if strings.Contains(position, strings.ToLower("DE")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("DE")) {
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.PassRush = RunPassRush(draftee.PassRush, event.IsCombine)
-	} else if strings.Contains(position, strings.ToLower("OLB")) && strings.Contains(archetype, strings.ToLower("Pass Rush")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("OLB")) && strings.Contains(archetype, strings.ToLower("Pass Rush")) {
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.PassRush = RunPassRush(draftee.PassRush, event.IsCombine)
-	} else if strings.Contains(position, strings.ToLower("OLB")) && !strings.Contains(archetype, strings.ToLower("Pass Rush")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("OLB")) && !strings.Contains(archetype, strings.ToLower("Pass Rush")) {
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.LBCoverage = RunLBCoverage(draftee.ManCoverage, draftee.ZoneCoverage, event.IsCombine)
-	} else if strings.Contains(position, strings.ToLower("ILB")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("ILB")) {
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.LBCoverage = RunLBCoverage(draftee.ManCoverage, draftee.ZoneCoverage, event.IsCombine)
-	} else if strings.Contains(position, strings.ToLower("CB")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("CB")) {
 		event.ManCoverage = RunManCoverage(draftee.ManCoverage, event.IsCombine)
 		event.ZoneCoverage = RunZoneCoverage(draftee.ZoneCoverage, event.IsCombine)
-	} else if strings.Contains(position, strings.ToLower("FS")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("FS")) {
 		event.ManCoverage = RunManCoverage(draftee.ManCoverage, event.IsCombine)
 		event.ZoneCoverage = RunZoneCoverage(draftee.ZoneCoverage, event.IsCombine)
-	} else if strings.Contains(position, strings.ToLower("SS")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("SS")) {
 		event.ManCoverage = RunManCoverage(draftee.ManCoverage, event.IsCombine)
 		event.ZoneCoverage = RunZoneCoverage(draftee.ZoneCoverage, event.IsCombine)
-	} else if strings.Contains(position, strings.ToLower("K")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("K")) {
 		event.Kickoff = RunKickoffDrill(draftee.KickPower, draftee.PuntPower, event.IsCombine)
 		event.Fieldgoal = RunFieldGoalDrill(draftee.KickPower, draftee.KickAccuracy, event.IsCombine)
 		event.PuntDistance = RunPuntDistance(draftee.PuntPower, event.IsCombine)
 		event.CoffinPunt = RunCoffinPunt(draftee.PuntAccuracy, event.IsCombine)
-	} else if strings.Contains(position, strings.ToLower("P")) {
+	} else if strings.Contains(strings.ToLower(position), strings.ToLower("P")) {
 		event.Kickoff = RunKickoffDrill(draftee.KickPower, draftee.PuntPower, event.IsCombine)
 		event.Fieldgoal = RunFieldGoalDrill(draftee.KickPower, draftee.KickAccuracy, event.IsCombine)
 		event.PuntDistance = RunPuntDistance(draftee.PuntPower, event.IsCombine)
@@ -221,6 +223,8 @@ func GetDummyDraftee(orginalDraftee models.NFLDraftee) models.NFLDraftee {
 	tempDraftee.PuntPower = int(GetNewAttributeRating(tempDraftee.PuntPowerGrade, attributeMeans, "PuntPower", (tempDraftee.Position)))
 	tempDraftee.PuntAccuracy = int(GetNewAttributeRating(tempDraftee.PuntAccuracyGrade, attributeMeans, "PuntAccuracy", (tempDraftee.Position)))
 	tempDraftee.FootballIQ = int(GetNewAttributeRating(tempDraftee.FootballIQGrade, attributeMeans, "FootballIQ", (tempDraftee.Position)))
+	tempDraftee.Tackle = int(GetNewAttributeRating(tempDraftee.FootballIQGrade, attributeMeans, "Tackle", (tempDraftee.Position)))
+	tempDraftee.Carrying = int(GetNewAttributeRating(tempDraftee.FootballIQGrade, attributeMeans, "Carrying", (tempDraftee.Position)))
 
 	return tempDraftee
 }
@@ -233,9 +237,9 @@ func GetStdDevForAttribute(mapping map[string]map[string]map[string]float32, att
 	return mapping[attribute][position]["stddev"]
 }
 
-func GetNewAttributeRating(grade string, mapping map[string]map[string]map[string]float32, position string, attribute string) uint {
+func GetNewAttributeRating(grade string, mapping map[string]map[string]map[string]float32, attribute string, position string) uint {
 	mean := GetMeanForAttribute(mapping, attribute, position)
-	stddev := GetMeanForAttribute(mapping, attribute, position)
+	stddev := GetStdDevForAttribute(mapping, attribute, position)
 
 	return uint(mean + (stddev * TranslateLetterGradeToStdDevs(grade)))
 }
@@ -634,12 +638,12 @@ func GetDelta(isCombine bool) float64 {
 
 func AddParticipants(json map[string][]uint, events []models.PreDraftEvent, players []models.NFLDraftee) []models.PreDraftEvent {
 	// For each event, find that events list of players, and get that player from the draftee list and add to participants
-	for _, event := range events {
+	for i, event := range events {
 		for _, player := range json[event.Name] {
 			participant, found := FindParticipant(player, players)
 
 			if found {
-				event.Participants = append(event.Participants, participant)
+				events[i].Participants = append(events[i].Participants, participant)
 			} else {
 				// Participant not found
 				fmt.Println("EVENT PARTICIPANT NOT FOUND!!!")

@@ -400,7 +400,7 @@ func RunWonderlic(fbIQ int) uint8 {
 		temp = 99.0
 	}
 	temp = temp - 130.0
-	temp = math.Pow(temp, 2)
+	temp = math.Pow(temp, 3)
 	temp = temp / 25000.0
 	temp = temp + 51.0
 	return uint8(temp)

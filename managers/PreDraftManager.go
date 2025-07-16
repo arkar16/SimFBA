@@ -126,73 +126,89 @@ func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool, ev
 	if strings.Contains(strings.ToLower(position), strings.ToLower("QB")) {
 		event.ThrowingDistance = RunQBDistance(draftee.ThrowPower, event.IsCombine)
 		event.ThrowingAccuracy = RunQBAccuracy(draftee.ThrowAccuracy, event.IsCombine)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("RB")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("RB")) {
 		event.InsideRun = RunInsideRun(draftee.Speed, draftee.Strength, event.IsCombine)
 		event.OutsideRun = RunOutsideRun(draftee.Speed, draftee.Agility, event.IsCombine)
 		event.Catching = RunCatching(draftee.Catching, event.IsCombine)
 		event.RouteRunning = RunRouteRunning(draftee.RouteRunning, event.IsCombine)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("WR")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("WR")) {
 		event.Catching = RunCatching(draftee.Catching, event.IsCombine)
 		event.RouteRunning = RunRouteRunning(draftee.RouteRunning, event.IsCombine)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("TE")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("TE")) {
 		event.Catching = RunCatching(draftee.Catching, event.IsCombine)
 		event.RouteRunning = RunRouteRunning(draftee.RouteRunning, event.IsCombine)
 		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, position)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("FB")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("FB")) {
 		event.InsideRun = RunInsideRun(draftee.Speed, draftee.Strength, event.IsCombine)
 		event.OutsideRun = RunOutsideRun(draftee.Speed, draftee.Agility, event.IsCombine)
 		event.Catching = RunCatching(draftee.Catching, event.IsCombine)
 		event.RouteRunning = RunRouteRunning(draftee.RouteRunning, event.IsCombine)
 		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, position)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("TE")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("TE")) {
 		event.Catching = RunCatching(draftee.Catching, event.IsCombine)
 		event.RouteRunning = RunRouteRunning(draftee.RouteRunning, event.IsCombine)
 		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, position)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("OT")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("OT")) {
 		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, position)
 		event.PassBlocking = RunPassBlocking(draftee.PassBlock, event.IsCombine, position)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("OG")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("OG")) {
 		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, position)
 		event.PassBlocking = RunPassBlocking(draftee.PassBlock, event.IsCombine, position)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("C")) && !strings.Contains(strings.ToLower(position), strings.ToLower("CB")) { // Special case so we don't get CBs in here.
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("C")) && !strings.Contains(strings.ToLower(position), strings.ToLower("CB")) { // Special case so we don't get CBs in here.
 		event.RunBlocking = RunRunBlocking(draftee.RunBlock, event.IsCombine, position)
 		event.PassBlocking = RunPassBlocking(draftee.PassBlock, event.IsCombine, position)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("DT")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("DT")) {
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.PassRush = RunPassRush(draftee.PassRush, event.IsCombine)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("DE")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("DE")) {
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.PassRush = RunPassRush(draftee.PassRush, event.IsCombine)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("OLB")) && strings.Contains(archetype, strings.ToLower("Pass Rush")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("OLB")) && strings.Contains(archetype, strings.ToLower("Pass Rush")) {
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.PassRush = RunPassRush(draftee.PassRush, event.IsCombine)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("OLB")) && !strings.Contains(archetype, strings.ToLower("Pass Rush")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("OLB")) && !strings.Contains(archetype, strings.ToLower("Pass Rush")) {
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.LBCoverage = RunLBCoverage(draftee.ManCoverage, draftee.ZoneCoverage, event.IsCombine)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("ILB")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("ILB")) {
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.LBCoverage = RunLBCoverage(draftee.ManCoverage, draftee.ZoneCoverage, event.IsCombine)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("CB")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("CB")) {
 		event.ManCoverage = RunManCoverage(draftee.ManCoverage, event.IsCombine)
 		event.ZoneCoverage = RunZoneCoverage(draftee.ZoneCoverage, event.IsCombine)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("FS")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("FS")) {
 		event.ManCoverage = RunManCoverage(draftee.ManCoverage, event.IsCombine)
 		event.ZoneCoverage = RunZoneCoverage(draftee.ZoneCoverage, event.IsCombine)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("SS")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("SS")) {
 		event.ManCoverage = RunManCoverage(draftee.ManCoverage, event.IsCombine)
 		event.ZoneCoverage = RunZoneCoverage(draftee.ZoneCoverage, event.IsCombine)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("K")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("K")) {
 		event.Kickoff = RunKickoffDrill(draftee.KickPower, draftee.PuntPower, event.IsCombine)
 		event.Fieldgoal = RunFieldGoalDrill(draftee.KickPower, draftee.KickAccuracy, event.IsCombine)
 		event.PuntDistance = RunPuntDistance(draftee.PuntPower, event.IsCombine)
 		event.CoffinPunt = RunCoffinPunt(draftee.PuntAccuracy, event.IsCombine)
-	} else if strings.Contains(strings.ToLower(position), strings.ToLower("P")) {
+	}
+	if strings.Contains(strings.ToLower(position), strings.ToLower("P")) {
 		event.Kickoff = RunKickoffDrill(draftee.KickPower, draftee.PuntPower, event.IsCombine)
 		event.Fieldgoal = RunFieldGoalDrill(draftee.KickPower, draftee.KickAccuracy, event.IsCombine)
 		event.PuntDistance = RunPuntDistance(draftee.PuntPower, event.IsCombine)
 		event.CoffinPunt = RunCoffinPunt(draftee.PuntAccuracy, event.IsCombine)
-	} else {
-		fmt.Println("WHAT THE HECK KIND OF POSITION DO YOU HAVE???")
 	}
 
 	return event

@@ -174,11 +174,11 @@ func RunPositionEvents(draftee models.NFLDraftee, shouldHidePerformance bool, ev
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.PassRush = RunPassRush(draftee.PassRush, event.IsCombine)
 	}
-	if strings.Contains(strings.ToLower(position), strings.ToLower("OLB")) && strings.Contains(archetype, strings.ToLower("Pass Rush")) {
+	if strings.Contains(strings.ToLower(position), strings.ToLower("OLB")) && strings.Contains(strings.ToLower(archetype), strings.ToLower("Pass Rush")) {
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.PassRush = RunPassRush(draftee.PassRush, event.IsCombine)
 	}
-	if strings.Contains(strings.ToLower(position), strings.ToLower("OLB")) && !strings.Contains(archetype, strings.ToLower("Pass Rush")) {
+	if strings.Contains(strings.ToLower(position), strings.ToLower("OLB")) && !strings.Contains(strings.ToLower(archetype), strings.ToLower("Pass Rush")) {
 		event.RunStop = RunRunStop(draftee.RunDefense, event.IsCombine)
 		event.LBCoverage = RunLBCoverage(draftee.ManCoverage, draftee.ZoneCoverage, event.IsCombine)
 	}

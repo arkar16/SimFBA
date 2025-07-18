@@ -382,7 +382,6 @@ func GenerateCroots() {
 		log.Fatalln("Could not grab last player record from players table...")
 	}
 
-	// var playerList []structs.CollegePlayer
 	fNameMap, lNameMap := getNameMaps()
 	generator := CrootGenerator{
 		firstNameMap:      fNameMap,

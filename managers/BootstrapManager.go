@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/models"
 	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 	"github.com/CalebRose/SimFBA/util"
@@ -55,6 +56,7 @@ type BootstrapDataThree struct {
 	WaiverWireOffers     []structs.NFLWaiverOffer
 	FreeAgents           []structs.NFLPlayer
 	WaiverPlayers        []structs.NFLPlayer
+	NFLDraftees          []models.NFLDraftee
 	ProNews              []structs.NewsLog
 	NFLDepthChartMap     map[uint]structs.NFLDepthChart
 	ContractMap          map[uint]structs.NFLContract
@@ -345,6 +347,7 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		waiverPlayers    []structs.NFLPlayer
 		freeAgentoffers  []structs.FreeAgencyOffer
 		waiverOffers     []structs.NFLWaiverOffer
+		nflDraftees      []models.NFLDraftee
 	)
 
 	if len(collegeID) > 0 && collegeID != "0" {
@@ -366,7 +369,7 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 	}
 
 	if len(proID) > 0 && proID != "0" {
-		wg.Add(8)
+		wg.Add(9)
 
 		go func() {
 			defer wg.Done()
@@ -409,6 +412,11 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 			waiverPlayers = GetAllWaiverWirePlayers()
 		}()
 
+		go func() {
+			defer wg.Done()
+			nflDraftees = GetAllNFLDraftees()
+		}()
+
 	}
 
 	wg.Add(1)
@@ -432,6 +440,7 @@ func GetThirdBootstrapData(collegeID, proID string) BootstrapDataThree {
 		FreeAgents:           freeAgents,
 		WaiverPlayers:        waiverPlayers,
 		FaceData:             faceDataMap,
+		NFLDraftees:          nflDraftees,
 	}
 }
 

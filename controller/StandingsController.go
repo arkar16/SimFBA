@@ -67,6 +67,6 @@ func GetAllNFLStandings(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateCollegeStandings(w http.ResponseWriter, r *http.Request) {
-	managers.GenerateCollegeStandings()
+	managers.GenerateNewSeasonStandings()
 	json.NewEncoder(w).Encode("Standings Generated")
 }

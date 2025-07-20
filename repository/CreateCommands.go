@@ -404,3 +404,33 @@ func CreateCFBPlayerSeasonStatsRecordsBatch(db *gorm.DB, gps []structs.CollegePl
 	}
 	return nil
 }
+
+func CreateCFBStandingsBatch(db *gorm.DB, standings []structs.CollegeStandings, batchSize int) error {
+	total := len(standings)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(standings[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateNFLStandingsBatch(db *gorm.DB, standings []structs.NFLStandings, batchSize int) error {
+	total := len(standings)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(standings[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}

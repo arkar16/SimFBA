@@ -421,11 +421,12 @@ func CreatePreDraftEventResultsBatch(db *gorm.DB, events []models.EventResults, 
 
 func CreateCFBStandingsBatch(db *gorm.DB, standings []structs.CollegeStandings, batchSize int) error {
 	total := len(standings)
-  end := i + batchSize
-  if end > total {
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
 			end = total
 		}
-  if err := db.CreateInBatches(standings[i:end], batchSize).Error; err != nil {
+		if err := db.CreateInBatches(standings[i:end], batchSize).Error; err != nil {
 			return err
 		}
 	}

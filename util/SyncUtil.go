@@ -205,6 +205,20 @@ func ReadCSV(path string) [][]string {
 	return rows
 }
 
+func GetParticipantIDS() map[string][]uint {
+	path := filepath.Join(os.Getenv("ROOT"), "data", "2026", "preDraftEventParticipants.json")
+	content := ReadJson(path)
+
+	var payload map[string][]uint
+
+	err := json.Unmarshal(content, &payload)
+	if err != nil {
+		log.Fatalln("Error during unmarshal: ", err)
+	}
+
+	return payload
+}
+
 func GetStateRegionMatcher() map[string]map[string]string {
 	path := filepath.Join(os.Getenv("ROOT"), "data", "regionMatcher.json")
 	content := ReadJson(path)

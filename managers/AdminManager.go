@@ -56,18 +56,6 @@ func MoveUpWeek() structs.Timestamp {
 	if ts.NFLWeek > 15 {
 		SyncExtensionOffers()
 		AllocateCapsheets()
-
-	}
-	if ts.CollegeSeasonOver && ts.NFLSeasonOver {
-		ts.MoveUpSeason()
-		// Run Progressions
-		if !ts.ProgressedCollegePlayers {
-
-		}
-		if !ts.ProgressedProfessionalPlayers {
-
-		}
-		//
 	}
 	repository.SaveTimestamp(ts, db)
 
@@ -596,12 +584,18 @@ func CreateCollegeSeason() {
 }
 
 func GenerateOffseasonData() {
+	// Fulfill Promises
 
-	// Create Standings Records for College
+	// Run First Phase of Portal
+
+	// Create Standings Records for Leagues
 	GenerateNewSeasonStandings()
 
+	// Reset Recruiting Profiles
+	// ResetTeamRecruitingProfiles()
+
 	// Generate Next Croot Class
-	GenerateCroots()
+	// GenerateCroots()
 }
 
 // Season Funcs

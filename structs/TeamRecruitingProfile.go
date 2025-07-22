@@ -192,6 +192,24 @@ func (r *RecruitingTeamProfile) AddBattleLost() {
 	r.BattlesLost += 1
 }
 
+func (r *RecruitingTeamProfile) SeasonReset() {
+	r.ResetStarCount()
+	r.ResetScholarshipCount()
+	r.SetRecruitingClassSize(25)
+	r.Rank247Score = 0
+	r.RecruitingClassRank = 0
+	r.ESPNScore = 0
+	r.CompositeScore = 0
+	r.RivalsScore = 0
+	r.SpentPoints = 0
+	r.CaughtCheating = false
+	if r.IsUserTeam {
+		r.DeactivateAI()
+	}
+	r.TotalCommitments = 0
+	r.WeeksMissed = 0
+}
+
 func (r *RecruitingTeamProfile) ResetStarCount() {
 	r.ThreeStars = 0
 	r.FourStars = 0

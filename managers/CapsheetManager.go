@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/CalebRose/SimFBA/dbprovider"
+	"github.com/CalebRose/SimFBA/repository"
 	"github.com/CalebRose/SimFBA/structs"
 )
 
@@ -135,6 +136,6 @@ func AllocateRetiredContracts() {
 	for _, team := range nflTeams {
 		cap := capsheetMap[team.ID]
 
-		db.Save(&cap)
+		repository.SaveNFLCapsheet(*cap, db)
 	}
 }

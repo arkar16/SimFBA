@@ -167,3 +167,11 @@ func SyncRES(w http.ResponseWriter, r *http.Request) {
 	ts := managers.GetTimestamp()
 	managers.SyncRecruitingEfficiency(ts)
 }
+
+func SyncToNextSeason(w http.ResponseWriter, r *http.Request) {
+	// db := dbprovider.GetInstance().GetDB()
+	// ts := managers.GetTimestamp()
+	// ts.MoveUpSeason()
+	// repository.SaveTimestamp(ts, db)
+	managers.GenerateOffseasonData()
+}

@@ -377,6 +377,10 @@ func GenerateCroots() {
 	var lastPlayerRecord structs.Player
 	ts := GetTimestamp()
 
+	if ts.CrootsGenerated {
+		return
+	}
+
 	err := db.Last(&lastPlayerRecord).Error
 	if err != nil {
 		log.Fatalln("Could not grab last player record from players table...")

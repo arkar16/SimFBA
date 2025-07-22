@@ -75,9 +75,11 @@ func (c *NFLContract) ProgressContract() {
 	c.CalculateContract()
 	c.HasProgressed = true
 
-	if c.Y1BaseSalary == 0 && c.Y1Bonus == 0 {
+	if c.Y1BaseSalary == 0 && c.Y1Bonus == 0 && c.ContractLength == 0 {
 		c.IsComplete = true
 		c.DeactivateContract()
+	} else if c.Y1BaseSalary == 0 && c.Y1Bonus == 0 && c.ContractLength > 0 {
+		c.Y1Bonus = 0.7
 	}
 }
 

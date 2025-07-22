@@ -2207,6 +2207,7 @@ func ReAlignCollegeDepthChartTEST(db *gorm.DB, teamID string, gp structs.College
 
 	goodFits := GetFitsByScheme(offScheme, false)
 	badFits := GetFitsByScheme(defScheme, false)
+	bonus := 5
 
 	// Allocate the Position Map
 	for _, cp := range roster {
@@ -2218,7 +2219,6 @@ func ReAlignCollegeDepthChartTEST(db *gorm.DB, teamID string, gp structs.College
 		player := arch + " " + pos
 		isGoodFit := CheckPlayerFits(player, goodFits)
 		isBadFit := CheckPlayerFits(player, badFits)
-		bonus := 5
 
 		// Add to QB List
 		if pos == "QB" || pos == "RB" || pos == "FB" || pos == "ATH" {
@@ -2720,7 +2720,7 @@ func ReAlignCollegeDepthChartTEST(db *gorm.DB, teamID string, gp structs.College
 		}
 
 		// Add to P list
-		if pos == "K" || pos == "P" || pos == "ATH" {
+		if pos == "K" || pos == "P" || pos == "QB" || pos == "ATH" {
 			score := 0
 			if pos == "P" {
 				score += 100
@@ -2748,7 +2748,7 @@ func ReAlignCollegeDepthChartTEST(db *gorm.DB, teamID string, gp structs.College
 		}
 
 		// Add to K list (Field Goal)
-		if pos == "K" || pos == "P" || pos == "ATH" {
+		if pos == "K" || pos == "P" || pos == "QB" || pos == "ATH" {
 			score := 0
 			if pos == "K" {
 				score += 100
@@ -2774,7 +2774,7 @@ func ReAlignCollegeDepthChartTEST(db *gorm.DB, teamID string, gp structs.College
 		}
 
 		// FG List
-		if pos == "K" || pos == "P" || pos == "ATH" {
+		if pos == "K" || pos == "P" || pos == "QB" || pos == "ATH" {
 			score := 0
 			if pos == "K" {
 				score += 100

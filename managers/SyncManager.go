@@ -84,13 +84,75 @@ func SyncRecruiting(timestamp structs.Timestamp) {
 		pointsPlaced := false
 		spendingCountAdjusted := false
 
-		allocatePointsToRecruit(recruit, &recruitProfiles, float64(pointLimit), &spendingCountAdjusted, &pointsPlaced, timestamp, &recruitProfilePointsMap, db)
+		// allocatePointsToRecruit(recruit, &recruitProfiles, float64(pointLimit), &spendingCountAdjusted, &pointsPlaced, timestamp, &recruitProfilePointsMap, db)
+		affinityBonus := 0.1
+		pointAllocationsList := []structs.RecruitPointAllocation{}
+		for i := 0; i < len(recruitProfiles); i++ {
+			if (recruitProfiles)[i].CurrentWeeksPoints == 0 {
+				if (recruitProfiles)[i].SpendingCount > 0 {
+					(recruitProfiles)[i].ResetSpendingCount()
+					spendingCountAdjusted = true
+					fmt.Println("Resetting spending count for " + recruit.FirstName + " " + recruit.LastName + " for " + (recruitProfiles)[i].TeamAbbreviation)
+				}
+			} else {
+				pointsPlaced = true
+			}
+
+			rpa := structs.RecruitPointAllocation{
+				RecruitID:        (recruitProfiles)[i].RecruitID,
+				TeamProfileID:    (recruitProfiles)[i].ProfileID,
+				RecruitProfileID: int((recruitProfiles)[i].ID),
+				WeekID:           timestamp.CollegeWeekID,
+			}
+
+			var curr float64 = 0
+
+			var res float64 = (recruitProfiles)[i].RecruitingEfficiencyScore
+
+			if (recruitProfiles)[i].AffinityOneEligible {
+				res += affinityBonus
+				rpa.ApplyAffinityOne()
+			}
+			if (recruitProfiles)[i].AffinityTwoEligible {
+				res += affinityBonus
+				rpa.ApplyAffinityTwo()
+			}
+
+			teamProfile := teamMap[strconv.Itoa(int(recruitProfiles[i].ProfileID))]
+
+			curr = float64((recruitProfiles)[i].CurrentWeeksPoints) * res
+			if !teamProfile.IsFBS {
+				starMod := float64(recruit.Stars) * 0.04
+				curr = curr * (1 - starMod)
+			}
+
+			if (recruitProfiles)[i].SpendingCount > 0 {
+				streakFormula := affinityBonus * float64((recruitProfiles)[i].SpendingCount)
+				curr *= (1 + streakFormula)
+			}
+
+			if (recruitProfiles)[i].CurrentWeeksPoints < 0 || (recruitProfiles)[i].CurrentWeeksPoints > float64(pointLimit) {
+				curr = 0
+				rpa.ApplyCaughtCheating()
+			}
+
+			rpa.UpdatePointsSpent((recruitProfiles)[i].CurrentWeeksPoints, curr)
+			(recruitProfiles)[i].AddCurrentWeekPointsToTotal(curr)
+			(recruitProfilePointsMap)[(recruitProfiles)[i].TeamAbbreviation] += (recruitProfiles)[i].CurrentWeeksPoints
+
+			// Add RPA to point allocations list
+			pointAllocationsList = append(pointAllocationsList, rpa)
+		}
 
 		if !pointsPlaced && !spendingCountAdjusted {
 			fmt.Println("Skipping over " + recruit.FirstName + " " + recruit.LastName)
 			continue
 		}
 
+		// Batch Insert RPAs
+		repository.CreateCFBRecruitPointAllocationRecordsBatch(db, pointAllocationsList, 20)
+
+		// Sort
 		sort.Sort(structs.ByPoints(recruitProfiles))
 
 		for i := 0; i < len(recruitProfiles) && pointsPlaced; i++ {

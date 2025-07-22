@@ -234,6 +234,19 @@ func GetRecruitingProfileForTeamBoardByTeamID(TeamID string) structs.SimTeamBoar
 	return teamProfileResponse
 }
 
+func GetAllTeamRecruitingProfiles() []structs.RecruitingTeamProfile {
+	db := dbprovider.GetInstance().GetDB()
+
+	var profiles []structs.RecruitingTeamProfile
+
+	err := db.Preload("Affinities").Find(&profiles).Error
+	if err != nil {
+		log.Panicln(err)
+	}
+
+	return profiles
+}
+
 func GetOnlyAITeamRecruitingProfiles() []structs.RecruitingTeamProfile {
 	db := dbprovider.GetInstance().GetDB()
 
@@ -473,4 +486,15 @@ func SaveAIBehavior(profile structs.RecruitingTeamProfile) {
 	recruitingProfile := GetOnlyRecruitingProfileByTeamID(TeamID)
 	recruitingProfile.UpdateAIBehavior(profile.IsAI, profile.AIAutoOfferscholarships, profile.AIStarMax, profile.AIStarMin, profile.AIMinThreshold, profile.AIMaxThreshold, profile.OffensiveScheme, profile.DefensiveScheme)
 	repository.SaveRecruitingTeamProfile(recruitingProfile, db)
+}
+
+func ResetTeamRecruitingProfiles() {
+	db := dbprovider.GetInstance().GetDB()
+
+	teamProfiles := GetAllTeamRecruitingProfiles()
+
+	for _, t := range teamProfiles {
+		t.SeasonReset()
+		repository.SaveRecruitingTeamProfile(t, db)
+	}
 }

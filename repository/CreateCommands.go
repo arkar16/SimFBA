@@ -434,3 +434,18 @@ func CreateNFLStandingsBatch(db *gorm.DB, standings []structs.NFLStandings, batc
 	}
 	return nil
 }
+
+func CreateCFBRecruitPointAllocationRecordsBatch(db *gorm.DB, profiles []structs.RecruitPointAllocation, batchSize int) error {
+	total := len(profiles)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(profiles[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}

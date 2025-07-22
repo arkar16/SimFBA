@@ -62,6 +62,9 @@ func (t *Timestamp) MoveUpWeekCollege() {
 		t.CollegeWeek = 0
 		t.CFBSpringGames = false
 	}
+	if t.CollegeWeek > 20 {
+		t.CollegeSeasonOver = true
+	}
 }
 
 func (t *Timestamp) MoveUpWeekNFL() {
@@ -70,6 +73,9 @@ func (t *Timestamp) MoveUpWeekNFL() {
 	if t.NFLPreseason && t.NFLWeek > 3 {
 		t.NFLWeek = 1
 		t.NFLPreseason = false
+	}
+	if t.NFLWeek > 21 {
+		t.NFLSeasonOver = true
 	}
 }
 
@@ -104,6 +110,14 @@ func (t *Timestamp) MoveUpSeason() {
 	t.Y3Capspace = t.Y4Capspace
 	t.Y4Capspace = t.Y5Capspace
 	t.Y5Capspace += 5
+	t.NFLSeasonOver = false
+	t.CollegeSeasonOver = false
+	t.ProgressedCollegePlayers = false
+	t.ProgressedProfessionalPlayers = false
+	t.FreeAgencyRound = 1
+	t.IsNFLOffSeason = true
+	t.IsOffSeason = true
+	t.CrootsGenerated = false
 }
 
 func (t *Timestamp) ToggleRES() {
@@ -227,24 +241,16 @@ func (t *Timestamp) IncrementTransferPortalRound() {
 	}
 }
 
-func (t *Timestamp) EndTheProfessionalSeason() {
-	t.IsNFLOffSeason = true
-	t.FreeAgencyRound = 1
-	t.IsDraftTime = false
-	t.IsFreeAgencyLocked = true
-	t.NFLSeasonOver = true
-}
-
 func (t *Timestamp) ToggleGeneratedCroots() {
 	t.CrootsGenerated = !t.CrootsGenerated
 }
 
 func (t *Timestamp) ToggleCollegeProgression() {
-	t.ProgressedCollegePlayers = !t.ProgressedCollegePlayers
+	t.ProgressedCollegePlayers = true
 }
 
 func (t *Timestamp) ToggleProfessionalProgression() {
-	t.ProgressedProfessionalPlayers = !t.ProgressedProfessionalPlayers
+	t.ProgressedProfessionalPlayers = true
 	t.IsFreeAgencyLocked = false
 	t.IsDraftTime = true
 }

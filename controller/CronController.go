@@ -3,7 +3,9 @@ package controller
 import (
 	"fmt"
 
+	"github.com/CalebRose/SimFBA/dbprovider"
 	"github.com/CalebRose/SimFBA/managers"
+	"github.com/CalebRose/SimFBA/repository"
 )
 
 func CronTest() {
@@ -68,6 +70,13 @@ func SyncToNextWeekViaCron() {
 			managers.MoveUpWeek()
 		}
 		managers.AssignTeamGrades()
+
+		if ts.NFLSeasonOver && ts.CollegeSeasonOver {
+			db := dbprovider.GetInstance().GetDB()
+			ts.MoveUpSeason()
+			repository.SaveTimestamp(ts, db)
+			managers.GenerateOffseasonData()
+		}
 	}
 }
 

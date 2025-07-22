@@ -137,6 +137,21 @@ func CreateNFLDrafteesInBatches(db *gorm.DB, draftees []models.NFLDraftee, batch
 	return nil
 }
 
+func CreateCFBRecruitProfileRecordsBatch(db *gorm.DB, profiles []structs.RecruitPlayerProfile, batchSize int) error {
+	total := len(profiles)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(profiles[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func CreateCFBRecruitRecordsBatch(db *gorm.DB, croots []structs.Recruit, batchSize int) error {
 	total := len(croots)
 	for i := 0; i < total; i += batchSize {
@@ -397,8 +412,35 @@ func CreatePreDraftEventResultsBatch(db *gorm.DB, events []models.EventResults, 
 		if end > total {
 			end = total
 		}
-
 		if err := db.CreateInBatches(events[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateCFBStandingsBatch(db *gorm.DB, standings []structs.CollegeStandings, batchSize int) error {
+	total := len(standings)
+  end := i + batchSize
+  if end > total {
+			end = total
+		}
+  if err := db.CreateInBatches(standings[i:end], batchSize).Error; err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func CreateNFLStandingsBatch(db *gorm.DB, standings []structs.NFLStandings, batchSize int) error {
+	total := len(standings)
+	for i := 0; i < total; i += batchSize {
+		end := i + batchSize
+		if end > total {
+			end = total
+		}
+
+		if err := db.CreateInBatches(standings[i:end], batchSize).Error; err != nil {
 			return err
 		}
 	}

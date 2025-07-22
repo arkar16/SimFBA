@@ -97,6 +97,8 @@ func (t *Timestamp) MoveUpSeason() {
 	t.CollegeWeek = 0
 	t.NFLWeek = 0
 	t.NFLSeasonID++
+	t.CollegeWeekID = (((t.CollegeSeasonID + 2020) - 2000) * 100)
+	t.NFLWeekID = (((t.CollegeSeasonID + 2020) - 2000) * 100)
 	t.Y1Capspace = t.Y2Capspace
 	t.Y2Capspace = t.Y3Capspace
 	t.Y3Capspace = t.Y4Capspace

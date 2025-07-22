@@ -273,10 +273,14 @@ func GetStandingsHistoryByTeamID(id string) []structs.CollegeStandings {
 	})
 }
 
-func GenerateCollegeStandings() {
+func GenerateNewSeasonStandings() {
 	db := dbprovider.GetInstance().GetDB()
 	ts := GetTimestamp()
 	teams := GetAllCollegeTeams()
+	collegeStandings := []structs.CollegeStandings{}
+	nflStandings := []structs.NFLStandings{}
+
+	nflTeams := GetAllNFLTeams()
 
 	for _, t := range teams {
 		if !t.IsActive {
@@ -307,6 +311,28 @@ func GenerateCollegeStandings() {
 			},
 		}
 
-		db.Create(&standings)
+		collegeStandings = append(collegeStandings, standings)
 	}
+	repository.CreateCFBStandingsBatch(db, collegeStandings, 100)
+
+	for _, t := range nflTeams {
+
+		standings := structs.NFLStandings{
+			TeamID:           t.ID,
+			TeamName:         t.TeamName,
+			SeasonID:         uint(ts.CollegeSeasonID),
+			Season:           uint(ts.Season),
+			ConferenceID:     t.ConferenceID,
+			ConferenceName:   t.Conference,
+			PostSeasonStatus: "None",
+			DivisionID:       t.DivisionID,
+			BaseStandings: structs.BaseStandings{
+				Coach:    t.Coach,
+				TeamAbbr: t.TeamAbbr,
+			},
+		}
+
+		nflStandings = append(nflStandings, standings)
+	}
+	repository.CreateNFLStandingsBatch(db, nflStandings, 20)
 }

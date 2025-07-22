@@ -595,6 +595,15 @@ func CreateCollegeSeason() {
 
 }
 
+func GenerateOffseasonData() {
+
+	// Create Standings Records for College
+	GenerateNewSeasonStandings()
+
+	// Generate Next Croot Class
+	GenerateCroots()
+}
+
 // Season Funcs
 func MoveUpInOffseasonFreeAgency() {
 	db := dbprovider.GetInstance().GetDB()

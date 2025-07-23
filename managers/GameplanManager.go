@@ -2890,9 +2890,7 @@ func ReAlignCollegeDepthChartTEST(db *gorm.DB, teamID string, gp structs.College
 		positionList := positionMap[dcp.Position]
 		for _, pos := range positionList {
 			if starterMap[pos.CollegePlayer.ID] &&
-				dcp.Position != "FG" &&
-				dcp.Position != "PR" &&
-				dcp.Position != "KR" {
+				dcp.Position != "FG" {
 				continue
 			}
 			if backupMap[pos.CollegePlayer.ID] && dcp.PositionLevel != "1" && dcp.Position != "STU" {

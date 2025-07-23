@@ -107,7 +107,7 @@ func RunAIGameplanViaCron() {
 func RunTheGamesViaCron() {
 	ts := managers.GetTimestamp()
 	if ts.RunCron {
-		if !ts.IsOffSeason && ts.RunGames {
+		if !ts.IsOffSeason && ts.RunGames && ts.NFLWeek < 22 && ts.CollegeWeek < 21 {
 			managers.FixBrokenGameplans()
 			managers.CheckForSchemePenalties()
 			managers.RunTheGames()

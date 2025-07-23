@@ -508,9 +508,9 @@ func UpdateCollegeAIDepthCharts() {
 	db := dbprovider.GetInstance().GetDB()
 	teams := GetAllCollegeTeams()
 	for _, team := range teams {
-		// if len(team.Coach) > 0 && team.Coach != "AI" {
-		// 	continue
-		// }
+		if len(team.Coach) > 0 && team.Coach != "AI" {
+			continue
+		}
 
 		teamID := strconv.Itoa(int(team.ID))
 		gp := GetGameplanByTeamID(teamID)

@@ -522,6 +522,24 @@ func UpdateCollegeAIDepthCharts() {
 	repository.SaveTimestamp(ts, db)
 }
 
+func UpdateCollegeAIDepthChartsTEST() {
+	db := dbprovider.GetInstance().GetDB()
+	teams := GetAllCollegeTeams()
+	for _, team := range teams {
+		// if len(team.Coach) > 0 && team.Coach != "AI" {
+		// 	continue
+		// }
+
+		teamID := strconv.Itoa(int(team.ID))
+		gp := GetGameplanTESTByTeamID(teamID)
+		ReAlignCollegeDepthChartTEST(db, teamID, gp)
+	}
+
+	ts := GetTimestamp()
+	ts.ToggleAIDepthCharts()
+	repository.SaveTimestamp(ts, db)
+}
+
 func ReAlignCollegeDepthChart(db *gorm.DB, teamID string, gp structs.CollegeGameplan) {
 	roster := GetAllCollegePlayersByTeamIdWithoutRedshirts(teamID)
 	dcPositions := GetDepthChartPositionPlayersByDepthchartID(teamID)

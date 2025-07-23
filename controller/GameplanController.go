@@ -152,6 +152,12 @@ func UpdateCollegeAIDepthCharts(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Updated all CFB Depth Charts")
 }
 
+func UpdateCollegeAIDepthChartsTEST(w http.ResponseWriter, r *http.Request) {
+	// managers.SetAIGameplan()
+	managers.UpdateCollegeAIDepthChartsTEST()
+	json.NewEncoder(w).Encode("Updated all CFB Depth Charts")
+}
+
 // UpdateCollegeAIDepthCharts
 func UpdateNFLAIDepthCharts(w http.ResponseWriter, r *http.Request) {
 	managers.UpdateNFLAIDepthCharts()

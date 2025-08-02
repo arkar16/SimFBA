@@ -164,6 +164,8 @@ func handleRequests() http.Handler {
 	apiRouter.HandleFunc("/gameplan/nfl/updatedepthchart", controller.UpdateNFLDepthChart).Methods("POST")
 	apiRouter.HandleFunc("/gameplan/nfl/depthchart/ai/update/", controller.UpdateNFLAIDepthCharts).Methods("GET")
 
+	// TODO Scheduling Controls
+	//apiRouter.HandleFunc() // get call
 	// Generation Controls
 	apiRouter.HandleFunc("/admin/generate/walkons", controller.GenerateWalkOns).Methods("GET")
 

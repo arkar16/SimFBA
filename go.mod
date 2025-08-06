@@ -31,3 +31,5 @@ require (
 	github.com/tkrajina/typescriptify-golang-structs v0.2.0
 	golang.org/x/sys v0.5.0 // indirect
 )
+
+replace github.com/CalebRose/SimFBA => ../SimFBA
